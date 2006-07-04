@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="enet"
-	ProjectGUID="{704C1FAA-B738-4940-9A64-12173423BEDE}"
-	RootNamespace="enet"
+	Name="ogg"
+	ProjectGUID="{7540BBE3-1261-4376-AB3A-6048078C29F5}"
+	RootNamespace="ogg"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -62,7 +62,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="ws2_32.lib"
 				OutputFile="lib\$(ProjectName)_d.lib"
 			/>
 			<Tool
@@ -111,10 +110,8 @@
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				EnableEnhancedInstructionSet="1"
-				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -132,7 +129,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="ws2_32.lib"
 				OutputFile="lib\$(ProjectName).lib"
 			/>
 			<Tool
@@ -156,31 +152,11 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\src\enet\callbacks.c"
+			RelativePath=".\src\ogg\bitwise.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\enet_win32.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\enet\host.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\enet\list.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\enet\packet.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\enet\peer.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\enet\protocol.c"
+			RelativePath=".\src\ogg\framing.c"
 			>
 		</File>
 	</Files>

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C++ Express 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib.vcproj", "{1D0B9ADE-FA77-4264-A4B9-A6F6340343B7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "physfs", "physfs.vcproj", "{CAFD3BAD-C113-45A1-BEA2-9204B84DEE8E}"
@@ -10,6 +10,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "enet", "enet.vcproj", "{704C1FAA-B738-4940-9A64-12173423BEDE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cal3d", "cal3d.vcproj", "{1ABAB52C-5D1B-43B7-9921-73DB7F5F7EC6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogg", "ogg.vcproj", "{7540BBE3-1261-4376-AB3A-6048078C29F5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbis", "vorbis.vcproj", "{47D22ABF-1581-43BB-9043-D8D7C6E331A8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile", "vorbisfile.vcproj", "{15DA09AC-5D76-4EEE-A96D-7F947A155FFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +43,18 @@ Global
 		{1ABAB52C-5D1B-43B7-9921-73DB7F5F7EC6}.Debug|Win32.Build.0 = Debug|Win32
 		{1ABAB52C-5D1B-43B7-9921-73DB7F5F7EC6}.Release|Win32.ActiveCfg = Release|Win32
 		{1ABAB52C-5D1B-43B7-9921-73DB7F5F7EC6}.Release|Win32.Build.0 = Release|Win32
+		{7540BBE3-1261-4376-AB3A-6048078C29F5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7540BBE3-1261-4376-AB3A-6048078C29F5}.Debug|Win32.Build.0 = Debug|Win32
+		{7540BBE3-1261-4376-AB3A-6048078C29F5}.Release|Win32.ActiveCfg = Release|Win32
+		{7540BBE3-1261-4376-AB3A-6048078C29F5}.Release|Win32.Build.0 = Release|Win32
+		{47D22ABF-1581-43BB-9043-D8D7C6E331A8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{47D22ABF-1581-43BB-9043-D8D7C6E331A8}.Debug|Win32.Build.0 = Debug|Win32
+		{47D22ABF-1581-43BB-9043-D8D7C6E331A8}.Release|Win32.ActiveCfg = Release|Win32
+		{47D22ABF-1581-43BB-9043-D8D7C6E331A8}.Release|Win32.Build.0 = Release|Win32
+		{15DA09AC-5D76-4EEE-A96D-7F947A155FFD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{15DA09AC-5D76-4EEE-A96D-7F947A155FFD}.Debug|Win32.Build.0 = Debug|Win32
+		{15DA09AC-5D76-4EEE-A96D-7F947A155FFD}.Release|Win32.ActiveCfg = Release|Win32
+		{15DA09AC-5D76-4EEE-A96D-7F947A155FFD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

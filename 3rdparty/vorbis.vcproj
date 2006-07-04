@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="enet"
-	ProjectGUID="{704C1FAA-B738-4940-9A64-12173423BEDE}"
-	RootNamespace="enet"
+	Name="vorbis"
+	ProjectGUID="{47D22ABF-1581-43BB-9043-D8D7C6E331A8}"
+	RootNamespace="vorbis"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -20,7 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -62,7 +62,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="ws2_32.lib"
 				OutputFile="lib\$(ProjectName)_d.lib"
 			/>
 			<Tool
@@ -86,7 +85,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="0"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -106,15 +105,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				ExceptionHandling="0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="0"
 				EnableEnhancedInstructionSet="1"
-				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -132,7 +128,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="ws2_32.lib"
 				OutputFile="lib\$(ProjectName).lib"
 			/>
 			<Tool
@@ -156,31 +151,159 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\src\enet\callbacks.c"
+			RelativePath=".\src\vorbis\analysis.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\enet_win32.c"
+			RelativePath=".\src\vorbis\backends.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\host.c"
+			RelativePath=".\src\vorbis\bitrate.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\list.c"
+			RelativePath=".\src\vorbis\bitrate.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\packet.c"
+			RelativePath=".\src\vorbis\block.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\peer.c"
+			RelativePath=".\src\vorbis\codebook.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\enet\protocol.c"
+			RelativePath=".\src\vorbis\codebook.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\codec_internal.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\envelope.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\envelope.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\floor0.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\floor1.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\highlevel.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\info.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lookup.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lookup.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lookup_data.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lpc.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lpc.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lsp.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\lsp.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\mapping0.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\masking.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\mdct.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\mdct.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\misc.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\os.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\psy.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\psy.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\registry.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\registry.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\res0.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\scales.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\sharedbook.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\smallft.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\smallft.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\synthesis.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\window.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\vorbis\window.h"
 			>
 		</File>
 	</Files>
