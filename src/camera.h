@@ -3,6 +3,9 @@
 
 #include "vmath.h"
 
+#define LOOK_SPEED 20.0f
+#define MOVE_SPEED 8.0f
+
 class Camera
 {
 public:

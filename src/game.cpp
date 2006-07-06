@@ -7,8 +7,6 @@
 #include <GL/glfw.h>
 
 #define DT         0.01f
-#define LOOK_SPEED 0.5f
-#define MOVE_SPEED 0.01f
 
 struct ContactBodies
 {
@@ -64,8 +62,8 @@ Game::Game() :
 {
     _world = NewtonCreate(NULL, NULL);
     NewtonWorldSetUserData(_world, reinterpret_cast<void*>(this));
-    //NewtonSetSolverModel(_world, 10);
-    //NewtonSetFrictionModel(_world, 1);
+    NewtonSetSolverModel(_world, 10);
+    NewtonSetFrictionModel(_world, 1);
 
     NewtonCollision* floorCol = NewtonCreateBox(_world, 100.0f, 1.0f, 100.f, NULL);
     NewtonBody* floorBody = NewtonCreateBody(_world, floorCol);
@@ -75,6 +73,8 @@ Game::Game() :
     pos.transpose();
     NewtonBodySetMatrix(floorBody, pos.m);
 
+
+
 	int floorID = NewtonMaterialCreateGroupID(_world);
 	int charID = NewtonMaterialCreateGroupID(_world);
 
@@ -82,12 +82,14 @@ Game::Game() :
 	NewtonMaterialSetDefaultFriction(_world, floorID, charID, 0.4f, 0.4f);
 
 	NewtonMaterialSetCollisionCallback(_world, floorID, charID, 
-        reinterpret_cast<void*>(&contactBodies), 
+        static_cast<void*>(&contactBodies), 
         PlayerContactBegin, PlayerContactProcess, NULL); 
 
     NewtonBodySetMaterialGroupID(floorBody, floorID);
 
-    _localPlayer = new LocalPlayer(_world, charID, Vector(0.0f, 1.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f));
+
+
+    _localPlayer = new LocalPlayer(_world, charID, Vector(0.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f));
 }
 
 Game::~Game()
@@ -133,7 +135,7 @@ void Game::run()
         currentTime = newTime;
         accum += deltaTime;
 
-        control();
+        control(deltaTime);
         while (accum >= DT)
         {
             update();
@@ -153,7 +155,7 @@ void Game::run()
          << frames/currentTime << " FPS" << endl;
 }
 
-void Game::control()
+void Game::control(float delta)
 {
     // read input from keyboard
 
@@ -166,8 +168,8 @@ void Game::control()
     if (x!=w2 || y !=h2)
     {
         _camera.rotate(
-            M_PI * LOOK_SPEED * (y-h2) / h2,
-            M_PI * LOOK_SPEED * (x-w2) / w2);
+            delta * M_PI * LOOK_SPEED * (y-h2) / h2,
+            delta * M_PI * LOOK_SPEED * (x-w2) / w2);
 
         glfwSetMousePos(w2, h2);
     }
@@ -181,7 +183,7 @@ void Game::control()
 
     if (dist!=0 || strafe!=0)
     {
-        _camera.move(MOVE_SPEED * dist, MOVE_SPEED * strafe);
+        _camera.move(delta * MOVE_SPEED * dist, delta * MOVE_SPEED * strafe);
     }
 
     _localPlayer->control();

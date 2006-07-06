@@ -129,6 +129,14 @@ void Video::renderSphere(float radius) const
     gluDeleteQuadric(q);
 }
     
+void Video::renderWireSphere(float radius) const
+{
+    GLUquadric* q =  gluNewQuadric();
+    gluQuadricDrawStyle(q, GLU_SILHOUETTE);
+    gluSphere(q, radius, 32, 32);
+    gluDeleteQuadric(q);
+}
+  
 void Video::renderAxes(float size) const
 {
     

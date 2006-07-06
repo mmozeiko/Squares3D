@@ -11,6 +11,7 @@ public:
 
     void renderCube(float size = 1.0f) const;
     void renderSphere(float radius = 1.0f) const;
+    void renderWireSphere(float radius = 1.0f) const;
     void renderAxes(float size = 5.0f) const;
 
 private:

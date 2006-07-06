@@ -29,7 +29,7 @@ private:
 
     Player* _localPlayer;   // temporary
 
-    void control();
+    void control(float delta);
     void update();
     void prepare();
     void render() const;
