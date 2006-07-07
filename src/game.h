@@ -7,6 +7,7 @@
 #include "network.h"
 #include "player.h"
 #include "camera.h"
+#include "ball.h"
 
 #include <Newton.h>
 
@@ -16,7 +17,7 @@ public:
     Game();
     ~Game();
 
-    void run();
+    void Run();
 
 private:
     Config  _config;
@@ -28,11 +29,12 @@ private:
     NewtonWorld* _world;
 
     Player* _localPlayer;   // temporary
+    Ball*   _ball;          // temporary
 
-    void control(float delta);
-    void update();
-    void prepare();
-    void render() const;
+    void Control(float delta);
+    void Update();
+    void Prepare();
+    void Render() const;
 };
 
 #endif

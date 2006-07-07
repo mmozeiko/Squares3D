@@ -1,54 +1,36 @@
 #include "player.h"
 #include "video.h"
 
+#include "body.h" // TODO: remove
+
 #include <cmath>
 #include <GL/glfw.h>
 
-#define GRAVITY     -9.81f
-
-Player::Player(const NewtonWorld* world, int material, const Vector& pos, const Vector& size) : _world(world)
+Player::Player(const NewtonWorld* world, int material, const Vector& pos, const Vector& size)
+    : Body(world), _radius(size * 0.5f), _stopped(true), _maxStepHigh(_radius.y * 0.5f), _force(),
+    _angleY(-M_PI/2)
 {
-    // TODO: move to common physics object parent class
-	_stopped = true;
+    Matrix location = Matrix::rotateY(_angleY) * Matrix::translate(pos);
 
-	// calculate the character ellipse radius
-	_radius = size * 0.5f;
+    NewtonCollision* collision = NewtonCreateSphere(_world, _radius.x, _radius.y, _radius.z, NULL); 
+    Body::Create(collision, location);
 
-    _maxStepHigh = _radius.y * 0.5f;
-
-    Matrix location = Matrix::translate(pos);
-    location *= Matrix::rotateY(M_PI/2);
-
-	NewtonCollision* sphere = NewtonCreateSphere(_world, _radius.x, _radius.y, _radius.z, NULL); 
-	_body = NewtonCreateBody(_world, sphere);
-	NewtonReleaseCollision(_world, sphere);
-
-	// disable auto freeze management for the player
+	// disable auto freeze
 	NewtonBodySetAutoFreeze(_body, 0);
-
-	// keep the player always active 
 	NewtonWorldUnfreezeBody(_world, _body);
 
-    const float damp[] = { 0.0f, 0.0f, 0.0f };
 	// set the viscous damping the the minimum
+    const float damp[] = { 0.0f, 0.0f, 0.0f };
 	NewtonBodySetLinearDamping(_body, 0.0f);
 	NewtonBodySetAngularDamping(_body, damp);
 
 	// Set Material Id for this object
 	NewtonBodySetMaterialGroupID(_body, material);
 
-	// save the pointer to the graphic object with the body.
-	NewtonBodySetUserData(_body, static_cast<void*>(this));
-
-	// set the force and torque call back function
-	NewtonBodySetForceAndTorqueCallback(_body, OnApplyForce);
-
 	// set the mas
-	NewtonBodySetMassMatrix(_body, 10.0f, 10.0f, 10.0f, 10.0f);
-
-	// set the matrix for the rigid body
-    location.transpose();
-	NewtonBodySetMatrix(_body, location.m);
+    Vector intertia, origin;
+    NewtonConvexCollisionCalculateInertialMatrix(collision, intertia.v, origin.v);
+    NewtonBodySetMassMatrix(_body, 10.0f, intertia.x, intertia.y, intertia.z);
 
   	// add and up vector constraint to help in keeping the body upright
 	const Vector upDirection (0.0f, 1.0f, 0.0f);
@@ -59,72 +41,52 @@ Player::Player(const NewtonWorld* world, int material, const Vector& pos, const 
 Player::~Player()
 {
     NewtonDestroyJoint(_world, _upVector);
-    NewtonDestroyBody(_world, _body);
 }
 
-void Player::setForce(const Vector& force)
+void Player::SetForce(const Vector& force)
 {
     _force = force;
     _stopped = (force.x==0.0f && force.z==0.0f);
 }
 
-void Player::prepare()
+void Player::onRender(const Video& video) const
 {
-    NewtonBodyGetMatrix(_body, _matrix.m);
-    //_matrix.transpose();// - wtf, why not needed ???
-}
-
-void Player::render(const Video& video) const
-{
-    glPushMatrix();
-    glMultMatrixf(_matrix.m);
-
     glColor3f(1.0f, 0.0f, 0.0f);
     glScalef(_radius.x, _radius.y, _radius.z);
-    video.renderSphere(1.0f);
-
-    glPopMatrix();
+    video.RenderSphere(1.0f);
 }
 
-void Player::OnApplyForce(const NewtonBody* body)
+void Player::onSetForceAndTorque()
 {
-    Player* self = static_cast<Player*>(NewtonBodyGetUserData(body));
-    self->OnApplyForce();
-}
-
-void Player::OnApplyForce()
-{
-    float mass;
-    Vector massI;
-
-    Vector omega, alpha, velocity;
-
-    Matrix matrix;
-
 	float timestepInv = 1.0f / 0.01f; // 0.01f == DT
 
 	// get the character mass
+    float mass;
+    Vector massI;
 	NewtonBodyGetMassMatrix(_body, &mass, &massI.x, &massI.y, &massI.z);
 
 	// apply the gravity force, cheat a little with the character gravity
-	Vector force = Vector (0.0f, mass*GRAVITY, 0.0f);
+	Vector force = mass * gravityVec;
 
 	// Get the velocity vector
+    Vector velocity;
 	NewtonBodyGetVelocity(_body, velocity.v);
 
-	// determine if the character have to be snap to the ground
-	NewtonBodyGetMatrix(_body, matrix.m);
+	// rotate the force direction to align with object angle
+    Vector heading = Matrix::rotateY(_angleY) * _force;
 
-	// rotate the force direction to align with the camera
-	Vector heading = matrix * _force;
-	heading.norm();
+    heading.norm();
+    velocity.norm();
 
 	force += (heading * 100.0f - heading * (50.0f * (velocity % heading)));
+
 	NewtonBodySetForce(_body, force.v);
 
 	// TODO: this is for rotation
 
 /*
+    Vector omega, alpha;
+
     // calculate the torque vector
     float steerAngle = std::min (std::max ((_matrix.row(0) * cameraDir).y, -1.0f), 1.0f);
 	steerAngle = dAsin (steerAngle); 
@@ -135,13 +97,13 @@ void Player::OnApplyForce()
 */
 }
 
-void Player::OnCollision(const NewtonMaterial* material, const NewtonContact* contact)
+void Player::onCollision(const NewtonMaterial* material, const NewtonContact* contact)
 {
 	Vector point;
 	Vector normal;
 	Vector velocity;
 
-	// Get the collision and normal
+    // Get the collision and normal
 	NewtonMaterialGetContactPositionAndNormal(material, point.v, normal.v);
 
 	Vector localPoint(point * _matrix);

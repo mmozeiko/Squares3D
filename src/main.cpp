@@ -11,14 +11,14 @@ int main(int, char* argv[])
     //std::ofstream log("log.txt");
     //clog.rdbuf(log.rdbuf());
 
-    clog << "Started: " << getDateTime() << endl;
+    clog << "Started: " << GetDateTime() << endl;
 
-    Random::init();
-    File::init(argv[0]);
+    Random::Init();
+    File::Init(argv[0]);
 
     try
     {
-        Game().run();
+        Game().Run();
     }
     catch (string& exception)
     {
@@ -26,9 +26,9 @@ int main(int, char* argv[])
              << " " << exception << endl;
     }
 
-    File::done();
+    File::Done();
 
-    clog << "Finished: " << getDateTime() << endl;
+    clog << "Finished: " << GetDateTime() << endl;
     
     return 0;
 }

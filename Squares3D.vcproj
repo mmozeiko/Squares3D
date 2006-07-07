@@ -190,6 +190,22 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\ball.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\ball.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\body.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\body.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\camera.cpp"
 			>
 		</File>

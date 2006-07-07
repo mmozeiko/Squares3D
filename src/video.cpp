@@ -102,7 +102,7 @@ Video::~Video()
     glfwTerminate();
 }
 
-void Video::renderCube(float size) const
+void Video::RenderCube(float size) const
 {
     float tmp = 0.5f * size;
 
@@ -122,14 +122,14 @@ void Video::renderCube(float size) const
 #   undef N
 }
 
-void Video::renderSphere(float radius) const
+void Video::RenderSphere(float radius) const
 {
     GLUquadric* q =  gluNewQuadric();
     gluSphere(q, radius, 32, 32);
     gluDeleteQuadric(q);
 }
     
-void Video::renderWireSphere(float radius) const
+void Video::RenderWireSphere(float radius) const
 {
     GLUquadric* q =  gluNewQuadric();
     gluQuadricDrawStyle(q, GLU_SILHOUETTE);
@@ -137,7 +137,7 @@ void Video::renderWireSphere(float radius) const
     gluDeleteQuadric(q);
 }
   
-void Video::renderAxes(float size) const
+void Video::RenderAxes(float size) const
 {
     
     glDisable(GL_LIGHTING);
@@ -191,3 +191,15 @@ void Video::renderAxes(float size) const
 
     gluDeleteQuadric(q);
 }
+
+void Video::BeginObject(const Matrix& matrix) const
+{
+    glPushMatrix();
+    glMultMatrixf(matrix.m);
+}
+
+void Video::EndObject() const
+{
+    glPopMatrix();
+}
+

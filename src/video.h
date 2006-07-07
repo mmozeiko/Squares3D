@@ -2,6 +2,7 @@
 #define __VIDEO_H__
 
 #include "config.h"
+#include "vmath.h"
 
 class Video
 {
@@ -9,10 +10,13 @@ public:
     Video(Config& config);
     ~Video();
 
-    void renderCube(float size = 1.0f) const;
-    void renderSphere(float radius = 1.0f) const;
-    void renderWireSphere(float radius = 1.0f) const;
-    void renderAxes(float size = 5.0f) const;
+    void RenderCube(float size = 1.0f) const;
+    void RenderSphere(float radius = 1.0f) const;
+    void RenderWireSphere(float radius = 1.0f) const;
+    void RenderAxes(float size = 5.0f) const;
+
+    void BeginObject(const Matrix& matrix) const;
+    void EndObject() const;
 
 private:
     Config& _config;

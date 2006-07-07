@@ -11,11 +11,11 @@ class Camera
 public:
     Camera(const Vector& pos = Vector(6.0f, 8.0f, 8.0f), float angleX = M_PI/5, float angleY = -M_PI/5);
 
-    void move(float distance, float strafe);
-    void rotate(float ax, float ay);
+    void Move(float distance, float strafe);
+    void Rotate(float ax, float ay);
 
-    void prepare();
-    void render() const;
+    void Prepare();
+    void Render() const;
 
 private:
     Vector _pos;
@@ -23,6 +23,7 @@ private:
     float  _angleY;
 
     const Matrix _strafeRotation;
+    const Matrix _scaleMatrix;
     Matrix _matrix;
 };
 #endif

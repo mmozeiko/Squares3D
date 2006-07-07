@@ -35,14 +35,14 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
     player = reinterpret_cast<Player*>(NewtonBodyGetUserData(contactBodies->body1));
     if (player)
     {
-        player->OnCollision(material, contact);
+        player->onCollision(material, contact);
     }
     else
     {
         player = reinterpret_cast<Player*>(NewtonBodyGetUserData(contactBodies->body2));
         if (player)
         {
-            player->OnCollision(material, contact);
+            player->onCollision(material, contact);
         }
     }
 
@@ -70,10 +70,7 @@ Game::Game() :
 	NewtonReleaseCollision(_world, floorCol);
 
     Matrix pos = Matrix::translate(Vector(0.0f, -0.5f, 0.0f));
-    pos.transpose();
     NewtonBodySetMatrix(floorBody, pos.m);
-
-
 
 	int floorID = NewtonMaterialCreateGroupID(_world);
 	int charID = NewtonMaterialCreateGroupID(_world);
@@ -90,16 +87,18 @@ Game::Game() :
 
 
     _localPlayer = new LocalPlayer(_world, charID, Vector(0.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f));
+    _ball = new Ball(_world, Vector(1, 0.2f, 1), 0.2f);
 }
 
 Game::~Game()
 {
+    delete _ball;
     delete _localPlayer;
     NewtonMaterialDestroyAllGroupID(_world);
     NewtonDestroy(_world);
 }
 
-void Game::run()
+void Game::Run()
 {
     clog << "Starting game..." << endl;
 
@@ -123,26 +122,26 @@ void Game::run()
 
     int    frames = 0;
     double accum = 0.0;
-    double currentTime = timer.read();
+    double currentTime = timer.Read();
     double startTime = currentTime;
 
     bool running = true;
     
     while (running)
     {
-        double newTime = timer.read();
+        double newTime = timer.Read();
         double deltaTime = newTime - currentTime;
         currentTime = newTime;
         accum += deltaTime;
 
-        control(deltaTime);
+        Control(deltaTime);
         while (accum >= DT)
         {
-            update();
+            Update();
             accum -= DT;
         }
-        prepare();
-        render();
+        Prepare();
+        Render();
         frames++;
 
         glfwPollEvents();
@@ -155,7 +154,7 @@ void Game::run()
          << frames/currentTime << " FPS" << endl;
 }
 
-void Game::control(float delta)
+void Game::Control(float delta)
 {
     // read input from keyboard
 
@@ -167,7 +166,7 @@ void Game::control(float delta)
 
     if (x!=w2 || y !=h2)
     {
-        _camera.rotate(
+        _camera.Rotate(
             delta * M_PI * LOOK_SPEED * (y-h2) / h2,
             delta * M_PI * LOOK_SPEED * (x-w2) / w2);
 
@@ -183,38 +182,40 @@ void Game::control(float delta)
 
     if (dist!=0 || strafe!=0)
     {
-        _camera.move(delta * MOVE_SPEED * dist, delta * MOVE_SPEED * strafe);
+        _camera.Move(delta * MOVE_SPEED * dist, delta * MOVE_SPEED * strafe);
     }
 
-    _localPlayer->control();
+    _localPlayer->Control();
 
 }
 
-void Game::update()
+void Game::Update()
 {
     // update world objects, simulate physics
     NewtonUpdate(_world, DT);
 }
 
-void Game::prepare()
+void Game::Prepare()
 {
     // prepare for rendering - store all object state in temporary variables
-    _camera.prepare();
-    _localPlayer->prepare();
+    _camera.Prepare();
+    _localPlayer->Prepare();
+    _ball->Prepare();
 
 }
 
-void Game::render() const
+void Game::Render() const
 {
     // render teh world, state of objects are in temporary variables
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _camera.render();
+    _camera.Render();
 
-    _video.renderAxes();
+    _video.RenderAxes();
 
-    _localPlayer->render(_video);
+    _localPlayer->Render(_video);
+    _ball->Render(_video);
 
     glfwSwapBuffers();
 }

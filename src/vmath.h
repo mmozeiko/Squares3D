@@ -221,7 +221,6 @@ public:
   
     Matrix()
     {
-        identity();
     }
 
     Matrix(float m00, float m01, float m02, float m03,
@@ -272,10 +271,12 @@ public:
         return m[idx];
     }
 
-    void identity()
+    static Matrix identity()
     {
-        std::fill_n(m, 16, 0.0f);
-        m00=m11=m22=m33=1.0f;
+        Matrix result;
+        std::fill_n(result.m, 16, 0.0f);
+        result.m00 = result.m11 = result.m22 = result.m33 = 1.0f;
+        return result;
     }
 
     void transpose()
@@ -295,8 +296,8 @@ public:
         std::fill_n(m, 16, 0.0f);
         m00 = m33 = 1.0f;
         m11 = m22 = c;
-        m12 = -s;
-        m21 = s;
+        m12 = s;
+        m21 = -s;
     }
 
     static Matrix rotateX(float angle)
@@ -313,8 +314,8 @@ public:
         std::fill_n(m, 16, 0.0f);
         m11 = m33 = 1.0f;
         m00 = m22 = c;
-        m20 = -s;
-        m02 = s;
+        m20 = s;
+        m02 = -s;
     }
   
     static Matrix rotateY(float angle)
@@ -331,8 +332,8 @@ public:
         std::fill_n(m, 16, 0.0f);
         m22 = m33 = 1.0f;
         m00 = m11 = c;
-        m01 = -s;
-        m10 = s;
+        m01 = s;
+        m10 = -s;
     }
     
     static Matrix rotateZ(float angle)
@@ -370,9 +371,9 @@ public:
     {
         std::fill_n(m, 16, 0.0f);
         m00 = m11 = m22 = m33 = 1.0f;
-        m03 = vec.x;
-        m13 = vec.y;
-        m23 = vec.z;
+        m30 = vec.x;
+        m31 = vec.y;
+        m32 = vec.z;
     }
 
     static Matrix translate(const Vector& vec)
@@ -400,7 +401,7 @@ public:
 
     Vector column(int idx) const
     {
-        if (idx>=0 && idx<=3)
+        if (idx>=0 && idx<=2)
         {
             return Vector(m[0+idx], m[4+idx], m[8+idx]);
         }
@@ -409,7 +410,7 @@ public:
   
     Vector row(int idx) const
     {
-        if (idx>=0 && idx<=2)
+        if (idx>=0 && idx<=3)
         {
             return Vector(m[idx*4+0], m[idx*4+1], m[idx*4+2]);
         }
@@ -419,9 +420,9 @@ public:
 
 inline Vector operator * (const Matrix& mx, const Vector& vec)
 {
-    return Vector(mx.m00*vec.x + mx.m01*vec.y + mx.m02*vec.z + mx.m03,
-                  mx.m10*vec.x + mx.m11*vec.y + mx.m12*vec.z + mx.m13,
-                  mx.m20*vec.x + mx.m21*vec.y + mx.m22*vec.z + mx.m23);
+    return Vector(mx.m00*vec.x + mx.m10*vec.y + mx.m20*vec.z + mx.m30,
+                  mx.m01*vec.x + mx.m11*vec.y + mx.m21*vec.z + mx.m31,
+                  mx.m02*vec.x + mx.m12*vec.y + mx.m22*vec.z + mx.m32);
 }
 
 inline Vector operator * (const Vector& vec, const Matrix& mx)
@@ -433,11 +434,24 @@ inline Vector operator * (const Vector& vec, const Matrix& mx)
 
 inline Matrix operator * (const Matrix& first, const Matrix& second)
 {
-    Matrix m = Matrix();
-    m.m00 = first.m00*second.m00 + first.m01*second.m10 + first.m02*second.m20;
-    m.m01 = first.m00*second.m01 + first.m01*second.m11 + first.m02*second.m21;
-    m.m02 = first.m00*second.m02 + first.m01*second.m12 + first.m02*second.m22;
-    m.m03 = first.m00*second.m03 + first.m01*second.m13 + first.m02*second.m23 + first.m03;
+    Matrix m;
+    for (int i=0; i<4; i++)
+    {
+        for (int j=0; j<4; j++)
+        {
+            float sum = 0.0f;
+            for (int k=0; k<4; k++)
+            {
+                sum += second.m[i*4+k] * first.m[k*4+j];
+            }
+            m.m[i*4+j] = sum;
+        }
+    }
+/*
+    m.m00 = first.m00*second.m00 + first.m10*second.m01 + first.m20*second.m02;
+    m.m01 = first.m00*second.m10 + first.m10*second.m11 + first.m20*second.m12;
+    m.m02 = first.m00*second.m20 + first.m10*second.m21 + first.m20*second.m22;
+    m.m03 = first.m00*second.m30 + first.m10*second.m31 + first.m20*second.m32 + first.m33;
 
     m.m10 = first.m10*second.m00 + first.m11*second.m10 + first.m12*second.m20;
     m.m11 = first.m10*second.m01 + first.m11*second.m11 + first.m12*second.m21;
@@ -448,7 +462,7 @@ inline Matrix operator * (const Matrix& first, const Matrix& second)
     m.m21 = first.m20*second.m01 + first.m21*second.m11 + first.m22*second.m21;
     m.m22 = first.m20*second.m02 + first.m21*second.m12 + first.m22*second.m22;
     m.m23 = first.m20*second.m03 + first.m21*second.m13 + first.m22*second.m23 + first.m23;
-
+*/
     return m;
 }
 

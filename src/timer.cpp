@@ -7,10 +7,10 @@ Timer::Timer(bool start) :
     _elapsed(0.0),
     _resumed(0.0)
 {
-    reset(start);
+    Reset(start);
 }
 
-void Timer::pause()
+void Timer::Pause()
 {
     _running--;
     if (_running != 0)
@@ -21,7 +21,7 @@ void Timer::pause()
     _elapsed += glfwGetTime() - _resumed;
 }
 
-void Timer::resume()
+void Timer::Resume()
 {
     _running++;
     if (_running != 1)
@@ -32,7 +32,7 @@ void Timer::resume()
     _resumed = glfwGetTime();
 }
 
-void Timer::reset(bool start)
+void Timer::Reset(bool start)
 {
     _running = (start ? 1 : 0);
     if (start)
@@ -42,7 +42,7 @@ void Timer::reset(bool start)
     _elapsed = 0;
 }
 
-double Timer::read() const
+double Timer::Read() const
 {
     if (_running <= 0)
     {

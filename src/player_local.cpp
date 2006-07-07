@@ -12,7 +12,7 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::control()
+void LocalPlayer::Control()
 {
     Vector force;
 
@@ -21,5 +21,5 @@ void LocalPlayer::control()
     if (glfwGetKey('A')==GLFW_PRESS) force.z =  50.0f;
     if (glfwGetKey('D')==GLFW_PRESS) force.z = -50.0f;
 
-    setForce(force);
+    SetForce(force);
 }

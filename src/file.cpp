@@ -361,7 +361,7 @@ void Writer::close()
     _buf->close();
 }
 
-void init(const char* argv0)
+void Init(const char* argv0)
 {
     clog << "Initializing filesystem." << endl;
 
@@ -375,7 +375,7 @@ void init(const char* argv0)
     PHYSFS_mount("data.zip", "data", 1);
 }
 
-void done()
+void Done()
 {
     clog << "Closing filesystem." << endl;
 

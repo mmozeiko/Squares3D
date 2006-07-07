@@ -7,8 +7,8 @@
 
 namespace File
 {
-    void init(const char* argv0);
-    void done();
+    void Init(const char* argv0);
+    void Done();
 
     class InputBuffer;
     class OutputBuffer;

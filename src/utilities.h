@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-string getDateTime();
+string GetDateTime();
 
 #endif

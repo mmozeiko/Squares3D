@@ -2,7 +2,7 @@
 
 #include <ctime>
 
-string getDateTime()
+string GetDateTime()
 {
     time_t time;
     std::time(&time);

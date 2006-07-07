@@ -6,11 +6,11 @@ class Timer
 public:
     Timer(bool start = true);
 
-    void pause();
-    void resume();
-    void reset(bool start = true);
+    void Pause();
+    void Resume();
+    void Reset(bool start = true);
 
-    double read() const;
+    double Read() const;
 
 private:
     int _running;

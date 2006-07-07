@@ -10,7 +10,7 @@ Network::Network()
 
     ENetCallbacks callbacks = { 
         NULL, NULL,                                                     // malloc, free
-        reinterpret_cast<int (ENET_CALLBACK*)(void)>(Random::getInt)    // rand
+        reinterpret_cast<int (ENET_CALLBACK*)(void)>(Random::GetInt)    // rand
     };
 
     if (enet_initialize_with_callbacks(ENET_VERSION, &callbacks) != 0)

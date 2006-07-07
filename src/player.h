@@ -3,10 +3,9 @@
 
 #include <Newton.h>
 #include "vmath.h"
+#include "body.h"
 
-class Video;
-
-class Player
+class Player : public Body
 {
 public:
     Player(const NewtonWorld* world, int material, 
@@ -14,30 +13,24 @@ public:
         const Vector& size);
     virtual ~Player();
 
-    void setForce(const Vector& force);
+    void SetForce(const Vector& force);
 
-    virtual void control() = 0;
-    virtual void prepare();
-    void render(const Video& video) const;
+    virtual void Control() = 0;
+    void onRender(const Video& video) const;
 
-    void OnCollision(const NewtonMaterial* material, const NewtonContact* contact);
+    void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 
 private:
-    const NewtonWorld*  _world;
-    NewtonBody*         _body;
     NewtonJoint*        _upVector;
 
     Vector              _radius;
-    
     bool                _stopped;
     float               _maxStepHigh;
-
     Vector              _force;
-    Matrix              _matrix;
+    
+    float               _angleY;
 
-    void OnApplyForce();
-
-    static void OnApplyForce(const NewtonBody* body);
+    void onSetForceAndTorque();
 
 };
 
