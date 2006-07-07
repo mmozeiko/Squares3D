@@ -16,10 +16,10 @@ void LocalPlayer::Control()
 {
     Vector force;
 
-    if (glfwGetKey('W')==GLFW_PRESS) force.x =  50.0f;
-    if (glfwGetKey('S')==GLFW_PRESS) force.x = -50.0f;
-    if (glfwGetKey('A')==GLFW_PRESS) force.z =  50.0f;
-    if (glfwGetKey('D')==GLFW_PRESS) force.z = -50.0f;
+    if (glfwGetKey('W')==GLFW_PRESS) force.x =  5.0f;
+    if (glfwGetKey('S')==GLFW_PRESS) force.x = -5.0f;
+    if (glfwGetKey('A')==GLFW_PRESS) force.z =  5.0f;
+    if (glfwGetKey('D')==GLFW_PRESS) force.z = -5.0f;
 
     SetForce(force);
 }

@@ -10,7 +10,14 @@ const Vector gravityVec(0.0f, -9.81f, 0.0f);
 class Body
 {
 public:
-    Body(const NewtonWorld* world);
+    enum BodyType
+    {
+        FloorBody,
+        PlayerBody,
+        BallBody,
+    };
+
+    Body(const NewtonWorld* world, const BodyType type);
     virtual ~Body();
 
     void Create(const NewtonCollision* collision, const Matrix& matrix);
@@ -20,6 +27,8 @@ public:
     
     void Render(const Video& video) const;
 
+    BodyType GetType() const;
+
 protected:
     virtual void onSetForceAndTorque();
 
@@ -28,6 +37,7 @@ protected:
     const NewtonCollision*  _collision;
 
     Matrix                  _matrix;
+    const BodyType          _type;
 
 private:
     static void onSetForceAndTorque(const NewtonBody* body);

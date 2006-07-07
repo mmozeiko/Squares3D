@@ -1,7 +1,7 @@
 #include "body.h"
 #include "common.h"
 
-Body::Body(const NewtonWorld* world) : _world(world), _body(NULL)
+Body::Body(const NewtonWorld* world, const BodyType type) : _world(world), _body(NULL), _type(type)
 {
 }
 
@@ -36,6 +36,11 @@ void Body::Render(const Video& video) const
     video.BeginObject(_matrix);
     onRender(video);
     video.EndObject();
+}
+
+Body::BodyType Body::GetType() const
+{
+    return _type;
 }
 
 void Body::onSetForceAndTorque()

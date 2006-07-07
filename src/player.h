@@ -24,10 +24,9 @@ private:
     NewtonJoint*        _upVector;
 
     Vector              _radius;
-    bool                _stopped;
-    float               _maxStepHigh;
+    bool                _isOnGround;
     Vector              _force;
-    
+   
     float               _angleY;
 
     void onSetForceAndTorque();

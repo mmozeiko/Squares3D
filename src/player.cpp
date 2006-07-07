@@ -7,8 +7,7 @@
 #include <GL/glfw.h>
 
 Player::Player(const NewtonWorld* world, int material, const Vector& pos, const Vector& size)
-    : Body(world), _radius(size * 0.5f), _stopped(true), _maxStepHigh(_radius.y * 0.5f), _force(),
-    _angleY(-M_PI/2)
+    : Body(world, PlayerBody), _radius(size * 0.5f), _isOnGround(true), _force(), _angleY(-M_PI/2)
 {
     Matrix location = Matrix::rotateY(_angleY) * Matrix::translate(pos);
 
@@ -46,7 +45,6 @@ Player::~Player()
 void Player::SetForce(const Vector& force)
 {
     _force = force;
-    _stopped = (force.x==0.0f && force.z==0.0f);
 }
 
 void Player::onRender(const Video& video) const
@@ -60,31 +58,33 @@ void Player::onSetForceAndTorque()
 {
 	float timestepInv = 1.0f / 0.01f; // 0.01f == DT
 
-	// get the character mass
     float mass;
-    Vector massI;
-	NewtonBodyGetMassMatrix(_body, &mass, &massI.x, &massI.y, &massI.z);
+    float Ixx, Iyy, Izz;
 
-	// apply the gravity force, cheat a little with the character gravity
-	Vector force = mass * gravityVec;
+    // Get the mass of the object
+    NewtonBodyGetMassMatrix(_body, &mass, &Ixx, &Iyy, &Izz );
 
-	// Get the velocity vector
-    Vector velocity;
-	NewtonBodyGetVelocity(_body, velocity.v);
+    Vector force = gravityVec * mass;
 
-	// rotate the force direction to align with object angle
-    Vector heading = Matrix::rotateY(_angleY) * _force;
+    Vector currentVel;
+    NewtonBodyGetVelocity(_body, currentVel.v);
+      
+    Vector targetVel = _force;
+    if (!_isOnGround)
+    {
+       NewtonBodyAddForce(_body, force.v);
+    }
 
-    heading.norm();
-    velocity.norm();
+    force = ( ( Matrix::rotateY(_angleY)*targetVel - currentVel ) * timestepInv ) * mass;
+    if (!_isOnGround) force.y = 0.0f;
 
-	force += (heading * 100.0f - heading * (50.0f * (velocity % heading)));
+    NewtonBodyAddForce(_body, force.v);
 
-	NewtonBodySetForce(_body, force.v);
-
+    _isOnGround = false;
+  
+/*
 	// TODO: this is for rotation
 
-/*
     Vector omega, alpha;
 
     // calculate the torque vector
@@ -99,50 +99,22 @@ void Player::onSetForceAndTorque()
 
 void Player::onCollision(const NewtonMaterial* material, const NewtonContact* contact)
 {
-	Vector point;
-	Vector normal;
-	Vector velocity;
+   Vector pos, nor;
 
-    // Get the collision and normal
-	NewtonMaterialGetContactPositionAndNormal(material, point.v, normal.v);
+   NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
 
-	Vector localPoint(point * _matrix);
 
-	// if a contact is below the max need consider the character is on the ground
-	if (localPoint.y < _maxStepHigh)
-    {
-		NewtonBodyGetVelocity(_body, velocity.v);
+   // Determine if this contact is on the ground
+   Vector dir(0.0f, 1.0f, 0.0f);
+   float angle = dir % nor;
+   _isOnGround = (angle > 0.0f);
 
-		// calculate ball velocity perpendicular to the contact normal
-		Vector tangentVelocity(velocity - normal * (normal % velocity));
 
-		// align the tangent at the contact point with the tangent velocity vector of the ball
-		NewtonMaterialContactRotateTangentDirections(material, tangentVelocity.v);
+   NewtonMaterialSetContactElasticity( material, 0.0f );
 
-		// we do do want bound back we hitting the floor
-		NewtonMaterialSetContactElasticity(material, 0.3f);
-	
-		// if the player want to move set disable friction else set high ground friction so it can stop on slopes
-		if (_stopped)
-        {
-			NewtonMaterialSetContactStaticFrictionCoef (material, 2.0f, 0);
-			NewtonMaterialSetContactKineticFrictionCoef (material, 2.0f, 0);
-			NewtonMaterialSetContactStaticFrictionCoef (material, 2.0f, 1);
-			NewtonMaterialSetContactKineticFrictionCoef (material, 2.0f, 1);
+   NewtonMaterialSetContactFrictionState( material, 0, 0 );
+   NewtonMaterialSetContactFrictionState( material, 0, 1 );
 
-		}
-        else
-        {
-			NewtonMaterialSetContactFrictionState (material, 0, 0);
-			NewtonMaterialSetContactFrictionState (material, 0, 1);
-		}
+   NewtonMaterialSetContactSoftness( material, 0 );
 
-	}
-    else
-    {
-		//set contact above the max step to be friction less
-		// disable fiction calculation for sphere collision
-		NewtonMaterialSetContactFrictionState (material, 0, 0);
-		NewtonMaterialSetContactFrictionState (material, 0, 1);
-	}
 }

@@ -17,7 +17,7 @@ struct ContactBodies
 // this callback is called when the aabb box with player overlaps floor
 int  PlayerContactBegin(const NewtonMaterial* material, const NewtonBody* body1, const NewtonBody* body2)
 {
-	ContactBodies* contactBodies = reinterpret_cast<ContactBodies*>(NewtonMaterialGetMaterialPairUserData(material));
+	ContactBodies* contactBodies = static_cast<ContactBodies*>(NewtonMaterialGetMaterialPairUserData(material));
     contactBodies->body1 = body1;
     contactBodies->body2 = body2;
 
@@ -26,27 +26,20 @@ int  PlayerContactBegin(const NewtonMaterial* material, const NewtonBody* body1,
 
 static int PlayerContactProcess(const NewtonMaterial* material, const NewtonContact* contact)
 {
-	ContactBodies* contactBodies = reinterpret_cast<ContactBodies*>(NewtonMaterialGetMaterialPairUserData(material));
+	ContactBodies* contactBodies = static_cast<ContactBodies*>(NewtonMaterialGetMaterialPairUserData(material));
     
-	Player* player;
+	Player* player[2];
 
-    // TODO: ugly code, somebody please fix it!
-
-    player = reinterpret_cast<Player*>(NewtonBodyGetUserData(contactBodies->body1));
-    if (player)
+    player[0] = static_cast<Player*>(NewtonBodyGetUserData(contactBodies->body2));
+    player[1] = static_cast<Player*>(NewtonBodyGetUserData(contactBodies->body1));
+    
+    for (int i=0; i<2; i++)
     {
-        player->onCollision(material, contact);
-    }
-    else
-    {
-        player = reinterpret_cast<Player*>(NewtonBodyGetUserData(contactBodies->body2));
-        if (player)
+        if (player[i] && player[i]->GetType()==Body::PlayerBody)
         {
-            player->onCollision(material, contact);
+            player[i]->onCollision(material, contact);
         }
     }
-
-    // ** end of ugly code
 
     return 1;
 }
@@ -61,7 +54,7 @@ Game::Game() :
     _camera()
 {
     _world = NewtonCreate(NULL, NULL);
-    NewtonWorldSetUserData(_world, reinterpret_cast<void*>(this));
+    NewtonWorldSetUserData(_world, static_cast<void*>(this));
     NewtonSetSolverModel(_world, 10);
     NewtonSetFrictionModel(_world, 1);
 
@@ -84,8 +77,6 @@ Game::Game() :
 
     NewtonBodySetMaterialGroupID(floorBody, floorID);
 
-
-
     _localPlayer = new LocalPlayer(_world, charID, Vector(0.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f));
     _ball = new Ball(_world, Vector(1, 0.2f, 1), 0.2f);
 }
@@ -95,6 +86,7 @@ Game::~Game()
     delete _ball;
     delete _localPlayer;
     NewtonMaterialDestroyAllGroupID(_world);
+    NewtonDestroyAllBodies(_world);
     NewtonDestroy(_world);
 }
 
@@ -158,35 +150,8 @@ void Game::Control(float delta)
 {
     // read input from keyboard
 
-    int w, h;
-    glfwGetWindowSize(&w, &h);
-    int x, y;
-    glfwGetMousePos(&x, &y);
-    int w2 = w/2, h2 = h/2;
-
-    if (x!=w2 || y !=h2)
-    {
-        _camera.Rotate(
-            delta * M_PI * LOOK_SPEED * (y-h2) / h2,
-            delta * M_PI * LOOK_SPEED * (x-w2) / w2);
-
-        glfwSetMousePos(w2, h2);
-    }
-    float dist = 0.0f;
-    float strafe = 0.0f;
-
-    if (glfwGetKey(GLFW_KEY_UP)==GLFW_PRESS) dist += 1.0f;
-    if (glfwGetKey(GLFW_KEY_DOWN)==GLFW_PRESS) dist -= 1.0f;
-    if (glfwGetKey(GLFW_KEY_RIGHT)==GLFW_PRESS) strafe += 1.0f;
-    if (glfwGetKey(GLFW_KEY_LEFT)==GLFW_PRESS) strafe -= 1.0f;
-
-    if (dist!=0 || strafe!=0)
-    {
-        _camera.Move(delta * MOVE_SPEED * dist, delta * MOVE_SPEED * strafe);
-    }
-
+    _camera.Control(delta);
     _localPlayer->Control();
-
 }
 
 void Game::Update()

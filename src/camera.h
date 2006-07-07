@@ -14,6 +14,7 @@ public:
     void Move(float distance, float strafe);
     void Rotate(float ax, float ay);
 
+    void Control(float delta);
     void Prepare();
     void Render() const;
 

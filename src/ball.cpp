@@ -1,7 +1,7 @@
 #include "ball.h"
 
 Ball::Ball(const NewtonWorld* world, const Vector& pos, const float radius) :
-    Body(world), _radius(radius)
+    Body(world, BallBody), _radius(radius)
 {
     NewtonCollision* collision = NewtonCreateSphere(_world, _radius, _radius, _radius, NULL);
     Body::Create(collision, Matrix::translate(pos));
