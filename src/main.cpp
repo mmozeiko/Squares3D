@@ -4,7 +4,6 @@
 #include "random.h"
 #include "utilities.h"
 #include "game.h"
-#include "common.h"
 
 int main(int, char* argv[])
 {

@@ -1,7 +1,5 @@
 #include "video.h"
 
-#include <GL/glfw.h>
-
 static void GLFWCALL sizeCb(int width, int height)
 {
   if (width==0 || height==0) return;

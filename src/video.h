@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "vmath.h"
+#include <GL/glfw.h>
 
 class Video
 {

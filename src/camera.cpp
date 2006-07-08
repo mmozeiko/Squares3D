@@ -56,16 +56,6 @@ void Camera::Rotate(float ax, float ay)
 
 void Camera::Prepare()
 {
-/*
-    glPushMatrix();
-    glLoadIdentity();
-    glRotatef(_angleX*180.0/M_PI, 1, 0, 0);
-    glRotatef(_angleY*180.0/M_PI, 0, 1, 0);
-    glTranslatef(_pos.x, _pos.y, _pos.z);
-    glScalef(1, 1, -1);
-    glGetFloatv(GL_MODELVIEW_MATRIX, _matrix.m);
-    glPopMatrix();
-*/
     _matrix = Matrix::rotateX(_angleX) * Matrix::rotateY(_angleY) * 
               Matrix::translate( _pos ) * _scaleMatrix;
 }

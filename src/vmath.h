@@ -13,7 +13,7 @@
 
 #include <cmath>
 #include <algorithm>
-#include <iostream>
+#include <ostream>
 
 class Vector
 {

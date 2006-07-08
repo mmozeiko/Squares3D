@@ -2,9 +2,15 @@
 #include "timer.h"
 #include "player_local.h"
 
-#include "vmath.h"
+#include "config.h"
+#include "video.h"
+#include "audio.h"
+#include "network.h"
+#include "player.h"
+#include "camera.h"
+#include "ball.h"
 
-#include <GL/glfw.h>
+#include "vmath.h"
 
 #define DT         0.01f
 
@@ -47,11 +53,11 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
 ContactBodies contactBodies;
 
 Game::Game() : 
-    _config(), 
-    _video(_config), 
-    _audio(_config), 
-    _network(),
-    _camera()
+    _config(new Config()), 
+    _video(new Video(*_config)), 
+    _audio(new Audio(*_config)), 
+    _network(new Network()),
+    _camera(new Camera())
 {
     _world = NewtonCreate(NULL, NULL);
     NewtonWorldSetUserData(_world, static_cast<void*>(this));
@@ -77,14 +83,15 @@ Game::Game() :
 
     NewtonBodySetMaterialGroupID(floorBody, floorID);
 
-    _localPlayer = new LocalPlayer(_world, charID, Vector(0.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f));
-    _ball = new Ball(_world, Vector(1, 0.2f, 1), 0.2f);
+    _localPlayer = auto_ptr<LocalPlayer>(new LocalPlayer(_world, charID, Vector(0.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f)));
+    _ball = auto_ptr<Ball>(new Ball(_world, Vector(1, 0.2f, 1), 0.2f));
 }
 
 Game::~Game()
 {
-    delete _ball;
-    delete _localPlayer;
+    delete _ball.release();
+    delete _localPlayer.release();
+
     NewtonMaterialDestroyAllGroupID(_world);
     NewtonDestroyAllBodies(_world);
     NewtonDestroy(_world);
@@ -150,7 +157,7 @@ void Game::Control(float delta)
 {
     // read input from keyboard
 
-    _camera.Control(delta);
+    _camera->Control(delta);
     _localPlayer->Control();
 }
 
@@ -163,7 +170,7 @@ void Game::Update()
 void Game::Prepare()
 {
     // prepare for rendering - store all object state in temporary variables
-    _camera.Prepare();
+    _camera->Prepare();
     _localPlayer->Prepare();
     _ball->Prepare();
 
@@ -175,12 +182,12 @@ void Game::Render() const
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _camera.Render();
+    _camera->Render();
 
-    _video.RenderAxes();
+    _video->RenderAxes();
 
-    _localPlayer->Render(_video);
-    _ball->Render(_video);
+    _localPlayer->Render(_video.get());
+    _ball->Render(_video.get());
 
     glfwSwapBuffers();
 }

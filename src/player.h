@@ -1,8 +1,6 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include <Newton.h>
-#include "vmath.h"
 #include "body.h"
 
 class Player : public Body
@@ -16,7 +14,7 @@ public:
     void SetForce(const Vector& force);
 
     virtual void Control() = 0;
-    void onRender(const Video& video) const;
+    void onRender(const Video* video) const;
 
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 

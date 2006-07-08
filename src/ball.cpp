@@ -1,4 +1,5 @@
 #include "ball.h"
+#include "video.h"
 
 Ball::Ball(const NewtonWorld* world, const Vector& pos, const float radius) :
     Body(world, BallBody), _radius(radius)
@@ -20,7 +21,7 @@ void Ball::onSetForceAndTorque()
     NewtonBodyAddForce(_body, gravityVec.v);
 }
 
-void Ball::onRender(const Video& video) const
+void Ball::onRender(const Video* video) const
 {
-    video.RenderSphere(_radius);
+    video->RenderSphere(_radius);
 }

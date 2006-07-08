@@ -1,11 +1,12 @@
 #ifndef __BODY_H__
 #define __BODY_H__
 
-#include <Newton.h>
 #include "vmath.h"
-#include "video.h"
+#include <Newton.h>
 
 const Vector gravityVec(0.0f, -9.81f, 0.0f);
+
+class Video;
 
 class Body
 {
@@ -23,9 +24,9 @@ public:
     void Create(const NewtonCollision* collision, const Matrix& matrix);
 
     virtual void Prepare();
-    virtual void onRender(const Video& video) const = 0;
+    virtual void onRender(const Video* video) const = 0;
     
-    void Render(const Video& video) const;
+    void Render(const Video* video) const;
 
     BodyType GetType() const;
 

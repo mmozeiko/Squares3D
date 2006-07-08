@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <memory>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -23,6 +24,8 @@ using std::endl;
 
 using std::pair;
 using std::make_pair;
+
+using std::auto_ptr;
 
 typedef map<string, string> StringMap;
 typedef pair<int, int> IntPair;

@@ -1,15 +1,16 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
-#include "config.h"
-#include "video.h"
-#include "audio.h"
-#include "network.h"
-#include "player.h"
-#include "camera.h"
-#include "ball.h"
-
+#include "common.h"
 #include <Newton.h>
+
+class Config;
+class Video;
+class Audio;
+class Network;
+class Camera;
+class Player;
+class Ball;
 
 class Game
 {
@@ -20,16 +21,16 @@ public:
     void Run();
 
 private:
-    Config  _config;
-    Video   _video;
-    Audio   _audio;
-    Network _network;
-    Camera  _camera;
+    auto_ptr<Config>    _config;
+    auto_ptr<Video>     _video;
+    auto_ptr<Audio>     _audio;
+    auto_ptr<Network>   _network;
+    auto_ptr<Camera>    _camera;
 
-    NewtonWorld* _world;
+    auto_ptr<Player>    _localPlayer;   // temporary
+    auto_ptr<Ball>      _ball;          // temporary
 
-    Player* _localPlayer;   // temporary
-    Ball*   _ball;          // temporary
+    NewtonWorld*        _world;
 
     void Control(float delta);
     void Update();

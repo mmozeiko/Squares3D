@@ -1,6 +1,5 @@
 #include "config.h"
 #include "file.h"
-#include "common.h"
 
 Config::Config()
 {

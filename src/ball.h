@@ -9,7 +9,7 @@ public:
     Ball(const NewtonWorld* world, const Vector& pos, const float radius = 1.0f);
     ~Ball();
 
-    void onRender(const Video& video) const;
+    void onRender(const Video* video) const;
 
 private:
     float _radius;

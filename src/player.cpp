@@ -4,7 +4,6 @@
 #include "body.h" // TODO: remove
 
 #include <cmath>
-#include <GL/glfw.h>
 
 Player::Player(const NewtonWorld* world, int material, const Vector& pos, const Vector& size)
     : Body(world, PlayerBody), _radius(size * 0.5f), _isOnGround(true), _force(), _angleY(-M_PI/2)
@@ -47,11 +46,11 @@ void Player::SetForce(const Vector& force)
     _force = force;
 }
 
-void Player::onRender(const Video& video) const
+void Player::onRender(const Video* video) const
 {
     glColor3f(1.0f, 0.0f, 0.0f);
     glScalef(_radius.x, _radius.y, _radius.z);
-    video.RenderSphere(1.0f);
+    video->RenderSphere(1.0f);
 }
 
 void Player::onSetForceAndTorque()

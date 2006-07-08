@@ -1,5 +1,6 @@
 #include "body.h"
 #include "common.h"
+#include "video.h"
 
 Body::Body(const NewtonWorld* world, const BodyType type) : _world(world), _body(NULL), _type(type)
 {
@@ -31,11 +32,11 @@ void Body::Prepare()
     NewtonBodyGetMatrix(_body, _matrix.m);
 }
 
-void Body::Render(const Video& video) const
+void Body::Render(const Video* video) const
 {
-    video.BeginObject(_matrix);
+    video->BeginObject(_matrix);
     onRender(video);
-    video.EndObject();
+    video->EndObject();
 }
 
 Body::BodyType Body::GetType() const
