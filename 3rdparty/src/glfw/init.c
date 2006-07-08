@@ -3,7 +3,8 @@
 // File:        init.c
 // Platform:    Any
 // API version: 2.5
-// Author:      Marcus Geelnard (marcus.geelnard at home.se)
+// Authors:     Marcus Geelnard (marcus.geelnard at home.se)
+//              Robin Leffmann (djinky at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -30,7 +31,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: init.c,v 1.5 2005/03/14 20:34:35 marcus256 Exp $
+// $Id: init.c,v 1.5.4.2 2006/04/05 12:07:24 elmindreda Exp $
 //========================================================================
 
 #define _init_c_
@@ -67,6 +68,7 @@ GLFWAPI int GLFWAPIENTRY glfwInit( void )
     _glfwWinHints.AccumAlphaBits = 0;
     _glfwWinHints.AuxBuffers     = 0;
     _glfwWinHints.Stereo         = 0;
+    _glfwWinHints.WindowNoResize = 0;
 
     // Platform specific initialization
     if( !_glfwPlatformInit() )

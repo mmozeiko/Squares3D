@@ -3,7 +3,9 @@
 // File:        win32_window.c
 // Platform:    Windows
 // API version: 2.5
-// Author:      Marcus Geelnard (marcus.geelnard at home.se)
+// Authors:     Marcus Geelnard (marcus.geelnard at home.se)
+//              Camilla Berglund (elmindreda at users.sourceforge.net)
+//		Robin Leffmann (djinky at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -30,7 +32,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: win32_window.c,v 1.19 2005/01/22 13:00:04 marcus256 Exp $
+// $Id: win32_window.c,v 1.19.4.1 2006/03/29 14:27:10 elmindreda Exp $
 //========================================================================
 
 #include "internal.h"
@@ -770,7 +772,12 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
     }
     else
     {
-        dwStyle   |= WS_OVERLAPPEDWINDOW;
+        dwStyle   |= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+	if( !_glfwWinHints.WindowNoResize )
+	{
+            dwStyle |= ( WS_MAXIMIZEBOX | WS_SIZEBOX );
+	}
+
         dwExStyle |= WS_EX_WINDOWEDGE;
     }
 

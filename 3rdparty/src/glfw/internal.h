@@ -3,7 +3,9 @@
 // File:        internal.h
 // Platform:    Any
 // API version: 2.5
-// Author:      Marcus Geelnard (marcus.geelnard at home.se)
+// Authors:     Marcus Geelnard (marcus.geelnard at home.se)
+//              Camilla Berglund (elmindreda at users.sourceforge.net)
+//              Robin Leffmann (djinky at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -30,7 +32,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: internal.h,v 1.6 2005/03/14 20:34:35 marcus256 Exp $
+// $Id: internal.h,v 1.6.4.3 2006/04/05 12:07:24 elmindreda Exp $
 //========================================================================
 
 #ifndef _internal_h_
@@ -88,9 +90,18 @@ GLFWGLOBAL struct {
     int          AccumAlphaBits;
     int          AuxBuffers;
     int          Stereo;
+    int          WindowNoResize;
 } _glfwWinHints;
 
-
+//------------------------------------------------------------------------
+// Abstracted data stream for image I/O functions
+//------------------------------------------------------------------------
+typedef struct {
+  FILE* file;
+  void* data;
+  long position;
+  long size;
+} GLFWstream;
 
 //========================================================================
 // Prototypes for platform specific implementation functions
@@ -175,7 +186,13 @@ void _glfwRemoveThread( _GLFWthread * t );
 int _glfwStringInExtensionString( const char *string, const GLubyte *extensions );
 
 // Image/texture I/O support (tga.c)
-int _glfwReadTGA( FILE *f, GLFWimage *img, int flags );
+int  _glfwOpenFileStream( GLFWstream *stream, const char *name, const char *mode );
+int  _glfwOpenBufferStream( GLFWstream *stream, void *data, long size );
+long _glfwReadStream( GLFWstream *stream, void *data, long size );
+long _glfwTellStream( GLFWstream *stream );
+int  _glfwSeekStream( GLFWstream *stream, long offset, int whence );
+void _glfwCloseStream( GLFWstream *stream );
+int  _glfwReadTGA( GLFWstream *s, GLFWimage *img, int flags );
 
 
 #endif // _internal_h_

@@ -11,17 +11,23 @@ Camera::Camera(const Vector& pos, float angleX, float angleY) :
 
 void Camera::Control(float delta)
 {
-    int w, h;
+    int w, h, x, y;
     glfwGetWindowSize(&w, &h);
-    int x, y;
     glfwGetMousePos(&x, &y);
     int w2 = w/2, h2 = h/2;
+    int dx = x-w2, dy = y-h2;
+    if (w2==0 || h2==0) return;
+    if (std::abs(dx)>w2 || std::abs(dy)>h2)
+    {
+        glfwSetMousePos(w2, h2);
+        return;
+    }
 
-    if (x!=w2 || y !=h2)
+    if (dx != 0 || dy != 0)
     {
         Rotate(
-            delta * M_PI * LOOK_SPEED * (y-h2) / h2,
-            delta * M_PI * LOOK_SPEED * (x-w2) / w2);
+            delta * M_PI * LOOK_SPEED * dy / h2,
+            delta * M_PI * LOOK_SPEED * dx / w2);
 
         glfwSetMousePos(w2, h2);
     }

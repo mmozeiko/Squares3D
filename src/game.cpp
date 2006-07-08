@@ -125,6 +125,8 @@ void Game::Run()
     double startTime = currentTime;
 
     bool running = true;
+
+    bool previous_active = true;
     
     while (running)
     {
@@ -133,7 +135,11 @@ void Game::Run()
         currentTime = newTime;
         accum += deltaTime;
 
-        Control(deltaTime);
+        if (glfwGetWindowParam(GLFW_ACTIVE)==GL_TRUE)
+        {
+            Control(deltaTime);
+        }
+    
         while (accum >= DT)
         {
             Update();
@@ -144,6 +150,17 @@ void Game::Run()
         frames++;
 
         glfwPollEvents();
+        
+        if (glfwGetWindowParam(GLFW_ACTIVE)==GL_FALSE && previous_active)
+        {
+            previous_active = false;
+        }
+        else if (glfwGetWindowParam(GLFW_ACTIVE)==GL_TRUE && !previous_active)
+        {
+            glfwRestoreWindow();
+            previous_active = true;
+        }
+
         running = glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS;
 
     }
@@ -164,12 +181,14 @@ void Game::Control(float delta)
 void Game::Update()
 {
     // update world objects, simulate physics
+
     NewtonUpdate(_world, DT);
 }
 
 void Game::Prepare()
 {
     // prepare for rendering - store all object state in temporary variables
+
     _camera->Prepare();
     _localPlayer->Prepare();
     _ball->Prepare();

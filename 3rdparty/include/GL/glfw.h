@@ -2,7 +2,9 @@
 // GLFW - An OpenGL framework
 // File:        glfw.h
 // API version: 2.5
-// Author:      Marcus Geelnard (marcus.geelnard at home.se)
+// Authors:     Marcus Geelnard (marcus.geelnard at home.se)
+//              Robin Leffmann (djinky at gmail.com)
+//              Camilla Berglund (elmindreda at users.sourceforge.net)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -29,7 +31,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: glfw.h,v 1.16 2005/03/14 20:52:51 marcus256 Exp $
+// $Id: glfw.h,v 1.16.4.2 2006/04/05 12:07:40 elmindreda Exp $
 //========================================================================
 
 #ifndef __glfw_h_
@@ -322,6 +324,7 @@ extern "C" {
 #define GLFW_ACCUM_ALPHA_BITS     0x0002000F
 #define GLFW_AUX_BUFFERS          0x00020010
 #define GLFW_STEREO               0x00020011
+#define GLFW_WINDOW_NO_RESIZE     0x00020012
 
 // glfwEnable/glfwDisable tokens
 #define GLFW_MOUSE_CURSOR         0x00030001
@@ -471,8 +474,11 @@ GLFWAPI void GLFWAPIENTRY glfwDisable( int token );
 
 // Image/texture I/O support
 GLFWAPI int  GLFWAPIENTRY glfwReadImage( const char *name, GLFWimage *img, int flags );
+GLFWAPI int  GLFWAPIENTRY glfwReadMemoryImage( const void *data, long size, GLFWimage *img, int flags );
 GLFWAPI void GLFWAPIENTRY glfwFreeImage( GLFWimage *img );
 GLFWAPI int  GLFWAPIENTRY glfwLoadTexture2D( const char *name, int flags );
+GLFWAPI int  GLFWAPIENTRY glfwLoadMemoryTexture2D( const void *data, long size, int flags );
+GLFWAPI int  GLFWAPIENTRY glfwLoadTextureImage2D( GLFWimage *img, int flags );
 
 
 #ifdef __cplusplus

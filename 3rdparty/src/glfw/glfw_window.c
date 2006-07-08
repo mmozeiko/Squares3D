@@ -3,7 +3,9 @@
 // File:        window.c
 // Platform:    Any
 // API version: 2.5
-// Author:      Marcus Geelnard (marcus.geelnard at home.se)
+// Authors:     Marcus Geelnard (marcus.geelnard at home.se)
+//              Robin Leffmann (djinky at gmail.com)
+//              Camilla Berglund (elmindreda at users.sourceforge.net)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -30,7 +32,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: window.c,v 1.14 2005/01/10 22:23:28 marcus256 Exp $
+// $Id: window.c,v 1.14.4.2 2006/04/05 12:07:24 elmindreda Exp $
 //========================================================================
 
 #include "internal.h"
@@ -238,15 +240,6 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
     Stereo         = _glfwWinHints.Stereo;
     RefreshRate    = _glfwWinHints.RefreshRate;
 
-    // Clear window hints
-    _glfwWinHints.RefreshRate    = 0;
-    _glfwWinHints.AccumRedBits   = 0;
-    _glfwWinHints.AccumGreenBits = 0;
-    _glfwWinHints.AccumBlueBits  = 0;
-    _glfwWinHints.AccumAlphaBits = 0;
-    _glfwWinHints.AuxBuffers     = 0;
-    _glfwWinHints.Stereo         = 0;
-
     // Check width & height
     if( width > 0 && height <= 0 )
     {
@@ -265,10 +258,11 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
         height = 480;
     }
 
-    // Remeber window settings
-    _glfwWin.Width      = width;
-    _glfwWin.Height     = height;
-    _glfwWin.Fullscreen = (mode == GLFW_FULLSCREEN ? 1 : 0);
+    // Remember window settings
+    _glfwWin.Width          = width;
+    _glfwWin.Height         = height;
+    _glfwWin.Fullscreen     = (mode == GLFW_FULLSCREEN ? 1 : 0);
+    _glfwWin.WindowNoResize = _glfwWinHints.WindowNoResize;
 
     // Platform specific window opening routine
     if( !_glfwPlatformOpenWindow( width, height, redbits, greenbits,
@@ -282,11 +276,25 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
     // Flag that window is now opened
     _glfwWin.Opened = GL_TRUE;
 
+    // Clear window hints
+    _glfwWinHints.RefreshRate    = 0;
+    _glfwWinHints.AccumRedBits   = 0;
+    _glfwWinHints.AccumGreenBits = 0;
+    _glfwWinHints.AccumBlueBits  = 0;
+    _glfwWinHints.AccumAlphaBits = 0;
+    _glfwWinHints.AuxBuffers     = 0;
+    _glfwWinHints.Stereo         = 0;
+    _glfwWinHints.WindowNoResize = 0;
+
     // Get window parameters (such as color buffer bits etc)
     _glfwPlatformRefreshWindowParams();
 
     // Get OpenGL version
     glfwGetGLVersion( &_glfwWin.GLVerMajor, &_glfwWin.GLVerMinor, &x );
+
+    // Do we have non-power-of-two textures?
+    _glfwWin.Has_GL_ARB_texture_non_power_of_two =
+        glfwExtensionSupported( "GL_ARB_texture_non_power_of_two" );
 
     // Do we have automatic mipmap generation?
     _glfwWin.Has_GL_SGIS_generate_mipmap =
@@ -337,6 +345,9 @@ GLFWAPI void GLFWAPIENTRY glfwOpenWindowHint( int target, int hint )
             break;
         case GLFW_STEREO:
             _glfwWinHints.Stereo = hint;
+            break;
+        case GLFW_WINDOW_NO_RESIZE:
+            _glfwWinHints.WindowNoResize = hint;
             break;
         default:
             break;
@@ -586,6 +597,8 @@ GLFWAPI int GLFWAPIENTRY glfwGetWindowParam( int param )
             return _glfwWin.Stereo;
         case GLFW_REFRESH_RATE:
             return _glfwWin.RefreshRate;
+        case GLFW_WINDOW_NO_RESIZE:
+            return _glfwWin.WindowNoResize;
         default:
             return 0;
     }
@@ -684,3 +697,4 @@ GLFWAPI void GLFWAPIENTRY glfwWaitEvents( void )
     // Poll for new events
     _glfwPlatformWaitEvents();
 }
+

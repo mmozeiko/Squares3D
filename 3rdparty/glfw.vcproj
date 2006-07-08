@@ -167,6 +167,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\glfw\glfw_window.c"
+			>
+		</File>
+		<File
 			RelativePath=".\src\glfw\image.c"
 			>
 		</File>
@@ -232,10 +236,6 @@
 		</File>
 		<File
 			RelativePath=".\src\glfw\win32_window.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\glfw\window.c"
 			>
 		</File>
 	</Files>

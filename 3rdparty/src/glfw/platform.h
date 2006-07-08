@@ -3,7 +3,9 @@
 // File:        platform.h
 // Platform:    Windows
 // API version: 2.5
-// Author:      Marcus Geelnard (marcus.geelnard at home.se)
+// Authors:     Marcus Geelnard (marcus.geelnard at home.se)
+//              Camilla Berglund (elmindreda at users.sourceforge.net)
+//              Robin Leffmann (djinky at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -30,7 +32,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: platform.h,v 1.14 2005/03/14 20:28:04 marcus256 Exp $
+// $Id: platform.h,v 1.14.4.1 2006/04/05 12:07:25 elmindreda Exp $
 //========================================================================
 
 #ifndef _platform_h_
@@ -42,6 +44,8 @@
 
 
 // Include files
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
 #include <windows.h>
 #include <mmsystem.h>
 #include "../../include/GL/glfw.h"
@@ -167,6 +171,7 @@ struct _GLFWwin_struct {
     int       MouseLock;       // Mouse-lock flag
     int       AutoPollEvents;  // Auto polling flag
     int       SysKeysDisabled; // System keys disabled flag
+    int       WindowNoResize;  // Resize- and maximize gadgets disabled flag
 
     // Window status & parameters
     int       Opened;          // Flag telling if window is opened or not
@@ -190,6 +195,7 @@ struct _GLFWwin_struct {
 
     // Extensions & OpenGL version
     int       Has_GL_SGIS_generate_mipmap;
+    int       Has_GL_ARB_texture_non_power_of_two;
     int       GLVerMajor,GLVerMinor;
 
 
@@ -255,6 +261,7 @@ GLFWGLOBAL struct {
 GLFWGLOBAL struct {
     int          HasPerformanceCounter;
     int          HasRDTSC;
+    unsigned int timerResolution;
     double       Resolution;
     unsigned int t0_32;
     __int64      t0_64;
@@ -336,7 +343,11 @@ typedef BOOL (WINAPI * SWAPBUFFERS_T) (HDC);
 typedef MMRESULT (WINAPI * JOYGETDEVCAPSA_T) (UINT,LPJOYCAPSA,UINT);
 typedef MMRESULT (WINAPI * JOYGETPOS_T) (UINT,LPJOYINFO);
 typedef MMRESULT (WINAPI * JOYGETPOSEX_T) (UINT,LPJOYINFOEX);
-typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
+typedef MMRESULT (WINAPI * TIMEGETTIME_T) (void);
+typedef MMRESULT (WINAPI * TIMEGETDEVCAPS_T) (LPTIMECAPS,UINT);
+typedef MMRESULT (WINAPI * TIMEBEGINPERIOD_T) (UINT);
+typedef MMRESULT (WINAPI * TIMEENDPERIOD_T) (UINT);
+UINT 
 #endif // _GLFW_NO_DLOAD_WINMM
 
 // Library handles and function pointers
@@ -360,6 +371,9 @@ GLFWGLOBAL struct {
     JOYGETPOS_T           joyGetPos;
     JOYGETPOSEX_T         joyGetPosEx;
     TIMEGETTIME_T         timeGetTime;
+    TIMEGETDEVCAPS_T      timeGetDevCaps;
+    TIMEBEGINPERIOD_T     timeBeginPeriod;
+    TIMEENDPERIOD_T       timeEndPeriod;
 #endif // _GLFW_NO_DLOAD_WINMM
 #if !defined(_GLFW_NO_DLOAD_GDI32) || !defined(_GLFW_NO_DLOAD_WINMM)
 } _glfwLibs;
@@ -382,15 +396,21 @@ GLFWGLOBAL struct {
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps _glfwLibs.joyGetDevCapsA
-#define _glfw_joyGetPos     _glfwLibs.joyGetPos
-#define _glfw_joyGetPosEx   _glfwLibs.joyGetPosEx
-#define _glfw_timeGetTime   _glfwLibs.timeGetTime
+#define _glfw_joyGetDevCaps     _glfwLibs.joyGetDevCapsA
+#define _glfw_joyGetPos         _glfwLibs.joyGetPos
+#define _glfw_joyGetPosEx       _glfwLibs.joyGetPosEx
+#define _glfw_timeGetTime       _glfwLibs.timeGetTime
+#define _glfw_timeGetDevCaps    _glfwLibs.timeGetDevCaps
+#define _glfw_timeBeginPeriod   _glfwLibs.timeBeginPeriod
+#define _glfw_timeEndPeriod     _glfwLibs.timeEndPeriod
 #else
-#define _glfw_joyGetDevCaps joyGetDevCapsA
-#define _glfw_joyGetPos     joyGetPos
-#define _glfw_joyGetPosEx   joyGetPosEx
-#define _glfw_timeGetTime   timeGetTime
+#define _glfw_joyGetDevCaps     joyGetDevCapsA
+#define _glfw_joyGetPos         joyGetPos
+#define _glfw_joyGetPosEx       joyGetPosEx
+#define _glfw_timeGetTime       timeGetTime
+#define _glfw_timeGetDevCaps    timeGetDevCaps
+#define _glfw_timeBeginPeriod   timeBeginPeriod
+#define _glfw_timeEndPeriod     timeEndPeriod
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
@@ -428,6 +448,7 @@ GLFWGLOBAL struct {
 
 // Time
 void _glfwInitTimer( void );
+void _glfwDoneTimer( void );
 
 // Fullscreen support
 int _glfwGetClosestVideoModeBPP( int *w, int *h, int *bpp, int *refresh );

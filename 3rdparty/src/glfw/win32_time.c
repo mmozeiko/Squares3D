@@ -30,7 +30,7 @@
 // Marcus Geelnard
 // marcus.geelnard at home.se
 //------------------------------------------------------------------------
-// $Id: win32_time.c,v 1.11 2005/03/14 20:28:04 marcus256 Exp $
+// $Id: win32_time.c,v 1.12 2005/05/17 07:17:59 marcus256 Exp $
 //========================================================================
 
 #include "internal.h"
@@ -285,7 +285,7 @@ static int _glfwCPUID( unsigned int ID, unsigned int *a, unsigned int *b,
 
 static int _glfwHasRDTSC( void )
 {
-#ifdef _USE_X86_ASM
+#ifdef _USE_X86_ASM_xxx
 
     unsigned int cpu_name1, cpu_name2, cpu_name3;
     unsigned int cpu_signature, cpu_brandID;
@@ -509,6 +509,7 @@ void _glfwInitTimer( void )
     double  dt;
     DWORD   OldPri;
     HANDLE  Process;
+    TIMECAPS tc;
 
     // Check if we have a performance counter
     if( QueryPerformanceFrequency( (LARGE_INTEGER *)&freq ) )
@@ -527,8 +528,13 @@ void _glfwInitTimer( void )
         // No performace counter available => use the tick counter
         _glfwTimer.HasPerformanceCounter = GL_FALSE;
 
-        // Counter resolution is 1 ms
-        _glfwTimer.Resolution = 0.001;
+        // Set counter resolution to minimal supported
+        _glfw_timeGetDevCaps( &tc, sizeof( TIMECAPS ) );
+        _glfwTimer.timerResolution = tc.wPeriodMin;
+
+        _glfwTimer.Resolution = tc.wPeriodMin / 1000.0;
+        
+        _glfw_timeBeginPeriod( tc.wPeriodMin );
 
         // Set start time for timer
         _glfwTimer.t0_32 = _glfw_timeGetTime();
@@ -601,6 +607,13 @@ void _glfwInitTimer( void )
     }
 }
 
+void _glfwDoneTimer( void )
+{
+    if (! _glfwTimer.HasPerformanceCounter )
+    {
+        _glfw_timeEndPeriod( _glfwTimer.timerResolution );  
+    }
+}
 
 //************************************************************************
 //****               Platform implementation functions                ****
@@ -671,6 +684,17 @@ void _glfwPlatformSleep( double time )
 {
     DWORD t;
 
-    t = (DWORD)(time*1000.0 + 0.5);
+    if( time < 1.0 )
+    {
+        t = 1;
+    }
+    else if( time > 2147483647.0 )
+    {
+        t = 2147483647;
+    }
+    else
+    {
+        t = (DWORD)(time*1000.0 + 0.5);
+    }
     Sleep( t > 0 ? t : 1 );
 }

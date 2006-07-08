@@ -1,4 +1,5 @@
 audio_on = 1
+system_keys = 1
 video_fullscreen = 0
 video_height = 600
 video_vsync = 0

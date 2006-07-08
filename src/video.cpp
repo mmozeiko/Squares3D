@@ -25,6 +25,7 @@ Video::Video(Config& config) : _config(config)
     int height = cast<string, int>(_config["video_height"]);
     int vsync = cast<string, int>(_config["video_vsync"]);
     int mode = (_config["video_fullscreen"]=="1" ? GLFW_FULLSCREEN : GLFW_WINDOW);
+    bool systemKeys = _config["system_keys"]=="1" ? true : false;
 
     if (vsync!=0 && vsync!=1)
     {
@@ -36,6 +37,8 @@ Video::Video(Config& config) : _config(config)
     IntPair sizes[]  = { make_pair(width, height), make_pair(800, 600) };
 
     bool fullscr, success = false;
+
+    glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, 1);
 
     for (int m=0; m<sizeOfArray(modes) && !success; m++)
     {
@@ -72,7 +75,10 @@ Video::Video(Config& config) : _config(config)
     glfwGetWindowSize(&width, &height);
     if (fullscr)
     {
-        glfwDisable(GLFW_SYSTEM_KEYS);
+        if (!systemKeys)
+        {
+            glfwDisable(GLFW_SYSTEM_KEYS);
+        }
     }
     else
     {
@@ -80,8 +86,6 @@ Video::Video(Config& config) : _config(config)
         glfwGetDesktopMode(&desktop);
         glfwSetWindowPos((desktop.Width-width)/2, (desktop.Height-height)/2);
     }
-
-    glfwSetMousePos(width/2, height/2);
 
     glfwDisable(GLFW_AUTO_POLL_EVENTS);
     glfwDisable(GLFW_KEY_REPEAT);
@@ -91,6 +95,7 @@ Video::Video(Config& config) : _config(config)
     _config["video_height"] = cast<int, string>(height);
     _config["video_vsync"] = cast<int, string>(vsync);
     _config["video_fullscreen"] = (fullscr ? "1" : "0");
+    _config["system_keys"] = (systemKeys ? "1" : "0");
 }
 
 Video::~Video()

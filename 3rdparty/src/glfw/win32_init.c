@@ -89,18 +89,27 @@ static int _glfwInitLibraries( void )
     _glfwLibs.winmm = LoadLibrary( "winmm.dll" );
     if( _glfwLibs.winmm != NULL )
     {
-        _glfwLibs.joyGetDevCapsA = (JOYGETDEVCAPSA_T)
+        _glfwLibs.joyGetDevCapsA  = (JOYGETDEVCAPSA_T)
             GetProcAddress( _glfwLibs.winmm, "joyGetDevCapsA" );
-        _glfwLibs.joyGetPos      = (JOYGETPOS_T)
+        _glfwLibs.joyGetPos       = (JOYGETPOS_T)
             GetProcAddress( _glfwLibs.winmm, "joyGetPos" );
-        _glfwLibs.joyGetPosEx    = (JOYGETPOSEX_T)
+        _glfwLibs.joyGetPosEx     = (JOYGETPOSEX_T)
             GetProcAddress( _glfwLibs.winmm, "joyGetPosEx" );
-        _glfwLibs.timeGetTime    = (TIMEGETTIME_T)
+        _glfwLibs.timeGetTime     = (TIMEGETTIME_T)
             GetProcAddress( _glfwLibs.winmm, "timeGetTime" );
-        if( _glfwLibs.joyGetDevCapsA == NULL ||
-            _glfwLibs.joyGetPos      == NULL ||
-            _glfwLibs.joyGetPosEx    == NULL ||
-            _glfwLibs.timeGetTime    == NULL )
+        _glfwLibs.timeGetDevCaps  = (TIMEGETDEVCAPS_T)
+            GetProcAddress( _glfwLibs.winmm, "timeGetDevCaps" );
+        _glfwLibs.timeBeginPeriod = (TIMEBEGINPERIOD_T)
+            GetProcAddress( _glfwLibs.winmm, "timeBeginPeriod" );
+        _glfwLibs.timeEndPeriod   = (TIMEENDPERIOD_T)
+            GetProcAddress( _glfwLibs.winmm, "timeEndPeriod" );
+        if( _glfwLibs.joyGetDevCapsA  == NULL ||
+            _glfwLibs.joyGetPos       == NULL ||
+            _glfwLibs.joyGetPosEx     == NULL ||
+            _glfwLibs.timeGetTime     == NULL ||
+            _glfwLibs.timeGetDevCaps  == NULL ||
+            _glfwLibs.timeBeginPeriod == NULL ||
+            _glfwLibs.timeEndPeriod   == NULL)
         {
             FreeLibrary( _glfwLibs.winmm );
             _glfwLibs.winmm = NULL;
@@ -335,6 +344,8 @@ int _glfwPlatformTerminate( void )
     {
         return GL_FALSE;
     }
+    
+    _glfwDoneTimer();
 
     // Close OpenGL window
     glfwCloseWindow();
