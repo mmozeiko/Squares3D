@@ -31,7 +31,7 @@ typedef map<string, string> StringMap;
 typedef pair<int, int> IntPair;
 
 template <typename From, typename To>
-To cast(const From& from)
+inline To cast(const From& from)
 {
     std::stringstream ss;
     To to;
@@ -41,22 +41,22 @@ To cast(const From& from)
 }
 
 template <typename ValueType>
-bool foundInVector(const vector<ValueType>& Vector,
-                   const ValueType&         Value)
+inline bool foundInVector(const vector<ValueType>& Vector,
+                          const ValueType&         Value)
 {
     return std::find(Vector.begin(), Vector.end(), Value) != Vector.end();
 }
 
 template <typename KeyType, typename ValueType>
-bool foundInMap(const map<KeyType, ValueType>& Map,
-                const KeyType&                 Key)
+inline bool foundInMap(const map<KeyType, ValueType>& Map,
+                       const KeyType&                 Key)
 {
     return Map.find(Key) != Map.end();
 }
 
 template <typename KeyType>
-bool foundInSet(const set<KeyType>& Set,
-                const KeyType&      Key)
+inline bool foundInSet(const set<KeyType>& Set,
+                       const KeyType&      Key)
 {
     return Set.find(Key) != Set.end();
 }
