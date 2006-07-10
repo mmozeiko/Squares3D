@@ -15,7 +15,7 @@ Game::Game() :
     _audio(new Audio(*_config)), 
     _network(new Network())
 {
-    _world = auto_ptr<World>(new World(this));
+    _world.reset(new World(this));
 }
 
 Game::~Game()
@@ -32,10 +32,9 @@ void Game::Run()
 {
     clog << "Starting game..." << endl;
 
-    // TODO: DANGER, textures can render incorrectly..
+    glFrontFace(GL_CW);
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    //
+    glCullFace(GL_BACK);
 
     glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);

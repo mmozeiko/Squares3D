@@ -32,7 +32,7 @@ Audio::Audio(Config& config) : _config(config)
          << " * Renderer : " << alGetString(AL_RENDERER) << endl
          << " * Device   : " << alcGetString(_device, ALC_DEVICE_SPECIFIER) << endl;
 
-    if (config["audio_on"]=="0")
+    if (config.audio().enabled == false)
     {
         alcSuspendContext(_context);
     }

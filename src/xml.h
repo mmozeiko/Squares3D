@@ -12,6 +12,9 @@ class XMLnode
     friend std::istream& operator >> (std::istream& stream, XMLnode& xml);
 
 public:
+    XMLnode();
+    XMLnode(const string& name, const string& value = "");
+
     StringMap attributes;
     XMLnodes childs;
     string name;

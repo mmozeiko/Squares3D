@@ -21,16 +21,11 @@ Video::Video(Config& config) : _config(config)
         throw Exception("glfwInit failed");
     }
 
-    int width = cast<string, int>(_config["video_width"]);
-    int height = cast<string, int>(_config["video_height"]);
-    int vsync = cast<string, int>(_config["video_vsync"]);
-    int mode = (_config["video_fullscreen"]=="1" ? GLFW_FULLSCREEN : GLFW_WINDOW);
-    bool systemKeys = _config["system_keys"]=="1" ? true : false;
-
-    if (vsync!=0 && vsync!=1)
-    {
-        vsync = 1;
-    }
+    int width = _config.video().width;;
+    int height = _config.video().height;
+    bool vsync = _config.video().vsync;
+    int mode = (_config.video().fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
+    bool systemKeys = config.misc().system_keys;
 
     int     modes[]  = { mode, GLFW_WINDOW };
     int     depths[] = { 32, 24, 16 };
@@ -70,7 +65,7 @@ Video::Video(Config& config) : _config(config)
     glfwSetWindowSizeCallback(sizeCb);
 
     glfwSetWindowTitle("Squares 3D");
-    glfwSwapInterval(vsync);
+    glfwSwapInterval(vsync ? 1 : 0);
 
     glfwGetWindowSize(&width, &height);
     if (fullscr)
@@ -90,12 +85,6 @@ Video::Video(Config& config) : _config(config)
     glfwDisable(GLFW_AUTO_POLL_EVENTS);
     glfwDisable(GLFW_KEY_REPEAT);
     glfwDisable(GLFW_MOUSE_CURSOR);
-
-    _config["video_width"] = cast<int, string>(width);
-    _config["video_height"] = cast<int, string>(height);
-    _config["video_vsync"] = cast<int, string>(vsync);
-    _config["video_fullscreen"] = (fullscr ? "1" : "0");
-    _config["system_keys"] = (systemKeys ? "1" : "0");
 }
 
 Video::~Video()

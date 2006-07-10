@@ -3,6 +3,7 @@
 #include <istream>
 #include <ostream>
 #include <sstream>
+#include <iomanip>
 #include <locale>
 
 /** OUTPUT **/
@@ -23,7 +24,8 @@ std::string encode(const string& str)
         default:
             if (ch<32 || ch>126)
             {
-                stream << "&#x" << std::hex << static_cast<int>(ch) << std::dec << ';';
+                stream << "&#x" << std::hex << std::setw(2) << std::setfill('0')
+                    << static_cast<int>(ch) << ';';
             }
             else
             {
@@ -34,41 +36,49 @@ std::string encode(const string& str)
     return stream.str();
 }
 
-std::ostream& operator << (std::ostream& stream, const XMLnode& xml)
+void outputNode(const XMLnode& node, std::ostream& stream, int level)
 {
-    if (xml.name.empty())
+    for (int i=0; i<level; i++)
     {
-        stream << encode(xml.value);
-        return stream;
+        stream << "  ";
     }
 
-    stream << '<' << xml.name;
-    if (!xml.attributes.empty())
+    stream << '<' << node.name;
+    if (!node.attributes.empty())
     {
-        for each_const(StringMap, xml.attributes, iter)
+        for each_const(StringMap, node.attributes, iter)
         {
             stream << ' ' << iter->first << "=\"" << encode(iter->second) << '"';
         }
     }
 
-    if (!xml.value.empty())
+    if (!node.value.empty())
     {
-        stream << '>' << encode(xml.value) << "</" << xml.name << '>';
+        stream << '>' << encode(node.value) << "</" << node.name << '>';
     }
-    else if (xml.childs.empty())
+    else if (node.childs.empty())
     {
         stream << " />";
     }
     else
     {
-        stream << '>';
-        for each_const(XMLnodes, xml.childs, iter)
+        stream << '>' << endl;
+        for each_const(XMLnodes, node.childs, iter)
         {
-            stream << (*iter);
+            outputNode(*iter, stream, level + 1);
         }
-        stream << "</" << xml.name << '>';
+        for (int i=0; i<level; i++)
+        {
+            stream << "  ";
+        }
+        stream << "</" << node.name << '>';
     }
+    stream << endl;
+}
 
+std::ostream& operator << (std::ostream& stream, const XMLnode& xml)
+{
+    outputNode(xml, stream, 0);
     return stream;
 }
 
@@ -104,7 +114,8 @@ public:
         xml.childs.clear();
     
         char ch;
-        //while (true)
+        bool done = false;
+        while (!done)
         {
             ch = scanWhite();
 
@@ -123,6 +134,7 @@ public:
             {
                 unreadChar(ch);
                 scanElement(xml);
+                done = true;
             }
         }
     }
@@ -187,7 +199,7 @@ private:
             ch = readChar();
             if (ch==' ' || ch=='\t' || ch=='\n')
             {
-                result += ch;
+                result.push_back(ch);
             }
             else if (ch!='\r')
             {
@@ -208,7 +220,7 @@ private:
             {
                 break;
             }
-            entity += ch;
+            entity.push_back(ch);
         }
 
         if (entity[0]=='#')
@@ -256,7 +268,7 @@ private:
 
     string scanIdentifier()
     {
-        string str;
+        string result;
         char ch;
         while (true)
         {
@@ -269,14 +281,14 @@ private:
                 unreadChar(ch);
                 break;
             }
-            str.push_back(ch);
+            result.push_back(ch);
         }
-        return str;
+        return result;
     }
 
     string scanString()
     {
-        string str;
+        string result;
         char delim = readChar();
         if ((delim!='\'' && delim!='"'))
         {
@@ -296,9 +308,9 @@ private:
             {
                 ch = decodeEntity();
             }
-            str += ch;
+            result.push_back(ch);
         }
-        return str;
+        return result;
     }
 
     bool checkLiteral(const std::string& literal)
@@ -315,7 +327,7 @@ private:
         return true;
     }
 
-    bool checkCDATA(std::string& buf)
+    bool checkCDATA(std::string& data)
     {
         char ch = readChar();
         if (ch!='[')
@@ -344,7 +356,7 @@ private:
                     }
                     else
                     {
-                        buf += "]]";
+                        data += "]]";
                         delimiterCharsSkipped = 0;
                     }
                     break;
@@ -353,10 +365,10 @@ private:
                     {
                         for (int i=0; i<delimiterCharsSkipped; ++i)
                         {
-                            buf += ']';
+                            data.push_back(']');
                         }
                         delimiterCharsSkipped = 0;
-                        buf += '>';
+                        data.push_back('>');
                     }
                     else
                     {
@@ -366,19 +378,18 @@ private:
                 default:
                     for (int i=0; i<delimiterCharsSkipped; ++i)
                     {
-                        buf += ']';
+                        data.push_back(']');
                     }
-                    buf += ch;
+                    data.push_back(ch);
                     delimiterCharsSkipped = 0;
             }
         }
         return true;
     }
 
-    string scanPCData()
+    void scanPCData(string& data)
     {
         char ch;
-        string data;
         while (true)
         {
             ch = readChar();
@@ -401,7 +412,6 @@ private:
             }
             data.push_back(ch);
         }
-        return data;
     }
 
     void skipComment()
@@ -533,7 +543,7 @@ private:
         if (ch!='<')
         {
             unreadChar(ch);
-            buf += scanPCData();
+            scanPCData(buf);
         }
         else
         {
@@ -544,7 +554,7 @@ private:
                 {
                     if (checkCDATA(buf))
                     {
-                        buf += scanPCData();
+                        scanPCData(buf);
                         break;
                     }
                     else
@@ -553,7 +563,7 @@ private:
                         if (ch!='<')
                         {
                             unreadChar(ch);
-                            buf += scanPCData();
+                            scanPCData(buf);
                         }
                         break;
                     }
@@ -644,4 +654,13 @@ std::istream& operator >> (std::istream& stream, XMLnode& xml)
     XMLreader reader(stream);
     reader.parse(xml);
     return stream;
+}
+
+XMLnode::XMLnode()
+{
+}
+
+XMLnode::XMLnode(const string& name, const string& value) :
+    name(name), value(value)
+{
 }

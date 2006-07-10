@@ -25,4 +25,5 @@ private:
     auto_ptr<Ball>      _ball;
     NewtonWorld*        _world;
 };
+
 #endif
