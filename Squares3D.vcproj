@@ -464,6 +464,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\state.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\state.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\timer.cpp"
 			>
 		</File>
@@ -489,6 +497,22 @@
 		</File>
 		<File
 			RelativePath=".\src\vmath.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\xml.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\xml.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\world.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\world.h"
 			>
 		</File>
 	</Files>
