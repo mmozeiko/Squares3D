@@ -10,6 +10,7 @@ class Camera
 {
 public:
     Camera(const Vector& pos = Vector(6.0f, 8.0f, 8.0f), float angleX = M_PI/5, float angleY = -M_PI/5);
+    ~Camera();
 
     void Move(float distance, float strafe);
     void Rotate(float ax, float ay);

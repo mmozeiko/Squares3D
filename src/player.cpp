@@ -69,12 +69,13 @@ void Player::onSetForceAndTorque()
     NewtonBodyGetVelocity(_body, currentVel.v);
       
     Vector targetVel = _force;
+    targetVel.norm();
     if (!_isOnGround)
     {
        NewtonBodyAddForce(_body, force.v);
     }
 
-    force = ( ( Matrix::rotateY(_angleY)*targetVel - currentVel ) * timestepInv ) * mass;
+    force = ( ( Matrix::rotateY(_angleY)*targetVel*5.0f - currentVel ) * timestepInv ) * mass;
     if (!_isOnGround) force.y = 0.0f;
 
     NewtonBodyAddForce(_body, force.v);

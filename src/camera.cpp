@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "common.h"
 
 #include <GL/glfw.h>
 
@@ -7,6 +8,12 @@ Camera::Camera(const Vector& pos, float angleX, float angleY) :
     _strafeRotation(Matrix::rotateY(-M_PI/2)),
     _scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f)))
 {
+    clog << "camera created" << endl;
+}
+
+Camera::~Camera()
+{
+    clog << "camera destroyed" << endl;
 }
 
 void Camera::Control(float delta)
