@@ -108,7 +108,7 @@ inline unsigned int hash(const time_t& t, const clock_t& c)
     return h1 ^ h2;
 }
 
-void Random::Init()
+void Random::init()
 {
     clog << "Initializing random seed." << endl;
 
@@ -143,7 +143,7 @@ void Random::Init()
 	}
 }
 
-unsigned int Random::GetInt()
+unsigned int Random::getInt()
 {
     if (left == 0) reload();
     --left;
@@ -155,7 +155,7 @@ unsigned int Random::GetInt()
     return s1 ^ (s1 >> 18);
 }
 
-unsigned int Random::GetIntN(unsigned int n)
+unsigned int Random::getIntN(unsigned int n)
 {
     unsigned int used = n;
     used |= used >> 1;
@@ -167,17 +167,17 @@ unsigned int Random::GetIntN(unsigned int n)
     unsigned int i;
     do
     {
-        i = GetInt() & used;
+        i = getInt() & used;
     } while (i >= n);
     return i;
 }
 
-float Random::GetFloat()
+float Random::getFloat()
 {
-    return GetInt() * (1.0f / 4294967295.0f);
+    return getInt() * (1.0f / 4294967295.0f);
 }
 
-float Random::GetFloatN(float n)
+float Random::getFloatN(float n)
 {
-    return GetFloat() * n;
+    return getFloat() * n;
 }

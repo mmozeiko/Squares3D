@@ -1,26 +1,31 @@
 #ifndef __VIDEO_H__
 #define __VIDEO_H__
 
-#include "config.h"
 #include "vmath.h"
+#include "common.h"
+
 #include <GL/glfw.h>
+
+class Config;
 
 class Video
 {
 public:
-    Video(Config& config);
+    Video(Config* config);
     ~Video();
 
-    void RenderCube(float size = 1.0f) const;
-    void RenderSphere(float radius = 1.0f) const;
-    void RenderWireSphere(float radius = 1.0f) const;
-    void RenderAxes(float size = 5.0f) const;
+    void renderCube(float size = 1.0f) const;
+    void renderSphere(float radius = 1.0f) const;
+    void renderWireSphere(float radius = 1.0f) const;
+    void renderAxes(float size = 5.0f) const;
 
-    void BeginObject(const Matrix& matrix) const;
-    void EndObject() const;
+    void beginObject(const Matrix& matrix) const;
+    void endObject() const;
+
+    unsigned int loadTexture(const string& name) const;
 
 private:
-    Config& _config;
+    Config* m_config;
 };
 
 #endif

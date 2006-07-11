@@ -1,40 +1,41 @@
 #include "audio.h"
+#include "config.h"
 #include "common.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
 
-Audio::Audio(Config& config) : _config(config)
+Audio::Audio(Config* config) : m_config(config)
 {
     clog << "Initializing audio." << endl;
 
-    _device = alcOpenDevice(NULL);
-    if (_device==NULL)
+    m_device = alcOpenDevice(NULL);
+    if (m_device==NULL)
     {
         throw Exception(alcGetString(NULL, alcGetError(NULL)));
     }
 
-    _context = alcCreateContext(_device, NULL);
-    if (_context==NULL)
+    m_context = alcCreateContext(m_device, NULL);
+    if (m_context==NULL)
     {
-        string error = string(alcGetString(_device, alcGetError(_device)));
-        alcCloseDevice(_device);
+        string error = string(alcGetString(m_device, alcGetError(m_device)));
+        alcCloseDevice(m_device);
         throw Exception(error);
     }
-    alcMakeContextCurrent(_context);
+    alcMakeContextCurrent(m_context);
 
     int major=0, minor=0;
-    alcGetIntegerv(_device, ALC_MAJOR_VERSION, 1, &major);
-    alcGetIntegerv(_device, ALC_MINOR_VERSION, 1, &minor);
+    alcGetIntegerv(m_device, ALC_MAJOR_VERSION, 1, &major);
+    alcGetIntegerv(m_device, ALC_MINOR_VERSION, 1, &minor);
 
     clog << " * Version  : " << major << '.' << minor << endl
          << " * Vendor   : " << alGetString(AL_VENDOR) << endl
          << " * Renderer : " << alGetString(AL_RENDERER) << endl
-         << " * Device   : " << alcGetString(_device, ALC_DEVICE_SPECIFIER) << endl;
+         << " * Device   : " << alcGetString(m_device, ALC_DEVICE_SPECIFIER) << endl;
 
-    if (config.audio().enabled == false)
+    if (config->audio().enabled == false)
     {
-        alcSuspendContext(_context);
+        alcSuspendContext(m_context);
     }
 }
 
@@ -42,6 +43,6 @@ Audio::~Audio()
 {
     clog << "Closing audio." << endl;
     alcMakeContextCurrent(NULL);
-    alcDestroyContext(_context);
-    alcCloseDevice(_device);
+    alcDestroyContext(m_context);
+    alcCloseDevice(m_device);
 }

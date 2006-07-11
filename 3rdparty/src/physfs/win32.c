@@ -25,7 +25,7 @@
 
 #if (defined _MSC_VER)
     #define alloca(x) _alloca(x)
-#elif (defined MINGW)  /* scary...hopefully this is okay. */
+#elif (defined __MINGW32__)  /* scary...hopefully this is okay. */
     #define alloca(x) __builtin_alloca(x) 
 #endif
 
@@ -440,7 +440,8 @@ void __PHYSFS_platformTimeslice(void)
 
 void __PHYSFS_platformEnumerateFiles(const char *dirname,
                                      int omitSymLinks,
-                                     PHYSFS_StringCallback callback,
+                                     PHYSFS_EnumFilesCallback callback,
+                                     const char *origdir,
                                      void *callbackdata)
 {
     HANDLE dir;
@@ -478,7 +479,7 @@ void __PHYSFS_platformEnumerateFiles(const char *dirname,
         if (strcmp(ent.cFileName, "..") == 0)
             continue;
 
-        callback(callbackdata, ent.cFileName);
+        callback(callbackdata, origdir, ent.cFileName);
     } while (FindNextFile(dir, &ent) != 0);
 
     FindClose(dir);
@@ -1122,17 +1123,19 @@ void __PHYSFS_platformAllocatorDeinit(void)
 } /* __PHYSFS_platformAllocatorInit */
 
 
-void *__PHYSFS_platformAllocatorMalloc(size_t s)
+void *__PHYSFS_platformAllocatorMalloc(PHYSFS_uint64 s)
 {
+    BAIL_IF_MACRO(__PHYSFS_ui64FitsAddressSpace(s), ERR_OUT_OF_MEMORY, NULL);
     #undef malloc
-    return(malloc(s));
+    return(malloc((size_t) s));
 } /* __PHYSFS_platformMalloc */
 
 
-void *__PHYSFS_platformAllocatorRealloc(void *ptr, size_t s)
+void *__PHYSFS_platformAllocatorRealloc(void *ptr, PHYSFS_uint64 s)
 {
+    BAIL_IF_MACRO(__PHYSFS_ui64FitsAddressSpace(s), ERR_OUT_OF_MEMORY, NULL);
     #undef realloc
-    return(realloc(ptr, s));
+    return(realloc(ptr, (size_t) s));
 } /* __PHYSFS_platformRealloc */
 
 

@@ -115,12 +115,12 @@ public:
         return operator = (tmp^other);
     }
   
-    float operator [] (const int idx) const
+    float operator [] (const size_t idx) const
     {
         return v[idx];
     }
   
-    float& operator [] (const int idx)
+    float& operator [] (const size_t idx)
     {
         return v[idx];
     }

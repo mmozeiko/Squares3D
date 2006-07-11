@@ -21,24 +21,24 @@ public:
     Body(const NewtonWorld* world, const BodyType type);
     virtual ~Body();
 
-    void Create(const NewtonCollision* collision, const Matrix& matrix);
+    void create(const NewtonCollision* collision, const Matrix& matrix);
 
-    virtual void Prepare();
+    virtual void prepare();
     virtual void onRender(const Video* video) const = 0;
     
-    void Render(const Video* video) const;
+    void render(const Video* video) const;
 
-    BodyType GetType() const;
+    BodyType getType() const;
 
 protected:
     virtual void onSetForceAndTorque();
 
-    const NewtonWorld*      _world;
-    NewtonBody*             _body;
-    const NewtonCollision*  _collision;
+    const NewtonWorld*      m_world;
+    NewtonBody*             m_body;
+    const NewtonCollision*  m_collision;
 
-    Matrix                  _matrix;
-    const BodyType          _type;
+    Matrix                  m_matrix;
+    const BodyType          m_type;
 
 private:
     static void onSetForceAndTorque(const NewtonBody* body);

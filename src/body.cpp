@@ -2,46 +2,46 @@
 #include "common.h"
 #include "video.h"
 
-Body::Body(const NewtonWorld* world, const BodyType type) : _world(world), _body(NULL), _type(type)
+Body::Body(const NewtonWorld* world, const BodyType type) : m_world(world), m_body(NULL), m_type(type)
 {
 }
 
 Body::~Body()
 {
-    if (_body != NULL)
+    if (m_body != NULL)
     {
-        NewtonReleaseCollision(_world, _collision);
-        NewtonDestroyBody(_world, _body);
+        NewtonReleaseCollision(m_world, m_collision);
+        NewtonDestroyBody(m_world, m_body);
     }
 }
 
-void Body::Create(const NewtonCollision* collision, const Matrix& matrix)
+void Body::create(const NewtonCollision* collision, const Matrix& matrix)
 {
-    _collision = collision;
-    _body = NewtonCreateBody(_world, _collision);
+    m_collision = collision;
+    m_body = NewtonCreateBody(m_world, m_collision);
 
-    NewtonBodySetMatrix(_body, matrix.m);
+    NewtonBodySetMatrix(m_body, matrix.m);
 
-    NewtonBodySetUserData(_body, static_cast<void*>(this));
-    NewtonBodySetForceAndTorqueCallback(_body, onSetForceAndTorque);
+    NewtonBodySetUserData(m_body, static_cast<void*>(this));
+    NewtonBodySetForceAndTorqueCallback(m_body, onSetForceAndTorque);
 
 }
 
-void Body::Prepare()
+void Body::prepare()
 {
-    NewtonBodyGetMatrix(_body, _matrix.m);
+    NewtonBodyGetMatrix(m_body, m_matrix.m);
 }
 
-void Body::Render(const Video* video) const
+void Body::render(const Video* video) const
 {
-    video->BeginObject(_matrix);
+    video->beginObject(m_matrix);
     onRender(video);
-    video->EndObject();
+    video->endObject();
 }
 
-Body::BodyType Body::GetType() const
+Body::BodyType Body::getType() const
 {
-    return _type;
+    return m_type;
 }
 
 void Body::onSetForceAndTorque()

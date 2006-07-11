@@ -1,0 +1,266 @@
+<xml>
+  <bodies>
+
+    <body id="grass" material="grass">
+      <position x="0.0" y="-0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+
+      <collision type="box">
+        <size x="20.0" y="1.0" z="7.0" />
+        <offset>
+          <position x="0.0" y="-0.5" z="6.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>grass.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+    
+      <collision type="box">
+        <size x="20.0" y="1.0" z="7.0" />
+        <offset>
+          <position x="0.0" y="-0.5" z="-6.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>grass.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+      <collision type="box">
+        <size x="7.0" y="1.0" z="6.0" />
+        <offset>
+          <position x="-6.5" y="-0.5" z="0.0" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>grass.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+      <collision type="box">
+        <size x="7.0" y="1.0" z="6.0" />
+        <offset>
+          <position x="6.5" y="-0.5" z="0.0" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>grass.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+    
+    </body>
+
+    <body id="floor" material="pavement">
+      <position x="0.0" y="-0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+
+      <collision type="box">
+        <size x="3.0" y="1.0" z="3.0" />
+        <offset>
+          <position x="1.5" y="-0.5" z="1.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>pavement.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+
+      <collision type="box">
+        <size x="3.0" y="1.0" z="3.0" />
+        <offset>
+          <position x="-1.5" y="-0.5" z="1.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>pavement.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+
+      <collision type="box">
+        <size x="3.0" y="1.0" z="3.0" />
+        <offset>
+          <position x="-1.5" y="-0.5" z="-1.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>pavement.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+
+      <collision type="box">
+        <size x="3.0" y="1.0" z="3.0" />
+        <offset>
+          <position x="1.5" y="-0.5" z="-1.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>pavement.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+    </body>
+
+    <body id="wall1" material="brick">
+      <position x="0.0" y="-0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      
+      <collision type="box">
+        <size x="20.0" y="16.0" z="1.0" />
+        <offset>
+          <position x="0.0" y="8.0" z="10.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>brick.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+    </body>
+
+    <body id="wall2" material="brick">
+      <position x="0.0" y="-0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      
+      <collision type="box">
+        <size x="20.0" y="16.0" z="1.0" />
+        <offset>
+          <position x="0.0" y="8.0" z="-10.5" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>brick.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+    </body>
+    
+    <body id="wall3" material="brick">
+      <position x="0.0" y="-0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      
+      <collision type="box">
+        <size x="1.0" y="16.0" z="20.0" />
+        <offset>
+          <position x="-10.5" y="8.0" z="0.0" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>brick.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+    </body>
+    
+    <body id="wall4" material="brick">
+      <position x="0.0" y="-0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      
+      <collision type="box">
+        <size x="1.0" y="16.0" z="20.0" />
+        <offset>
+          <position x="10.5" y="8.0" z="0.0" />
+          <rotation x="0.0" y="0.0" z="0.0" />
+        </offset>
+        <texture> 
+          <path>brick.tga</path>
+        </texture>
+	<colors>
+          <ambient r="1.0" g="0.0" b="0.0" />
+          <diffuse r="0.0" g="0.0" b="0.0" />
+          <specular r="0.0" g="0.0" b="0.0" />
+          <emission r="0.0" g="0.0" b="0.0" />
+          <shine>1.0</shine>
+        </colors>
+      </collision>
+      
+    </body>
+
+ 
+  </bodies>
+
+  <materials>
+    <material name1="brick" name2="human" sF="1.0" kF="0.0" />
+  </materials>
+
+  <joints>
+  </joints>
+ 
+</xml>

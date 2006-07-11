@@ -8,22 +8,26 @@
 class Camera;
 class Player;
 class Ball;
+class Level;
 
 class World : public State
 {
 public:
 	World(Game* game);
     ~World();
-    void Control(float delta);
-    void Update();
-    void Prepare();
-    void Render() const;
+    
+    void control(float delta);
+    void update();
+    void prepare();
+    void render() const;
     
 private:
-	auto_ptr<Camera>    _camera;
-    auto_ptr<Player>    _localPlayer;
-    auto_ptr<Ball>      _ball;
-    NewtonWorld*        _world;
+	auto_ptr<Camera>    m_camera;
+    auto_ptr<Player>    m_localPlayer;
+    auto_ptr<Ball>      m_ball;
+    auto_ptr<Level>      m_level;
+
+    NewtonWorld*        m_world;
 };
 
 #endif

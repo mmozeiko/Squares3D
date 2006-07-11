@@ -1,16 +1,16 @@
 #include "xml.h"
+#include "utilities.h"
 
 #include <istream>
 #include <ostream>
 #include <sstream>
 #include <iomanip>
-#include <locale>
 
 /** OUTPUT **/
 
 std::string encode(const string& str)
 {
-    std::stringstream stream;
+    stringstream stream;
     for (size_t i=0; i<str.size(); ++i)
     {
         char ch = str[i];
@@ -83,21 +83,6 @@ std::ostream& operator << (std::ostream& stream, const XMLnode& xml)
 }
 
 /** INPUT **/
-
-inline string trim(const string& str)
-{
-    size_t i = 0;
-    size_t j = str.size()-1;
-    while (i<str.size() && std::isspace(str[i], std::locale::empty()))
-    {
-        i++;
-    }
-    while (j>i && std::isspace(str[j], std::locale::empty()))
-    {
-        j--;
-    }
-    return str.substr(i, j-i+1);
-}
 
 class XMLreader
 {
@@ -225,7 +210,7 @@ private:
 
         if (entity[0]=='#')
         {
-            std::stringstream ss;
+            stringstream ss;
             if (entity[1]=='x')
             {
                 ss << std::hex << entity.substr(2);
@@ -605,6 +590,7 @@ private:
                 {
                     unreadChar(ch);
                     xml.childs.push_back(XMLnode());
+                    xml.childs.back().line = curLine;
                     scanElement(xml.childs.back());
                 }
 
@@ -661,6 +647,6 @@ XMLnode::XMLnode()
 }
 
 XMLnode::XMLnode(const string& name, const string& value) :
-    name(name), value(value)
+    name(name), value(value), line(0)
 {
 }

@@ -10,24 +10,31 @@ int main(int, char* argv[])
     //std::ofstream log("log.txt");
     //clog.rdbuf(log.rdbuf());
 
-    clog << "Started: " << GetDateTime() << endl;
+    clog << "Started: " << getDateTime() << endl;
 
-    Random::Init();
-    File::Init(argv[0]);
+    Random::init();
 
     try
     {
-        Game().Run();
+        File::init(argv[0]);
+        try
+        {
+            Game().run();
+        }
+        catch (string& exception)
+        {
+            clog << "Exception occured :" << endl
+                 << "  " << exception << endl;
+        }
+        File::done();
     }
     catch (string& exception)
     {
         clog << "Exception occured :" << endl
-             << " " << exception << endl;
+             << "  " << exception << endl;
     }
 
-    File::Done();
-
-    clog << "Finished: " << GetDateTime() << endl;
+    clog << "Finished: " << getDateTime() << endl;
     
     return 0;
 }

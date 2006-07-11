@@ -11,7 +11,7 @@ public:
         const Vector& size);
     ~LocalPlayer();
 
-    void Control();
+    void control();
 private:
 
 };

@@ -1,5 +1,5 @@
 #include "state.h"
 
-State::State(Game* game) : _game(game)
+State::State(Game* game) : m_game(game)
 {    
 }

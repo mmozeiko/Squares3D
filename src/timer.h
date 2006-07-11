@@ -6,17 +6,16 @@ class Timer
 public:
     Timer(bool start = true);
 
-    void Pause();
-    void Resume();
-    void Reset(bool start = true);
+    void pause();
+    void resume();
+    void reset(bool start = true);
 
-    double Read() const;
+    double read() const;
 
 private:
-    int _running;
-
-    double _elapsed;
-    double _resumed;
+    int     m_running;
+    double  m_elapsed;
+    double  m_resumed;
 };
 
 #endif

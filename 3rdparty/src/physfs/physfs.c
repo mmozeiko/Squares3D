@@ -20,10 +20,6 @@
 #define __PHYSICSFS_INTERNAL__
 #include "physfs_internal.h"
 
-void * alloca(int s)
-{
-    return allocator.Malloc(s);
-}
 
 typedef struct __PHYSFS_DIRHANDLE__
 {
@@ -65,6 +61,11 @@ extern const PHYSFS_ArchiveInfo    __PHYSFS_ArchiveInfo_ZIP;
 extern const PHYSFS_Archiver       __PHYSFS_Archiver_ZIP;
 #endif
 
+#if (defined PHYSFS_SUPPORTS_LZMA)
+extern const PHYSFS_ArchiveInfo    __PHYSFS_ArchiveInfo_LZMA;
+extern const PHYSFS_Archiver       __PHYSFS_Archiver_LZMA;
+#endif
+
 #if (defined PHYSFS_SUPPORTS_GRP)
 extern const PHYSFS_ArchiveInfo    __PHYSFS_ArchiveInfo_GRP;
 extern const PHYSFS_Archiver       __PHYSFS_Archiver_GRP;
@@ -104,6 +105,10 @@ static const PHYSFS_ArchiveInfo *supported_types[] =
     &__PHYSFS_ArchiveInfo_ZIP,
 #endif
 
+#if (defined PHYSFS_SUPPORTS_LZMA)
+    &__PHYSFS_ArchiveInfo_LZMA,
+#endif
+
 #if (defined PHYSFS_SUPPORTS_GRP)
     &__PHYSFS_ArchiveInfo_GRP,
 #endif
@@ -135,6 +140,10 @@ static const PHYSFS_Archiver *archivers[] =
 {
 #if (defined PHYSFS_SUPPORTS_ZIP)
     &__PHYSFS_Archiver_ZIP,
+#endif
+
+#if (defined PHYSFS_SUPPORTS_LZMA)
+    &__PHYSFS_Archiver_LZMA,
 #endif
 
 #if (defined PHYSFS_SUPPORTS_GRP)
@@ -633,7 +642,7 @@ static int freeDirHandle(DirHandle *dh, FileHandle *openList)
 
     for (i = openList; i != NULL; i = i->next)
         BAIL_IF_MACRO(i->dirHandle == dh, ERR_FILES_STILL_OPEN, 0);
-    
+
     dh->funcs->dirClose(dh->opaque);
     allocator.Free(dh->dirName);
     allocator.Free(dh->mountPoint);
@@ -781,7 +790,8 @@ int PHYSFS_init(const char *argv0)
     if (!externalAllocator)
         setDefaultAllocator();
 
-    BAIL_IF_MACRO(!allocator.Init(), NULL, 0);
+    if (allocator.Init != NULL)
+        BAIL_IF_MACRO(!allocator.Init(), NULL, 0);
 
     BAIL_IF_MACRO(!__PHYSFS_platformInit(), NULL, 0);
 
@@ -893,7 +903,8 @@ int PHYSFS_deinit(void)
     __PHYSFS_platformDestroyMutex(errorLock);
     __PHYSFS_platformDestroyMutex(stateLock);
 
-    allocator.Deinit();
+    if (allocator.Deinit != NULL)
+        allocator.Deinit();
 
     errorLock = stateLock = NULL;
     return(1);
@@ -1111,7 +1122,7 @@ int PHYSFS_setSaneConfig(const char *organization, const char *appName,
 
     BAIL_IF_MACRO(!initialized, ERR_NOT_INITIALIZED, 0);
 
-        /* set write dir... */
+    /* set write dir... */
     str = (char *) allocator.Malloc(
             strlen(userdir) + (strlen(organization) * 2) +
             (strlen(appName) * 2) + (strlen(dirsep) * 3) + 2);
@@ -1329,12 +1340,14 @@ static int verifyPath(DirHandle *h, char **_fname, int allowMissing)
     {
         while (1)
         {
+            int rc = 0;
             end = strchr(start, '/');
-            if (end != NULL)
-                *end = '\0';
 
-            if (h->funcs->isSymLink(h->opaque, fname, &retval))
-                BAIL_MACRO(ERR_SYMLINK_DISALLOWED, 0);   /* insecure. */
+            if (end != NULL) *end = '\0';
+            rc = h->funcs->isSymLink(h->opaque, fname, &retval);
+            if (end != NULL) *end = '/';
+
+            BAIL_IF_MACRO(rc, ERR_SYMLINK_DISALLOWED, 0);   /* insecure. */
 
             /* break out early if path element is missing. */
             if (!retval)
@@ -1352,7 +1365,6 @@ static int verifyPath(DirHandle *h, char **_fname, int allowMissing)
             if (end == NULL)
                 break;
 
-            *end = '/';
             start = end + 1;
         } /* while */
     } /* if */
@@ -1460,42 +1472,35 @@ static int locateInStringList(const char *str,
                               char **list,
                               PHYSFS_uint32 *pos)
 {
-    PHYSFS_uint32 hi = *pos - 1;
+    PHYSFS_uint32 len = *pos;
+    PHYSFS_uint32 half_len;
     PHYSFS_uint32 lo = 0;
-    PHYSFS_uint32 i = hi >> 1;
+    PHYSFS_uint32 middle;
     int cmp;
 
-    assert(*pos != 0);  /* this doesn't work with empty lists! */
-
-    while (hi != lo)
+    while (len > 0)
     {
-        cmp = strcmp(list[i], str);
+        half_len = len >> 1;
+        middle = lo + half_len;
+        cmp = strcmp(list[middle], str);
+
         if (cmp == 0)  /* it's in the list already. */
             return(1);
-        else if (cmp < 0)
-        {
-            hi = i;
-            i = lo + ((hi - lo) >> 1);
-        } /* else if */
+        else if (cmp > 0)
+            len = half_len;
         else
         {
-            lo = i + 1;
-            i = lo + ((1 + hi - lo) >> 1);
+            lo = middle + 1;
+            len -= half_len + 1;
         } /* else */
     } /* while */
 
-    /* hi == lo, check it in case it's the match... */
-    cmp = strcmp(list[lo], str);
-    if (cmp == 0)
-        return(1);
-
-    /* not in the list, set insertion point... */
-    *pos = (cmp < 0) ? lo : lo + 1;
+    *pos = lo;
     return(0);
 } /* locateInStringList */
 
 
-static void enumFilesCallback(void *data, const char *str)
+static void enumFilesCallback(void *data, const char *origdir, const char *str)
 {
     PHYSFS_uint32 pos;
     void *ptr;
@@ -1507,11 +1512,8 @@ static void enumFilesCallback(void *data, const char *str)
      *  alphabetically...
      */
     pos = pecd->size;
-    if (pos > 0)
-    {
-        if (locateInStringList(str, pecd->list, &pos))
-            return;  /* already in the list. */
-    } /* if */
+    if (locateInStringList(str, pecd->list, &pos))
+        return;  /* already in the list. */
 
     ptr = allocator.Realloc(pecd->list, (pecd->size + 2) * sizeof (char *));
     newstr = (char *) allocator.Malloc(strlen(str) + 1);
@@ -1546,8 +1548,27 @@ char **PHYSFS_enumerateFiles(const char *path)
 } /* PHYSFS_enumerateFiles */
 
 
+/*
+ * Broke out to seperate function so we can use alloca() gratuitously.
+ */
+static void enumerateFromMountPoint(DirHandle *i, const char *arcfname,
+                                    PHYSFS_EnumFilesCallback callback,
+                                    const char *_fname, void *data)
+{
+    size_t len = strlen(arcfname);
+    char *mountPoint = (char *) alloca(strlen(i->mountPoint) + 1);
+    //strcpy(mountPoint, i->mountPoint);
+    char *ptr = mountPoint + ((len) ? len + 1 : 0);
+    char *end = strchr(ptr, '/');
+    assert(end);  /* should always find a terminating '/'. */
+    *end = '\0';
+    callback(data, _fname, ptr);
+} /* enumerateFromMountPoint */
+
+
+
 void PHYSFS_enumerateFilesCallback(const char *_fname,
-                                   PHYSFS_StringCallback callback,
+                                   PHYSFS_EnumFilesCallback callback,
                                    void *data)
 {
     DirHandle *i;
@@ -1565,19 +1586,12 @@ void PHYSFS_enumerateFilesCallback(const char *_fname,
     {
         char *arcfname = fname;
         if (partOfMountPoint(i, arcfname))
-        {
-            size_t len = strlen(arcfname);
-            char *ptr = i->mountPoint + ((len) ? len + 1 : 0);
-            char *end = strchr(ptr, '/');
-            assert(end);  /* should always find a terminating '/'. */
-            *end = '\0';  /* !!! FIXME: not safe in a callback... */
-            callback(data, ptr);
-            *end = '/';   /* !!! FIXME: not safe in a callback... */
-        } /* if */
+            enumerateFromMountPoint(i, arcfname, callback, _fname, data);
 
         else if (verifyPath(i, &arcfname, 0))
         {
-            i->funcs->enumerateFiles(i->opaque,arcfname,noSyms,callback,data);
+            i->funcs->enumerateFiles(i->opaque, arcfname, noSyms,
+                                     callback, _fname, data);
         } /* else if */
     } /* for */
     __PHYSFS_platformReleaseMutex(stateLock);
@@ -1903,7 +1917,7 @@ static PHYSFS_sint64 doBufferedWrite(PHYSFS_File *handle, const void *buffer,
                                      PHYSFS_uint32 objCount)
 {
     FileHandle *fh = (FileHandle *) handle;
-    
+
     /* whole thing fits in the buffer? */
     if (fh->buffill + (objSize * objCount) < fh->bufsize)
     {
@@ -2050,7 +2064,7 @@ int PHYSFS_flush(PHYSFS_File *handle)
 } /* PHYSFS_flush */
 
 
-int PHYSFS_setAllocator(PHYSFS_Allocator *a)
+int PHYSFS_setAllocator(const PHYSFS_Allocator *a)
 {
     BAIL_IF_MACRO(initialized, ERR_IS_INITIALIZED, 0);
     externalAllocator = (a != NULL);

@@ -218,6 +218,18 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\3rdparty\lib\manymouse_d.lib"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\3rdparty\lib\ogg_d.lib"
 					>
 					<FileConfiguration
@@ -295,6 +307,18 @@
 				</File>
 				<File
 					RelativePath=".\3rdparty\lib\glfw.lib"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\3rdparty\lib\manymouse.lib"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -428,6 +452,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\level.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\level.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\main.cpp"
 			>
 		</File>
@@ -500,19 +532,19 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\xml.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\xml.h"
-			>
-		</File>
-		<File
 			RelativePath=".\src\world.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\src\world.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\xml.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\xml.h"
 			>
 		</File>
 	</Files>

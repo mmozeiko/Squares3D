@@ -3,6 +3,7 @@
 
 #include "common.h"
 
-string GetDateTime();
+string getDateTime();
+string trim(const string& str);
 
 #endif

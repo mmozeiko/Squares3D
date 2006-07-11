@@ -6,51 +6,51 @@
 #include <cmath>
 
 Player::Player(const NewtonWorld* world, int material, const Vector& pos, const Vector& size)
-    : Body(world, PlayerBody), _radius(size * 0.5f), _isOnGround(true), _force(), _angleY(-M_PI/2)
+    : Body(world, PlayerBody), m_radius(size * 0.5f), m_isOnGround(true), m_force(), m_angleY(-M_PI/2)
 {
-    Matrix location = Matrix::rotateY(_angleY) * Matrix::translate(pos);
+    Matrix location = Matrix::rotateY(m_angleY) * Matrix::translate(pos);
 
-    NewtonCollision* collision = NewtonCreateSphere(_world, _radius.x, _radius.y, _radius.z, NULL); 
-    Body::Create(collision, location);
+    NewtonCollision* collision = NewtonCreateSphere(m_world, m_radius.x, m_radius.y, m_radius.z, NULL); 
+    Body::create(collision, location);
 
 	// disable auto freeze
-	NewtonBodySetAutoFreeze(_body, 0);
-	NewtonWorldUnfreezeBody(_world, _body);
+	NewtonBodySetAutoFreeze(m_body, 0);
+	NewtonWorldUnfreezeBody(m_world, m_body);
 
 	// set the viscous damping the the minimum
     const float damp[] = { 0.0f, 0.0f, 0.0f };
-	NewtonBodySetLinearDamping(_body, 0.0f);
-	NewtonBodySetAngularDamping(_body, damp);
+	NewtonBodySetLinearDamping(m_body, 0.0f);
+	NewtonBodySetAngularDamping(m_body, damp);
 
 	// Set Material Id for this object
-	NewtonBodySetMaterialGroupID(_body, material);
+	NewtonBodySetMaterialGroupID(m_body, material);
 
 	// set the mas
     Vector intertia, origin;
     NewtonConvexCollisionCalculateInertialMatrix(collision, intertia.v, origin.v);
-    NewtonBodySetMassMatrix(_body, 10.0f, intertia.x, intertia.y, intertia.z);
+    NewtonBodySetMassMatrix(m_body, 10.0f, intertia.x, intertia.y, intertia.z);
 
   	// add and up vector constraint to help in keeping the body upright
 	const Vector upDirection (0.0f, 1.0f, 0.0f);
 
-    _upVector = NewtonConstraintCreateUpVector(_world, upDirection.v, _body); 
+    m_upVector = NewtonConstraintCreateUpVector(m_world, upDirection.v, m_body); 
 }
 
 Player::~Player()
 {
-    NewtonDestroyJoint(_world, _upVector);
+    NewtonDestroyJoint(m_world, m_upVector);
 }
 
-void Player::SetForce(const Vector& force)
+void Player::setForce(const Vector& force)
 {
-    _force = force;
+    m_force = force;
 }
 
 void Player::onRender(const Video* video) const
 {
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glScalef(_radius.x, _radius.y, _radius.z);
-    video->RenderSphere(1.0f);
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glScalef(m_radius.x, m_radius.y, m_radius.z);
+    video->renderSphere(1.0f);
 }
 
 void Player::onSetForceAndTorque()
@@ -61,26 +61,26 @@ void Player::onSetForceAndTorque()
     float Ixx, Iyy, Izz;
 
     // Get the mass of the object
-    NewtonBodyGetMassMatrix(_body, &mass, &Ixx, &Iyy, &Izz );
+    NewtonBodyGetMassMatrix(m_body, &mass, &Ixx, &Iyy, &Izz );
 
     Vector force = gravityVec * mass;
 
     Vector currentVel;
-    NewtonBodyGetVelocity(_body, currentVel.v);
+    NewtonBodyGetVelocity(m_body, currentVel.v);
       
-    Vector targetVel = _force;
+    Vector targetVel = m_force;
     targetVel.norm();
-    if (!_isOnGround)
+    if (!m_isOnGround)
     {
-       NewtonBodyAddForce(_body, force.v);
+       NewtonBodyAddForce(m_body, force.v);
     }
 
-    force = ( ( Matrix::rotateY(_angleY)*targetVel*5.0f - currentVel ) * timestepInv ) * mass;
-    if (!_isOnGround) force.y = 0.0f;
+    force = ( ( Matrix::rotateY(m_angleY)*targetVel*5.0f - currentVel ) * timestepInv ) * mass;
+    if (!m_isOnGround) force.y = 0.0f;
 
-    NewtonBodyAddForce(_body, force.v);
+    NewtonBodyAddForce(m_body, force.v);
 
-    _isOnGround = false;
+    m_isOnGround = false;
   
 /*
 	// TODO: this is for rotation
@@ -107,7 +107,7 @@ void Player::onCollision(const NewtonMaterial* material, const NewtonContact* co
    // Determine if this contact is on the ground
    Vector dir(0.0f, 1.0f, 0.0f);
    float angle = dir % nor;
-   _isOnGround = (angle > 0.0f);
+   m_isOnGround = (angle > 0.0f);
 
 
    NewtonMaterialSetContactElasticity( material, 0.0f );

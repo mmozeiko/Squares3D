@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="physfs"
-	ProjectGUID="{CAFD3BAD-C113-45A1-BEA2-9204B84DEE8E}"
-	RootNamespace="physfs"
+	Name="manymouse"
+	ProjectGUID="{0DA6B73F-6EF3-4DB2-AF1C-0E0248170786}"
+	RootNamespace="manymouse"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/zlib;include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;PHYSFS_SUPPORTS_ZIP;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -107,18 +107,14 @@
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="src/zlib;include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;PHYSFS_SUPPORTS_ZIP;_CRT_SECURE_NO_DEPRECATE"
-				ExceptionHandling="0"
-				BasicRuntimeChecks="0"
+				AdditionalIncludeDirectories="include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="false"
 				EnableEnhancedInstructionSet="1"
-				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CompileAs="1"
 			/>
 			<Tool
@@ -155,35 +151,23 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\src\physfs\dir.c"
+			RelativePath=".\src\manymouse\linux_evdev.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\physfs\physfs.c"
-			>
-			<FileConfiguration
-				Name="Release|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					CompileAs="1"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
-			RelativePath=".\src\physfs\physfs_byteorder.c"
+			RelativePath=".\src\manymouse\macosx_hidmanager.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\physfs\physfs_internal.h"
+			RelativePath=".\src\manymouse\manymouse.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\physfs\win32.c"
+			RelativePath=".\src\manymouse\windows_wminput.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\physfs\zip.c"
+			RelativePath=".\src\manymouse\x11_xinput.c"
 			>
 		</File>
 	</Files>

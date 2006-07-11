@@ -19,6 +19,7 @@ using std::list;
 using std::vector;
 
 using std::string;
+using std::stringstream;
 using std::clog;
 using std::endl;
 
@@ -33,7 +34,7 @@ typedef pair<int, int> IntPair;
 template <typename From, typename To>
 inline To cast(const From& from)
 {
-    std::stringstream ss;
+    stringstream ss;
     To to;
     ss << from;
     ss >> to;

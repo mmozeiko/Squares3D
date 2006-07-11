@@ -11,21 +11,21 @@ public:
         const Vector& size);
     virtual ~Player();
 
-    void SetForce(const Vector& force);
+    void setForce(const Vector& force);
 
-    virtual void Control() = 0;
+    virtual void control() = 0;
     void onRender(const Video* video) const;
 
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 
 private:
-    NewtonJoint*        _upVector;
+    NewtonJoint*    m_upVector;
 
-    Vector              _radius;
-    bool                _isOnGround;
-    Vector              _force;
+    Vector          m_radius;
+    bool            m_isOnGround;
+    Vector          m_force;
    
-    float               _angleY;
+    float           m_angleY;
 
     void onSetForceAndTorque();
 

@@ -19,6 +19,7 @@ public:
     XMLnodes childs;
     string name;
     string value;
+    unsigned int line;
 };
 
 #endif // __XML_H__

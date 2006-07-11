@@ -5,6 +5,7 @@
 #include "video.h"
 #include "game.h"
 #include "player_local.h"
+#include "level.h"
 
 struct ContactBodies
 {
@@ -33,7 +34,7 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
     
     for (int i=0; i<2; i++)
     {
-        if (player[i] && player[i]->GetType()==Body::PlayerBody)
+        if (player[i] && player[i]->getType()==Body::PlayerBody)
         {
             player[i]->onCollision(material, contact);
         }
@@ -45,83 +46,87 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
 ContactBodies contactBodies;
 
 World::World(Game* game) : 
-    _camera(new Camera()), State(game)
+    State(game),
+    m_camera(new Camera())
 {
-    _world = NewtonCreate(NULL, NULL);
-    NewtonWorldSetUserData(_world, static_cast<void*>(this));
-    NewtonSetSolverModel(_world, 10);
-    NewtonSetFrictionModel(_world, 1);
+    m_world = NewtonCreate(NULL, NULL);
+    NewtonWorldSetUserData(m_world, static_cast<void*>(this));
+    NewtonSetSolverModel(m_world, 10);
+    NewtonSetFrictionModel(m_world, 1);
 
-    NewtonCollision* floorCol = NewtonCreateBox(_world, 100.0f, 1.0f, 100.f, NULL);
-    NewtonBody* floorBody = NewtonCreateBody(_world, floorCol);
-	NewtonReleaseCollision(_world, floorCol);
+    NewtonCollision* floorCol = NewtonCreateBox(m_world, 100.0f, 1.0f, 100.f, NULL);
+    NewtonBody* floorBody = NewtonCreateBody(m_world, floorCol);
+	NewtonReleaseCollision(m_world, floorCol);
 
     Matrix pos = Matrix::translate(Vector(0.0f, -0.5f, 0.0f));
     NewtonBodySetMatrix(floorBody, pos.m);
     
-    int floorID = NewtonMaterialCreateGroupID(_world);
-	int charID = NewtonMaterialCreateGroupID(_world);
+    int floorID = NewtonMaterialCreateGroupID(m_world);
+	int charID = NewtonMaterialCreateGroupID(m_world);
 
-	NewtonMaterialSetDefaultElasticity(_world, floorID, charID, 0.4f);
-	NewtonMaterialSetDefaultFriction(_world, floorID, charID, 0.4f, 0.4f);
+	NewtonMaterialSetDefaultElasticity(m_world, floorID, charID, 0.4f);
+	NewtonMaterialSetDefaultFriction(m_world, floorID, charID, 0.4f, 0.4f);
 
-	NewtonMaterialSetCollisionCallback(_world, floorID, charID, 
+	NewtonMaterialSetCollisionCallback(m_world, floorID, charID, 
         static_cast<void*>(&contactBodies), 
         PlayerContactBegin, PlayerContactProcess, NULL); 
 
     NewtonBodySetMaterialGroupID(floorBody, floorID);
 
-    _localPlayer = auto_ptr<LocalPlayer>(new LocalPlayer(_world, charID, Vector(0.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f)));
-    _ball = auto_ptr<Ball>(new Ball(_world, Vector(1, 0.2f, 1), 0.2f));
+    m_localPlayer.reset(new LocalPlayer(m_world, charID, Vector(1.0f, 2.0f, 0.0f), Vector(0.75f, 2.0f, 0.75f)));
+    m_ball.reset(new Ball(m_world, Vector(1, 0.2f, 1), m_game, 0.2f));
+    m_level.reset(new Level());
+    //m_level->loadLevelData("/data/level.xml");
 }
 
 World::~World()
 {
-    delete _ball.release();
-    delete _localPlayer.release();
+    delete m_ball.release();
+    delete m_localPlayer.release();
+    delete m_level.release();
 
-    NewtonMaterialDestroyAllGroupID(_world);
-    NewtonDestroyAllBodies(_world);
-    NewtonDestroy(_world);
+    NewtonMaterialDestroyAllGroupID(m_world);
+    NewtonDestroyAllBodies(m_world);
+    NewtonDestroy(m_world);
 }
 
-void World::Control(float delta)
+void World::control(float delta)
 {
     // read input from keyboard
 
-    _camera->Control(delta);
-    _localPlayer->Control();
+    m_camera->control(delta);
+    m_localPlayer->control();
 }
 
-void World::Update()
+void World::update()
 {
     // update world objects, simulate physics
 
-    NewtonUpdate(_world, DT);
+    NewtonUpdate(m_world, DT);
 }
 
-void World::Prepare()
+void World::prepare()
 {
     // prepare for rendering - store all object state in temporary variables
 
-    _camera->Prepare();
-    _localPlayer->Prepare();
-    _ball->Prepare();
+    m_camera->prepare();
+    m_localPlayer->prepare();
+    m_ball->prepare();
 
 }
-#include "video.h"
-void World::Render() const
+
+void World::render() const
 {
     // render teh world, state of objects are in temporary variables
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _camera->Render();
+    m_camera->render();
 
-    _game->video()->RenderAxes();
+    m_game->video()->renderAxes();
 
-    _localPlayer->Render(_game->video());
-    _ball->Render(_game->video());
+    m_localPlayer->render(m_game->video());
+    m_ball->render(m_game->video());
 
     glfwSwapBuffers();
 }

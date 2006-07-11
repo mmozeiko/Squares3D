@@ -3,50 +3,50 @@
 #include <GL/glfw.h>
 
 Timer::Timer(bool start) :
-    _running(start ? 1 : 0),
-    _elapsed(0.0),
-    _resumed(0.0)
+    m_running(start ? 1 : 0),
+    m_elapsed(0.0),
+    m_resumed(0.0)
 {
-    Reset(start);
+    reset(start);
 }
 
-void Timer::Pause()
+void Timer::pause()
 {
-    _running--;
-    if (_running != 0)
+    m_running--;
+    if (m_running != 0)
     {
         return;
     }
 
-    _elapsed += glfwGetTime() - _resumed;
+    m_elapsed += glfwGetTime() - m_resumed;
 }
 
-void Timer::Resume()
+void Timer::resume()
 {
-    _running++;
-    if (_running != 1)
+    m_running++;
+    if (m_running != 1)
     {
         return;
     }
 
-    _resumed = glfwGetTime();
+    m_resumed = glfwGetTime();
 }
 
-void Timer::Reset(bool start)
+void Timer::reset(bool start)
 {
-    _running = (start ? 1 : 0);
+    m_running = (start ? 1 : 0);
     if (start)
     {
-        _resumed = glfwGetTime();
+        m_resumed = glfwGetTime();
     }
-    _elapsed = 0;
+    m_elapsed = 0;
 }
 
-double Timer::Read() const
+double Timer::read() const
 {
-    if (_running <= 0)
+    if (m_running <= 0)
     {
-        return _elapsed;
+        return m_elapsed;
     }
-    return glfwGetTime() - _resumed + _elapsed;
+    return glfwGetTime() - m_resumed + m_elapsed;
 }

@@ -13,6 +13,7 @@
 #ifndef __PHYSICSFS_INTERNAL__
 #error Do not include this header from your applications.
 #endif
+#include <malloc.h>
 
 #include "physfs.h"
 
@@ -33,7 +34,7 @@ extern "C" {
 
 
 /* The LANG section. */
-/*  please send questions/translations to Ryan: icculus@clutteredmind.org. */
+/*  please send questions/translations to Ryan: icculus@icculus.org. */
 
 #if (!defined PHYSFS_LANG)
 #  define PHYSFS_LANG PHYSFS_LANG_ENGLISH
@@ -57,6 +58,7 @@ extern "C" {
  #define QPAK_ARCHIVE_DESCRIPTION "Quake I/II format"
  #define ZIP_ARCHIVE_DESCRIPTION  "PkZip/WinZip/Info-Zip compatible"
  #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format"
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format"
 
  #define ERR_IS_INITIALIZED       "Already initialized"
  #define ERR_NOT_INITIALIZED      "Not initialized"
@@ -91,12 +93,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "Bad filename"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS made a bad system call"
  #define ERR_ARGV0_IS_NULL        "argv0 is NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: need dictionary"
- #define ERR_ZLIB_DATA_ERROR      "zlib: data error"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: memory error"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: buffer error"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: version error"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: unknown error"
+ #define ERR_NEED_DICT            "need dictionary"
+ #define ERR_DATA_ERROR           "data error"
+ #define ERR_MEMORY_ERROR         "memory error"
+ #define ERR_BUFFER_ERROR         "buffer error"
+ #define ERR_VERSION_ERROR        "version error"
+ #define ERR_UNKNOWN_ERROR        "unknown error"
  #define ERR_SEARCHPATH_TRUNC     "Search path was truncated"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() was truncated"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() had no dir"
@@ -154,7 +156,8 @@ extern "C" {
  #define MVL_ARCHIVE_DESCRIPTION  "Descent II Movielib format"
  #define QPAK_ARCHIVE_DESCRIPTION "Quake I/II format"
  #define ZIP_ARCHIVE_DESCRIPTION  "PkZip/WinZip/Info-Zip kompatibel"
- #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format"
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "Bereits initialisiert"
  #define ERR_NOT_INITIALIZED      "Nicht initialisiert"
@@ -189,12 +192,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "Unzulässiger Dateiname"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS verursachte einen ungültigen Systemaufruf"
  #define ERR_ARGV0_IS_NULL        "argv0 ist NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: brauche Wörterbuch"
- #define ERR_ZLIB_DATA_ERROR      "zlib: Datenfehler"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: Speicherfehler"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: Bufferfehler"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: Versionskonflikt"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: Unbekannter Fehler"
+ #define ERR_NEED_DICT            "brauche Wörterbuch"
+ #define ERR_DATA_ERROR           "Datenfehler"
+ #define ERR_MEMORY_ERROR         "Speicherfehler"
+ #define ERR_BUFFER_ERROR         "Bufferfehler"
+ #define ERR_VERSION_ERROR        "Versionskonflikt"
+ #define ERR_UNKNOWN_ERROR        "Unbekannter Fehler"
  #define ERR_SEARCHPATH_TRUNC     "Suchpfad war abgeschnitten"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() war abgeschnitten"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() bekam kein Verzeichnis"
@@ -251,7 +254,8 @@ extern "C" {
  #define HOG_ARCHIVE_DESCRIPTION  "Descent I/II HOG file format"
  #define MVL_ARCHIVE_DESCRIPTION  "Descent II Movielib format"
  #define ZIP_ARCHIVE_DESCRIPTION  "PkZip/WinZip/Info-Zip ÓÏ×ÍÅÓÔÉÍÙÊ"
- #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" // !!! FIXME: translate this line if needed
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "õÖÅ ÉÎÉÃÉÁÌÉÚÉÒÏ×ÁÎ"
  #define ERR_NOT_INITIALIZED      "îÅ ÉÎÉÃÉÁÌÉÚÉÒÏ×ÁÎ"
@@ -286,12 +290,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "îÅ×ÅÒÎÏÅ ÉÍÑ ÆÁÊÌÁ"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS ×ÙÐÏÌÎÉÌÁ ÎÅ×ÅÒÎÙÊ ÓÉÓÔÅÍÎÙÊ ×ÙÚÏ×"
  #define ERR_ARGV0_IS_NULL        "argv0 is NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: ÎÕÖÅÎ ÓÌÏ×ÁÒØ"
- #define ERR_ZLIB_DATA_ERROR      "zlib: ÏÛÉÂËÁ ÄÁÎÎÙÈ"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: ÏÛÉÂËÁ ÐÁÍÑÔÉ"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: ÏÛÉÂËÁ ÂÕÆÅÒÁ"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: ÏÛÉÂËÁ ×ÅÒÓÉÉ"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: ÎÅÉÚ×ÅÓÔÎÁÑ ÏÛÉÂËÁ"
+ #define ERR_NEED_DICT            "ÎÕÖÅÎ ÓÌÏ×ÁÒØ"
+ #define ERR_DATA_ERROR           "ÏÛÉÂËÁ ÄÁÎÎÙÈ"
+ #define ERR_MEMORY_ERROR         "ÏÛÉÂËÁ ÐÁÍÑÔÉ"
+ #define ERR_BUFFER_ERROR         "ÏÛÉÂËÁ ÂÕÆÅÒÁ"
+ #define ERR_VERSION_ERROR        "ÏÛÉÂËÁ ×ÅÒÓÉÉ"
+ #define ERR_UNKNOWN_ERROR        "ÎÅÉÚ×ÅÓÔÎÁÑ ÏÛÉÂËÁ"
  #define ERR_SEARCHPATH_TRUNC     "ðÕÔØ ÐÏÉÓËÁ ÏÂÒÅÚÁÎ"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() ÏÂÒÅÚÁÎ"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() ÎÅ ÐÏÌÕÞÉÌ ËÁÔÁÌÏÇ"
@@ -348,7 +352,8 @@ extern "C" {
  #define HOG_ARCHIVE_DESCRIPTION  "Descent I/II HOG file format"
  #define MVL_ARCHIVE_DESCRIPTION  "Descent II Movielib format"
  #define ZIP_ARCHIVE_DESCRIPTION  "PkZip/WinZip/Info-Zip ñîâìåñòèìûé"
- #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" // FIXME: translate this line if needed
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "Óæå èíèöèàëèçèðîâàí"
  #define ERR_NOT_INITIALIZED      "Íå èíèöèàëèçèðîâàí"
@@ -383,12 +388,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "Íåâåðíîå èìÿ ôàéëà"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS âûïîëíèëà íåâåðíûé ñèñòåìíûé âûçîâ"
  #define ERR_ARGV0_IS_NULL        "argv0 is NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: íóæåí ñëîâàðü"
- #define ERR_ZLIB_DATA_ERROR      "zlib: îøèáêà äàííûõ"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: îøèáêà ïàìÿòè"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: îøèáêà áóôåðà"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: îøèáêà âåðñèè"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: íåèçâåñòíàÿ îøèáêà"
+ #define ERR_NEED_DICT            "íóæåí ñëîâàðü"
+ #define ERR_DATA_ERROR           "îøèáêà äàííûõ"
+ #define ERR_MEMORY_ERROR         "îøèáêà ïàìÿòè"
+ #define ERR_BUFFER_ERROR         "îøèáêà áóôåðà"
+ #define ERR_VERSION_ERROR        "îøèáêà âåðñèè"
+ #define ERR_UNKNOWN_ERROR        "íåèçâåñòíàÿ îøèáêà"
  #define ERR_SEARCHPATH_TRUNC     "Ïóòü ïîèñêà îáðåçàí"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() îáðåçàí"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() íå ïîëó÷èë êàòàëîã"
@@ -445,7 +450,8 @@ extern "C" {
  #define HOG_ARCHIVE_DESCRIPTION  "Descent I/II HOG file format"
  #define MVL_ARCHIVE_DESCRIPTION  "Descent II Movielib format"
  #define ZIP_ARCHIVE_DESCRIPTION  "PkZip/WinZip/Info-Zip á®¢¬¥áâ¨¬ë©"
- #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" // FIXME: Translate this line if needed
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "“¦¥ ¨­¨æ¨ «¨§¨à®¢ ­"
  #define ERR_NOT_INITIALIZED      "¥ ¨­¨æ¨ «¨§¨à®¢ ­"
@@ -480,12 +486,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "¥¢¥à­®¥ ¨¬ï ä ©« "
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS ¢ë¯®«­¨«  ­¥¢¥à­ë© á¨áâ¥¬­ë© ¢ë§®¢"
  #define ERR_ARGV0_IS_NULL        "argv0 is NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: ­ã¦¥­ á«®¢ àì"
- #define ERR_ZLIB_DATA_ERROR      "zlib: ®è¨¡ª  ¤ ­­ëå"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: ®è¨¡ª  ¯ ¬ïâ¨"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: ®è¨¡ª  ¡ãä¥à "
- #define ERR_ZLIB_VERSION_ERROR   "zlib: ®è¨¡ª  ¢¥àá¨¨"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: ­¥¨§¢¥áâ­ ï ®è¨¡ª "
+ #define ERR_NEED_DICT            "­ã¦¥­ á«®¢ àì"
+ #define ERR_DATA_ERROR           "®è¨¡ª  ¤ ­­ëå"
+ #define ERR_MEMORY_ERROR         "®è¨¡ª  ¯ ¬ïâ¨"
+ #define ERR_BUFFER_ERROR         "®è¨¡ª  ¡ãä¥à "
+ #define ERR_VERSION_ERROR        "®è¨¡ª  ¢¥àá¨¨"
+ #define ERR_UNKNOWN_ERROR        "­¥¨§¢¥áâ­ ï ®è¨¡ª "
  #define ERR_SEARCHPATH_TRUNC     "ãâì ¯®¨áª  ®¡à¥§ ­"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() ®¡à¥§ ­"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() ­¥ ¯®«ãç¨« ª â «®£"
@@ -542,7 +548,8 @@ extern "C" {
  #define HOG_ARCHIVE_DESCRIPTION  "Descent I/II HOG file format"
  #define MVL_ARCHIVE_DESCRIPTION  "Descent II Movielib format"
  #define ZIP_ARCHIVE_DESCRIPTION  "PkZip/WinZip/Info-Zip áÞÒÜÕáâØÜëÙ"
- #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format"  // FIXME: translate this line if needed
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "ÃÖÕ ØÝØæØÐÛØ×ØàÞÒÐÝ"
  #define ERR_NOT_INITIALIZED      "½Õ ØÝØæØÐÛØ×ØàÞÒÐÝ"
@@ -577,12 +584,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "½ÕÒÕàÝÞÕ ØÜï äÐÙÛÐ"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS ÒëßÞÛÝØÛÐ ÝÕÒÕàÝëÙ áØáâÕÜÝëÙ Òë×ÞÒ"
  #define ERR_ARGV0_IS_NULL        "argv0 is NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: ÝãÖÕÝ áÛÞÒÐàì"
- #define ERR_ZLIB_DATA_ERROR      "zlib: ÞèØÑÚÐ ÔÐÝÝëå"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: ÞèØÑÚÐ ßÐÜïâØ"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: ÞèØÑÚÐ ÑãäÕàÐ"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: ÞèØÑÚÐ ÒÕàáØØ"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: ÝÕØ×ÒÕáâÝÐï ÞèØÑÚÐ"
+ #define ERR_NEED_DICT            "ÝãÖÕÝ áÛÞÒÐàì"
+ #define ERR_DATA_ERROR           "ÞèØÑÚÐ ÔÐÝÝëå"
+ #define ERR_MEMORY_ERROR         "ÞèØÑÚÐ ßÐÜïâØ"
+ #define ERR_BUFFER_ERROR         "ÞèØÑÚÐ ÑãäÕàÐ"
+ #define ERR_VERSION_ERROR        "ÞèØÑÚÐ ÒÕàáØØ"
+ #define ERR_UNKNOWN_ERROR        "ÝÕØ×ÒÕáâÝÐï ÞèØÑÚÐ"
  #define ERR_SEARCHPATH_TRUNC     "¿ãâì ßÞØáÚÐ ÞÑàÕ×ÐÝ"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() ÞÑàÕ×ÐÝ"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() ÝÕ ßÞÛãçØÛ ÚÐâÐÛÞÓ"
@@ -642,6 +649,7 @@ extern "C" {
  #define QPAK_ARCHIVE_DESCRIPTION "Quake I/II format"
  #define ZIP_ARCHIVE_DESCRIPTION  "Compatible PkZip/WinZip/Info-Zip"
  #define WAD_ARCHIVE_DESCRIPTION  "Format WAD du moteur DOOM"
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "Déjà initialisé"
  #define ERR_NOT_INITIALIZED      "Non initialisé"
@@ -676,12 +684,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "Mauvais nom de fichier"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BOGUE) PhysicsFS a fait un mauvais appel système, le salaud"
  #define ERR_ARGV0_IS_NULL        "argv0 est NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: a besoin du dico"
- #define ERR_ZLIB_DATA_ERROR      "zlib: erreur de données"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: erreur mémoire"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: erreur tampon"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: erreur de version"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: erreur inconnue"
+ #define ERR_NEED_DICT            "a besoin du dico"
+ #define ERR_DATA_ERROR           "erreur de données"
+ #define ERR_MEMORY_ERROR         "erreur mémoire"
+ #define ERR_BUFFER_ERROR         "erreur tampon"
+ #define ERR_VERSION_ERROR        "erreur de version"
+ #define ERR_UNKNOWN_ERROR        "erreur inconnue"
  #define ERR_SEARCHPATH_TRUNC     "Le chemin de recherche a été tronqué"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() a été tronqué"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() n'a pas de répertoire"
@@ -740,6 +748,8 @@ extern "C" {
  #define QPAK_ARCHIVE_DESCRIPTION "Formato Quake I/II"
  #define ZIP_ARCHIVE_DESCRIPTION  "Formato compatível PkZip/WinZip/Info-Zip"
  #define WAD_ARCHIVE_DESCRIPTION  "Formato WAD do engine DOOM"
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "Já inicializado"
  #define ERR_NOT_INITIALIZED      "Não inicializado"
@@ -774,12 +784,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "Nome de arquivo inválido"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS realizou uma chamada de sistema inválida"
  #define ERR_ARGV0_IS_NULL        "argv0 é NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: precisa de diretório"
- #define ERR_ZLIB_DATA_ERROR      "zlib: erro nos dados"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: erro de memória"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: erro de buffer"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: erro na version"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: erro desconhecido"
+ #define ERR_NEED_DICT            "precisa de diretório"
+ #define ERR_DATA_ERROR           "erro nos dados"
+ #define ERR_MEMORY_ERROR         "erro de memória"
+ #define ERR_BUFFER_ERROR         "erro de buffer"
+ #define ERR_VERSION_ERROR        "erro na version"
+ #define ERR_UNKNOWN_ERROR        "erro desconhecido"
  #define ERR_SEARCHPATH_TRUNC     "Caminho de procura quebrado"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() foi quebrado"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() nao teve diretório"
@@ -837,6 +847,8 @@ extern "C" {
  #define MVL_ARCHIVE_DESCRIPTION  "Formato Descent II Movielib"
  #define QPAK_ARCHIVE_DESCRIPTION "Formato Quake I/II"
  #define ZIP_ARCHIVE_DESCRIPTION  "Compatible con PkZip/WinZip/Info-Zip"
+ #define WAD_ARCHIVE_DESCRIPTION  "DOOM engine format" /* !!! FIXME: translate this line if needed */
+ #define LZMA_ARCHIVE_DESCRIPTION "LZMA (7zip) format" /* !!! FIXME: translate this line if needed */
 
  #define ERR_IS_INITIALIZED       "Ya estaba inicializado"
  #define ERR_NOT_INITIALIZED      "No está inicializado"
@@ -871,12 +883,12 @@ extern "C" {
  #define ERR_BAD_FILENAME         "Nombre de archivo incorrecto"
  #define ERR_PHYSFS_BAD_OS_CALL   "(BUG) PhysicsFS ha hecho una llamada incorrecta al sistema"
  #define ERR_ARGV0_IS_NULL        "argv0 es NULL"
- #define ERR_ZLIB_NEED_DICT       "zlib: necesito diccionario"
- #define ERR_ZLIB_DATA_ERROR      "zlib: error de datos"
- #define ERR_ZLIB_MEMORY_ERROR    "zlib: error de memoria"
- #define ERR_ZLIB_BUFFER_ERROR    "zlib: error de buffer"
- #define ERR_ZLIB_VERSION_ERROR   "zlib: error de versión"
- #define ERR_ZLIB_UNKNOWN_ERROR   "zlib: error desconocido"
+ #define ERR_NEED_DICT            "necesito diccionario"
+ #define ERR_DATA_ERROR           "error de datos"
+ #define ERR_MEMORY_ERROR         "error de memoria"
+ #define ERR_BUFFER_ERROR         "error de buffer"
+ #define ERR_VERSION_ERROR        "error de versión"
+ #define ERR_UNKNOWN_ERROR        "error desconocido"
  #define ERR_SEARCHPATH_TRUNC     "La ruta de búsqueda ha sido truncada"
  #define ERR_GETMODFN_TRUNC       "GetModuleFileName() ha sido truncado"
  #define ERR_GETMODFN_NO_DIR      "GetModuleFileName() no tenia directorio"
@@ -995,7 +1007,8 @@ typedef struct
     void (*enumerateFiles)(dvoid *opaque,
                             const char *dirname,
                             int omitSymLinks,
-                            PHYSFS_StringCallback callback,
+                            PHYSFS_EnumFilesCallback callback,
+                            const char *origdir,
                             void *callbackdata);
 
         /*
@@ -1252,6 +1265,23 @@ void __PHYSFS_sort(void *entries, PHYSFS_uint32 max,
 #define GOTO_MACRO_MUTEX(e, m, g) { __PHYSFS_setError(e); __PHYSFS_platformReleaseMutex(m); goto g; }
 #define GOTO_IF_MACRO_MUTEX(c, e, m, g) if (c) { __PHYSFS_setError(e); __PHYSFS_platformReleaseMutex(m); goto g; }
 
+#ifdef __GNUC__
+#define LONGLONGLITERAL(x) x##LL
+#else
+#define LONGLONGLITERAL(x) x
+#endif
+
+/*
+ * Check if a ui64 will fit in the platform's address space.
+ *  The initial sizeof check will optimize this macro out entirely on
+ *  64-bit (and larger?!) platforms, and the other condition will
+ *  return zero or non-zero if the variable will fit in the platform's
+ *  size_t, suitable to pass to malloc. This is kinda messy, but effective.
+ */
+#define __PHYSFS_ui64FitsAddressSpace(s) ( \
+    (sizeof (PHYSFS_uint64) > sizeof (size_t)) && \
+    ((s) > (LONGLONGLITERAL(0xFFFFFFFFFFFFFFFF) >> (64-(sizeof(size_t)*8)))) \
+)
 
 /*
  * The current allocator. Not valid before PHYSFS_init is called!
@@ -1568,7 +1598,8 @@ void __PHYSFS_platformTimeslice(void);
  */
 void __PHYSFS_platformEnumerateFiles(const char *dirname,
                                      int omitSymLinks,
-                                     PHYSFS_StringCallback callback,
+                                     PHYSFS_EnumFilesCallback callback,
+                                     const char *origdir,
                                      void *callbackdata);
 
 
@@ -1682,14 +1713,14 @@ void __PHYSFS_platformAllocatorDeinit(void);
  *  This is used for allocation if the user hasn't selected their own
  *  allocator via PHYSFS_setAllocator().
  */
-void *__PHYSFS_platformAllocatorMalloc(size_t s);
+void *__PHYSFS_platformAllocatorMalloc(PHYSFS_uint64 s);
 
 /*
  * Implement realloc. It's safe to just pass through from the C runtime.
  *  This is used for allocation if the user hasn't selected their own
  *  allocator via PHYSFS_setAllocator().
  */
-void *__PHYSFS_platformAllocatorRealloc(void *ptr, size_t s);
+void *__PHYSFS_platformAllocatorRealloc(void *ptr, PHYSFS_uint64 s);
 
 /*
  * Implement free. It's safe to just pass through from the C runtime.

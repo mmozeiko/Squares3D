@@ -10,12 +10,12 @@
 #include "vmath.h"
 
 Game::Game() : 
-    _config(new Config()), 
-    _video(new Video(*_config)), 
-    _audio(new Audio(*_config)), 
-    _network(new Network())
+    m_config(new Config()), 
+    m_video(new Video(m_config.get())), 
+    m_audio(new Audio(m_config.get())), 
+    m_network(new Network())
 {
-    _world.reset(new World(this));
+    m_world.reset(new World(this));
 }
 
 Game::~Game()
@@ -24,11 +24,11 @@ Game::~Game()
 
 const Video* Game::video() const
 {
-    return _video.get();
+    return m_video.get();
 }
 
 
-void Game::Run()
+void Game::run()
 {
     clog << "Starting game..." << endl;
 
@@ -40,7 +40,10 @@ void Game::Run()
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    
+
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+
     //glDisable(GL_LIGHT0);
     //glDisable(GL_LIGHTING);
 
@@ -51,7 +54,7 @@ void Game::Run()
 
     int    frames = 0;
     double accum = 0.0;
-    double currentTime = timer.Read();
+    double currentTime = timer.read();
     double startTime = currentTime;
 
     bool running = true;
@@ -60,23 +63,19 @@ void Game::Run()
     
     while (running)
     {
-        double newTime = timer.Read();
+        double newTime = timer.read();
         double deltaTime = newTime - currentTime;
         currentTime = newTime;
         accum += deltaTime;
 
-        if (glfwGetWindowParam(GLFW_ACTIVE)==GL_TRUE)
-        {
-            _world->Control(deltaTime);
-        }
-    
+        m_world->control(static_cast<float>(deltaTime));
         while (accum >= DT)
         {
-            _world->Update();
+            m_world->update();
             accum -= DT;
         }
-        _world->Prepare();
-        _world->Render();
+        m_world->prepare();
+        m_world->render();
         frames++;
 
         glfwPollEvents();

@@ -3,12 +3,12 @@
 
 namespace Random
 {
-    void Init();
+    void init();
 
-    unsigned int GetInt();               // [0,2^32)
-    unsigned int GetIntN(unsigned int n); // [0,n)
-    float GetFloat();                    // [0,1)
-    float GetFloatN(float n);             // [0,n)
+    unsigned int getInt();               // [0,2^32)
+    unsigned int getIntN(unsigned int n); // [0,n)
+    float getFloat();                    // [0,1)
+    float getFloatN(float n);             // [0,n)
 }
 
 #endif

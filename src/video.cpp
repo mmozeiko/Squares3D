@@ -1,4 +1,8 @@
 #include "video.h"
+#include "config.h"
+#include "file.h"
+
+#include <GL/glfw.h>
 
 static void GLFWCALL sizeCb(int width, int height)
 {
@@ -12,7 +16,7 @@ static void GLFWCALL sizeCb(int width, int height)
   glLoadIdentity();
 }
 
-Video::Video(Config& config) : _config(config)
+Video::Video(Config* config) : m_config(config)
 {
     clog << "Initializing video." << endl;
 
@@ -21,11 +25,11 @@ Video::Video(Config& config) : _config(config)
         throw Exception("glfwInit failed");
     }
 
-    int width = _config.video().width;;
-    int height = _config.video().height;
-    bool vsync = _config.video().vsync;
-    int mode = (_config.video().fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
-    bool systemKeys = config.misc().system_keys;
+    int width = m_config->video().width;;
+    int height = m_config->video().height;
+    bool vsync = m_config->video().vsync;
+    int mode = (m_config->video().fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
+    bool systemKeys = m_config->misc().system_keys;
 
     int     modes[]  = { mode, GLFW_WINDOW };
     int     depths[] = { 32, 24, 16 };
@@ -94,7 +98,7 @@ Video::~Video()
     glfwTerminate();
 }
 
-void Video::RenderCube(float size) const
+void Video::renderCube(float size) const
 {
     float tmp = 0.5f * size;
 
@@ -114,14 +118,16 @@ void Video::RenderCube(float size) const
 #   undef N
 }
 
-void Video::RenderSphere(float radius) const
+void Video::renderSphere(float radius) const
 {
     GLUquadric* q =  gluNewQuadric();
+    gluQuadricTexture(q, GLU_TRUE);
+    gluQuadricNormals(q, GLU_TRUE);
     gluSphere(q, radius, 32, 32);
     gluDeleteQuadric(q);
 }
     
-void Video::RenderWireSphere(float radius) const
+void Video::renderWireSphere(float radius) const
 {
     GLUquadric* q =  gluNewQuadric();
     gluQuadricDrawStyle(q, GLU_SILHOUETTE);
@@ -129,21 +135,25 @@ void Video::RenderWireSphere(float radius) const
     gluDeleteQuadric(q);
 }
   
-void Video::RenderAxes(float size) const
+void Video::renderAxes(float size) const
 {
+    const float red[] = {1.0, 0.0, 0.0};
+    const float green[] = {0.0, 1.0, 0.0};
+    const float blue[] = {0.0, 0.0, 1.0};
+
     
     glDisable(GL_LIGHTING);
 
     glBegin(GL_LINES);
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3fv(red);
     glVertex3f(-size, 0.0, 0.0);
     glVertex3f(size, 0.0, 0.0);
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3fv(green);
     glVertex3f(0.0, -size, 0.0);
     glVertex3f(0.0, size, 0.0);
 
-    glColor3f(0.0, 0.0, 1.0);
+    glColor3fv(blue);
     glVertex3f(0.0, 0.0, -size);
     glVertex3f(0.0, 0.0, size);
     glEnd();
@@ -153,8 +163,7 @@ void Video::RenderAxes(float size) const
     GLUquadric* q =  gluNewQuadric();
     
     glPushMatrix();
-    const float red[] = {1.0, 0.0, 0.0};
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+    glColor3fv(red);
     glTranslatef(size, 0.0, 0.0);
     glRotatef(90.0, 0.0, 1.0, 0.0);
     gluCylinder(q, 0.2, 0.0, 1.0, 32, 32);
@@ -163,8 +172,7 @@ void Video::RenderAxes(float size) const
     glPopMatrix();
 
     glPushMatrix();
-    const float green[] = {0.0, 1.0, 0.0};
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, green);
+    glColor3fv(green);
     glTranslatef(0.0, size, 0.0);
     glRotatef(-90.0, 1.0, 0.0, 0.0);
     gluCylinder(q, 0.2, 0.0, 1.0, 32, 32);
@@ -173,8 +181,7 @@ void Video::RenderAxes(float size) const
     glPopMatrix();
 
     glPushMatrix();
-    const float blue[] = {0.0, 0.0, 1.0};
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, blue);
+    glColor3fv(blue);
     glTranslatef(0.0, 0.0, size);
     gluCylinder(q, 0.2, 0.0, 1.0, 32, 32);
     glRotatef(180.0, 0.0, 1.0, 0.0);
@@ -184,14 +191,44 @@ void Video::RenderAxes(float size) const
     gluDeleteQuadric(q);
 }
 
-void Video::BeginObject(const Matrix& matrix) const
+void Video::beginObject(const Matrix& matrix) const
 {
     glPushMatrix();
     glMultMatrixf(matrix.m);
 }
 
-void Video::EndObject() const
+void Video::endObject() const
 {
     glPopMatrix();
 }
 
+unsigned int Video::loadTexture(const string& name) const
+{
+    string filename = "/data/textures/" + name;
+    File::Reader file(filename);
+    if (!file.is_open())
+    {
+        throw Exception("Texture " + name + " not found");
+    }
+    unsigned int filesize = file.filesize();
+
+    vector<char> data(filesize);
+    file.read(&data[0], filesize);
+    file.close();
+
+    glEnable(GL_TEXTURE_2D);
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if (glfwLoadMemoryTexture2D(static_cast<void*>(&data[0]), filesize, GLFW_BUILD_MIPMAPS_BIT) == GL_FALSE)
+    {
+        throw Exception("Texture " + name + " failed to load");
+    }
+    glDisable(GL_TEXTURE_2D);
+    
+    return texture;
+}

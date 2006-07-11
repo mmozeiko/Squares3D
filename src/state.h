@@ -11,13 +11,13 @@ class State
 public:
 	State(Game* game);
 
-    virtual void Control(float delta) = 0;
-    virtual void Update() = 0;
-    virtual void Prepare() = 0;
-    virtual void Render() const = 0;
+    virtual void control(float delta) = 0;
+    virtual void update() = 0;
+    virtual void prepare() = 0;
+    virtual void render() const = 0;
     
 protected:
-	Game* _game;
+	Game* m_game;
 };
 
 #endif

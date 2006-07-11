@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#define DT         0.01f
+#define DT 0.01f
 
 class Config;
 class Video;
@@ -16,16 +16,17 @@ class Game
 public:
     Game();
     ~Game();
-	const Video* video() const;
+	
+    const Video* video() const;
 
-    void Run();
+    void run();
 
 private:
-    auto_ptr<Config>    _config;
-    auto_ptr<Video>     _video;
-    auto_ptr<Audio>     _audio;
-    auto_ptr<Network>   _network;
-    auto_ptr<World>     _world;
+    auto_ptr<Config>    m_config;
+    auto_ptr<Video>     m_video;
+    auto_ptr<Audio>     m_audio;
+    auto_ptr<Network>   m_network;
+    auto_ptr<World>     m_world;
 
 };
 

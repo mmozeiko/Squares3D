@@ -7,8 +7,8 @@
 
 namespace File
 {
-    void Init(const char* argv0);
-    void Done();
+    void init(const char* argv0);
+    void done();
 
     class InputBuffer;
     class OutputBuffer;
@@ -23,8 +23,10 @@ namespace File
         bool open(const std::string& filename);
         void close();
 
+        unsigned int filesize() const;
+
     private:
-        InputBuffer* _buf;
+        InputBuffer* m_buf;
     };
 
     class Writer : public std::ostream
@@ -38,7 +40,7 @@ namespace File
         void close();
 
     private:
-        OutputBuffer* _buf;
+        OutputBuffer* m_buf;
     };
 
 };

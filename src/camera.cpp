@@ -2,39 +2,93 @@
 #include "common.h"
 
 #include <GL/glfw.h>
+#include "manymouse.h"
 
 Camera::Camera(const Vector& pos, float angleX, float angleY) :
-    _pos(-pos), _angleX(angleX), _angleY(angleY),
-    _strafeRotation(Matrix::rotateY(-M_PI/2)),
-    _scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f)))
+    m_pos(-pos), m_angleX(angleX), m_angleY(angleY),
+    m_strafeRotation(Matrix::rotateY(-M_PI/2)),
+    m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f)))
 {
+    ManyMouse_Init();
 }
 
 Camera::~Camera()
 {
+    ManyMouse_Quit();
 }
 
-void Camera::Control(float delta)
+static int posX = -1;
+static int posY = -1;
+
+void Camera::control(float delta)
 {
-    int w, h, x, y;
-    glfwGetWindowSize(&w, &h);
-    glfwGetMousePos(&x, &y);
-    int w2 = w/2, h2 = h/2;
-    int dx = x-w2, dy = y-h2;
-    if (w2==0 || h2==0) return;
-    if (std::abs(dx)>w2 || std::abs(dy)>h2)
+    int dx = 0;
+    int dy = 0;
+
+    ManyMouseEvent event;
+    while (ManyMouse_PollEvent(&event))
     {
-        glfwSetMousePos(w2, h2);
+        if (event.device != 0)
+        {
+            continue;
+        }
+        switch (event.type)
+        {
+            case MANYMOUSE_EVENT_ABSMOTION:
+                if (event.item == 0)
+                {
+                    if (posX == -1)
+                    {
+                        posX = event.value;
+                    }
+                    if (posY != -1)
+                    {
+                        relX += event.value - posX;
+                    }
+                }
+                else
+                {
+                    if (posY == -1)
+                    {
+                        posY = event.value;
+                    }
+                    if (posX != -1)
+                    {
+                        relY += event.value - posY;
+                    }
+                }
+                break;
+            case MANYMOUSE_EVENT_RELMOTION:
+                if (event.item == 0)
+                {
+                    relX += event.value;
+                }
+                else
+                {
+                    relY += event.value;
+                }
+                break;
+        }
+    }
+
+    int w, h;
+    glfwGetWindowSize(&w, &h);
+    int w2 = w/2, h2 = h/2;
+    if (w2==0 || h2==0)
+    {
+        return;
+    }
+
+    if (glfwGetWindowParam(GLFW_ACTIVE) == GL_FALSE)
+    {
         return;
     }
 
     if (dx != 0 || dy != 0)
     {
-        Rotate(
+        rotate(
             delta * M_PI * LOOK_SPEED * dy / h2,
             delta * M_PI * LOOK_SPEED * dx / w2);
-
-        glfwSetMousePos(w2, h2);
     }
     float dist = 0.0f;
     float strafe = 0.0f;
@@ -46,32 +100,32 @@ void Camera::Control(float delta)
 
     if (dist!=0 || strafe!=0)
     {
-        Move(delta * MOVE_SPEED * dist, delta * MOVE_SPEED * strafe);
+        move(delta * MOVE_SPEED * dist, delta * MOVE_SPEED * strafe);
     }
 }
 
-void Camera::Move(float distance, float strafe)
+void Camera::move(float distance, float strafe)
 {
-    Matrix moveMatrix = Matrix::rotateY(-_angleY) * Matrix::rotateX(-_angleX);
-    Matrix strafeMatrix = moveMatrix * _strafeRotation;
+    Matrix moveMatrix = Matrix::rotateY(-m_angleY) * Matrix::rotateX(-m_angleX);
+    Matrix strafeMatrix = moveMatrix * m_strafeRotation;
 
     Vector deltaPos = distance * moveMatrix.row(2) + strafe * strafeMatrix.row(2);
-    _pos += deltaPos;
+    m_pos += deltaPos;
 }
 
-void Camera::Rotate(float ax, float ay)
+void Camera::rotate(float ax, float ay)
 {
-    _angleX += ax;
-    _angleY += ay;
+    m_angleX += ax;
+    m_angleY += ay;
 }
 
-void Camera::Prepare()
+void Camera::prepare()
 {
-    _matrix = Matrix::rotateX(_angleX) * Matrix::rotateY(_angleY) * 
-              Matrix::translate( _pos ) * _scaleMatrix;
+    m_matrix = Matrix::rotateX(m_angleX) * Matrix::rotateY(m_angleY) * 
+               Matrix::translate(m_pos) * m_scaleMatrix;
 }
 
-void Camera::Render() const
+void Camera::render() const
 {
-    glLoadMatrixf(_matrix.m);
+    glLoadMatrixf(m_matrix.m);
 }
