@@ -3,6 +3,8 @@
 
 #include "player.h"
 
+class Input;
+
 class LocalPlayer : public Player
 {
 public:
@@ -11,7 +13,7 @@ public:
         const Vector& size);
     ~LocalPlayer();
 
-    void control();
+    void control(const Input* input);
 private:
 
 };

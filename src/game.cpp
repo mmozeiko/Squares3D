@@ -5,6 +5,7 @@
 #include "video.h"
 #include "audio.h"
 #include "network.h"
+#include "input.h"
 #include "world.h"
 
 #include "vmath.h"
@@ -12,8 +13,9 @@
 Game::Game() : 
     m_config(new Config()), 
     m_video(new Video(m_config.get())), 
-    m_audio(new Audio(m_config.get())), 
-    m_network(new Network())
+    m_audio(new Audio(m_config.get())),
+    m_network(new Network()),
+    m_input(new Input())
 {
     m_world.reset(new World(this));
 }
@@ -68,7 +70,8 @@ void Game::run()
         currentTime = newTime;
         accum += deltaTime;
 
-        m_world->control(static_cast<float>(deltaTime));
+        m_input->process();
+        m_world->control(m_input.get(), static_cast<float>(deltaTime));
         while (accum >= DT)
         {
             m_world->update();

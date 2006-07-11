@@ -452,6 +452,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\input.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\input.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\level.cpp"
 			>
 		</File>

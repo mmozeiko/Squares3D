@@ -1,5 +1,7 @@
 #include "player_local.h"
 
+#include "input.h"
+
 #include <GL/glfw.h>
 
 LocalPlayer::LocalPlayer(const NewtonWorld* world, int material, 
@@ -12,14 +14,14 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::control()
+void LocalPlayer::control(const Input* input)
 {
     Vector force;
 
-    if (glfwGetKey('W')==GLFW_PRESS) force.x =  5.0f;
-    if (glfwGetKey('S')==GLFW_PRESS) force.x = -5.0f;
-    if (glfwGetKey('A')==GLFW_PRESS) force.z =  5.0f;
-    if (glfwGetKey('D')==GLFW_PRESS) force.z = -5.0f;
+    if (input->key('W')) force.x =  5.0f;
+    if (input->key('S')) force.x = -5.0f;
+    if (input->key('A')) force.z =  5.0f;
+    if (input->key('D')) force.z = -5.0f;
 
     setForce(force);
 }

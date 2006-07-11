@@ -9,6 +9,7 @@ class Config;
 class Video;
 class Audio;
 class Network;
+class Input;
 class World;
 
 class Game
@@ -26,6 +27,7 @@ private:
     auto_ptr<Video>     m_video;
     auto_ptr<Audio>     m_audio;
     auto_ptr<Network>   m_network;
+    auto_ptr<Input>     m_input;
     auto_ptr<World>     m_world;
 
 };

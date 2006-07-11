@@ -16,7 +16,7 @@ public:
 	World(Game* game);
     ~World();
     
-    void control(float delta);
+    void control(const Input* input, float delta);
     void update();
     void prepare();
     void render() const;
@@ -25,7 +25,7 @@ private:
 	auto_ptr<Camera>    m_camera;
     auto_ptr<Player>    m_localPlayer;
     auto_ptr<Ball>      m_ball;
-    auto_ptr<Level>      m_level;
+    auto_ptr<Level>     m_level;
 
     NewtonWorld*        m_world;
 };

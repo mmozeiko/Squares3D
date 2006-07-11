@@ -1,75 +1,30 @@
 #include "camera.h"
 #include "common.h"
+#include "input.h"
 
 #include <GL/glfw.h>
-#include "manymouse.h"
 
 Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_pos(-pos), m_angleX(angleX), m_angleY(angleY),
     m_strafeRotation(Matrix::rotateY(-M_PI/2)),
     m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f)))
 {
-    ManyMouse_Init();
+    int w, h; 
+    glfwGetWindowSize(&w, &h);
+    m_lastMouse = make_pair(w/2, h/2);
 }
 
 Camera::~Camera()
 {
-    ManyMouse_Quit();
 }
 
-static int posX = -1;
-static int posY = -1;
-
-void Camera::control(float delta)
+void Camera::control(const Input* input, float delta)
 {
-    int dx = 0;
-    int dy = 0;
+    const Mouse& mouse = input->mouse();
+    int dx = mouse.x - m_lastMouse.first;
+    int dy = mouse.y - m_lastMouse.second;
 
-    ManyMouseEvent event;
-    while (ManyMouse_PollEvent(&event))
-    {
-        if (event.device != 0)
-        {
-            continue;
-        }
-        switch (event.type)
-        {
-            case MANYMOUSE_EVENT_ABSMOTION:
-                if (event.item == 0)
-                {
-                    if (posX == -1)
-                    {
-                        posX = event.value;
-                    }
-                    if (posY != -1)
-                    {
-                        relX += event.value - posX;
-                    }
-                }
-                else
-                {
-                    if (posY == -1)
-                    {
-                        posY = event.value;
-                    }
-                    if (posX != -1)
-                    {
-                        relY += event.value - posY;
-                    }
-                }
-                break;
-            case MANYMOUSE_EVENT_RELMOTION:
-                if (event.item == 0)
-                {
-                    relX += event.value;
-                }
-                else
-                {
-                    relY += event.value;
-                }
-                break;
-        }
-    }
+    m_lastMouse = make_pair(mouse.x, mouse.y);
 
     int w, h;
     glfwGetWindowSize(&w, &h);
@@ -93,10 +48,10 @@ void Camera::control(float delta)
     float dist = 0.0f;
     float strafe = 0.0f;
 
-    if (glfwGetKey(GLFW_KEY_UP)==GLFW_PRESS) dist += 1.0f;
-    if (glfwGetKey(GLFW_KEY_DOWN)==GLFW_PRESS) dist -= 1.0f;
-    if (glfwGetKey(GLFW_KEY_RIGHT)==GLFW_PRESS) strafe += 1.0f;
-    if (glfwGetKey(GLFW_KEY_LEFT)==GLFW_PRESS) strafe -= 1.0f;
+    if (input->key(GLFW_KEY_UP)) dist += 1.0f;
+    if (input->key(GLFW_KEY_DOWN)) dist -= 1.0f;
+    if (input->key(GLFW_KEY_RIGHT)) strafe += 1.0f;
+    if (input->key(GLFW_KEY_LEFT)) strafe -= 1.0f;
 
     if (dist!=0 || strafe!=0)
     {

@@ -3,6 +3,8 @@
 
 #include "body.h"
 
+class Input;
+
 class Player : public Body
 {
 public:
@@ -13,7 +15,7 @@ public:
 
     void setForce(const Vector& force);
 
-    virtual void control() = 0;
+    virtual void control(const Input* input) = 0;
     void onRender(const Video* video) const;
 
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);

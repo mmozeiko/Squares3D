@@ -5,6 +5,7 @@
 #include "video.h"
 #include "game.h"
 #include "player_local.h"
+#include "input.h"
 #include "level.h"
 
 struct ContactBodies
@@ -90,35 +91,26 @@ World::~World()
     NewtonDestroy(m_world);
 }
 
-void World::control(float delta)
+void World::control(const Input* input, float delta)
 {
-    // read input from keyboard
-
-    m_camera->control(delta);
-    m_localPlayer->control();
+    m_camera->control(input, delta);
+    m_localPlayer->control(input);
 }
 
 void World::update()
 {
-    // update world objects, simulate physics
-
     NewtonUpdate(m_world, DT);
 }
 
 void World::prepare()
 {
-    // prepare for rendering - store all object state in temporary variables
-
     m_camera->prepare();
     m_localPlayer->prepare();
     m_ball->prepare();
-
 }
 
 void World::render() const
 {
-    // render teh world, state of objects are in temporary variables
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_camera->render();

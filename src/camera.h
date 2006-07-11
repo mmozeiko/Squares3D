@@ -2,9 +2,12 @@
 #define __CAMERA_H__
 
 #include "vmath.h"
+#include "common.h"
 
 #define LOOK_SPEED 20.0f
 #define MOVE_SPEED 8.0f
+
+class Input;
 
 class Camera
 {
@@ -15,14 +18,15 @@ public:
     void move(float distance, float strafe);
     void rotate(float ax, float ay);
 
-    void control(float delta);
+    void control(const Input* input, float delta);
     void prepare();
     void render() const;
 
 private:
-    Vector m_pos;
-    float  m_angleX;
-    float  m_angleY;
+    IntPair m_lastMouse;
+    Vector  m_pos;
+    float   m_angleX;
+    float   m_angleY;
 
     const Matrix m_strafeRotation;
     const Matrix m_scaleMatrix;

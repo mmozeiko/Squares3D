@@ -5,13 +5,14 @@
 #include "common.h"
 
 class Game;
+class Input;
 
 class State
 {
 public:
 	State(Game* game);
 
-    virtual void control(float delta) = 0;
+    virtual void control(const Input* input, float delta) = 0;
     virtual void update() = 0;
     virtual void prepare() = 0;
     virtual void render() const = 0;
