@@ -64,7 +64,7 @@ inline bool foundInSet(const set<KeyType>& Set,
 
 #define sizeOfArray(array) (sizeof(array)/sizeof((array)[0]))
 
-#define each(Class, Container, Iterator) \
+#define each_(Class, Container, Iterator) \
         (Class::iterator Iterator = (Container).begin(); \
         Iterator != (Container).end(); \
         Iterator++)

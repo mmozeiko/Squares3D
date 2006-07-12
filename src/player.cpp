@@ -1,21 +1,19 @@
 #include "player.h"
 #include "video.h"
+#include "game.h"
 
 #include "body.h" // TODO: remove
 
 #include <cmath>
 
-Player::Player(const NewtonWorld* world, int material, const Vector& pos, const Vector& size)
-    : Body(world, PlayerBody), m_radius(size * 0.5f), m_isOnGround(true), m_force(), m_angleY(-M_PI/2)
+Player::Player(Game* game, int material, const Vector& pos, const Vector& size) :
+    Body(game, PlayerBody),
+    m_radius(size * 0.5f), m_isOnGround(true)
 {
-    Matrix location = Matrix::rotateY(m_angleY) * Matrix::translate(pos);
+    Matrix location = Matrix::translate(pos);
 
     NewtonCollision* collision = NewtonCreateSphere(m_world, m_radius.x, m_radius.y, m_radius.z, NULL); 
     Body::create(collision, location);
-
-	// disable auto freeze
-	NewtonBodySetAutoFreeze(m_body, 0);
-	NewtonWorldUnfreezeBody(m_world, m_body);
 
 	// set the viscous damping the the minimum
     const float damp[] = { 0.0f, 0.0f, 0.0f };
@@ -34,23 +32,47 @@ Player::Player(const NewtonWorld* world, int material, const Vector& pos, const 
 	const Vector upDirection (0.0f, 1.0f, 0.0f);
 
     m_upVector = NewtonConstraintCreateUpVector(m_world, upDirection.v, m_body); 
+
+    m_texture = m_game->m_video->loadTexture("player.tga");
 }
 
 Player::~Player()
 {
+    glDeleteTextures(1, &m_texture);
     NewtonDestroyJoint(m_world, m_upVector);
 }
 
-void Player::setForce(const Vector& force)
+void Player::setDirection(const Vector& direction)
 {
-    m_force = force;
+    m_direction = direction;
 }
 
-void Player::onRender(const Video* video) const
+void Player::setRotation(const Vector& rotation)
 {
+    m_rotation = rotation;
+}
+
+void Player::render(const Video* video) const
+{
+    video->beginObject(m_matrix);
+
     glColor3f(0.5f, 0.5f, 0.5f);
     glScalef(m_radius.x, m_radius.y, m_radius.z);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+
+    glPushMatrix();
+    glMatrixMode(GL_TEXTURE_MATRIX);
+    glRotatef(-90.0, 1, 0, 0);
+    glRotatef(90.0, 0, 0, 1);
+
     video->renderSphere(1.0f);
+
+    glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
+
+    video->endObject();
 }
 
 void Player::onSetForceAndTorque()
@@ -68,33 +90,32 @@ void Player::onSetForceAndTorque()
     Vector currentVel;
     NewtonBodyGetVelocity(m_body, currentVel.v);
       
-    Vector targetVel = m_force;
+    Vector targetVel = m_direction;
     targetVel.norm();
     if (!m_isOnGround)
     {
        NewtonBodyAddForce(m_body, force.v);
     }
 
-    force = ( ( Matrix::rotateY(m_angleY)*targetVel*5.0f - currentVel ) * timestepInv ) * mass;
+    Matrix m;
+    
+    //m = m_matrix;
+    //m.m30 = m.m31 = m.m32 = 0.0f;
+
+    force = (targetVel * 5.0f - currentVel ) * timestepInv * mass;
     if (!m_isOnGround) force.y = 0.0f;
 
     NewtonBodyAddForce(m_body, force.v);
 
     m_isOnGround = false;
   
-/*
-	// TODO: this is for rotation
+    Vector omega;
+	NewtonBodyGetOmega(m_body, omega.v);
 
-    Vector omega, alpha;
-
-    // calculate the torque vector
-    float steerAngle = std::min (std::max ((_matrix.row(0) * cameraDir).y, -1.0f), 1.0f);
-	steerAngle = dAsin (steerAngle); 
-	NewtonBodyGetOmega(m_myBody, &omega.m_x);
-
-	dVector torque (0.0f, 0.5f * Iyy * (steerAngle * timestepInv - omega.m_y) * timestepInv, 0.0f);
-	NewtonBodySetTorque (m_myBody, &torque.m_x);
-*/
+	Vector torque = m_rotation;
+    torque.norm();
+    torque = (10.0f * torque - omega) * timestepInv * Iyy;
+	NewtonBodySetTorque (m_body, torque.v);
 }
 
 void Player::onCollision(const NewtonMaterial* material, const NewtonContact* contact)
@@ -102,7 +123,6 @@ void Player::onCollision(const NewtonMaterial* material, const NewtonContact* co
    Vector pos, nor;
 
    NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
-
 
    // Determine if this contact is on the ground
    Vector dir(0.0f, 1.0f, 0.0f);

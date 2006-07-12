@@ -6,15 +6,18 @@
 
 #include <GL/glfw.h>
 
-class Config;
+class Game;
+
+typedef vector<Vector> Face;
 
 class Video
 {
 public:
-    Video(Config* config);
+    Video(const Game* game);
     ~Video();
 
     void renderCube(float size = 1.0f) const;
+    void renderFace(const Face& face, vector<vector<int>>&) const;
     void renderSphere(float radius = 1.0f) const;
     void renderWireSphere(float radius = 1.0f) const;
     void renderAxes(float size = 5.0f) const;
@@ -25,7 +28,7 @@ public:
     unsigned int loadTexture(const string& name) const;
 
 private:
-    Config* m_config;
+    const Game* m_game;
 };
 
 #endif

@@ -2,13 +2,15 @@
 #define __BODY_H__
 
 #include "vmath.h"
+#include "renderable.h"
+
 #include <Newton.h>
 
 const Vector gravityVec(0.0f, -9.81f, 0.0f);
 
 class Video;
 
-class Body
+class Body : public Renderable
 {
 public:
     enum BodyType
@@ -18,15 +20,11 @@ public:
         BallBody,
     };
 
-    Body(const NewtonWorld* world, const BodyType type);
+    Body(Game* game, const BodyType type);
     virtual ~Body();
 
-    void create(const NewtonCollision* collision, const Matrix& matrix);
-
     virtual void prepare();
-    virtual void onRender(const Video* video) const = 0;
-    
-    void render(const Video* video) const;
+    void create(const NewtonCollision* collision, const Matrix& matrix);
 
     BodyType getType() const;
 
@@ -41,6 +39,7 @@ protected:
     const BodyType          m_type;
 
 private:
+    void update(float delta);
     static void onSetForceAndTorque(const NewtonBody* body);
 
 };

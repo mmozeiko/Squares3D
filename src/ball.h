@@ -5,19 +5,21 @@
 
 class Game;
 
+class Input;
 class Ball : public Body
 {
 public:
-    Ball(const NewtonWorld* world, const Vector& pos, Game* game, const float radius = 1.0f);
+    Ball(Game* game, const Vector& pos, const float radius = 1.0f);
     ~Ball();
 
-    void onRender(const Video* video) const;
+    void render(const Video* video) const;
 
 private:
     unsigned int m_texture;
     float m_radius;
-    void onSetForceAndTorque();
 
+    void onSetForceAndTorque();
+    void control(const Input*);
 };
 
 #endif

@@ -3,31 +3,38 @@
 
 #include <Newton.h>
 #include "common.h"
-#include "state.h"
+#include "renderable.h"
 
 class Camera;
 class Player;
 class Ball;
-class Level;
 
-class World : public State
+namespace LevelObjects
+{
+    class Level;
+}
+
+class World : public Renderable
 {
 public:
 	World(Game* game);
     ~World();
+
+    void init();
     
-    void control(const Input* input, float delta);
-    void update();
+    void control(const Input* input);
+    void update(float delta);
     void prepare();
-    void render() const;
+    void render(const Video* video) const;
+
+	auto_ptr<Camera>                m_camera;
+    NewtonWorld*                    m_world;
     
 private:
-	auto_ptr<Camera>    m_camera;
-    auto_ptr<Player>    m_localPlayer;
-    auto_ptr<Ball>      m_ball;
-    auto_ptr<Level>     m_level;
+    auto_ptr<Player>                m_localPlayer;
+    auto_ptr<Ball>                  m_ball;
+    auto_ptr<LevelObjects::Level>   m_level;
 
-    NewtonWorld*        m_world;
 };
 
 #endif

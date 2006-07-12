@@ -7,28 +7,24 @@
 #include "network.h"
 #include "input.h"
 #include "world.h"
+#include "camera.h"
 
 #include "vmath.h"
 
-Game::Game() : 
-    m_config(new Config()), 
-    m_video(new Video(m_config.get())), 
-    m_audio(new Audio(m_config.get())),
-    m_network(new Network()),
-    m_input(new Input())
+Game::Game() : m_config(new Config())
 {
+    m_video.reset(new Video(this));
+    m_audio.reset(new Audio(this));
+    m_network.reset(new Network());
+    m_input.reset(new Input());
     m_world.reset(new World(this));
+    
+    m_world->init();
 }
 
 Game::~Game()
 {
 }
-
-const Video* Game::video() const
-{
-    return m_video.get();
-}
-
 
 void Game::run()
 {
@@ -38,7 +34,7 @@ void Game::run()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    glEnable(GL_NORMALIZE);
+    //glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -46,8 +42,14 @@ void Game::run()
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
-    //glDisable(GL_LIGHT0);
-    //glDisable(GL_LIGHTING);
+	GLfloat lightColor[] = { 0.7f, 0.7f, 0.7f, 1.0 };
+	GLfloat lightAmbientColor[] = { 0.5f, 0.5f, 0.5f, 1.0 };
+	GLfloat lightPoition[] = { 500.0f, 200.0f, 500.0f, 0.0 };
+	
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPoition);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbientColor);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
@@ -71,14 +73,15 @@ void Game::run()
         accum += deltaTime;
 
         m_input->process();
-        m_world->control(m_input.get(), static_cast<float>(deltaTime));
+        m_world->control(m_input.get());
+        m_world->m_camera->update(static_cast<float>(deltaTime));
         while (accum >= DT)
         {
-            m_world->update();
+            m_world->update(DT);
             accum -= DT;
         }
         m_world->prepare();
-        m_world->render();
+        m_world->render(m_video.get());
         frames++;
 
         glfwPollEvents();

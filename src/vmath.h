@@ -32,8 +32,8 @@ public:
         };
     };
   
-    Vector(const float x=0.0f, const float y=0.0f, const float z=0.0f) : 
-        x(x), y(y), z(z), w(1.0f) 
+    Vector(const float x=0.0f, const float y=0.0f, const float z=0.0f, const float w=1.0f) : 
+        x(x), y(y), z(z), w(w) 
     {
     }
 

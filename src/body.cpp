@@ -1,9 +1,14 @@
 #include "body.h"
 #include "common.h"
 #include "video.h"
+#include "game.h"
+#include "world.h"
 
-Body::Body(const NewtonWorld* world, const BodyType type) : m_world(world), m_body(NULL), m_type(type)
+Body::Body(Game* game, const BodyType type) :
+    Renderable(game),
+    m_body(NULL), m_type(type)
 {
+    m_world = m_game->m_world->m_world;
 }
 
 Body::~Body()
@@ -22,21 +27,22 @@ void Body::create(const NewtonCollision* collision, const Matrix& matrix)
 
     NewtonBodySetMatrix(m_body, matrix.m);
 
+	// disable auto freeze
+	NewtonBodySetAutoFreeze(m_body, 0);
+	NewtonWorldUnfreezeBody(m_world, m_body);
+
     NewtonBodySetUserData(m_body, static_cast<void*>(this));
     NewtonBodySetForceAndTorqueCallback(m_body, onSetForceAndTorque);
 
 }
 
+void Body::update(float delta)
+{
+}
+
 void Body::prepare()
 {
     NewtonBodyGetMatrix(m_body, m_matrix.m);
-}
-
-void Body::render(const Video* video) const
-{
-    video->beginObject(m_matrix);
-    onRender(video);
-    video->endObject();
 }
 
 Body::BodyType Body::getType() const

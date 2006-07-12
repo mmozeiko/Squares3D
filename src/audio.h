@@ -5,16 +5,16 @@
 typedef struct ALCdevice_struct ALCdevice;
 typedef struct ALCcontext_struct ALCcontext;
 
-class Config;
+class Game;
 
 class Audio
 {
 public:
-    Audio(Config* config);
+    Audio(const Game* game);
     ~Audio();
 
 private:
-    Config*     m_config;
+    const Game* m_game;
     ALCdevice*  m_device;
     ALCcontext* m_context;
 };

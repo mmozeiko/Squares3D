@@ -4,30 +4,32 @@
 #include "body.h"
 
 class Input;
+class Game;
 
 class Player : public Body
 {
 public:
-    Player(const NewtonWorld* world, int material, 
-        const Vector& pos,
-        const Vector& size);
+    Player(Game* game, int material, const Vector& pos,const Vector& size);
     virtual ~Player();
 
-    void setForce(const Vector& force);
+    void setDirection(const Vector& direction);
+    void setRotation(const Vector& rotation);
 
     virtual void control(const Input* input) = 0;
-    void onRender(const Video* video) const;
+
+    void render(const Video* video) const;
 
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 
-private:
+protected:
     NewtonJoint*    m_upVector;
 
     Vector          m_radius;
     bool            m_isOnGround;
-    Vector          m_force;
-   
-    float           m_angleY;
+    Vector          m_direction;
+    Vector          m_rotation;
+    
+    unsigned int    m_texture;
 
     void onSetForceAndTorque();
 

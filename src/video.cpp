@@ -1,4 +1,5 @@
 #include "video.h"
+#include "game.h"
 #include "config.h"
 #include "file.h"
 
@@ -16,7 +17,7 @@ static void GLFWCALL sizeCb(int width, int height)
   glLoadIdentity();
 }
 
-Video::Video(Config* config) : m_config(config)
+Video::Video(const Game* game) : m_game(game)
 {
     clog << "Initializing video." << endl;
 
@@ -25,11 +26,11 @@ Video::Video(Config* config) : m_config(config)
         throw Exception("glfwInit failed");
     }
 
-    int width = m_config->video().width;;
-    int height = m_config->video().height;
-    bool vsync = m_config->video().vsync;
-    int mode = (m_config->video().fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
-    bool systemKeys = m_config->misc().system_keys;
+    int width = m_game->m_config->video().width;;
+    int height = m_game->m_config->video().height;
+    bool vsync = m_game->m_config->video().vsync;
+    int mode = (m_game->m_config->video().fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
+    bool systemKeys = m_game->m_config->misc().system_keys;
 
     int     modes[]  = { mode, GLFW_WINDOW };
     int     depths[] = { 32, 24, 16 };
@@ -102,20 +103,121 @@ void Video::renderCube(float size) const
 {
     float tmp = 0.5f * size;
 
+	static float vertex[8][3] = {
+			{-tmp, -tmp, tmp},   // vertex v0
+			{tmp,  -tmp, tmp},   // vertex v1
+			{tmp,  -tmp, -tmp},  // vertex v2
+			{-tmp, -tmp, -tmp},  // vertex v3
+			{-tmp, tmp,  tmp},   // vertex v4
+			{tmp,  tmp,  tmp},   // vertex v5
+			{tmp,  tmp,  -tmp},  // vertex v6 
+			{-tmp, tmp,  -tmp}   // vertex v7
+	}; 
+	
+	static const int triangle[12][3] = {
+			{0, 1, 4},  // polygon v0,v1,v4
+			{1, 5, 4},  // polygon v1,v5,v4
+			{1, 2, 5},  // polygon v1,v2,v5
+			{2, 6, 5},  // polygon v2,v6,v5
+			{2, 3, 6},  // polygon v2,v3,v6
+			{3, 7, 6},  // polygon v3,v7,v6
+			{3, 0, 7},  // polygon v3,v0,v7
+			{0, 4, 7},  // polygon v0,v4,v7
+			{4, 5, 7},  // polygon v4,v5,v7
+			{5, 6, 7},  // polygon v5,v6,v7
+			{3, 2, 0},  // polygon v3,v2,v0
+			{2, 1, 0}   // polygon v2,v1,v0
+	};
+	
+	static const float texCoord[8][2] = {
+			{0.0f, 0.0f},  // mapping coordinates for vertex v0
+			{1.0f, 0.0f},  // mapping coordinates for vertex v1
+			{1.0f, 0.0f},  // mapping coordinates for vertex v2
+			{0.0f, 0.0f},  // mapping coordinates for vertex v3
+			{0.0f, 1.0f},  // mapping coordinates for vertex v4
+			{1.0f, 1.0f},  // mapping coordinates for vertex v5
+			{1.0f, 1.0f},  // mapping coordinates for vertex v6 
+			{0.0f, 1.0f}   // mapping coordinates for vertex v7
+	};
+
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 12; i++)
+    {
+        Vector v1 = Vector(vertex[triangle[i][1]]) - Vector(vertex[triangle[i][0]]);
+        Vector v2 = Vector(vertex[triangle[i][2]]) - Vector(vertex[triangle[i][0]]);
+        Vector n = v1 ^ v2;
+        n.norm();
+        glNormal3fv(n.v);
+
+        glTexCoord2f(texCoord[triangle[i][0]][0], texCoord[triangle[i][0]][1]);
+        glVertex3fv(vertex[triangle[i][0]]);
+
+        glTexCoord2f(texCoord[triangle[i][1]][0], texCoord[triangle[i][1]][1]);
+        glVertex3fv(vertex[triangle[i][1]]);
+
+        glTexCoord2f(texCoord[triangle[i][2]][0], texCoord[triangle[i][2]][1]);
+        glVertex3fv(vertex[triangle[i][2]]);
+    }
+	glEnd();
+
+/*
 #   define V(a,b,c) glVertex3f(a tmp, b tmp, c tmp);
 #   define N(a,b,c) glNormal3f(a, b, c);
 
+
     glBegin(GL_QUADS);
-        N( 1.0, 0.0, 0.0); V(+,-,+); V(+,-,-); V(+,+,-); V(+,+,+);
-        N( 0.0, 1.0, 0.0); V(+,+,+); V(+,+,-); V(-,+,-); V(-,+,+);
-        N( 0.0, 0.0, 1.0); V(+,+,+); V(-,+,+); V(-,-,+); V(+,-,+);
-        N(-1.0, 0.0, 0.0); V(-,-,+); V(-,+,+); V(-,+,-); V(-,-,-);
-        N( 0.0,-1.0, 0.0); V(-,-,+); V(-,-,-); V(+,-,-); V(+,-,+);
-        N( 0.0, 0.0,-1.0); V(-,-,-); V(-,+,-); V(+,+,-); V(+,-,-);
+        N( 1.0, 0.0, 0.0); 
+            V(+,-,+); glTexCoord2f(1, 0);
+            V(+,-,-); glTexCoord2f(0, 0);
+            V(+,+,-); glTexCoord2f(0, 1);
+            V(+,+,+); glTexCoord2f(1, 1);
+        
+        N( 0.0, 1.0, 0.0); 
+            V(+,+,+); glTexCoord2f(1, 0);
+            V(+,+,-); glTexCoord2f(0, 0);
+            V(-,+,-); glTexCoord2f(0, 1);
+            V(-,+,+); glTexCoord2f(1, 1);
+
+        N( 0.0, 0.0, 1.0);
+            V(+,+,+); glTexCoord2f(1, 0);
+            V(-,+,+); glTexCoord2f(0, 0);
+            V(-,-,+); glTexCoord2f(0, 1);
+            V(+,-,+); glTexCoord2f(1, 1);
+
+        N(-1.0, 0.0, 0.0);
+            V(-,-,+); glTexCoord2f(1, 0);
+            V(-,+,+); glTexCoord2f(0, 0);
+            V(-,+,-); glTexCoord2f(0, 1);
+            V(-,-,-); glTexCoord2f(1, 1);
+
+        N( 0.0,-1.0, 0.0);
+            V(-,-,+); glTexCoord2f(1, 0);
+            V(-,-,-); glTexCoord2f(0, 0);
+            V(+,-,-); glTexCoord2f(0, 1);
+            V(+,-,+); glTexCoord2f(1, 1);
+
+        N( 0.0, 0.0,-1.0);
+            V(-,-,-); glTexCoord2f(1, 0);
+            V(-,+,-); glTexCoord2f(0, 0);
+            V(+,+,-); glTexCoord2f(0, 1);
+            V(+,-,-); glTexCoord2f(1, 1);
     glEnd();
 
 #   undef V
 #   undef N
+*/
+}
+
+void Video::renderFace(const Face& face, vector<vector<int>>& uv) const
+{
+    glBegin(GL_QUADS);
+    for (size_t i = 0; i < face.size(); i++)
+    {
+        glTexCoord2i(uv[i][0], uv[i][1]);
+        
+        glVertex3fv(face[i].v);
+    }
+	glEnd();
 }
 
 void Video::renderSphere(float radius) const
@@ -208,7 +310,7 @@ unsigned int Video::loadTexture(const string& name) const
     File::Reader file(filename);
     if (!file.is_open())
     {
-        throw Exception("Texture " + name + " not found");
+        throw Exception("Texture '" + name + "' not found");
     }
     unsigned int filesize = file.filesize();
 
@@ -223,10 +325,11 @@ unsigned int Video::loadTexture(const string& name) const
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     if (glfwLoadMemoryTexture2D(static_cast<void*>(&data[0]), filesize, GLFW_BUILD_MIPMAPS_BIT) == GL_FALSE)
     {
-        throw Exception("Texture " + name + " failed to load");
+        throw Exception("Texture '" + name + "' failed to load");
     }
     glDisable(GL_TEXTURE_2D);
     
