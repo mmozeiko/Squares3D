@@ -4,6 +4,7 @@
 Shader::Shader(const string& vp, const string& fp)
 {
     Video::glGenProgramsARB(1, &m_fhandle);
+    Video::glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_fhandle);
     Video::glProgramStringARB(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, 
             static_cast<GLsizei>(fp.size()), fp.c_str());
         
@@ -20,6 +21,7 @@ Shader::Shader(const string& vp, const string& fp)
 
 
     Video::glGenProgramsARB(1, &m_vhandle);
+    Video::glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_vhandle);
     Video::glProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, 
             static_cast<GLsizei>(vp.size()), vp.c_str());
         
@@ -43,9 +45,9 @@ Shader::~Shader()
 void Shader::begin() const
 {
     glEnable(GL_FRAGMENT_PROGRAM_ARB);
-    glEnable(GL_VERTEX_PROGRAM_ARB);
+    //glEnable(GL_VERTEX_PROGRAM_ARB);
     Video::glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_fhandle);
-    Video::glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_vhandle);
+    //Video::glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_vhandle);
 }
 
 void Shader::end() const
