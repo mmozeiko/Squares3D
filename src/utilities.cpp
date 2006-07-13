@@ -20,11 +20,11 @@ string trim(const string& str)
 {
     size_t i = 0;
     size_t j = str.size()-1;
-    while (i<str.size() && std::isspace(str[i], std::locale::empty()))
+    while (i<str.size() && std::isspace(str[i], std::locale::classic()))
     {
         i++;
     }
-    while (j>i && std::isspace(str[j], std::locale::empty()))
+    while (j>i && std::isspace(str[j], std::locale::classic()))
     {
         j--;
     }

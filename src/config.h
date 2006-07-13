@@ -28,19 +28,15 @@ public:
     Config();
     ~Config();
 
-    VideoConfig& video();
-    AudioConfig& audio();
-    MiscConfig& misc();
+    VideoConfig m_video;
+    AudioConfig m_audio;
+    MiscConfig  m_misc;
 
 private:
     static const string CONFIG_FILE;
     static const VideoConfig defaultVideo;
     static const AudioConfig defaultAudio;
     static const MiscConfig defaultMisc;
-
-    VideoConfig m_video;
-    AudioConfig m_audio;
-    MiscConfig  m_misc;
 };
 
 #endif

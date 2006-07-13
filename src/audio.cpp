@@ -6,7 +6,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-Audio::Audio(const Game* game) : m_game(game)
+Audio::Audio(const Game* game) : m_config(game->m_config.get())
 {
     clog << "Initializing audio." << endl;
 
@@ -34,7 +34,7 @@ Audio::Audio(const Game* game) : m_game(game)
          << " * Renderer : " << alGetString(AL_RENDERER) << endl
          << " * Device   : " << alcGetString(m_device, ALC_DEVICE_SPECIFIER) << endl;
 
-    if (m_game->m_config->audio().enabled == false)
+    if (m_config->m_audio.enabled == false)
     {
         alcSuspendContext(m_context);
     }

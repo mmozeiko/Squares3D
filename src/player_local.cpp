@@ -42,6 +42,9 @@ void LocalPlayer::control(const Input* input)
     if (input->key('A')) direction.x = -1.0f;
     if (input->key('W')) direction.z =  1.0f;
     if (input->key('S')) direction.z = -1.0f;
+    
+    m_crouch = (input->key('C') ? 0.2f : 2.0f) / 2.0f;
+    if (input->key('X')) m_crouch = 10.0f;
 
     setDirection(Matrix::rotateY(m_game->m_world->m_camera->angleY()) * direction );
 }

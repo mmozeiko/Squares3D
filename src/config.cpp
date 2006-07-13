@@ -121,18 +121,3 @@ Config::~Config()
     out << xml;
     out.close();
 }
-
-VideoConfig& Config::video()
-{
-    return m_video;
-}
-
-AudioConfig& Config::audio()
-{
-    return m_audio;
-}
-
-MiscConfig& Config::misc()
-{
-    return m_misc;
-}

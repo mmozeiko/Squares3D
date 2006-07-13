@@ -4,8 +4,9 @@
 #include "body.h"
 
 class Game;
-
+class Shader;
 class Input;
+
 class Ball : public Body
 {
 public:
@@ -16,6 +17,9 @@ public:
 
 private:
     unsigned int m_texture;
+    unsigned int m_textureBump;
+    Shader*      m_shader;
+
     float m_radius;
 
     void onSetForceAndTorque();

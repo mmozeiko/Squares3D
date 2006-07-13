@@ -2,6 +2,7 @@
 #include "game.h"
 #include "config.h"
 #include "file.h"
+#include "shader.h"
 
 #include <GL/glfw.h>
 
@@ -17,7 +18,7 @@ static void GLFWCALL sizeCb(int width, int height)
   glLoadIdentity();
 }
 
-Video::Video(const Game* game) : m_game(game)
+Video::Video(const Game* game) : m_config(game->m_config.get())
 {
     clog << "Initializing video." << endl;
 
@@ -26,11 +27,11 @@ Video::Video(const Game* game) : m_game(game)
         throw Exception("glfwInit failed");
     }
 
-    int width = m_game->m_config->video().width;;
-    int height = m_game->m_config->video().height;
-    bool vsync = m_game->m_config->video().vsync;
-    int mode = (m_game->m_config->video().fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
-    bool systemKeys = m_game->m_config->misc().system_keys;
+    int width = m_config->m_video.width;;
+    int height = m_config->m_video.height;
+    bool vsync = m_config->m_video.vsync;
+    int mode = (m_config->m_video.fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
+    bool systemKeys = m_config->m_misc.system_keys;
 
     int     modes[]  = { mode, GLFW_WINDOW };
     int     depths[] = { 32, 24, 16 };
@@ -90,134 +91,98 @@ Video::Video(const Game* game) : m_game(game)
     glfwDisable(GLFW_AUTO_POLL_EVENTS);
     glfwDisable(GLFW_KEY_REPEAT);
     glfwDisable(GLFW_MOUSE_CURSOR);
+
+    loadExtensions();
 }
 
 Video::~Video()
 {
     clog << "Closing video." << endl;
+
+    for each_(UIntMap, m_textures, iter)
+    {
+        glDeleteTextures(1, &iter->second);
+    }
+
     glfwCloseWindow();
     glfwTerminate();
 }
 
-void Video::renderCube(float size) const
+void Video::renderCube() const
 {
-    float tmp = 0.5f * size;
+    // -0.5 .. 0.5
+    static const Vector vertices[] = {
+        /* 0 */ Vector(-0.5, -0.5, -0.5),
+        /* 1 */ Vector( 0.5, -0.5, -0.5),
+        /* 2 */ Vector( 0.5, -0.5,  0.5),
+        /* 3 */ Vector(-0.5, -0.5,  0.5),
 
-	static float vertex[8][3] = {
-			{-tmp, -tmp, tmp},   // vertex v0
-			{tmp,  -tmp, tmp},   // vertex v1
-			{tmp,  -tmp, -tmp},  // vertex v2
-			{-tmp, -tmp, -tmp},  // vertex v3
-			{-tmp, tmp,  tmp},   // vertex v4
-			{tmp,  tmp,  tmp},   // vertex v5
-			{tmp,  tmp,  -tmp},  // vertex v6 
-			{-tmp, tmp,  -tmp}   // vertex v7
-	}; 
-	
-	static const int triangle[12][3] = {
-			{0, 1, 4},  // polygon v0,v1,v4
-			{1, 5, 4},  // polygon v1,v5,v4
-			{1, 2, 5},  // polygon v1,v2,v5
-			{2, 6, 5},  // polygon v2,v6,v5
-			{2, 3, 6},  // polygon v2,v3,v6
-			{3, 7, 6},  // polygon v3,v7,v6
-			{3, 0, 7},  // polygon v3,v0,v7
-			{0, 4, 7},  // polygon v0,v4,v7
-			{4, 5, 7},  // polygon v4,v5,v7
-			{5, 6, 7},  // polygon v5,v6,v7
-			{3, 2, 0},  // polygon v3,v2,v0
-			{2, 1, 0}   // polygon v2,v1,v0
-	};
-	
-	static const float texCoord[8][2] = {
-			{0.0f, 0.0f},  // mapping coordinates for vertex v0
-			{1.0f, 0.0f},  // mapping coordinates for vertex v1
-			{1.0f, 0.0f},  // mapping coordinates for vertex v2
-			{0.0f, 0.0f},  // mapping coordinates for vertex v3
-			{0.0f, 1.0f},  // mapping coordinates for vertex v4
-			{1.0f, 1.0f},  // mapping coordinates for vertex v5
-			{1.0f, 1.0f},  // mapping coordinates for vertex v6 
-			{0.0f, 1.0f}   // mapping coordinates for vertex v7
-	};
+        /* 4 */ Vector(-0.5, 0.5, -0.5),
+        /* 5 */ Vector( 0.5, 0.5, -0.5),
+        /* 6 */ Vector( 0.5, 0.5,  0.5),
+        /* 7 */ Vector(-0.5, 0.5,  0.5),
+    };
 
-    glBegin(GL_TRIANGLES);
-    for (int i = 0; i < 12; i++)
+    static const int faces[][4] = {
+        { 0, 1, 2, 3 }, // bottom
+        { 4, 7, 6, 5 }, // up
+        { 4, 5, 1, 0 }, // front
+        { 6, 7, 3, 2 }, // back
+        { 7, 4, 0, 3 }, // left
+        { 5, 6, 2, 1 }, // right
+    };
+    
+    static const Vector normals[] = {
+        Vector(0.0, -1.0, 0.0), // bottom
+        Vector(0.0,  1.0, 0.0), // up
+        Vector(0.0, 0.0, -1.0), // front
+        Vector(0.0, 0.0,  1.0), // back
+        Vector(-1.0, 0.0, 0.0), // left
+        Vector( 1.0, 0.0, 0.0), // right
+    };
+
+    static const UV uv[] = {
+        UV(1.0, 0.0),
+        UV(0.0, 0.0),
+        UV(0.0, 1.0),
+        UV(1.0, 1.0),
+    };
+
+    Face f;
+    f.vertexes.resize(4);
+    f.uv.resize(4);
+
+    for (size_t i = 0; i < sizeOfArray(faces); i++)
     {
-        Vector v1 = Vector(vertex[triangle[i][1]]) - Vector(vertex[triangle[i][0]]);
-        Vector v2 = Vector(vertex[triangle[i][2]]) - Vector(vertex[triangle[i][0]]);
-        Vector n = v1 ^ v2;
-        n.norm();
-        glNormal3fv(n.v);
-
-        glTexCoord2f(texCoord[triangle[i][0]][0], texCoord[triangle[i][0]][1]);
-        glVertex3fv(vertex[triangle[i][0]]);
-
-        glTexCoord2f(texCoord[triangle[i][1]][0], texCoord[triangle[i][1]][1]);
-        glVertex3fv(vertex[triangle[i][1]]);
-
-        glTexCoord2f(texCoord[triangle[i][2]][0], texCoord[triangle[i][2]][1]);
-        glVertex3fv(vertex[triangle[i][2]]);
+        f.normal = normals[i];
+        for (int k=0; k<4; k++)
+        {
+            f.vertexes[k] = vertices[faces[i][k]];
+            f.uv[k] = uv[k];
+        }
+        renderFace(f);
     }
-	glEnd();
-
-/*
-#   define V(a,b,c) glVertex3f(a tmp, b tmp, c tmp);
-#   define N(a,b,c) glNormal3f(a, b, c);
-
-
-    glBegin(GL_QUADS);
-        N( 1.0, 0.0, 0.0); 
-            V(+,-,+); glTexCoord2f(1, 0);
-            V(+,-,-); glTexCoord2f(0, 0);
-            V(+,+,-); glTexCoord2f(0, 1);
-            V(+,+,+); glTexCoord2f(1, 1);
-        
-        N( 0.0, 1.0, 0.0); 
-            V(+,+,+); glTexCoord2f(1, 0);
-            V(+,+,-); glTexCoord2f(0, 0);
-            V(-,+,-); glTexCoord2f(0, 1);
-            V(-,+,+); glTexCoord2f(1, 1);
-
-        N( 0.0, 0.0, 1.0);
-            V(+,+,+); glTexCoord2f(1, 0);
-            V(-,+,+); glTexCoord2f(0, 0);
-            V(-,-,+); glTexCoord2f(0, 1);
-            V(+,-,+); glTexCoord2f(1, 1);
-
-        N(-1.0, 0.0, 0.0);
-            V(-,-,+); glTexCoord2f(1, 0);
-            V(-,+,+); glTexCoord2f(0, 0);
-            V(-,+,-); glTexCoord2f(0, 1);
-            V(-,-,-); glTexCoord2f(1, 1);
-
-        N( 0.0,-1.0, 0.0);
-            V(-,-,+); glTexCoord2f(1, 0);
-            V(-,-,-); glTexCoord2f(0, 0);
-            V(+,-,-); glTexCoord2f(0, 1);
-            V(+,-,+); glTexCoord2f(1, 1);
-
-        N( 0.0, 0.0,-1.0);
-            V(-,-,-); glTexCoord2f(1, 0);
-            V(-,+,-); glTexCoord2f(0, 0);
-            V(+,+,-); glTexCoord2f(0, 1);
-            V(+,-,-); glTexCoord2f(1, 1);
-    glEnd();
-
-#   undef V
-#   undef N
-*/
 }
 
-void Video::renderFace(const Face& face, vector<vector<int>>& uv) const
+void Video::renderFace(const Face& face) const
 {
-    glBegin(GL_QUADS);
-    for (size_t i = 0; i < face.size(); i++)
+    glBegin(GL_POLYGON);
+    glNormal3fv(face.normal.v);
+    for (size_t i = 0; i < face.vertexes.size(); i++)
     {
-        glTexCoord2i(uv[i][0], uv[i][1]);
-        
-        glVertex3fv(face[i].v);
+        glTexCoord2fv(face.uv[i].uv);
+        glVertex3fv(face.vertexes[i].v);
     }
 	glEnd();
+
+    glDisable(GL_LIGHTING);
+    glBegin(GL_LINES);
+    glColor3f(1, 0, 0);
+    glVertex3fv(face.vertexes[0].v);
+    glColor3f(1, 1, 1);
+    glVertex3fv((face.vertexes[0] + face.normal).v);
+    glEnd();
+    glEnable(GL_LIGHTING);
 }
 
 void Video::renderSphere(float radius) const
@@ -293,19 +258,52 @@ void Video::renderAxes(float size) const
     gluDeleteQuadric(q);
 }
 
-void Video::beginObject(const Matrix& matrix) const
+void Video::begin() const
+{
+    glPushMatrix();
+}
+
+void Video::begin(const Matrix& matrix) const
 {
     glPushMatrix();
     glMultMatrixf(matrix.m);
 }
 
-void Video::endObject() const
+void Video::end() const
 {
     glPopMatrix();
 }
 
-unsigned int Video::loadTexture(const string& name) const
+
+void Video::begin(const Shader* shader) const
 {
+    if (shader != NULL)
+    {
+        shader->begin();
+    }
+}
+
+void Video::end(const Shader* shader) const
+{
+    if (shader != NULL)
+    {
+        shader->end();
+    }
+}
+
+void Video::applyTexture(unsigned int texture) const
+{
+    glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+unsigned int Video::loadTexture(const string& name)
+{
+    UIntMap::const_iterator iter = m_textures.find(name);
+    if (iter != m_textures.end())
+    {
+        return iter->second;
+    }
+
     string filename = "/data/textures/" + name;
     File::Reader file(filename);
     if (!file.is_open())
@@ -333,5 +331,90 @@ unsigned int Video::loadTexture(const string& name) const
     }
     glDisable(GL_TEXTURE_2D);
     
+    m_textures.insert(make_pair(name, texture));
     return texture;
+}
+
+Shader* Video::loadShader(const string& vp, const string& fp)
+{
+    ShaderMap::const_iterator iter = m_shaders.find(vp+"::"+fp);
+    if (iter != m_shaders.end())
+    {
+        return iter->second;
+    }
+
+    if (glfwExtensionSupported("GL_ARB_multitexture") &&
+        glfwExtensionSupported("GL_ARB_fragment_program") && 
+        glfwExtensionSupported("GL_ARB_vertex_program"))
+    {
+        string vprogram, fprogram;
+
+        string vp_filename = "/data/shaders/" + vp;
+        string fp_filename = "/data/shaders/" + fp;
+
+        File::Reader file(vp_filename);
+        if (!file.is_open())
+        {
+            throw Exception("Shader '" + vp + "' not found");
+        }
+        vector<char> v(file.filesize());
+        file.read(&v[0], file.filesize());
+        file.close();
+        vprogram.assign(v.begin(), v.end());
+
+        file.open(fp_filename);
+        if (!file.is_open())
+        {
+            throw Exception("Shader '" + fp + "' not found");
+        }
+        v.resize(file.filesize());
+        file.read(&v[0], file.filesize());
+        file.close();
+        fprogram.assign(v.begin(), v.end());
+
+
+        Shader* shader = new Shader(vprogram, fprogram);
+        m_shaders.insert(make_pair(vp+"::"+fp, shader));
+        return shader;
+    }
+
+    throw Exception("Shaders not supported, sorry!");
+}
+
+PFNGLACTIVETEXTUREARBPROC   Video::glActiveTextureARB = NULL;
+
+PFNGLGENPROGRAMSARBPROC     Video::glGenProgramsARB = NULL;
+PFNGLPROGRAMSTRINGARBPROC   Video::glProgramStringARB = NULL;
+PFNGLGETPROGRAMIVARBPROC    Video::glGetProgramivARB = NULL;
+PFNGLDELETEPROGRAMPROC      Video::glDeleteProgramsARB = NULL;
+PFNGLBINDPROGRAMARBPROC     Video::glBindProgramARB = NULL;
+
+template <typename T>
+void Video::loadProcAddress(const char* name, T& proc) const
+{
+    proc = reinterpret_cast<T>(glfwGetProcAddress(name));
+    if (proc == NULL)
+    {
+        throw Exception("Address of '" + string(name) + "' not found");
+    }
+}
+
+#define loadProc(X) loadProcAddress(#X, X)
+
+void Video::loadExtensions()
+{
+    if (glfwExtensionSupported("GL_ARB_multitexture"))
+    {
+        loadProc(glActiveTextureARB);
+    }
+
+    if (glfwExtensionSupported("GL_ARB_fragment_program") && 
+        glfwExtensionSupported("GL_ARB_vertex_program"))
+    {
+        loadProc(glGenProgramsARB);
+        loadProc(glProgramStringARB);
+        loadProc(glGetProgramivARB);
+        loadProc(glDeleteProgramsARB);
+        loadProc(glBindProgramARB);
+    }
 }

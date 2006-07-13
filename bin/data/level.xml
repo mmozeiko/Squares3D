@@ -4,17 +4,36 @@
       <texture>
         <path>grass.tga</path>
       </texture>
+      <colors>
+        <ambient r="0.8" g="0.8" b="0.8" />
+      </colors>
     </material>
 
     <material id="pavement">
       <texture>
         <path>pavement.tga</path>
       </texture>
+      <colors>
+        <ambient r="0.8" g="0.8" b="0.8" />
+      </colors>
     </material>
 
     <material id="brick">
       <texture>
         <path>brick.tga</path>
+      </texture>
+      <colors>
+        <ambient r="0.5" g="0.5" b="0.5" />
+        <diffuse r="0.6" g="0.6" b="0.6" />
+        <!--specular r="1.0" g="1.0" b="1.0" /-->
+        <!--emission r="0.0" g="0.0" b="0.0" /-->
+        <shine>1.0</shine>
+      </colors>
+    </material>
+
+    <material id="box">
+      <texture>
+        <path>box.tga</path>
       </texture>
       <colors>
         <ambient r="0.5" g="0.5" b="0.5" />
@@ -35,92 +54,92 @@
 
       <collision type="tree">
           <face material="pavement">
-            <vertex x="-3.0" y="0.0" z="3.0" />
-            <vertex x="0.0" y="0.0" z="3.0" />
-            <vertex x="0.0" y="0.0" z="0.0" />
-            <vertex x="-3.0" y="0.0" z="0.0" />
+            <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
+            <vertex x="0.0"  y="0.0" z="3.0" u="1.0" v="0.0" />
+            <vertex x="0.0"  y="0.0" z="0.0" u="1.0" v="1.0" />
+            <vertex x="-3.0" y="0.0" z="0.0" u="0.0" v="1.0" />
           </face>
           
           <face material="pavement">
-            <vertex x="0.0" y="0.0" z="3.0" />
-            <vertex x="3.0" y="0.0" z="3.0" />
-            <vertex x="3.0" y="0.0" z="0.0" />
-            <vertex x="0.0" y="0.0" z="0.0" />
+            <vertex x="0.0" y="0.0" z="3.0" u="0.0" v="0.0" />
+            <vertex x="3.0" y="0.0" z="3.0" u="1.0" v="0.0" />
+            <vertex x="3.0" y="0.0" z="0.0" u="1.0" v="1.0" />
+            <vertex x="0.0" y="0.0" z="0.0" u="0.0" v="1.0" />
           </face>
 
           <face material="pavement">
-            <vertex x="0.0" y="0.0" z="0.0" />
-            <vertex x="3.0" y="0.0" z="0.0" />
-            <vertex x="3.0" y="0.0" z="-3.0" />
-            <vertex x="0.0" y="0.0" z="-3.0" />
+            <vertex x="0.0" y="0.0" z="0.0"  u="0.0" v="0.0" />
+            <vertex x="3.0" y="0.0" z="0.0"  u="1.0" v="0.0" />
+            <vertex x="3.0" y="0.0" z="-3.0" u="1.0" v="1.0" />
+            <vertex x="0.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
           </face>
 
           <face material="pavement">
-            <vertex x="-3.0" y="0.0" z="0.0" />
-            <vertex x="0.0" y="0.0" z="0.0" />
-            <vertex x="0.0" y="0.0" z="-3.0" />
-            <vertex x="-3.0" y="0.0" z="-3.0" />
+            <vertex x="-3.0" y="0.0" z="0.0"  u="0.0" v="0.0" />
+            <vertex x="0.0"  y="0.0" z="0.0"  u="1.0" v="0.0" />
+            <vertex x="0.0"  y="0.0" z="-3.0" u="1.0" v="1.0" />
+            <vertex x="-3.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
           </face>
 
           <face material="grass">
-            <vertex x="-10.0" y="0.0" z="10.0" />
-            <vertex x="10.0" y="0.0" z="10.0" />
-            <vertex x="10.0" y="0.0" z="3.0" />
-            <vertex x="-10.0" y="0.0" z="3.0" />
+            <vertex x="-10.0" y="0.0" z="10.0" u="0.0"  v="0.0" />
+            <vertex x="10.0"  y="0.0" z="10.0" u="10.0" v="0.0" />
+            <vertex x="10.0"  y="0.0" z="3.0"  u="10.0" v="3.5" />
+            <vertex x="-10.0" y="0.0" z="3.0"  u="0.0"  v="3.5" />
           </face>
 
           <face material="grass">
-            <vertex x="3.0" y="0.0" z="3.0" />
-            <vertex x="10.0" y="0.0" z="3.0" />
-            <vertex x="10.0" y="0.0" z="-3.0" />
-            <vertex x="3.0" y="0.0" z="-3.0" />
+            <vertex x="3.0"  y="0.0" z="3.0"  u="0.0" v="0.0" />
+            <vertex x="10.0" y="0.0" z="3.0"  u="3.5" v="0.0" />
+            <vertex x="10.0" y="0.0" z="-3.0" u="3.5" v="3.0" />
+            <vertex x="3.0"  y="0.0" z="-3.0" u="0.0" v="3.0" />
           </face>
 
           <face material="grass">
-            <vertex x="-10.0" y="0.0" z="-3.0" />
-            <vertex x="10.0" y="0.0" z="-3.0" />
-            <vertex x="10.0" y="0.0" z="-10.0" />
-            <vertex x="-10.0" y="0.0" z="-10.0" />
+            <vertex x="-10.0" y="0.0" z="-3.0"  u="0.0"  v="0.0"  />
+            <vertex x="10.0"  y="0.0" z="-3.0"  u="10.0" v="0.0"  />
+            <vertex x="10.0"  y="0.0" z="-10.0" u="10.0" v="3.5"  />
+            <vertex x="-10.0" y="0.0" z="-10.0" u="0.0"  v="3.5"  />
           </face>
 
           <face material="grass">
-            <vertex x="-10.0" y="0.0" z="3.0" />
-            <vertex x="-3.0" y="0.0" z="3.0" />
-            <vertex x="-3.0" y="0.0" z="-3.0" />
-            <vertex x="-10.0" y="0.0" z="-3.0" />
+            <vertex x="-10.0" y="0.0" z="3.0"  u="0.0" v="0.0" />
+            <vertex x="-3.0"  y="0.0" z="3.0"  u="3.5" v="0.0" />
+            <vertex x="-3.0"  y="0.0" z="-3.0" u="3.5" v="3.0" />
+            <vertex x="-10.0" y="0.0" z="-3.0" u="0.0" v="3.0" />
+            </face>
+
+          <face material="brick">
+            <vertex x="-10.0" y="3.0" z="10.0" u="0.0"  v="0.0" />
+            <vertex x="10.0"  y="3.0" z="10.0" u="10.0" v="0.0" />
+            <vertex x="10.0"  y="0.0" z="10.0" u="10.0" v="1.5" />
+            <vertex x="-10.0" y="0.0" z="10.0" u="0.0"  v="1.5" />
           </face>
 
           <face material="brick">
-            <vertex x="-10.0" y="20.0" z="10.0" />
-            <vertex x="10.0" y="20.0" z="10.0" />
-            <vertex x="10.0" y="0.0" z="10.0" />
-            <vertex x="-10.0" y="0.0" z="10.0" />
-          </face>
-
-          <face material="brick">
-            <vertex x="10.0" y="20.0" z="10.0" />
-            <vertex x="10.0" y="20.0" z="-10.0" />
-            <vertex x="10.0" y="0.0" z="-10.0" />
-            <vertex x="10.0" y="0.0" z="10.0" />
+            <vertex x="10.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
+            <vertex x="10.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
+            <vertex x="10.0" y="0.0" z="-10.0" u="10.0" v="1.5" />
+            <vertex x="10.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
           </face>
           
           <face material="brick">
-            <vertex x="-10.0" y="20.0" z="-10.0" />
-            <vertex x="10.0" y="20.0" z="-10.0" />
-            <vertex x="10.0" y="0.0" z="-10.0" />
-            <vertex x="-10.0" y="0.0" z="-10.0" />
+            <vertex x="-10.0" y="3.0" z="-10.0" u="0.0"  v="0.0" />
+            <vertex x="-10.0" y="0.0" z="-10.0" u="0.0"  v="1.5" />
+            <vertex x="10.0"  y="0.0" z="-10.0" u="10.0" v="1.5" />
+            <vertex x="10.0"  y="3.0" z="-10.0" u="10.0" v="0.0" />
           </face>
 
           <face material="brick">
-            <vertex x="-10.0" y="20.0" z="10.0" />
-            <vertex x="-10.0" y="20.0" z="-10.0" />
-            <vertex x="-10.0" y="0.0" z="-10.0" />
-            <vertex x="-10.0" y="0.0" z="10.0" />
+            <vertex x="-10.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
+            <vertex x="-10.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
+            <vertex x="-10.0" y="0.0" z="-10.0" u="10.0" v="1.5" />
+            <vertex x="-10.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
           </face>
       </collision>
     </body>
 
-    <body id="box" material="brick">
+    <body id="box" material="box">
       <position x="5.0" y="0.5" z="5.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
 

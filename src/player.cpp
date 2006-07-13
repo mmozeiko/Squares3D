@@ -12,9 +12,11 @@ Player::Player(Game* game, int material, const Vector& pos, const Vector& size) 
 {
     Matrix location = Matrix::translate(pos);
 
-    NewtonCollision* collision = NewtonCreateSphere(m_world, m_radius.x, m_radius.y, m_radius.z, NULL); 
+    NewtonCollision* sphere = NewtonCreateSphere(m_world, m_radius.x, m_radius.y, m_radius.z, NULL); 
+    NewtonCollision* collision = NewtonCreateConvexHullModifier(m_world, sphere); 
     Body::create(collision, location);
-
+    NewtonReleaseCollision(m_world, sphere);
+    
 	// set the viscous damping the the minimum
     const float damp[] = { 0.0f, 0.0f, 0.0f };
 	NewtonBodySetLinearDamping(m_body, 0.0f);
@@ -38,7 +40,6 @@ Player::Player(Game* game, int material, const Vector& pos, const Vector& size) 
 
 Player::~Player()
 {
-    glDeleteTextures(1, &m_texture);
     NewtonDestroyJoint(m_world, m_upVector);
 }
 
@@ -54,7 +55,7 @@ void Player::setRotation(const Vector& rotation)
 
 void Player::render(const Video* video) const
 {
-    video->beginObject(m_matrix);
+    video->begin(m_matrix);
 
     glColor3f(0.5f, 0.5f, 0.5f);
     glScalef(m_radius.x, m_radius.y, m_radius.z);
@@ -72,7 +73,7 @@ void Player::render(const Video* video) const
 
     glDisable(GL_TEXTURE_2D);
 
-    video->endObject();
+    video->end();
 }
 
 void Player::onSetForceAndTorque()
@@ -85,6 +86,14 @@ void Player::onSetForceAndTorque()
     // Get the mass of the object
     NewtonBodyGetMassMatrix(m_body, &mass, &Ixx, &Iyy, &Izz );
 
+    float deltaC = (m_crouch - m_radius.y) * 0.5f * 0.01f;
+    m_radius.y += deltaC;
+    NewtonConvexHullModifierSetMatrix(m_collision, Matrix::scale(Vector(1.0, m_radius.y, 1.0)).m);
+    if (m_matrix.m31+0.05f < m_radius.y)
+    {
+        NewtonBodyAddForce(m_body, Vector(0.0f, 70*mass, 0.0f).v);
+    }
+    
     Vector force = gravityVec * mass;
 
     Vector currentVel;
@@ -125,10 +134,8 @@ void Player::onCollision(const NewtonMaterial* material, const NewtonContact* co
    NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
 
    // Determine if this contact is on the ground
-   Vector dir(0.0f, 1.0f, 0.0f);
-   float angle = dir % nor;
+   float angle = Vector(0.0f, 1.0f, 0.0f) % nor;
    m_isOnGround = (angle > 0.0f);
-
 
    NewtonMaterialSetContactElasticity( material, 0.0f );
 

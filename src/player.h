@@ -28,6 +28,7 @@ protected:
     bool            m_isOnGround;
     Vector          m_direction;
     Vector          m_rotation;
+    float           m_crouch;
     
     unsigned int    m_texture;
 

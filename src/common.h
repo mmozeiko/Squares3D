@@ -28,8 +28,9 @@ using std::make_pair;
 
 using std::auto_ptr;
 
-typedef map<string, string> StringMap;
-typedef pair<int, int> IntPair;
+typedef map<string, string>         StringMap;
+typedef map<string, unsigned int>   UIntMap;
+typedef pair<int, int>              IntPair;
 
 template <typename From, typename To>
 inline To cast(const From& from)

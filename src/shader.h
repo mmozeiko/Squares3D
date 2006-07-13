@@ -1,0 +1,21 @@
+#ifndef __SHADER_H__
+#define __SHADER_H__
+
+class Video;
+
+class Shader
+{
+    friend class Video;
+
+private:
+    Shader(const string& vp, const string& fp);
+    ~Shader();
+
+    void begin() const;
+    void end() const;
+
+    unsigned int m_vhandle;
+    unsigned int m_fhandle;
+};
+
+#endif

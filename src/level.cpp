@@ -3,6 +3,7 @@
 #include "xml.h"
 #include "video.h"
 #include "game.h"
+#include "world.h"
 
 string getAttribute(const XMLnode& node, const string& name)
 {
@@ -99,7 +100,7 @@ Material::Material(const XMLnode& node, const Game* game) :
 
 void Material::render(const Video* video) const
 {
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+    video->applyTexture(m_texture);
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_cAmbient.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_cDiffuse.v);
@@ -136,7 +137,7 @@ void Level::load(const string& levelFile)
                 const XMLnode& node = *iter;
                 if (node.name == "body")
                 {
-                    m_bodies.insert(new Body(node));
+                    m_bodies.insert(new Body(node, m_game));
                 }
                 else
                 {
@@ -200,10 +201,10 @@ Level::~Level()
 void Level::render(const Video* video) const
 {
     // TODO: Remove
-    glDisable(GL_COLOR_MATERIAL);
     glEnable(GL_TEXTURE_2D);
 
     glPushAttrib(GL_LIGHTING_BIT);
+    glDisable(GL_COLOR_MATERIAL);
     for each_const(set<Body*>, m_bodies, iter)
     {
        (*iter)->render(video, &m_materials);
@@ -211,11 +212,10 @@ void Level::render(const Video* video) const
     glPopAttrib();
     
     // TODO: Remove
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_COLOR_MATERIAL);
+    //glDisable(GL_TEXTURE_2D);
 }
 
-Body::Body(const XMLnode& node):
+Body::Body(const XMLnode& node, const Game* game):
     m_id(), 
     m_material(), 
     m_position(0.0f, 0.0f, 0.0f),
@@ -242,13 +242,51 @@ Body::Body(const XMLnode& node):
         }
         else if (node.name == "collision")
         { 
-            m_collisions.insert(Collision::create(node));
+            m_collisions.insert(Collision::create(node, game));
         }
         else
         {
             throw Exception("Invalid body, unknown node - " + node.name);
         }
     }
+
+    static int i = 0;
+    i++;
+
+    if (m_collisions.size() == 1)
+    {
+        NewtonCollision* collision = (*m_collisions.begin())->m_newtonCollision;
+        m_newtonBody = NewtonCreateBody(game->m_world->m_world, collision);
+        if (i==2)
+        {
+            NewtonBodySetMassMatrix(m_newtonBody, 100.0, 1, 1, 1);
+        }
+        
+        Matrix matrix;
+        //NewtonSetEulerAngle(m_rotation.v, matrix.m);
+        //matrix = matrix * Matrix::translate(m_position);
+        matrix.translation(m_position);
+                
+        NewtonBodySetMatrix(m_newtonBody, matrix.m);
+
+        NewtonBodySetAutoFreeze(m_newtonBody, 0);
+	    NewtonWorldUnfreezeBody(game->m_world->m_world, m_newtonBody);
+
+
+     //   NewtonBodySetUserData(m_body, static_cast<void*>(this));
+     //   NewtonBodySetForceAndTorqueCallback(m_body, onSetForceAndTorque);
+
+        NewtonReleaseCollision(game->m_world->m_world, collision);
+     //   
+	    //// set the viscous damping the the minimum
+     //   const float damp[] = { 0.0f, 0.0f, 0.0f };
+	    //NewtonBodySetLinearDamping(m_body, 0.0f);
+	    //NewtonBodySetAngularDamping(m_body, damp);
+
+	    //// Set Material Id for this object
+	    //NewtonBodySetMaterialGroupID(m_body, material);
+    }
+
 }
 
 Body::~Body()
@@ -267,18 +305,23 @@ void Body::render(const Video* video, const MaterialsMap* materials) const
         material->second->render(video);
     }
 
+    Matrix m;
+    NewtonBodyGetMatrix(m_newtonBody, m.m);
+    video->begin(m.m);
+
     for each_const(set<Collision*>, m_collisions, iter)
     {
         (*iter)->render(video, materials);
     }
+    video->end();
 }
 
-Collision::Collision(const XMLnode& node)
+Collision::Collision(const XMLnode& node, const Game* game)
 {
 }
 
-CollisionBox::CollisionBox(const XMLnode& node) :
-    Collision(node),
+CollisionBox::CollisionBox(const XMLnode& node, const Game* game) :
+    Collision(node, game),
     m_size(1.0f, 1.0f, 1.0f), 
     m_mass(1.0f),
     m_position(0.0f, 0.0f, 0.0f),
@@ -310,27 +353,30 @@ CollisionBox::CollisionBox(const XMLnode& node) :
             throw Exception("Invalid collision, unknown node - " + node.name);
         }
     }
+
+    m_newtonCollision = 
+        NewtonCreateBox(game->m_world->m_world, m_size.x, m_size.y, m_size.z, 0);
 }
 
 void CollisionBox::render(const Video* video, const MaterialsMap* materials) const
 {   
-    glPushMatrix();
-    glTranslatef(m_position.x, m_position.y, m_position.z);
-    glScalef(m_size.x, m_size.y, m_size.z);
+    //video->begin();
+    //glTranslatef(m_position.x, m_position.y, m_position.z);
+    //glScalef(m_size.x, m_size.y, m_size.z);
     video->renderCube();
-    glPopMatrix();
+    //video->end();
 }
 
-Collision* Collision::create(const XMLnode& node)
+Collision* Collision::create(const XMLnode& node, const Game* game)
 {
     string type = getAttribute(node, "type");
     if (type == "box")
     {
-        return new CollisionBox(node);
+        return new CollisionBox(node, game);
     }
     else if (type == "tree")
     {
-        return new CollisionTree(node);
+        return new CollisionTree(node, game);
     }
     else
     {
@@ -338,8 +384,8 @@ Collision* Collision::create(const XMLnode& node)
     }
 }
 
-CollisionTree::CollisionTree(const XMLnode& node) :
-    Collision(node)
+CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
+    Collision(node, game)
 {
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -354,35 +400,38 @@ CollisionTree::CollisionTree(const XMLnode& node) :
                 const XMLnode& node = *iter;
                 if (node.name == "vertex")
                 {
-                    face.push_back(getAttributesInVector(node, "xyz"));
+                    face.vertexes.push_back(getAttributesInVector(node, "xyz"));
+                    face.uv.push_back(UV(
+                        cast<string, float>(getAttribute(node, "u")),
+                        cast<string, float>(getAttribute(node, "v"))));
                 }
                 else
                 { 
                     throw Exception("Invalid face, unknown node - " + node.name);
                 }
             }
+            Vector v0 = m_faces.back().vertexes[0];
+            Vector v1 = m_faces.back().vertexes[1];
+            Vector v2 = m_faces.back().vertexes[2];
+            
+            face.normal = (v1-v0) ^ (v2-v0);
+            face.normal.norm();
         }
         else
         {
             throw Exception("Invalid collision, unknown node - " + node.name);
         }
     }
+    m_newtonCollision = 
+        NewtonCreateBox(game->m_world->m_world, 1, 1, 1, 0);
 }
 
 void CollisionTree::render(const Video* video, const MaterialsMap* materials) const
 {
-    //clog << m_faces[0][0].v[0] << endl;
     for (size_t i = 0; i < m_faces.size(); i++)
     {
         materials->find(m_materials[i])->second->render(video);
-        vector<vector<int>> uv;
 
-        vector<int> int2;
-        int2.push_back(0), int2.push_back(0); uv.push_back(int2); int2.clear();
-        int2.push_back(0), int2.push_back(1); uv.push_back(int2); int2.clear();
-        int2.push_back(1), int2.push_back(1); uv.push_back(int2); int2.clear();
-        int2.push_back(1), int2.push_back(0); uv.push_back(int2);
-
-        video->renderFace(m_faces[i], uv);
+        video->renderFace(m_faces[i]);
     }
 }

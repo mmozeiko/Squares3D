@@ -1,6 +1,9 @@
 #include "ball.h"
 #include "video.h"
 #include "game.h"
+#include "shader.h"
+
+#include <GL/glext.h>
 
 Ball::Ball(Game* game, const Vector& pos, const float radius) :
     Body(game, BallBody), m_radius(radius)
@@ -15,11 +18,12 @@ Ball::Ball(Game* game, const Vector& pos, const float radius) :
     NewtonBodySetContinuousCollisionMode(m_body, 1);
     
     m_texture = m_game->m_video->loadTexture("ball.tga");
+    m_textureBump = m_game->m_video->loadTexture("ball_bump.tga");
+    m_shader = m_game->m_video->loadShader("bump.vp", "bump.fp");
 }
 
 Ball::~Ball()
 {
-    glDeleteTextures(1, &m_texture);
 }
 
 void Ball::onSetForceAndTorque()
@@ -29,15 +33,20 @@ void Ball::onSetForceAndTorque()
 
 void Ball::render(const Video* video) const
 {
-    video->beginObject(m_matrix.m);
-
-    glColor3f(1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    video->renderSphere(m_radius);
-    glDisable(GL_TEXTURE_2D);
 
-    video->endObject();
+    video->begin(m_matrix.m);
+
+    glColor3f(1.0, 1.0, 1.0);
+    
+    video->begin(m_shader);
+    video->renderSphere(m_radius);
+    video->end(m_shader);
+   
+    video->end();
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Ball::control(const Input*)

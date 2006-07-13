@@ -4,6 +4,7 @@
 #include "common.h"
 #include "vmath.h"
 #include "video.h"
+#include "newton.h"
 
 class XMLnode;
 class Game;
@@ -14,13 +15,13 @@ namespace LevelObjects
     {
         friend class Level;
     public:
-        string m_id; //""
-        string m_texPath; //""
-        Vector m_cAmbient; //(0.2f, 0.2f, 0.2f, 1.0f)
-        Vector m_cDiffuse; //(0.8f, 0.8f, 0.8f, 1.0f)
-        Vector m_cSpecular; //(0.0f, 0.0f, 0.0f)
-        Vector m_cEmission; //(0.0f, 0.0f, 0.0f, 1.0f)
-        float  m_cShine; //0.0f
+        string m_id;        // ""
+        string m_texPath;   // ""
+        Vector m_cAmbient;  // (0.2f, 0.2f, 0.2f, 1.0f)
+        Vector m_cDiffuse;  // (0.8f, 0.8f, 0.8f, 1.0f)
+        Vector m_cSpecular; // (0.0f, 0.0f, 0.0f)
+        Vector m_cEmission; // (0.0f, 0.0f, 0.0f, 1.0f)
+        float  m_cShine;    // 0.0f
 
         void render(const Video* video) const;
     private: 
@@ -34,11 +35,13 @@ namespace LevelObjects
     {
         friend class Body;
     public:
-        static Collision* create(const XMLnode& node);
+        static Collision* create(const XMLnode& node, const Game* game);
 
         virtual void render(const Video* video, const MaterialsMap* materials) const = 0;
     protected:
-        Collision(const XMLnode& node);
+        Collision(const XMLnode& node, const Game* game);
+
+        NewtonCollision*  m_newtonCollision;
     };
 
     class Body
@@ -46,15 +49,17 @@ namespace LevelObjects
         friend class Level;
 
     public:
-        string          m_id; //""
-        string          m_material; //""
-        Vector          m_position; //(0.0f, 0.0f, 0.0f)
-        Vector          m_rotation; //(0.0f, 0.0f, 0.0f)
+        string          m_id;         // ""
+        string          m_material;   // ""
+        Vector          m_position;   // (0.0f, 0.0f, 0.0f)
+        Vector          m_rotation;   // (0.0f, 0.0f, 0.0f)
         set<Collision*> m_collisions;
     private:
         void render(const Video* video, const MaterialsMap* materials) const;
-        Body(const XMLnode& node);
+        Body(const XMLnode& node, const Game* game);
         ~Body();
+    protected:
+        NewtonBody*     m_newtonBody;
     };
 
     class Level
@@ -77,12 +82,12 @@ namespace LevelObjects
     public:
         void render(const Video* video, const MaterialsMap* materials) const;
 
-        float  m_mass; //1.0f
-        Vector m_size; //(1.0f, 1.0f, 1.0f)
-        Vector m_position; //(0.0f, 0.0f, 0.0f)
-        Vector m_rotation; //(0.0f, 0.0f, 0.0f)
+        float  m_mass;     // 1.0f
+        Vector m_size;     // (1.0f, 1.0f, 1.0f)
+        Vector m_position; // (0.0f, 0.0f, 0.0f)
+        Vector m_rotation; // (0.0f, 0.0f, 0.0f)
     private:
-        CollisionBox(const XMLnode& node);
+        CollisionBox(const XMLnode& node, const Game* game);
     };
 
     class CollisionTree : public Collision
@@ -94,7 +99,7 @@ namespace LevelObjects
         vector<Face>   m_faces;
         vector<string> m_materials;
     private:
-        CollisionTree(const XMLnode& node);
+        CollisionTree(const XMLnode& node, const Game* game);
     };
 
 }
