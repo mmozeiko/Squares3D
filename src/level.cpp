@@ -27,6 +27,20 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
 
 }
 
+void __onSetForceAndTorque(const NewtonBody* m_newtonBody)
+{
+    float mass;
+    float Ixx, Iyy, Izz;
+
+    // Get the mass of the object
+    NewtonBodyGetMassMatrix(m_newtonBody, &mass, &Ixx, &Iyy, &Izz );
+    
+    Vector force = gravityVec * mass;
+
+    NewtonBodyAddForce(m_newtonBody, force.v);
+
+}
+
 using namespace LevelObjects;
 
 Material::Material(const XMLnode& node, const Game* game) :
@@ -198,6 +212,14 @@ Level::~Level()
     }
 }
 
+void Level::prepare()
+{
+    for each_const(set<LevelObjects::Body*>, m_bodies, iter)
+    {
+        (*iter)->prepare();
+    }
+}
+
 void Level::render(const Video* video) const
 {
     // TODO: Remove
@@ -212,14 +234,15 @@ void Level::render(const Video* video) const
     glPopAttrib();
     
     // TODO: Remove
-    //glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 }
 
 Body::Body(const XMLnode& node, const Game* game):
     m_id(), 
     m_material(), 
     m_position(0.0f, 0.0f, 0.0f),
-    m_rotation(0.0f, 0.0f, 0.0f)
+    m_rotation(0.0f, 0.0f, 0.0f),
+    m_matrix()
 {
     m_id = getAttribute(node, "id");
 
@@ -253,28 +276,29 @@ Body::Body(const XMLnode& node, const Game* game):
     static int i = 0;
     i++;
 
+    //right now we support just one collision per body
     if (m_collisions.size() == 1)
     {
         NewtonCollision* collision = (*m_collisions.begin())->m_newtonCollision;
         m_newtonBody = NewtonCreateBody(game->m_world->m_world, collision);
         if (i==2)
         {
-            NewtonBodySetMassMatrix(m_newtonBody, 100.0, 1, 1, 1);
+            NewtonBodySetMassMatrix(m_newtonBody, 10.0f, 1, 1, 1);
         }
         
-        Matrix matrix;
-        //NewtonSetEulerAngle(m_rotation.v, matrix.m);
-        //matrix = matrix * Matrix::translate(m_position);
-        matrix.translation(m_position);
+        NewtonBodySetForceAndTorqueCallback(m_newtonBody, __onSetForceAndTorque);
+
+        m_matrix = m_matrix.identity();
+        //NewtonSetEulerAngle(m_rotation.v, m_matrix.m);
+        m_matrix = m_matrix * Matrix::translate(m_position);
                 
-        NewtonBodySetMatrix(m_newtonBody, matrix.m);
+        NewtonBodySetMatrix(m_newtonBody, m_matrix.m);
 
         NewtonBodySetAutoFreeze(m_newtonBody, 0);
 	    NewtonWorldUnfreezeBody(game->m_world->m_world, m_newtonBody);
 
 
      //   NewtonBodySetUserData(m_body, static_cast<void*>(this));
-     //   NewtonBodySetForceAndTorqueCallback(m_body, onSetForceAndTorque);
 
         NewtonReleaseCollision(game->m_world->m_world, collision);
      //   
@@ -297,23 +321,43 @@ Body::~Body()
     }
 }
 
-void Body::render(const Video* video, const MaterialsMap* materials) const
+void Body::prepare()
 {
+    NewtonBodyGetMatrix(m_newtonBody, m_matrix.m);
+}
+
+void Body::onSetForceAndTorque()
+{
+    float mass;
+    float Ixx, Iyy, Izz;
+
+    // Get the mass of the object
+    NewtonBodyGetMassMatrix(m_newtonBody, &mass, &Ixx, &Iyy, &Izz );
+    
+    Vector force = gravityVec * mass;
+
+    NewtonBodyAddForce(m_newtonBody, force.v);
+
+}
+
+void Body::render(const Video* video, const MaterialsMap* materials)
+{
+    Vector force(10,3,0);
     MaterialsMap::const_iterator material = materials->find(m_material);
     if (material != materials->end())
     {
         material->second->render(video);
     }
 
-    Matrix m;
-    NewtonBodyGetMatrix(m_newtonBody, m.m);
-    video->begin(m.m);
-
     for each_const(set<Collision*>, m_collisions, iter)
     {
+        //set the rotation and transformation offset of collision
+        //NewtonSetEulerAngle(m_rotation.v, m_matrix.m);
+        //m_matrix = m_matrix * Matrix::translate(m_position);
+        video->begin(m_matrix.m);
         (*iter)->render(video, materials);
+        video->end();
     }
-    video->end();
 }
 
 Collision::Collision(const XMLnode& node, const Game* game)
@@ -360,11 +404,8 @@ CollisionBox::CollisionBox(const XMLnode& node, const Game* game) :
 
 void CollisionBox::render(const Video* video, const MaterialsMap* materials) const
 {   
-    //video->begin();
-    //glTranslatef(m_position.x, m_position.y, m_position.z);
-    //glScalef(m_size.x, m_size.y, m_size.z);
+    glScalef(m_size.x, m_size.y, m_size.z);
     video->renderCube();
-    //video->end();
 }
 
 Collision* Collision::create(const XMLnode& node, const Game* game)
@@ -423,7 +464,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
         }
     }
     m_newtonCollision = 
-        NewtonCreateBox(game->m_world->m_world, 1, 1, 1, 0);
+        NewtonCreateBox(game->m_world->m_world, 0.1f, 0.1f, 0.1f, 0);
 }
 
 void CollisionTree::render(const Video* video, const MaterialsMap* materials) const

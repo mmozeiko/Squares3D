@@ -378,7 +378,7 @@ Shader* Video::loadShader(const string& vp, const string& fp)
         return shader;
     }
 
-    throw Exception("Shaders not supported, sorry!");
+    throw Exception("Shaders not supported, GENA HAUZE!");
 }
 
 PFNGLACTIVETEXTUREARBPROC   Video::glActiveTextureARB = NULL;

@@ -141,7 +141,7 @@
 
     <body id="box" material="box">
       <position x="5.0" y="0.5" z="5.0" />
-      <rotation x="0.0" y="0.0" z="0.0" />
+      <rotation x="0.0" y="0.5" z="0.0" />
 
       <collision type="box">
         <size x="1.0" y="1.0" z="1.0" />

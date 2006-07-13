@@ -6,8 +6,6 @@
 
 #include <Newton.h>
 
-const Vector gravityVec(0.0f, -9.81f, 0.0f);
-
 class Video;
 
 class Body : public Renderable

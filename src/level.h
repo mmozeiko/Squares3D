@@ -36,7 +36,7 @@ namespace LevelObjects
         friend class Body;
     public:
         static Collision* create(const XMLnode& node, const Game* game);
-
+        
         virtual void render(const Video* video, const MaterialsMap* materials) const = 0;
     protected:
         Collision(const XMLnode& node, const Game* game);
@@ -49,13 +49,17 @@ namespace LevelObjects
         friend class Level;
 
     public:
+        void prepare();
+        void onSetForceAndTorque();
+
         string          m_id;         // ""
         string          m_material;   // ""
         Vector          m_position;   // (0.0f, 0.0f, 0.0f)
         Vector          m_rotation;   // (0.0f, 0.0f, 0.0f)
         set<Collision*> m_collisions;
+        Matrix          m_matrix;
     private:
-        void render(const Video* video, const MaterialsMap* materials) const;
+        void render(const Video* video, const MaterialsMap* materials);
         Body(const XMLnode& node, const Game* game);
         ~Body();
     protected:
@@ -69,6 +73,7 @@ namespace LevelObjects
         ~Level();
         void load(const string& levelFile);
         void render(const Video* video) const;
+        void prepare();
 
         set<Body*>   m_bodies;
         MaterialsMap m_materials;
@@ -80,6 +85,7 @@ namespace LevelObjects
     {
         friend class Collision;
     public:
+
         void render(const Video* video, const MaterialsMap* materials) const;
 
         float  m_mass;     // 1.0f

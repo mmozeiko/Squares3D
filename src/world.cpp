@@ -117,6 +117,7 @@ void World::prepare()
     m_camera->prepare();
     m_localPlayer->prepare();
     m_ball->prepare();
+    m_level->prepare();
 }
 
 void World::render(const Video* video) const
