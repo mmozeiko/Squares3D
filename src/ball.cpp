@@ -33,6 +33,11 @@ void Ball::onSetForceAndTorque()
 
 void Ball::render(const Video* video) const
 {
+    Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, m_textureBump);
+
+    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
