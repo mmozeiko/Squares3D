@@ -1,3 +1,46 @@
+//
+attribute vec4 position;
+attribute mat3 tangentBasis;
+attribute vec2 texcoord;
+
+uniform vec3 light;
+uniform vec3 halfAngle;
+uniform mat4 modelViewI;
+
+varying vec2 uv;
+varying vec3 lightVec;
+varying vec3 halfVec;
+
+void main()
+{
+    gl_Position = ftransform();
+    
+    vec3 pos = (gl_ModelViewMatrix * gl_LightSource[0].position).xyz;
+
+    lightVec = normalize(gl_Position.xyz);
+
+    pos = lightVec + (gl_ModelViewMatrix * gl_LightSource[0].position).xyz; //vec4(0,0,1,0)).xyz;
+    halfVec = normalize(gl_Position.xyz);
+
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+//    uv = gl_MultiTexCoord0.st;
+/*
+    // output vertex position
+    gl_Position = gl_ModelViewProjectionMatrix * position;
+
+    // output texture coordinates for decal and normal maps
+    uv = texcoord;
+
+    // transform light and half angle vectors by tangent basis
+    lightVec = light * tangentBasis;
+    halfVec = halfAngle * tangentBasis;
+ 
+    eyeVec = modelViewI[3].xyz - position.xyz;
+    eyeVec = eyeVec * tangentBasis;
+*/
+}
+
+/*
 !!ARBvp1.0
 ATTRIB iPos         = vertex.position;
 ATTRIB iNormal      = vertex.normal;
@@ -61,3 +104,5 @@ END
 #MOV result.position, vpos;
 #
 #END
+
+*/

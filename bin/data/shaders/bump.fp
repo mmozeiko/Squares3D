@@ -1,3 +1,37 @@
+//
+
+uniform sampler2D decalMap;
+uniform sampler2D heightMap;
+
+varying vec2 uv;
+varying vec3 lightVec;
+varying vec3 halfVec;
+
+const float diffuseCoeff = 0.7;
+const float specularCoeff = 0.5;
+
+void main()
+{
+   vec3 pos = lightVec; //normalize(gl_LightSource[0].position.xyz); // light vector in object space
+   vec3 hhalf = halfVec; //vec3(1,0,0); // eye vector in object space
+
+   vec2 uv = gl_TexCoord[0].st;
+   
+   vec3 decalColor = texture2D(decalMap, uv).rgb;
+   vec3 heightColor = texture2D(heightMap, uv).rgb;
+
+   vec3 normal = 2.0 * (heightColor - 0.5);
+   normal = normalize(normal);
+   float diffuse = max(dot(pos, normal), 0.0) * diffuseCoeff;
+
+   float specular = max(dot(hhalf, normal), 0.0);
+   specular = pow(specular, 128.0) * specularCoeff;
+   
+   gl_FragColor = vec4(vec3(diffuse) * decalColor + vec3(specular), 1.0);
+}
+
+/*
+
 !!ARBfp1.0
 ATTRIB detailCoords = fragment.texcoord[0];
 ATTRIB bumpCoords   = fragment.texcoord[1];
@@ -56,3 +90,5 @@ END
 #        float diffuse = dot(bumpNormalVectorFinal, lightVectorFinal);
 #
 #        return float4(diffuse * detailColor + ambientColor, 1.0);
+
+*/

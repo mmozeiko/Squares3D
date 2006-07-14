@@ -14,8 +14,13 @@ private:
     void begin() const;
     void end() const;
 
+    void checkShaderStatus(unsigned int handle, int status);
+
     unsigned int m_vhandle;
     unsigned int m_fhandle;
+
+public:
+    unsigned int m_program;
 };
 
 #endif

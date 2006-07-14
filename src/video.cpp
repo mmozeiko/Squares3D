@@ -18,7 +18,8 @@ static void GLFWCALL sizeCb(int width, int height)
   glLoadIdentity();
 }
 
-Video::Video(const Game* game) : m_config(game->m_config.get())
+Video::Video(const Game* game) : 
+    m_config(game->m_config.get()), m_haveShaders(false)
 {
     clog << "Initializing video." << endl;
 
@@ -175,6 +176,7 @@ void Video::renderFace(const Face& face) const
     }
 	glEnd();
 
+/*
     glDisable(GL_LIGHTING);
     glBegin(GL_LINES);
     glColor3f(1, 0, 0);
@@ -183,6 +185,7 @@ void Video::renderFace(const Face& face) const
     glVertex3fv((face.vertexes[0] + face.normal).v);
     glEnd();
     glEnable(GL_LIGHTING);
+*/
 }
 
 void Video::renderSphere(float radius) const
@@ -190,7 +193,7 @@ void Video::renderSphere(float radius) const
     GLUquadric* q =  gluNewQuadric();
     gluQuadricTexture(q, GLU_TRUE);
     gluQuadricNormals(q, GLU_TRUE);
-    gluSphere(q, radius, 32, 32);
+    gluSphere(q, radius, 64, 64);
     gluDeleteQuadric(q);
 }
     
@@ -198,7 +201,7 @@ void Video::renderWireSphere(float radius) const
 {
     GLUquadric* q =  gluNewQuadric();
     gluQuadricDrawStyle(q, GLU_SILHOUETTE);
-    gluSphere(q, radius, 32, 32);
+    gluSphere(q, radius, 64, 64);
     gluDeleteQuadric(q);
 }
   
@@ -337,16 +340,14 @@ unsigned int Video::loadTexture(const string& name)
 
 Shader* Video::loadShader(const string& vp, const string& fp)
 {
-    ShaderMap::const_iterator iter = m_shaders.find(vp+"::"+fp);
-    if (iter != m_shaders.end())
+    if (m_haveShaders)
     {
-        return iter->second;
-    }
+        ShaderMap::const_iterator iter = m_shaders.find(vp+"::"+fp);
+        if (iter != m_shaders.end())
+        {
+            return iter->second;
+        }
 
-    if (glfwExtensionSupported("GL_ARB_multitexture") &&
-        glfwExtensionSupported("GL_ARB_fragment_program") && 
-        glfwExtensionSupported("GL_ARB_vertex_program"))
-    {
         string vprogram, fprogram;
 
         string vp_filename = "/data/shaders/" + vp;
@@ -378,16 +379,41 @@ Shader* Video::loadShader(const string& vp, const string& fp)
         return shader;
     }
 
-    throw Exception("Shaders not supported, GENA HAUZE!");
+    return NULL;
+    //throw Exception("Shaders not supported, GENA HAUZE!");
 }
 
 PFNGLACTIVETEXTUREARBPROC   Video::glActiveTextureARB = NULL;
 
+/*
 PFNGLGENPROGRAMSARBPROC     Video::glGenProgramsARB = NULL;
 PFNGLPROGRAMSTRINGARBPROC   Video::glProgramStringARB = NULL;
 PFNGLGETPROGRAMIVARBPROC    Video::glGetProgramivARB = NULL;
 PFNGLDELETEPROGRAMPROC      Video::glDeleteProgramsARB = NULL;
 PFNGLBINDPROGRAMARBPROC     Video::glBindProgramARB = NULL;
+*/
+
+PFNGLCREATESHADEROBJECTARBPROC     Video::glCreateShaderObjectARB;
+PFNGLSHADERSOURCEARBPROC           Video::glShaderSourceARB;
+PFNGLCOMPILESHADERARBPROC          Video::glCompileShaderARB;
+
+PFNGLCREATEPROGRAMOBJECTARBPROC    Video::glCreateProgramObjectARB;
+PFNGLATTACHOBJECTARBPROC           Video::glAttachObjectARB;
+PFNGLLINKPROGRAMARBPROC            Video::glLinkProgramARB;
+PFNGLUSEPROGRAMOBJECTARBPROC       Video::glUseProgramObjectARB;
+
+PFNGLGETOBJECTPARAMETERIVARBPROC   Video::glGetObjectParameterivARB;
+PFNGLGETINFOLOGARBPROC             Video::glGetInfoLogARB;
+
+PFNGLDETACHOBJECTARBPROC           Video::glDetachObjectARB;
+PFNGLDELETEOBJECTARBPROC           Video::glDeleteObjectARB;
+
+PFNGLGETUNIFORMLOCATIONARBPROC     Video::glGetUniformLocationARB;
+PFNGLUNIFORM1IARBPROC              Video::glUniform1iARB;
+PFNGLUNIFORM3FARBPROC              Video::glUniform3fARB;
+PFNGLUNIFORMMATRIX4FVARBPROC       Video::glUniformMatrix4fvARB;
+PFNGLVERTEXATTRIB2FARBPROC         Video::glVertexAttrib2fARB;
+PFNGLVERTEXATTRIB3FVARBPROC        Video::glVertexAttrib3fvARB;
 
 template <typename T>
 void Video::loadProcAddress(const char* name, T& proc) const
@@ -408,13 +434,44 @@ void Video::loadExtensions()
         loadProc(glActiveTextureARB);
     }
 
-    if (glfwExtensionSupported("GL_ARB_fragment_program") && 
+/*
+if (glfwExtensionSupported("GL_ARB_fragment_program") && 
         glfwExtensionSupported("GL_ARB_vertex_program"))
     {
+        m_haveShaders = true;
         loadProc(glGenProgramsARB);
         loadProc(glProgramStringARB);
         loadProc(glGetProgramivARB);
         loadProc(glDeleteProgramsARB);
         loadProc(glBindProgramARB);
+    }
+*/
+    if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
+        glfwExtensionSupported("GL_ARB_vertex_shader"))
+    {
+        m_haveShaders = true;
+
+        loadProc(glCreateShaderObjectARB);
+        loadProc(glShaderSourceARB);
+        loadProc(glCompileShaderARB);
+
+        loadProc(glCreateProgramObjectARB);
+        loadProc(glAttachObjectARB);
+        loadProc(glLinkProgramARB);
+        loadProc(glUseProgramObjectARB);
+
+        loadProc(glGetObjectParameterivARB);
+        loadProc(glGetInfoLogARB);
+
+        loadProc(glDetachObjectARB);
+        loadProc(glDeleteObjectARB);
+
+        loadProc(glGetUniformLocationARB);
+        loadProc(glUniform1iARB);
+        loadProc(glUniform3fARB);
+        loadProc(glUniformMatrix4fvARB);
+        
+        loadProc(glVertexAttrib2fARB);
+        loadProc(glVertexAttrib3fvARB);
     }
 }

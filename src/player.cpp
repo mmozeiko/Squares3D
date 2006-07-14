@@ -28,7 +28,7 @@ Player::Player(Game* game, int material, const Vector& pos, const Vector& size) 
 	// set the mas
     Vector intertia, origin;
     NewtonConvexCollisionCalculateInertialMatrix(collision, intertia.v, origin.v);
-    NewtonBodySetMassMatrix(m_body, 10.0f, intertia.x, intertia.y, intertia.z);
+    NewtonBodySetMassMatrix(m_body, 100.0f, intertia.x, intertia.y, intertia.z);
 
   	// add and up vector constraint to help in keeping the body upright
 	const Vector upDirection (0.0f, 1.0f, 0.0f);
@@ -91,20 +91,20 @@ void Player::onSetForceAndTorque()
     NewtonConvexHullModifierSetMatrix(m_collision, Matrix::scale(Vector(1.0, m_radius.y, 1.0)).m);
     if (m_matrix.m31+0.05f < m_radius.y)
     {
-        NewtonBodyAddForce(m_body, Vector(0.0f, 70*mass, 0.0f).v);
+        //NewtonBodyAddForce(m_body, Vector(0.0f, 70*mass, 0.0f).v);
     }
     
     Vector force = gravityVec * mass;
+    NewtonBodyAddForce(m_body, force.v);
 
     Vector currentVel;
     NewtonBodyGetVelocity(m_body, currentVel.v);
       
     Vector targetVel = m_direction;
     targetVel.norm();
-    if (!m_isOnGround)
-    {
-       NewtonBodyAddForce(m_body, force.v);
-    }
+//    if (!m_isOnGround)
+//    {
+//    }
 
     Matrix m;
     
@@ -112,7 +112,7 @@ void Player::onSetForceAndTorque()
     //m.m30 = m.m31 = m.m32 = 0.0f;
 
     force = (targetVel * 5.0f - currentVel ) * timestepInv * mass;
-    if (!m_isOnGround) force.y = 0.0f;
+    if (!m_isOnGround && glfwGetKey(GLFW_KEY_SPACE)==GLFW_RELEASE) force.y = 0.0f;
 
     NewtonBodyAddForce(m_body, force.v);
 

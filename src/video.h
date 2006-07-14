@@ -60,11 +60,36 @@ public:
 
     static PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;
 
+/*
     static PFNGLGENPROGRAMSARBPROC glGenProgramsARB;
     static PFNGLPROGRAMSTRINGARBPROC glProgramStringARB;
     static PFNGLGETPROGRAMIVARBPROC glGetProgramivARB;
     static PFNGLDELETEPROGRAMPROC glDeleteProgramsARB;
     static PFNGLBINDPROGRAMARBPROC glBindProgramARB;
+*/
+    static PFNGLCREATESHADEROBJECTARBPROC     glCreateShaderObjectARB;
+    static PFNGLSHADERSOURCEARBPROC           glShaderSourceARB;
+    static PFNGLCOMPILESHADERARBPROC          glCompileShaderARB;
+
+    static PFNGLCREATEPROGRAMOBJECTARBPROC    glCreateProgramObjectARB;
+    static PFNGLATTACHOBJECTARBPROC           glAttachObjectARB;
+    static PFNGLLINKPROGRAMARBPROC            glLinkProgramARB;
+    static PFNGLUSEPROGRAMOBJECTARBPROC       glUseProgramObjectARB;
+
+    static PFNGLGETOBJECTPARAMETERIVARBPROC   glGetObjectParameterivARB;
+    static PFNGLGETINFOLOGARBPROC             glGetInfoLogARB;
+
+    static PFNGLDETACHOBJECTARBPROC           glDetachObjectARB;
+    static PFNGLDELETEOBJECTARBPROC           glDeleteObjectARB;
+
+    static PFNGLGETUNIFORMLOCATIONARBPROC     glGetUniformLocationARB;
+    static PFNGLUNIFORM1IARBPROC              glUniform1iARB;
+    static PFNGLUNIFORM3FARBPROC              glUniform3fARB;
+    static PFNGLUNIFORMMATRIX4FVARBPROC       glUniformMatrix4fvARB;
+    static PFNGLVERTEXATTRIB2FARBPROC         glVertexAttrib2fARB;
+    static PFNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB;
+
+    bool          m_haveShaders;
 
 private:
     template <typename T>
@@ -75,6 +100,7 @@ private:
     const Config* m_config;
     UIntMap       m_textures;
     ShaderMap     m_shaders;
+
 };
 
 #endif

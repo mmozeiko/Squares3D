@@ -58,24 +58,24 @@ World::World(Game* game) :
 
 void World::init()
 {
-    NewtonCollision* floorCol = NewtonCreateBox(m_world, 100.0f, 1.0f, 100.f, NULL);
-    NewtonBody* floorBody = NewtonCreateBody(m_world, floorCol);
-	NewtonReleaseCollision(m_world, floorCol);
+    //NewtonCollision* floorCol = NewtonCreateBox(m_world, 100.0f, 1.0f, 100.f, NULL);
+    //NewtonBody* floorBody = NewtonCreateBody(m_world, floorCol);
+	//NewtonReleaseCollision(m_world, floorCol);
 
-    Matrix pos = Matrix::translate(Vector(0.0f, -0.5f, 0.0f));
-    NewtonBodySetMatrix(floorBody, pos.m);
-    
-    int floorID = NewtonMaterialCreateGroupID(m_world);
+ //   Matrix pos = Matrix::translate(Vector(0.0f, -0.5f, 0.0f));
+ //   NewtonBodySetMatrix(floorBody, pos.m);
+ //   
+ //   int floorID = NewtonMaterialCreateGroupID(m_world);
 	int charID = NewtonMaterialCreateGroupID(m_world);
 
-	NewtonMaterialSetDefaultElasticity(m_world, floorID, charID, 0.4f);
-	NewtonMaterialSetDefaultFriction(m_world, floorID, charID, 0.4f, 0.4f);
+	//NewtonMaterialSetDefaultElasticity(m_world, floorID, charID, 0.4f);
+	//NewtonMaterialSetDefaultFriction(m_world, floorID, charID, 0.4f, 0.4f);
 
-	NewtonMaterialSetCollisionCallback(m_world, floorID, charID, 
-        static_cast<void*>(&contactBodies), 
-        PlayerContactBegin, PlayerContactProcess, NULL); 
+	//NewtonMaterialSetCollisionCallback(m_world, floorID, charID, 
+ //       static_cast<void*>(&contactBodies), 
+ //       PlayerContactBegin, PlayerContactProcess, NULL); 
 
-    NewtonBodySetMaterialGroupID(floorBody, floorID);
+ //   NewtonBodySetMaterialGroupID(floorBody, floorID);
 
     m_localPlayer.reset(new LocalPlayer(m_game, charID, Vector(1.0f, 2.0f, 0.0f), Vector(0.75, 2, 0.75)));
     m_ball.reset(new Ball(m_game, Vector(1, 0.2f, 1), 0.2f));
@@ -126,7 +126,7 @@ void World::render(const Video* video) const
 
     m_camera->render(video);
 
-    video->renderAxes();
+    //video->renderAxes();
 
     m_localPlayer->render(video);
     m_ball->render(video);

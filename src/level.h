@@ -38,10 +38,17 @@ namespace LevelObjects
         static Collision* create(const XMLnode& node, const Game* game);
         
         virtual void render(const Video* video, const MaterialsMap* materials) const = 0;
+    
     protected:
         Collision(const XMLnode& node, const Game* game);
 
+        void create(NewtonCollision* collision);
+        void create(NewtonCollision* collision, float mass, const Vector& position);
+
+    private:
         NewtonCollision*  m_newtonCollision;
+        Vector m_inertia;
+        float  m_mass;
     };
 
     class Body
@@ -50,20 +57,25 @@ namespace LevelObjects
 
     public:
         void prepare();
-        void onSetForceAndTorque();
-
+        
         string          m_id;         // ""
         string          m_material;   // ""
-        Vector          m_position;   // (0.0f, 0.0f, 0.0f)
-        Vector          m_rotation;   // (0.0f, 0.0f, 0.0f)
+        //Vector          m_position;   // (0.0f, 0.0f, 0.0f)
+        //Vector          m_rotation;   // (0.0f, 0.0f, 0.0f)
         set<Collision*> m_collisions;
-        Matrix          m_matrix;
+
     private:
-        void render(const Video* video, const MaterialsMap* materials);
         Body(const XMLnode& node, const Game* game);
         ~Body();
-    protected:
+        void render(const Video* video, const MaterialsMap* materials);
+
         NewtonBody*     m_newtonBody;
+        Matrix          m_matrix;
+        float           m_totalMass;
+        Vector          m_totalInertia;
+
+        void onSetForceAndTorque();
+        static void onSetForceAndTorque(const NewtonBody* newtonBody);
     };
 
     class Level
@@ -85,15 +97,17 @@ namespace LevelObjects
     {
         friend class Collision;
     public:
-
         void render(const Video* video, const MaterialsMap* materials) const;
 
-        float  m_mass;     // 1.0f
-        Vector m_size;     // (1.0f, 1.0f, 1.0f)
-        Vector m_position; // (0.0f, 0.0f, 0.0f)
-        Vector m_rotation; // (0.0f, 0.0f, 0.0f)
+        Vector m_size;      // (1.0f, 1.0f, 1.0f)
+        //Vector m_position;  // (0.0f, 0.0f, 0.0f)
+        //Vector m_rotation;  // (0.0f, 0.0f, 0.0f)
+        bool   m_hasOffset; // false
+
     private:
         CollisionBox(const XMLnode& node, const Game* game);
+
+        Matrix m_matrix;
     };
 
     class CollisionTree : public Collision

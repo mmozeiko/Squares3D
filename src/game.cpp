@@ -31,10 +31,10 @@ void Game::run()
     clog << "Starting game..." << endl;
 
     glFrontFace(GL_CW);
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
-    //glEnable(GL_NORMALIZE);
+    glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -71,6 +71,7 @@ void Game::run()
         double deltaTime = newTime - currentTime;
         currentTime = newTime;
         accum += deltaTime;
+        if (accum>0.1) clog << accum << endl;
 
         m_input->process();
         m_world->control(m_input.get());

@@ -43,6 +43,11 @@ void LocalPlayer::control(const Input* input)
     if (input->key('W')) direction.z =  1.0f;
     if (input->key('S')) direction.z = -1.0f;
     
+    if (input->key(GLFW_KEY_SPACE)) 
+    {
+        direction.y += 1.0f;
+    }
+    
     m_crouch = (input->key('C') ? 0.2f : 2.0f) / 2.0f;
     if (input->key('X')) m_crouch = 10.0f;
 
