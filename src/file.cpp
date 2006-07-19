@@ -5,9 +5,7 @@
 
 #include <streambuf>
 #include <algorithm>
-
 #include "file.h"
-#include "common.h"
 
 // PRIVATE part
 
@@ -33,7 +31,7 @@ public:
         return m_handle != NULL;
     }
 
-    bool open(const std::string filename)
+    bool open(const string& filename)
     {
         if (m_handle!=NULL)
         {
@@ -90,7 +88,7 @@ protected:
         return 0;
     }
 
-    std::streamsize xsgetn(char *s, std::streamsize n)
+    std::streamsize xsgetn(char* s, std::streamsize n)
     {
         int cnt = 0;
         if (gptr()<egptr())
@@ -207,7 +205,7 @@ public:
         return m_handle != NULL;
     }
 
-    bool open(const std::string filename, bool append)
+    bool open(const string& filename, bool append)
     {
         if (m_handle != NULL)
         {
@@ -275,7 +273,7 @@ protected:
         return 0;
     }
   
-    std::streamsize xsputn(char *s, std::streamsize n)
+    std::streamsize xsputn(char* s, std::streamsize n)
     {
         if (sync()==EOF)
         {
@@ -308,7 +306,7 @@ private:
 
 // PUBLIC part
 
-Reader::Reader(const std::string& filename) : 
+Reader::Reader(const string& filename) : 
     m_buf(new InputBuffer()), 
     std::istream(std::_Uninitialized())
 {
@@ -330,7 +328,7 @@ bool Reader::is_open() const
     return m_buf->is_open();
 }
 
-bool Reader::open(const std::string& filename)
+bool Reader::open(const string& filename)
 {
     return m_buf->open(filename);
 }
@@ -345,7 +343,7 @@ unsigned int Reader::filesize() const
     return m_buf->filesize();
 }
 
-Writer::Writer(const std::string& filename, bool append) : 
+Writer::Writer(const string& filename, bool append) : 
     m_buf(new OutputBuffer()), 
     std::ostream(std::_Uninitialized())
 {
@@ -367,7 +365,7 @@ bool Writer::is_open() const
     return m_buf->is_open();
 }
 
-bool Writer::open(const std::string& filename, bool append)
+bool Writer::open(const string& filename, bool append)
 {
     return m_buf->open(filename, append);
 }
@@ -402,6 +400,11 @@ void done()
     {
         throw Exception(PHYSFS_getLastError());
     }
+}
+
+bool exists(const string& filename)
+{
+    return PHYSFS_exists(filename.c_str()) != 0;
 }
 
 }

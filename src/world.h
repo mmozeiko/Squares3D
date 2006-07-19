@@ -29,11 +29,11 @@ public:
 
 	auto_ptr<Camera>                m_camera;
     NewtonWorld*                    m_world;
-    
+    auto_ptr<LevelObjects::Level>   m_level;
+
 private:
     auto_ptr<Player>                m_localPlayer;
     auto_ptr<Ball>                  m_ball;
-    auto_ptr<LevelObjects::Level>   m_level;
 
 };
 

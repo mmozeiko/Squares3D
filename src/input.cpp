@@ -113,7 +113,7 @@ const Mouse& Input::mouse(int id) const
 {
     if (id >= m_mouseCount)
     {
-        string sid = cast<int, string>(id);
+        string sid = cast<string>(id);
         throw Exception("Invalid mouse id - " + id);
     }
     return m_mouses[id];

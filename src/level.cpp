@@ -21,7 +21,7 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
     for (size_t i = 0; i < attributeSymbols.size(); i++)
     {
         string key(1, attributeSymbols[i]);
-        vector[i] = cast<string, float>(getAttribute(node, key));
+        vector[i] = cast<float>(getAttribute(node, key));
     }
     return vector;
 
@@ -82,7 +82,7 @@ Material::Material(const XMLnode& node, const Game* game) :
                 }
                 else if (node.name == "shine")
                 {
-                    m_cShine = cast<string, float>(node.value);
+                    m_cShine = cast<float>(node.value);
                 }
                 else
                 {
@@ -164,6 +164,21 @@ void Level::load(const string& levelFile)
                 }
             }
         }
+        else if (node.name == "collisions")
+        {
+            for each_const(XMLnodes, node.childs, iter)
+            {
+                const XMLnode& node = *iter;
+                if (node.name == "collision")
+                {
+                    m_collisions[getAttribute(node, "id")] = Collision::create(node, m_game);
+                }
+                else
+                {
+                    throw Exception("Invalid collisions, unknown node - " + node.name);
+                }
+            }
+        }
         else if (node.name == "joints")
         {
             for each_const(XMLnodes, node.childs, iter)
@@ -191,6 +206,10 @@ Level::~Level()
     for each_(set<Body*>, m_bodies, iter)
     {
         delete *iter;
+    }
+    for each_const(CollisionsMap, m_collisions, iter)
+    {
+        delete iter->second;
     }
     for each_(MaterialsMap, m_materials, iter)
     {
@@ -228,7 +247,8 @@ Body::Body(const XMLnode& node, const Game* game):
     m_material(), 
     m_matrix(),
     m_totalMass(0.0f),
-    m_totalInertia(0.0f, 0.0f, 0.0f)
+    m_totalInertia(0.0f, 0.0f, 0.0f),
+    m_newtonWorld(game->m_world->m_world)
 {
     m_id = getAttribute(node, "id");
 
@@ -254,7 +274,16 @@ Body::Body(const XMLnode& node, const Game* game):
         }
         else if (node.name == "collision")
         { 
-            m_collisions.insert(Collision::create(node, game));
+            string id = node.value;
+            CollisionsMap::const_iterator iter = game->m_world->m_level->m_collisions.find(id);
+            if (iter != game->m_world->m_level->m_collisions.end())
+            {
+                m_collisions.insert(iter->second);
+            }
+            else
+            {
+                throw Exception("Could not find specified collision for body '" + m_id + "'");
+            }
         }
         else
         {
@@ -300,9 +329,9 @@ Body::Body(const XMLnode& node, const Game* game):
 
 Body::~Body()
 {
-    for each_(set<Collision*>, m_collisions, iter)
+    for each_const(set<Collision*>, m_collisions, iter)
     {
-        delete *iter;
+        //NewtonReleaseCollision(m_newtonWorld, (*iter)->m_newtonCollision);
     }
 }
 
@@ -342,8 +371,13 @@ void Body::render(const Video* video, const MaterialsMap* materials)
 }
 
 Collision::Collision(const XMLnode& node, const Game* game) :
-    m_inertia(), m_mass(0.0f)
+    m_inertia(), m_mass(0.0f), m_newtonWorld(game->m_world->m_world)
 {
+}
+
+Collision::~Collision()
+{
+    //NewtonReleaseCollision(m_newtonWorld, m_newtonCollision);
 }
 
 void Collision::create(NewtonCollision* collision)
@@ -369,7 +403,7 @@ CollisionBox::CollisionBox(const XMLnode& node, const Game* game) :
     Vector offset(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
 
-    float mass = cast<string, float>(getAttribute(node, "mass"));
+    float mass = cast<float>(getAttribute(node, "mass"));
 
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -424,6 +458,7 @@ void CollisionBox::render(const Video* video, const MaterialsMap* materials) con
 Collision* Collision::create(const XMLnode& node, const Game* game)
 {
     string type = getAttribute(node, "type");
+    
     if (type == "box")
     {
         return new CollisionBox(node, game);
@@ -456,8 +491,8 @@ CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
                 {
                     face.vertexes.push_back(getAttributesInVector(node, "xyz"));
                     face.uv.push_back(UV(
-                        cast<string, float>(getAttribute(node, "u")),
-                        cast<string, float>(getAttribute(node, "v"))));
+                        cast<float>(getAttribute(node, "u")),
+                        cast<float>(getAttribute(node, "v"))));
                 }
                 else
                 { 
@@ -482,7 +517,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
     {
         NewtonTreeCollisionAddFace(collision, iter->vertexes.size(), iter->vertexes[0].v, sizeof(Vector), 0);
     }
-    NewtonTreeCollisionEndBuild(collision, 1);
+    NewtonTreeCollisionEndBuild(collision, 0);
     
     create(collision);
 }

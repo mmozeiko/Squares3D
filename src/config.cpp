@@ -33,23 +33,23 @@ Config::Config() :
                 const XMLnode& node = *iter;
                 if (node.name == "width")
                 {
-                    m_video.width = cast<string, int>(node.value);
+                    m_video.width = cast<int>(node.value);
                 }
                 else if (node.name == "height")
                 {
-                    m_video.height = cast<string, int>(node.value);
+                    m_video.height = cast<int>(node.value);
                 }
                 else if (node.name == "fullscreen")
                 {
-                    m_video.fullscreen = cast<string, int>(node.value)==1;
+                    m_video.fullscreen = cast<int>(node.value)==1;
                 }
                 else if (node.name == "vsync")
                 {
-                    m_video.vsync = cast<string, int>(node.value)==1;
+                    m_video.vsync = cast<int>(node.value)==1;
                 }
                 else
                 {
-                    string line = cast<int, string>(node.line);
+                    string line = cast<string>(node.line);
                     throw Exception("Invalid configuration file, unknown video parameter '" + node.name + "' at line " + line);
                 }
             }
@@ -61,11 +61,11 @@ Config::Config() :
                 const XMLnode& node = *iter;
                 if (node.name == "enabled")
                 {
-                    m_audio.enabled = cast<string, int>(node.value)==1;
+                    m_audio.enabled = cast<int>(node.value)==1;
                 }
                 else
                 {
-                    string line = cast<int, string>(node.line);
+                    string line = cast<string>(node.line);
                     throw Exception("Invalid configuration file, unknown audio parameter '" + node.name + "' at line " + line);
                 }
             }
@@ -77,18 +77,18 @@ Config::Config() :
                 const XMLnode& node = *iter;
                 if (node.name == "system_keys")
                 {
-                    m_misc.system_keys = cast<string, int>(node.value)==1;
+                    m_misc.system_keys = cast<int>(node.value)==1;
                 }
                 else
                 {
-                    string line = cast<int, string>(node.line);
+                    string line = cast<string>(node.line);
                     throw Exception("Invalid configuration file, unknown misc parameter '" + node.name + "' at line " + line);
                 }
             }
         }
         else
         {
-            string line = cast<int, string>(node.line);
+            string line = cast<string>(node.line);
             throw Exception("Invalid configuration file, unknown section '" + node.name + "' at line " + line);
         }
     }
@@ -107,16 +107,16 @@ Config::~Config()
     XMLnode xml("config");
 
     xml.childs.push_back(XMLnode("video"));
-    xml.childs.back().childs.push_back(XMLnode("width", cast<int, string>(m_video.width)));
-    xml.childs.back().childs.push_back(XMLnode("height", cast<int, string>(m_video.height)));
-    xml.childs.back().childs.push_back(XMLnode("fullscreen", cast<int, string>(m_video.fullscreen ? 1 : 0)));
-    xml.childs.back().childs.push_back(XMLnode("vsync", cast<int, string>(m_video.vsync ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("width", cast<string>(m_video.width)));
+    xml.childs.back().childs.push_back(XMLnode("height", cast<string>(m_video.height)));
+    xml.childs.back().childs.push_back(XMLnode("fullscreen", cast<string>(m_video.fullscreen ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("vsync", cast<string>(m_video.vsync ? 1 : 0)));
 
     xml.childs.push_back(XMLnode("audio"));
-    xml.childs.back().childs.push_back(XMLnode("enabled", cast<int, string>(m_audio.enabled ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));
 
     xml.childs.push_back(XMLnode("misc"));
-    xml.childs.back().childs.push_back(XMLnode("system_keys", cast<int, string>(m_misc.system_keys ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
 
     out << xml;
     out.close();

@@ -11,6 +11,12 @@ class Game;
 
 namespace LevelObjects
 {
+    class Material;    
+    class Collision;
+
+    typedef map<string, Material*> MaterialsMap;
+    typedef map<string, Collision*> CollisionsMap;
+
     class Material
     {
         friend class Level;
@@ -29,8 +35,6 @@ namespace LevelObjects
         unsigned int m_texture;
     };
 
-    typedef map<string, Material*> MaterialsMap;
-
     class Collision
     {
         friend class Body;
@@ -38,6 +42,9 @@ namespace LevelObjects
         static Collision* create(const XMLnode& node, const Game* game);
         
         virtual void render(const Video* video, const MaterialsMap* materials) const = 0;
+
+        NewtonCollision*  m_newtonCollision;
+        virtual ~Collision();
     
     protected:
         Collision(const XMLnode& node, const Game* game);
@@ -46,9 +53,9 @@ namespace LevelObjects
         void create(NewtonCollision* collision, float mass, const Vector& position);
 
     private:
-        NewtonCollision*  m_newtonCollision;
-        Vector m_inertia;
-        float  m_mass;
+        NewtonWorld*      m_newtonWorld;
+        Vector            m_inertia;
+        float             m_mass;
     };
 
     class Body
@@ -73,6 +80,7 @@ namespace LevelObjects
         Matrix          m_matrix;
         float           m_totalMass;
         Vector          m_totalInertia;
+        NewtonWorld*    m_newtonWorld;
 
         void onSetForceAndTorque();
         static void onSetForceAndTorque(const NewtonBody* newtonBody);
@@ -87,8 +95,9 @@ namespace LevelObjects
         void render(const Video* video) const;
         void prepare();
 
-        set<Body*>   m_bodies;
-        MaterialsMap m_materials;
+        set<Body*>    m_bodies;
+        CollisionsMap m_collisions;
+        MaterialsMap  m_materials;
     private:
         const Game* m_game;
     };

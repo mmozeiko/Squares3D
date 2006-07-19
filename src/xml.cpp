@@ -131,7 +131,7 @@ private:
 
     string makeError(const string& errorMsg)
     {
-        return errorMsg + " at line " + cast<int, string>(curLine) + "!";
+        return errorMsg + " at line " + cast<string>(curLine) + "!";
     }
 
     char readChar()

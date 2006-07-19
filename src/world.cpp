@@ -7,7 +7,7 @@
 #include "player_local.h"
 #include "input.h"
 #include "level.h"
-
+/*
 struct ContactBodies
 {
     const NewtonBody* body1;
@@ -45,7 +45,7 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
 }
 
 ContactBodies contactBodies;
-
+*/
 World::World(Game* game) : 
     Renderable(game),
     m_camera(new Camera(game))
@@ -126,7 +126,7 @@ void World::render(const Video* video) const
 
     m_camera->render(video);
 
-    //video->renderAxes();
+    video->renderAxes();
 
     m_localPlayer->render(video);
     m_ball->render(video);

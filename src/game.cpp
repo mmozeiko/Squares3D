@@ -70,8 +70,9 @@ void Game::run()
         double newTime = timer.read();
         double deltaTime = newTime - currentTime;
         currentTime = newTime;
+        // TODO: REMOVE!!!!!
+        if (deltaTime > 0.01f) deltaTime = 0.01f;
         accum += deltaTime;
-        if (accum>0.1) clog << accum << endl;
 
         m_input->process();
         m_world->control(m_input.get());
@@ -102,7 +103,7 @@ void Game::run()
     }
 
     clog << "Game finished... " << endl;
-    clog << "Rendered " << frames << " frames in " << currentTime << " seconds = " 
-         << frames/currentTime << " FPS" << endl;
+    clog << "Rendered " << frames << " frames in " << (currentTime-startTime) << " seconds = " 
+         << frames/(currentTime-startTime) << " FPS" << endl;
 }
 

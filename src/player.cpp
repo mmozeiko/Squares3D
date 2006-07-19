@@ -2,8 +2,6 @@
 #include "video.h"
 #include "game.h"
 
-#include "body.h" // TODO: remove
-
 #include <cmath>
 
 Player::Player(Game* game, int material, const Vector& pos, const Vector& size) :
@@ -13,9 +11,7 @@ Player::Player(Game* game, int material, const Vector& pos, const Vector& size) 
     Matrix location = Matrix::translate(pos);
 
     NewtonCollision* sphere = NewtonCreateSphere(m_world, m_radius.x, m_radius.y, m_radius.z, NULL); 
-    NewtonCollision* collision = NewtonCreateConvexHullModifier(m_world, sphere); 
-    Body::create(collision, location);
-    NewtonReleaseCollision(m_world, sphere);
+    Body::create(sphere, location);
     
 	// set the viscous damping the the minimum
     const float damp[] = { 0.0f, 0.0f, 0.0f };
@@ -27,7 +23,7 @@ Player::Player(Game* game, int material, const Vector& pos, const Vector& size) 
 
 	// set the mas
     Vector intertia, origin;
-    NewtonConvexCollisionCalculateInertialMatrix(collision, intertia.v, origin.v);
+    NewtonConvexCollisionCalculateInertialMatrix(sphere, intertia.v, origin.v);
     NewtonBodySetMassMatrix(m_body, 100.0f, intertia.x, intertia.y, intertia.z);
 
   	// add and up vector constraint to help in keeping the body upright
@@ -76,9 +72,12 @@ void Player::render(const Video* video) const
     video->end();
 }
 
+#include "world.h"
+
 void Player::onSetForceAndTorque()
 {
-	float timestepInv = 1.0f / 0.01f; // 0.01f == DT
+//    clog << NewtonGetTimeStep(m_game->m_world->m_world) << endl;
+    float timestepInv = 1.0f / 0.01f; // 0.01f == DT
 
     float mass;
     float Ixx, Iyy, Izz;
@@ -86,9 +85,6 @@ void Player::onSetForceAndTorque()
     // Get the mass of the object
     NewtonBodyGetMassMatrix(m_body, &mass, &Ixx, &Iyy, &Izz );
 
-    float deltaC = (m_crouch - m_radius.y) * 0.5f * 0.01f;
-    m_radius.y += deltaC;
-    NewtonConvexHullModifierSetMatrix(m_collision, Matrix::scale(Vector(1.0, m_radius.y, 1.0)).m);
     if (m_matrix.m31+0.05f < m_radius.y)
     {
         //NewtonBodyAddForce(m_body, Vector(0.0f, 70*mass, 0.0f).v);

@@ -3,12 +3,13 @@
 
 #include <istream>
 #include <ostream>
-#include <string>
+#include "common.h"
 
 namespace File
 {
     void init(const char* argv0);
     void done();
+    bool exists(const string& filename);
 
     class InputBuffer;
     class OutputBuffer;
@@ -16,11 +17,11 @@ namespace File
     class Reader : public std::istream
     {
     public:
-        Reader(const std::string& filename = "");
+        Reader(const string& filename = "");
         ~Reader();
 
         bool is_open() const;
-        bool open(const std::string& filename);
+        bool open(const string& filename);
         void close();
 
         unsigned int filesize() const;
@@ -32,11 +33,11 @@ namespace File
     class Writer : public std::ostream
     {
     public:
-        Writer(const std::string& filename = "", bool append = false);
+        Writer(const string& filename = "", bool append = false);
         ~Writer();
 
         bool is_open() const;
-        bool open(const std::string& filename, bool append = false);
+        bool open(const string& filename, bool append = false);
         void close();
 
     private:

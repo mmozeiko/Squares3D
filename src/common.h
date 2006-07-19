@@ -32,7 +32,7 @@ typedef map<string, string>         StringMap;
 typedef map<string, unsigned int>   UIntMap;
 typedef pair<int, int>              IntPair;
 
-template <typename From, typename To>
+template <typename To, typename From>
 inline To cast(const From& from)
 {
     stringstream ss;
