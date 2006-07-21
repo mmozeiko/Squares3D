@@ -75,7 +75,6 @@ Material::Material(const XMLnode& node, const Game* game) :
     m_id(),
     m_texPath(),
     m_cAmbient(0.2f, 0.2f, 0.2f),
-    m_cDiffuse(0.8f, 0.8f, 0.8f),
     m_cSpecular(0.0f, 0.0f, 0.0f),
     m_cEmission(0.0f, 0.0f, 0.0f),
     m_cShine(0.0f),
@@ -110,10 +109,6 @@ Material::Material(const XMLnode& node, const Game* game) :
                 {
                     m_cAmbient = getAttributesInVector(node, "rgb");
                 }
-                else if (node.name == "diffuse")
-                {
-                    m_cDiffuse = getAttributesInVector(node, "rgb");
-                }
                 else if (node.name == "specular")
                 {
                     m_cSpecular = getAttributesInVector(node, "rgb");
@@ -144,8 +139,7 @@ void Material::render(const Video* video) const
 {
     video->applyTexture(m_texture);
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_cAmbient.v);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_cDiffuse.v);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_cSpecular.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m_cEmission.v);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_cShine);
@@ -306,6 +300,7 @@ Body::Body(const XMLnode& node, const Game* game):
         else if (node.name == "rotation")
         {
             rotation = getAttributesInVector(node, "xyz");
+            rotation *= DEG_IN_RAD;
         }
         else if (node.name == "collision")
         { 

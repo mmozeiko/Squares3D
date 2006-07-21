@@ -10,6 +10,9 @@
 #ifndef M_PI_4
 #define M_PI_4 0.78539816339744830962f
 #endif
+#ifndef DEG_IN_RAD
+#define DEG_IN_RAD 0.0174532925
+#endif
 
 #include <cmath>
 #include <algorithm>

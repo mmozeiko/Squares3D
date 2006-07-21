@@ -42,7 +42,6 @@
       </texture>
       <colors>
         <ambient r="0.5" g="0.5" b="0.5" />
-        <diffuse r="0.6" g="0.6" b="0.6" />
         <!--specular r="1.0" g="1.0" b="1.0" /-->
         <!--emission r="0.0" g="0.0" b="0.0" /-->
         <shine>1.0</shine>
@@ -56,7 +55,6 @@
       </texture>
       <colors>
         <ambient r="0.5" g="0.5" b="0.5" />
-        <diffuse r="0.6" g="0.6" b="0.6" />
         <!--specular r="1.0" g="1.0" b="1.0" /-->
         <!--emission r="0.0" g="0.0" b="0.0" /-->
         <shine>1.0</shine>
@@ -69,7 +67,6 @@
       </texture>
       <colors>
         <ambient r="0.5" g="0.5" b="0.5" />
-        <diffuse r="0.6" g="0.6" b="0.6" />
         <!--specular r="1.0" g="1.0" b="1.0" /-->
         <!--emission r="0.0" g="0.0" b="0.0" /-->
         <shine>1.0</shine>
@@ -257,7 +254,7 @@
 
     <body id="lady">
       <position x="3.0" y="2.0" z="-3.0" />
-      <rotation x="0.0" y="0.5" z="0.0" />
+      <rotation x="0.0" y="45.0" z="0.0" />
       <collision>body</collision>
       <collision>head</collision>
       <collision>hand1</collision>
