@@ -50,12 +50,13 @@ namespace LevelObjects
         Collision(const XMLnode& node, const Game* game);
 
         void create(NewtonCollision* collision);
-        void create(NewtonCollision* collision, float mass, const Vector& position);
+        void create(NewtonCollision* collision, float mass);
 
     private:
-        NewtonWorld*      m_newtonWorld;
-        Vector            m_inertia;
-        float             m_mass;
+        NewtonWorld* m_newtonWorld;
+        Vector       m_origin;
+        Vector       m_inertia;
+        float        m_mass;
     };
 
     class Body
@@ -66,14 +67,11 @@ namespace LevelObjects
         void prepare();
         
         string          m_id;         // ""
-        string          m_material;   // ""
-        //Vector          m_position;   // (0.0f, 0.0f, 0.0f)
-        //Vector          m_rotation;   // (0.0f, 0.0f, 0.0f)
-        set<Collision*> m_collisions;
 
     private:
         Body(const XMLnode& node, const Game* game);
         ~Body();
+
         void render(const Video* video, const MaterialsMap* materials);
 
         NewtonBody*     m_newtonBody;
@@ -81,6 +79,7 @@ namespace LevelObjects
         float           m_totalMass;
         Vector          m_totalInertia;
         NewtonWorld*    m_newtonWorld;
+        set<Collision*> m_collisions;
 
         void onSetForceAndTorque();
         static void onSetForceAndTorque(const NewtonBody* newtonBody);
@@ -100,35 +99,6 @@ namespace LevelObjects
         MaterialsMap  m_materials;
     private:
         const Game* m_game;
-    };
-
-    class CollisionBox : public Collision
-    {
-        friend class Collision;
-    public:
-        void render(const Video* video, const MaterialsMap* materials) const;
-
-        Vector m_size;      // (1.0f, 1.0f, 1.0f)
-        //Vector m_position;  // (0.0f, 0.0f, 0.0f)
-        //Vector m_rotation;  // (0.0f, 0.0f, 0.0f)
-        bool   m_hasOffset; // false
-
-    private:
-        CollisionBox(const XMLnode& node, const Game* game);
-
-        Matrix m_matrix;
-    };
-
-    class CollisionTree : public Collision
-    {
-        friend class Collision;
-    public:
-        void render(const Video* video, const MaterialsMap* materials) const;
-
-        vector<Face>   m_faces;
-        vector<string> m_materials;
-    private:
-        CollisionTree(const XMLnode& node, const Game* game);
     };
 
 }

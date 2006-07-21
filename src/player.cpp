@@ -24,7 +24,7 @@ Player::Player(Game* game, int material, const Vector& pos, const Vector& size) 
 	// set the mas
     Vector intertia, origin;
     NewtonConvexCollisionCalculateInertialMatrix(sphere, intertia.v, origin.v);
-    NewtonBodySetMassMatrix(m_body, 100.0f, intertia.x, intertia.y, intertia.z);
+    NewtonBodySetMassMatrix(m_body, 100.0f, 100.0f*intertia.x, 100.0f*intertia.y, 100.0f*intertia.z);
 
   	// add and up vector constraint to help in keeping the body upright
 	const Vector upDirection (0.0f, 1.0f, 0.0f);

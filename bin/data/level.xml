@@ -9,6 +9,24 @@
       </colors>
     </material>
 
+    <material id="lady">
+      <texture>
+        <path>lady.tga</path>
+      </texture>
+      <colors>
+        <ambient r="0.8" g="0.8" b="0.8" />
+      </colors>
+    </material>
+
+    <material id="boob">
+      <texture>
+        <path>boob.tga</path>
+      </texture>
+      <colors>
+        <ambient r="0.8" g="0.8" b="0.8" />
+      </colors>
+    </material>
+
     <material id="pavement">
       <texture>
         <path>pavement.tga</path>
@@ -29,6 +47,7 @@
         <!--emission r="0.0" g="0.0" b="0.0" /-->
         <shine>1.0</shine>
       </colors>
+      <!--shader name="bump" texture="brick_bump.tga" /-->
     </material>
 
     <material id="wood">
@@ -61,14 +80,66 @@
   </materials>
   
   <collisions>
-    <collision id="box1" type="box" mass="1.0">
+    <collision id="box1" type="box" mass="0.2" material="box">
       <size x="0.50" y="0.20" z="0.15" />
     </collision>
-    <collision id="box2" type="box" mass="500.0">
-      <size x="1.0" y="1.0" z="1.0" />
+    
+    <collision id="bumbaLiela" type="sphere" mass="100.0" material="box">
+      <radius x="2" y="2" z="3" />
+    </collision>
+    
+    <collision id="box2" type="box" mass="500.0" material="box">
+      <size x="1.5" y="1.0" z="1.5" />
       <!--offset x="2.0" y="0.0" z="2.0" />
         <rotation x="0.0" y="0.0" z="0.0" /-->
     </collision>
+
+    <collision id="thinBox" type="box" mass="50.0" material="box">
+      <size x="0.1" y="1.0" z="0.1" />
+      <offset x="0.0" y="1.0" z="0.0" />
+      <!--rotation x="0.0" y="0.0" z="0.0" /-->
+    </collision>
+
+    <collision id="heavyBox" type="sphere" mass="10000.0" material="box">
+      <radius x="0.2" y="0.1" z="0.2" />
+      <offset x="0.0" y="1.55" z="0.0" />
+      <!--rotation x="0.0" y="0.0" z="0.0" /-->
+    </collision>
+
+    <collision id="body" type="sphere" mass="10.0" material="box">
+      <radius x="0.3" y="1.2" z="0.5" />
+      <offset x="0.0" y="0.0" z="0.0" />
+      <!--rotation x="0.0" y="0.0" z="0.0" /-->
+    </collision>
+    <collision id="head" type="sphere" mass="10.0" material="lady">
+      <radius x="0.3" y="0.4" z="0.3" />
+      <offset x="0.0" y="1.2" z="0.0" />
+    </collision>
+    <collision id="boob1" type="sphere" mass="10.0" material="boob">
+      <radius x="0.25" y="0.2" z="0.2" />
+      <offset x="0.2" y="0.6" z="0.2" />
+      <rotation x="0.0" y="1.7" z="1.7" />
+    </collision>
+    <collision id="boob2" type="sphere" mass="10.0" material="boob">
+      <radius x="0.25" y="0.2" z="0.2" />
+      <offset x="0.2" y="0.6" z="-0.2" />
+      <rotation x="0.0" y="1.7" z="1.7" />
+    </collision>
+    <collision id="hand1" type="box" mass="10.0" material="box">
+      <size x="0.15" y="1.0" z="0.1" />
+      <offset x="0.0" y="0.4" z="-0.5" />
+      <rotation x="0.5" y="0.0" z="0.0" />
+    </collision>
+    <collision id="hand2" type="box" mass="10.0">
+      <size x="0.15" y="1.0" z="0.1" />
+      <offset x="0.0" y="0.4" z="0.5" />
+      <rotation x="-0.5" y="0.0" z="0.0" />
+    </collision>
+    <collision id="leg" type="box" mass="100.0">
+      <size x="0.8" y="0.05" z="0.8" />
+      <offset x="0.0" y="-1.2" z="0.0" />
+    </collision>
+
     <collision id="tree1" type="tree">
       <face material="pavement">
         <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
@@ -155,8 +226,8 @@
       </face>
     </collision>
   </collisions>
-  
-  
+
+
   <bodies>
     <body id="level">
       <position x="0.0" y="0.0" z="0.0" />
@@ -164,116 +235,38 @@
       <collision>tree1</collision>
     </body>
 
-    <body id="box" material="box">
-      <position x="-2.0" y="0.5" z="2.0" />
+    <body id="box">
+      <position x="-4.0" y="0.5" z="2.0" />
       <rotation x="0.0" y="0.5" z="0.0" />
       <collision>box2</collision>
     </body>
-
-    <!--body id="combinedbox" material="box">
-      <position x="-2.0" y="0.5" z="2.0" />
+    
+    <!--body id="sphere">
+      <position x="-8.0" y="5.5" z="2.0" />
       <rotation x="0.0" y="0.5" z="0.0" />
-      <collision>box2</collision>
-      <collision>box3</collision>
+      <collision>bumbaLiela</collision>
     </body-->
 
+    <!--body id="combinedbox">
+      <position x="-2.0" y="1.55" z="-2.0" />
+      <rotation x="0.0" y="0.5" z="4.6" />
+      <collision>box2</collision>
+      <collision>thinBox</collision>
+      <collision>heavyBox</collision>
+    </body-->
 
-<body id="brick001" material="wood"><position x="0.60" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick002" material="wood"><position x="1.10" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick003" material="wood"><position x="1.60" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick004" material="wood"><position x="2.10" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick005" material="wood"><position x="2.60" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick006" material="wood"><position x="3.10" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick007" material="wood"><position x="3.60" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick008" material="wood"><position x="4.10" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick009" material="wood"><position x="4.60" y="0.10" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick010" material="wood"><position x="0.35" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="0.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
+    <body id="lady">
+      <position x="3.0" y="2.0" z="-3.0" />
+      <rotation x="0.0" y="0.5" z="0.0" />
+      <collision>body</collision>
+      <collision>head</collision>
+      <collision>hand1</collision>
+      <collision>hand2</collision>
+      <collision>boob1</collision>
+      <collision>boob2</collision>
+      <collision>leg</collision>
+    </body>
 
-<body id="brick010" material="wood"><position x="0.35" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="0.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-
-<body id="brick010" material="wood"><position x="0.35" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="1.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-
-<body id="brick010" material="wood"><position x="0.35" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="1.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-
-<body id="brick010" material="wood"><position x="0.35" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="1.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-
-<body id="brick010" material="wood"><position x="0.35" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="2.05" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-
-<body id="brick010" material="wood"><position x="0.35" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="2.35" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-
-<body id="brick010" material="wood"><position x="0.35" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick011" material="wood"><position x="0.85" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick012" material="wood"><position x="1.35" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick013" material="wood"><position x="1.85" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick014" material="wood"><position x="2.35" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick015" material="wood"><position x="2.85" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick016" material="wood"><position x="3.35" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick017" material="wood"><position x="3.85" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick018" material="wood"><position x="4.35" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
-<body id="brick019" material="wood"><position x="4.85" y="2.55" z="2.0" /><rotation x="0.0" y="0.0" z="0.0" /><collision>box1</collision></body>
 
   </bodies>
 

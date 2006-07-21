@@ -58,14 +58,6 @@ World::World(Game* game) :
 
 void World::init()
 {
-    //NewtonCollision* floorCol = NewtonCreateBox(m_world, 100.0f, 1.0f, 100.f, NULL);
-    //NewtonBody* floorBody = NewtonCreateBody(m_world, floorCol);
-	//NewtonReleaseCollision(m_world, floorCol);
-
- //   Matrix pos = Matrix::translate(Vector(0.0f, -0.5f, 0.0f));
- //   NewtonBodySetMatrix(floorBody, pos.m);
- //   
- //   int floorID = NewtonMaterialCreateGroupID(m_world);
 	int charID = NewtonMaterialCreateGroupID(m_world);
 
 	//NewtonMaterialSetDefaultElasticity(m_world, floorID, charID, 0.4f);

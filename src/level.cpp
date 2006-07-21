@@ -5,6 +5,50 @@
 #include "game.h"
 #include "world.h"
 
+using namespace LevelObjects;
+
+/////
+
+    class CollisionConvex : public Collision
+    {
+    protected:
+        CollisionConvex(const XMLnode& node, const Game* game);
+
+        string m_material;   // ""
+        bool   m_hasOffset; // false
+        Matrix m_matrix;
+    };
+
+    class CollisionBox : public CollisionConvex
+    {
+    public:
+        CollisionBox(const XMLnode& node, const Game* game);
+        void render(const Video* video, const MaterialsMap* materials) const;
+
+        Vector m_size;      // (1.0f, 1.0f, 1.0f)
+    };
+
+    class CollisionSphere : public CollisionConvex
+    {
+    public:
+        CollisionSphere(const XMLnode& node, const Game* game);
+        void render(const Video* video, const MaterialsMap* materials) const;
+
+        Vector m_radius;      // (1.0f, 1.0f, 1.0f)
+    };
+
+    class CollisionTree : public Collision
+    {
+    public:
+        CollisionTree(const XMLnode& node, const Game* game);
+        void render(const Video* video, const MaterialsMap* materials) const;
+
+        vector<Face>   m_faces;
+        vector<string> m_materials;
+    };
+
+/////
+
 string getAttribute(const XMLnode& node, const string& name)
 {
     if (foundInMap(node.attributes, name))
@@ -26,8 +70,6 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
     return vector;
 
 }
-
-using namespace LevelObjects;
 
 Material::Material(const XMLnode& node, const Game* game) :
     m_id(),
@@ -244,7 +286,6 @@ void Level::render(const Video* video) const
 
 Body::Body(const XMLnode& node, const Game* game):
     m_id(), 
-    m_material(), 
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),
@@ -254,12 +295,6 @@ Body::Body(const XMLnode& node, const Game* game):
 
     Vector position(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
-
-    string name = "material";
-    if (foundInMap(node.attributes, name))
-    {
-        m_material = getAttribute(node, name);
-    }
 
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -291,40 +326,68 @@ Body::Body(const XMLnode& node, const Game* game):
         }
     }
 
-    static int i = 0;
-    i++;
+    Vector totalOrigin;
 
-    //right now we support just one collision per body
+    NewtonCollision* newtonCollision = NULL;
+
     if (m_collisions.size() == 1)
     {
         Collision* collision = *m_collisions.begin();
 
-        m_totalMass += collision->m_mass;
-        m_totalInertia += collision->m_inertia;
-        
-        m_newtonBody = NewtonCreateBody(game->m_world->m_world, collision->m_newtonCollision);
-        NewtonBodySetUserData(m_newtonBody, static_cast<void*>(this));
+        m_totalMass = collision->m_mass;
+        m_totalInertia = collision->m_inertia;
+        totalOrigin = collision->m_origin;
 
-        NewtonBodySetMassMatrix(m_newtonBody, m_totalMass, m_totalInertia.x, m_totalInertia.y, m_totalInertia.z);
-        
-        NewtonBodySetForceAndTorqueCallback(m_newtonBody, onSetForceAndTorque);
+        newtonCollision = collision->m_newtonCollision;
+    }
+    else if (m_collisions.size() > 1)
+    {
+        vector<NewtonCollision*> newtonCollisions(m_collisions.size());
+        unsigned int cnt = 0;
+        for each_const(set<Collision*>, m_collisions, collision)
+        {
+            newtonCollisions[cnt++] = (*collision)->m_newtonCollision;
+            m_totalMass += (*collision)->m_mass;
+            m_totalInertia += (*collision)->m_inertia;
+            totalOrigin += (*collision)->m_origin;
+        }
+        totalOrigin /= m_totalMass;
 
-        //m_matrix = m_matrix.identity();
-        NewtonSetEulerAngle(rotation.v, m_matrix.m);
-        m_matrix = Matrix::translate(position) * m_matrix;
-                
-        NewtonBodySetMatrix(m_newtonBody, m_matrix.m);
-
-        NewtonBodySetAutoFreeze(m_newtonBody, 0);
-	    //NewtonWorldUnfreezeBody(game->m_world->m_world, m_newtonBody);
-
-
-        NewtonReleaseCollision(game->m_world->m_world, collision->m_newtonCollision);
-
-        // Set Material Id for this object
-	    //NewtonBodySetMaterialGroupID(m_body, material);
+        newtonCollision = NewtonCreateCompoundCollision(
+                                                game->m_world->m_world,
+                                                newtonCollisions.size(),
+                                                &newtonCollisions[0]);
+        for each_const(vector<NewtonCollision*>, newtonCollisions, collision)
+        {
+            NewtonReleaseCollision(game->m_world->m_world, *collision);
+        }
+    }
+    else
+    {
+        throw Exception("No collisions were found for body '" + m_id + "'");
     }
 
+    m_newtonBody = NewtonCreateBody(game->m_world->m_world, newtonCollision);
+    NewtonBodySetUserData(m_newtonBody, static_cast<void*>(this));
+
+    // Set Material Id for this object
+    //NewtonBodySetMaterialGroupID(m_body, material);
+
+    NewtonBodySetMassMatrix(m_newtonBody, m_totalMass, m_totalInertia.x, m_totalInertia.y, m_totalInertia.z);
+    NewtonBodySetCentreOfMass(m_newtonBody, totalOrigin.v);
+    
+    NewtonBodySetForceAndTorqueCallback(m_newtonBody, onSetForceAndTorque);
+
+    //m_matrix = m_matrix.identity();
+    NewtonSetEulerAngle(rotation.v, m_matrix.m);
+    m_matrix = Matrix::translate(position) * m_matrix;
+            
+    NewtonBodySetMatrix(m_newtonBody, m_matrix.m);
+
+    NewtonBodySetAutoFreeze(m_newtonBody, 0);
+    //NewtonWorldUnfreezeBody(game->m_world->m_world, m_newtonBody);
+
+    NewtonReleaseCollision(game->m_world->m_world, newtonCollision);
 }
 
 Body::~Body()
@@ -354,12 +417,6 @@ void Body::onSetForceAndTorque(const NewtonBody* body)
 
 void Body::render(const Video* video, const MaterialsMap* materials)
 {
-    MaterialsMap::const_iterator material = materials->find(m_material);
-    if (material != materials->end())
-    {
-        material->second->render(video);
-    }
-
     video->begin(m_matrix);
 
     for each_const(set<Collision*>, m_collisions, iter)
@@ -371,7 +428,7 @@ void Body::render(const Video* video, const MaterialsMap* materials)
 }
 
 Collision::Collision(const XMLnode& node, const Game* game) :
-    m_inertia(), m_mass(0.0f), m_newtonWorld(game->m_world->m_world)
+    m_inertia(), m_mass(0.0f), m_origin(), m_newtonWorld(game->m_world->m_world)
 {
 }
 
@@ -385,74 +442,14 @@ void Collision::create(NewtonCollision* collision)
     m_newtonCollision = collision;
 }
 
-void Collision::create(NewtonCollision* collision, float mass, const Vector& position)
+void Collision::create(NewtonCollision* collision, float mass)
 {
     m_newtonCollision = collision;
     m_mass = mass;
 
-    // TODO: wtf???
-    Vector p;
-    NewtonConvexCollisionCalculateInertialMatrix(m_newtonCollision, m_inertia.v, p.v);
-}
-
-CollisionBox::CollisionBox(const XMLnode& node, const Game* game) :
-    Collision(node, game),
-    m_size(1.0f, 1.0f, 1.0f), 
-    m_hasOffset(false)
-{
-    Vector offset(0.0f, 0.0f, 0.0f);
-    Vector rotation(0.0f, 0.0f, 0.0f);
-
-    float mass = cast<float>(getAttribute(node, "mass"));
-
-    for each_const(XMLnodes, node.childs, iter)
-    {
-        const XMLnode& node = *iter;
-        if (node.name == "size")
-        {
-            m_size = getAttributesInVector(node, "xyz");
-        }
-        else if (node.name == "offset")
-        {
-            offset = getAttributesInVector(node, "xyz");
-            m_hasOffset = true;
-        }
-        else if (node.name == "rotation")
-        {
-            rotation = getAttributesInVector(node, "xyz");
-            m_hasOffset = true;
-        }
-        else
-        {
-            throw Exception("Invalid collision, unknown node - " + node.name);
-        }
-    }
-
-    if (m_hasOffset)
-    {
-        NewtonSetEulerAngle(rotation.v, m_matrix.m);
-        m_matrix = Matrix::translate(offset) * m_matrix;
-    }
-
-    create(
-        NewtonCreateBox(game->m_world->m_world, m_size.x, m_size.y, m_size.z, (m_hasOffset ? m_matrix.m : NULL)),
-        mass,
-        offset);
-}
-
-void CollisionBox::render(const Video* video, const MaterialsMap* materials) const
-{
-    glPushMatrix();
-
-    if (m_hasOffset)
-    {
-        glMultMatrixf(m_matrix.m);
-    }
-
-    glScalef(m_size.x, m_size.y, m_size.z);
-    video->renderCube();
-
-    glPopMatrix();
+    NewtonConvexCollisionCalculateInertialMatrix(m_newtonCollision, m_inertia.v, m_origin.v);
+    m_inertia *= mass;
+    m_origin *= mass;
 }
 
 Collision* Collision::create(const XMLnode& node, const Game* game)
@@ -462,6 +459,10 @@ Collision* Collision::create(const XMLnode& node, const Game* game)
     if (type == "box")
     {
         return new CollisionBox(node, game);
+    }    
+    if (type == "sphere")
+    {
+        return new CollisionSphere(node, game);
     }
     else if (type == "tree")
     {
@@ -471,6 +472,144 @@ Collision* Collision::create(const XMLnode& node, const Game* game)
     {
         throw Exception("Unknown collision type - " + type);
     }
+}
+
+CollisionConvex::CollisionConvex(const XMLnode& node, const Game* game) :
+    Collision(node, game),
+    m_hasOffset(false),
+    m_material()
+{
+    Vector offset(0.0f, 0.0f, 0.0f);
+    Vector rotation(0.0f, 0.0f, 0.0f);
+
+    string name = "material";
+    if (foundInMap(node.attributes, name))
+    {
+        m_material = getAttribute(node, name);
+    }
+
+    for each_const(XMLnodes, node.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name == "offset")
+        {
+            offset = getAttributesInVector(node, "xyz");
+            m_hasOffset = true;
+        }
+        else if (node.name == "rotation")
+        {
+            rotation = getAttributesInVector(node, "xyz");
+            m_hasOffset = true;
+        }
+    }
+
+    if (m_hasOffset)
+    {
+        NewtonSetEulerAngle(rotation.v, m_matrix.m);
+        m_matrix = Matrix::translate(offset) * m_matrix;
+    }
+}
+
+CollisionBox::CollisionBox(const XMLnode& node, const Game* game) :
+    CollisionConvex(node, game),
+    m_size(1.0f, 1.0f, 1.0f)
+{
+    float mass = cast<float>(getAttribute(node, "mass"));
+
+    for each_const(XMLnodes, node.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name == "size")
+        {
+            m_size = getAttributesInVector(node, "xyz");
+        }
+        else if (node.name != "offset" && node.name != "rotation")
+        {
+            throw Exception("Invalid collision, unknown node - " + node.name);
+        }
+    }
+
+    create(
+        NewtonCreateBox(
+            game->m_world->m_world, 
+            m_size.x, m_size.y, m_size.z, 
+            (m_hasOffset ? m_matrix.m : NULL)
+        ),
+        mass);
+}
+
+void CollisionBox::render(const Video* video, const MaterialsMap* materials) const
+{
+    glPushMatrix();
+
+    MaterialsMap::const_iterator material = materials->find(m_material);
+    if (material != materials->end())
+    {
+        material->second->render(video);
+    }
+
+    if (m_hasOffset)
+    {
+        glMultMatrixf(m_matrix.m);
+    }
+
+    glScalef(m_size.x, m_size.y, m_size.z);
+    video->renderCube();
+
+    glDisable(GL_TEXTURE_2D);
+
+    glPopMatrix();
+}
+
+CollisionSphere::CollisionSphere(const XMLnode& node, const Game* game) :
+    CollisionConvex(node, game),
+    m_radius(1.0f, 1.0f, 1.0f)
+{
+    float mass = cast<float>(getAttribute(node, "mass"));
+
+    for each_const(XMLnodes, node.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name == "radius")
+        {
+            m_radius = getAttributesInVector(node, "xyz");
+        }
+        else if (node.name != "offset" && node.name != "rotation")
+        {
+            throw Exception("Invalid collision, unknown node - " + node.name);
+        }
+    }
+
+    create(
+        NewtonCreateSphere(
+            game->m_world->m_world, 
+            m_radius.x, m_radius.y, m_radius.z, 
+            (m_hasOffset ? m_matrix.m : NULL)
+        ),
+        mass);
+}
+
+void CollisionSphere::render(const Video* video, const MaterialsMap* materials) const
+{
+    glPushMatrix();
+
+    MaterialsMap::const_iterator material = materials->find(m_material);
+    if (material != materials->end())
+    {
+        material->second->render(video);
+    }
+
+    if (m_hasOffset)
+    {
+        glMultMatrixf(m_matrix.m);
+    }
+
+    glScalef(m_radius.x, m_radius.y, m_radius.z);
+    video->renderSphere();
+
+    glDisable(GL_TEXTURE_2D);
+
+    glPopMatrix();
 }
 
 CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
@@ -530,4 +669,6 @@ void CollisionTree::render(const Video* video, const MaterialsMap* materials) co
 
         video->renderFace(m_faces[i]);
     }
+
+    glDisable(GL_TEXTURE_2D);
 }
