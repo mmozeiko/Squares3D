@@ -1,7 +1,7 @@
 #include "utilities.h"
 
 #include <ctime>
-#include <locale>
+#include <cctype>
 
 string getDateTime()
 {
@@ -20,11 +20,11 @@ string trim(const string& str)
 {
     size_t i = 0;
     size_t j = str.size()-1;
-    while (i<str.size() && std::isspace(str[i], std::locale::classic()))
+    while (i<str.size() && std::isspace(str[i]))
     {
         i++;
     }
-    while (j>i && std::isspace(str[j], std::locale::classic()))
+    while (j>i && std::isspace(str[j]))
     {
         j--;
     }

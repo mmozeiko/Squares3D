@@ -87,7 +87,7 @@ public:
     static PFNGLUNIFORM3FARBPROC              glUniform3fARB;
     static PFNGLUNIFORMMATRIX4FVARBPROC       glUniformMatrix4fvARB;
     static PFNGLVERTEXATTRIB2FARBPROC         glVertexAttrib2fARB;
-    static PFNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB;
+    static PFNGLVERTEXATTRIB3FVARBPROC        glVertexAttrib3fvARB;
 
     bool          m_haveShaders;
 

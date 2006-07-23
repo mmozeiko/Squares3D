@@ -221,7 +221,7 @@ private:
             }
             int i;
             ss >> i;
-            if (ss.fail())
+            if (static_cast<size_t>(ss.tellg()) != ss.str().size())
             {
                 throw Exception(makeError("Unknown entity " + entity));
             }

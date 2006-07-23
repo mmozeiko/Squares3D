@@ -263,9 +263,6 @@ void Level::prepare()
 
 void Level::render(const Video* video) const
 {
-    // TODO: Remove
-    glEnable(GL_TEXTURE_2D);
-
     glPushAttrib(GL_LIGHTING_BIT);
     glDisable(GL_COLOR_MATERIAL);
     for each_const(set<Body*>, m_bodies, iter)
@@ -273,9 +270,6 @@ void Level::render(const Video* video) const
        (*iter)->render(video, &m_materials);
     }    
     glPopAttrib();
-    
-    // TODO: Remove
-    glDisable(GL_TEXTURE_2D);
 }
 
 Body::Body(const XMLnode& node, const Game* game):
@@ -299,8 +293,7 @@ Body::Body(const XMLnode& node, const Game* game):
         }
         else if (node.name == "rotation")
         {
-            rotation = getAttributesInVector(node, "xyz");
-            rotation *= DEG_IN_RAD;
+            rotation = getAttributesInVector(node, "xyz") * DEG_IN_RAD;
         }
         else if (node.name == "collision")
         { 
@@ -338,19 +331,20 @@ Body::Body(const XMLnode& node, const Game* game):
     else if (m_collisions.size() > 1)
     {
         vector<NewtonCollision*> newtonCollisions(m_collisions.size());
-        unsigned int cnt = 0;
-        for each_const(set<Collision*>, m_collisions, collision)
+        int cnt = 0;
+        for each_const(set<Collision*>, m_collisions, iter)
         {
-            newtonCollisions[cnt++] = (*collision)->m_newtonCollision;
-            m_totalMass += (*collision)->m_mass;
-            m_totalInertia += (*collision)->m_inertia;
-            totalOrigin += (*collision)->m_origin;
+            Collision* collision = *iter;
+            newtonCollisions[cnt++] = collision->m_newtonCollision;
+            m_totalMass += collision->m_mass;
+            m_totalInertia += collision->m_inertia;
+            totalOrigin += collision->m_origin;
         }
         totalOrigin /= m_totalMass;
 
         newtonCollision = NewtonCreateCompoundCollision(
                                                 game->m_world->m_world,
-                                                newtonCollisions.size(),
+                                                cnt,
                                                 &newtonCollisions[0]);
         for each_const(vector<NewtonCollision*>, newtonCollisions, collision)
         {
@@ -540,6 +534,7 @@ void CollisionBox::render(const Video* video, const MaterialsMap* materials) con
     MaterialsMap::const_iterator material = materials->find(m_material);
     if (material != materials->end())
     {
+        glEnable(GL_TEXTURE_2D);
         material->second->render(video);
     }
 
@@ -591,6 +586,7 @@ void CollisionSphere::render(const Video* video, const MaterialsMap* materials) 
     MaterialsMap::const_iterator material = materials->find(m_material);
     if (material != materials->end())
     {
+        glEnable(GL_TEXTURE_2D);
         material->second->render(video);
     }
 
@@ -649,7 +645,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
     NewtonTreeCollisionBeginBuild(collision);
     for each_const(vector<Face>, m_faces, iter)
     {
-        NewtonTreeCollisionAddFace(collision, iter->vertexes.size(), iter->vertexes[0].v, sizeof(Vector), 0);
+        NewtonTreeCollisionAddFace(collision, static_cast<int>(iter->vertexes.size()), iter->vertexes[0].v, sizeof(Vector), 0);
     }
     NewtonTreeCollisionEndBuild(collision, 0);
     
@@ -658,6 +654,8 @@ CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
 
 void CollisionTree::render(const Video* video, const MaterialsMap* materials) const
 {
+    glEnable(GL_TEXTURE_2D);
+
     for (size_t i = 0; i < m_faces.size(); i++)
     {
         materials->find(m_materials[i])->second->render(video);

@@ -7,8 +7,8 @@ varying vec2 uv;
 varying vec3 lightVec;
 varying vec3 halfVec;
 
-const float diffuseCoeff = 0.7;
-const float specularCoeff = 0.5;
+const float diffuseCoeff = 0.8;
+const float specularCoeff = 0.15;
 
 void main()
 {
