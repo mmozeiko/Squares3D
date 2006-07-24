@@ -9,6 +9,17 @@
       </colors>
     </material>
 
+    <material id="football">
+      <texture>
+        <path>ball.tga</path>
+        <bump_path>ball_bump.tga</bump_path>
+      </texture>
+      <shader name="bump" />
+      <colors>
+        <ambient r="0.8" g="0.8" b="0.8" />
+      </colors>
+    </material>
+
     <material id="lady">
       <texture>
         <path>lady.tga</path>
@@ -79,6 +90,10 @@
   <collisions>
     <collision id="box1" type="box" mass="0.2" material="box">
       <size x="0.50" y="0.20" z="0.15" />
+    </collision>
+
+    <collision id="football" type="sphere" mass="0.4" material="football">
+      <radius x="0.11" y="0.11" z="0.11" />
     </collision>
     
     <collision id="bumbaLiela" type="sphere" mass="100.0" material="box">
@@ -236,6 +251,12 @@
       <position x="-4.0" y="0.5" z="2.0" />
       <rotation x="0.0" y="0.5" z="0.0" />
       <collision>box2</collision>
+    </body>
+
+    <body id="football">
+      <position x="0.0" y="0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      <collision>football</collision>
     </body>
     
     <!--body id="sphere">

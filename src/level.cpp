@@ -73,12 +73,13 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
 
 Material::Material(const XMLnode& node, const Game* game) :
     m_id(),
-    m_texPath(),
+    m_shaderName(),
     m_cAmbient(0.2f, 0.2f, 0.2f),
     m_cSpecular(0.0f, 0.0f, 0.0f),
     m_cEmission(0.0f, 0.0f, 0.0f),
     m_cShine(0.0f),
-    m_texture(0)
+    m_texture(0),
+    m_textureBump(0)
 {
     m_id = getAttribute(node, "id");
 
@@ -92,7 +93,11 @@ Material::Material(const XMLnode& node, const Game* game) :
                 const XMLnode& node = *iter;
                 if (node.name == "path")
                 {
-                    m_texPath = node.value;
+                    m_texture = game->m_video->loadTexture(node.value);
+                }
+                else if (node.name == "bump_path")
+                {
+                    m_textureBump = game->m_video->loadTexture(node.value);
                 }
                 else
                 {
@@ -127,19 +132,22 @@ Material::Material(const XMLnode& node, const Game* game) :
                 }
             }
         }
+        else if (node.name == "shader")
+        {
+            m_shaderName = getAttribute(node, "name");
+        }
         else
         {
             throw Exception("Invalid material, unknown node - " + node.name);
         }
     }
-    m_texture = game->m_video->loadTexture(m_texPath);
 }
 
 void Material::render(const Video* video) const
 {
     video->applyTexture(m_texture);
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_cSpecular.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m_cEmission.v);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_cShine);
@@ -173,7 +181,7 @@ void Level::load(const string& levelFile)
                 const XMLnode& node = *iter;
                 if (node.name == "body")
                 {
-                    m_bodies.insert(new Body(node, m_game));
+                    m_bodies[getAttribute(node, "id")] = new Body(node, m_game);
                 }
                 else
                 {
@@ -239,9 +247,9 @@ void Level::load(const string& levelFile)
 
 Level::~Level()
 {
-    for each_(set<Body*>, m_bodies, iter)
+    for each_(BodiesMap, m_bodies, iter)
     {
-        delete *iter;
+        delete iter->second;
     }
     for each_const(CollisionsMap, m_collisions, iter)
     {
@@ -255,9 +263,9 @@ Level::~Level()
 
 void Level::prepare()
 {
-    for each_const(set<LevelObjects::Body*>, m_bodies, iter)
+    for each_const(BodiesMap, m_bodies, iter)
     {
-        (*iter)->prepare();
+        (iter->second)->prepare();
     }
 }
 
@@ -265,21 +273,20 @@ void Level::render(const Video* video) const
 {
     glPushAttrib(GL_LIGHTING_BIT);
     glDisable(GL_COLOR_MATERIAL);
-    for each_const(set<Body*>, m_bodies, iter)
+    for each_const(BodiesMap, m_bodies, iter)
     {
-       (*iter)->render(video, &m_materials);
+       (iter->second)->render(video, &m_materials);
     }    
     glPopAttrib();
 }
 
 Body::Body(const XMLnode& node, const Game* game):
-    m_id(), 
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),
     m_newtonWorld(game->m_world->m_world)
 {
-    m_id = getAttribute(node, "id");
+    string id = getAttribute(node, "id");
 
     Vector position(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
@@ -305,7 +312,7 @@ Body::Body(const XMLnode& node, const Game* game):
             }
             else
             {
-                throw Exception("Could not find specified collision for body '" + m_id + "'");
+                throw Exception("Could not find specified collision for body '" + id + "'");
             }
         }
         else
@@ -353,7 +360,7 @@ Body::Body(const XMLnode& node, const Game* game):
     }
     else
     {
-        throw Exception("No collisions were found for body '" + m_id + "'");
+        throw Exception("No collisions were found for body '" + id + "'");
     }
 
     m_newtonBody = NewtonCreateBody(game->m_world->m_world, newtonCollision);
@@ -374,6 +381,11 @@ Body::Body(const XMLnode& node, const Game* game):
     NewtonBodySetMatrix(m_newtonBody, m_matrix.m);
 
     NewtonBodySetAutoFreeze(m_newtonBody, 0);
+
+    if (id == "football")
+    {
+        NewtonBodySetContinuousCollisionMode(m_newtonBody, 1);
+    }
     //NewtonWorldUnfreezeBody(game->m_world->m_world, m_newtonBody);
 
     NewtonReleaseCollision(game->m_world->m_world, newtonCollision);
@@ -665,3 +677,4 @@ void CollisionTree::render(const Video* video, const MaterialsMap* materials) co
 
     glDisable(GL_TEXTURE_2D);
 }
+

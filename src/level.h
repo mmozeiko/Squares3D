@@ -13,16 +13,18 @@ namespace LevelObjects
 {
     class Material;    
     class Collision;
+    class Body;
 
-    typedef map<string, Material*> MaterialsMap;
+    typedef map<string, Material*>  MaterialsMap;
     typedef map<string, Collision*> CollisionsMap;
+    typedef map<string, Body*> BodiesMap;
 
     class Material
     {
         friend class Level;
     public:
         string m_id;        // ""
-        string m_texPath;   // ""
+        string m_shaderName; // ""
         Vector m_cAmbient;  // (0.2f, 0.2f, 0.2f, 1.0f)
         Vector m_cDiffuse;  // (0.8f, 0.8f, 0.8f, 1.0f)
         Vector m_cSpecular; // (0.0f, 0.0f, 0.0f)
@@ -33,6 +35,7 @@ namespace LevelObjects
     private: 
         Material(const XMLnode& node, const Game* game);
         unsigned int m_texture;
+        unsigned int m_textureBump;
     };
 
     class Collision
@@ -66,8 +69,6 @@ namespace LevelObjects
     public:
         void prepare();
         
-        string          m_id;         // ""
-
     private:
         Body(const XMLnode& node, const Game* game);
         ~Body();
@@ -94,7 +95,7 @@ namespace LevelObjects
         void render(const Video* video) const;
         void prepare();
 
-        set<Body*>    m_bodies;
+        BodiesMap     m_bodies;
         CollisionsMap m_collisions;
         MaterialsMap  m_materials;
     private:
