@@ -1,6 +1,5 @@
 #include "player.h"
 #include "camera.h"
-#include "ball.h"
 #include "world.h"
 #include "video.h"
 #include "game.h"
@@ -70,7 +69,6 @@ void World::init()
  //   NewtonBodySetMaterialGroupID(floorBody, floorID);
 
     m_localPlayer.reset(new LocalPlayer(m_game, charID, Vector(1.0f, 2.0f, 0.0f), Vector(0.75, 2, 0.75)));
-    m_ball.reset(new Ball(m_game, Vector(1, 0.2f, 1), 0.2f));
 
     m_level.reset(new LevelObjects::Level(m_game));
     m_level->load("/data/level.xml");
@@ -78,7 +76,6 @@ void World::init()
 
 World::~World()
 {
-    delete m_ball.release();
     delete m_localPlayer.release();
     delete m_level.release();
 
@@ -108,7 +105,6 @@ void World::prepare()
 {
     m_camera->prepare();
     m_localPlayer->prepare();
-    m_ball->prepare();
     m_level->prepare();
 }
 
@@ -121,7 +117,6 @@ void World::render(const Video* video) const
     video->renderAxes();
 
     m_localPlayer->render(video);
-    m_ball->render(video);
     m_level->render(video);
 
     glfwSwapBuffers();

@@ -7,7 +7,6 @@
 
 class Camera;
 class Player;
-class Ball;
 
 namespace LevelObjects
 {
@@ -33,7 +32,6 @@ public:
 
 private:
     auto_ptr<Player>                m_localPlayer;
-    auto_ptr<Ball>                  m_ball;
 
 };
 

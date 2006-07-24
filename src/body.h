@@ -15,7 +15,6 @@ public:
     {
         FloorBody,
         PlayerBody,
-        BallBody,
     };
 
     Body(Game* game, const BodyType type);
