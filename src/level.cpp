@@ -73,7 +73,7 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
 
 Material::Material(const XMLnode& node, const Game* game) :
     m_id(),
-    m_shaderName(),
+    m_shader(NULL),
     m_cAmbient(0.2f, 0.2f, 0.2f),
     m_cSpecular(0.0f, 0.0f, 0.0f),
     m_cEmission(0.0f, 0.0f, 0.0f),
@@ -134,7 +134,8 @@ Material::Material(const XMLnode& node, const Game* game) :
         }
         else if (node.name == "shader")
         {
-            m_shaderName = getAttribute(node, "name");
+            std::string name = getAttribute(node, "name");
+            m_shader = game->m_video->loadShader(name + ".vp", name + ".fp");
         }
         else
         {
@@ -143,14 +144,39 @@ Material::Material(const XMLnode& node, const Game* game) :
     }
 }
 
-void Material::render(const Video* video) const
+void Material::enable(const Video* video) const
 {
-    video->applyTexture(m_texture);
+    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_cSpecular.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m_cEmission.v);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_cShine);
+
+    if (video->m_haveShaders && (m_shader != NULL))
+    {
+        Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, m_textureBump);
+        video->begin(m_shader);
+    }
+    
+
+}
+
+void Material::disable(const Video* video) const
+{
+    if (video->m_haveShaders && (m_shader != NULL))
+    {
+        video->end(m_shader);
+        Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    glDisable(GL_TEXTURE_2D);
 }
 
 Level::Level(const Game* game) :
@@ -544,10 +570,11 @@ void CollisionBox::render(const Video* video, const MaterialsMap* materials) con
     glPushMatrix();
 
     MaterialsMap::const_iterator material = materials->find(m_material);
-    if (material != materials->end())
+    bool hasMaterial = (material != materials->end());
+
+    if (hasMaterial)
     {
-        glEnable(GL_TEXTURE_2D);
-        material->second->render(video);
+        material->second->enable(video);
     }
 
     if (m_hasOffset)
@@ -558,7 +585,10 @@ void CollisionBox::render(const Video* video, const MaterialsMap* materials) con
     glScalef(m_size.x, m_size.y, m_size.z);
     video->renderCube();
 
-    glDisable(GL_TEXTURE_2D);
+    if (hasMaterial)
+    {
+        material->second->disable(video);
+    }
 
     glPopMatrix();
 }
@@ -596,10 +626,11 @@ void CollisionSphere::render(const Video* video, const MaterialsMap* materials) 
     glPushMatrix();
 
     MaterialsMap::const_iterator material = materials->find(m_material);
-    if (material != materials->end())
+    bool hasMaterial = (material != materials->end());
+
+    if (hasMaterial)
     {
-        glEnable(GL_TEXTURE_2D);
-        material->second->render(video);
+        material->second->enable(video);
     }
 
     if (m_hasOffset)
@@ -610,7 +641,10 @@ void CollisionSphere::render(const Video* video, const MaterialsMap* materials) 
     glScalef(m_radius.x, m_radius.y, m_radius.z);
     video->renderSphere();
 
-    glDisable(GL_TEXTURE_2D);
+    if (hasMaterial)
+    {
+        material->second->disable(video);
+    }
 
     glPopMatrix();
 }
@@ -666,15 +700,24 @@ CollisionTree::CollisionTree(const XMLnode& node, const Game* game) :
 
 void CollisionTree::render(const Video* video, const MaterialsMap* materials) const
 {
-    glEnable(GL_TEXTURE_2D);
 
     for (size_t i = 0; i < m_faces.size(); i++)
     {
-        materials->find(m_materials[i])->second->render(video);
+        MaterialsMap::const_iterator material = materials->find(m_materials[i]);
+        bool hasMaterial = (material != materials->end());
+
+        if (hasMaterial)
+        {
+            material->second->enable(video);
+        }
+
 
         video->renderFace(m_faces[i]);
-    }
 
-    glDisable(GL_TEXTURE_2D);
+        if (hasMaterial)
+        {
+            material->second->disable(video);
+        }
+    }
 }
 

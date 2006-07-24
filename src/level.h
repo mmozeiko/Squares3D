@@ -8,6 +8,7 @@
 
 class XMLnode;
 class Game;
+class Shader;
 
 namespace LevelObjects
 {
@@ -23,17 +24,19 @@ namespace LevelObjects
     {
         friend class Level;
     public:
-        string m_id;        // ""
-        string m_shaderName; // ""
-        Vector m_cAmbient;  // (0.2f, 0.2f, 0.2f, 1.0f)
-        Vector m_cDiffuse;  // (0.8f, 0.8f, 0.8f, 1.0f)
-        Vector m_cSpecular; // (0.0f, 0.0f, 0.0f)
-        Vector m_cEmission; // (0.0f, 0.0f, 0.0f, 1.0f)
-        float  m_cShine;    // 0.0f
+        string  m_id;        // ""
+        Shader* m_shader;
+        Vector  m_cAmbient;  // (0.2f, 0.2f, 0.2f, 1.0f)
+        Vector  m_cDiffuse;  // (0.8f, 0.8f, 0.8f, 1.0f)
+        Vector  m_cSpecular; // (0.0f, 0.0f, 0.0f)
+        Vector  m_cEmission; // (0.0f, 0.0f, 0.0f, 1.0f)
+        float   m_cShine;    // 0.0f
 
-        void render(const Video* video) const;
+        void enable(const Video* video) const;
+        void disable(const Video* video) const;
     private: 
         Material(const XMLnode& node, const Game* game);
+
         unsigned int m_texture;
         unsigned int m_textureBump;
     };
