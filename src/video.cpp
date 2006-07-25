@@ -3,6 +3,7 @@
 #include "config.h"
 #include "file.h"
 #include "shader.h"
+#include "level.h"
 
 #include <GL/glfw.h>
 
@@ -293,6 +294,23 @@ void Video::end(const Shader* shader) const
         shader->end();
     }
 }
+
+void Video::enableMaterial(const LevelObjects::Material* material) const
+{
+    if (material != NULL)
+    {
+        material->enable(this);
+    }
+}
+
+void Video::disableMaterial(const LevelObjects::Material* material) const
+{
+    if (material != NULL)
+    {
+        material->disable(this);
+    }
+}
+
 
 void Video::applyTexture(unsigned int texture) const
 {

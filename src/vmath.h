@@ -11,7 +11,7 @@
 #define M_PI_4 0.78539816339744830962f
 #endif
 #ifndef DEG_IN_RAD
-#define DEG_IN_RAD (180.0f/M_PI)
+#define DEG_IN_RAD (M_PI/180.0f)
 #endif
 
 #include <cmath>

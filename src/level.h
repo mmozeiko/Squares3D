@@ -35,7 +35,7 @@ namespace LevelObjects
         void enable(const Video* video) const;
         void disable(const Video* video) const;
     private: 
-        Material(const XMLnode& node, const Game* game);
+        Material(const XMLnode& node, Video* video);
 
         unsigned int m_texture;
         unsigned int m_textureBump;
@@ -45,21 +45,21 @@ namespace LevelObjects
     {
         friend class Body;
     public:
-        static Collision* create(const XMLnode& node, const Game* game);
+        static Collision* create(const XMLnode& node, const NewtonWorld* newtonWorld, const MaterialsMap* materials);
         
-        virtual void render(const Video* video, const MaterialsMap* materials) const = 0;
+        virtual void render(const Video* video) const = 0;
 
         NewtonCollision*  m_newtonCollision;
         virtual ~Collision();
     
     protected:
-        Collision(const XMLnode& node, const Game* game);
+        Collision(const XMLnode& node, const NewtonWorld* newtonWorld);
 
         void create(NewtonCollision* collision);
         void create(NewtonCollision* collision, float mass);
 
     private:
-        NewtonWorld* m_newtonWorld;
+        const NewtonWorld* m_newtonWorld;
         Vector       m_origin;
         Vector       m_inertia;
         float        m_mass;
@@ -76,7 +76,7 @@ namespace LevelObjects
         Body(const XMLnode& node, const Game* game);
         ~Body();
 
-        void render(const Video* video, const MaterialsMap* materials);
+        void render(const Video* video);
 
         NewtonBody*     m_newtonBody;
         Matrix          m_matrix;
