@@ -16,7 +16,6 @@ public:
 
 private:
     IntPair m_lastMouse;
-    LevelObjects::Body* m_body;
 
 };
 

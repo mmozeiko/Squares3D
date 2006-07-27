@@ -5,6 +5,7 @@
 #include "audio.h"
 #include "game.h"
 #include "player_local.h"
+#include "player_ai.h"
 #include "input.h"
 #include "level.h"
 #include "music.h"
@@ -62,7 +63,7 @@ World::World(Game* game) :
     NewtonSetFrictionModel(m_world, 1);
     
     music = m_game->m_audio->loadMusic("music.ogg");
-    //music->play();
+    music->play();
 }
 
 void World::init()
@@ -81,8 +82,9 @@ void World::init()
     m_level.reset(new LevelObjects::Level(m_game));
     m_level->load("/data/level.xml");
 
-    m_localPlayers.insert(new LocalPlayer("playerDura", m_game, Vector(1.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
-    m_localPlayers.insert(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(180.0f, 0.0f, 0.0f)));
+    m_localPlayers.push_back(new LocalPlayer("playerDura", m_game, Vector(1.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
+    m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(180.0f, 0.0f, 0.0f)));
+    m_localPlayers.push_back(new AiPlayer("penguin", m_game, Vector(0.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
 }
 
 World::~World()
@@ -90,7 +92,7 @@ World::~World()
     music->stop();
     //delete music;
 
-    for each_const(set<Player*>, m_localPlayers, player)
+    for each_const(vector<Player*>, m_localPlayers, player)
     {
         delete *player;
     }
@@ -107,7 +109,7 @@ void World::control(const Input* input)
     if (glfwGetWindowParam(GLFW_ACTIVE) == GL_TRUE)
     {
         m_camera->control(input);
-        for each_const(set<Player*>, m_localPlayers, player)
+        for each_const(vector<Player*>, m_localPlayers, player)
         {
             (*player)->control(input);
         }
