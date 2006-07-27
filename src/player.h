@@ -18,7 +18,7 @@ public:
 
     virtual void control(const Input* input) = 0;
 
-    Vector& getPosition();
+    Vector getPosition();
 
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 

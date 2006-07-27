@@ -63,7 +63,7 @@ World::World(Game* game) :
     NewtonSetFrictionModel(m_world, 1);
     
     music = m_game->m_audio->loadMusic("music.ogg");
-    music->play();
+    //music->play();
 }
 
 void World::init()

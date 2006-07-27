@@ -18,11 +18,10 @@ void AiPlayer::control(const Input* input)
     Player* humanPlayer = m_world->m_localPlayers[0];
 
     Vector direction = humanPlayer->getPosition() - getPosition();
-    
+
     direction.norm();
     
-    direction.x /=  2.0f;
-    direction.z /=  2.0f;
+    direction /=  2.0f;
 
     setDirection(direction);
 }

@@ -463,7 +463,7 @@ void Body::prepare()
     NewtonBodyGetMatrix(m_newtonBody, m_matrix.m);
 }
 
-Vector& Body::getPosition()
+Vector Body::getPosition()
 {
     return m_matrix.row(3);
 }

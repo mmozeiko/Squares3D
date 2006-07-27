@@ -30,7 +30,7 @@ Player::~Player()
     NewtonDestroyJoint(m_world->m_world, m_upVector);
 }
 
-Vector& Player::getPosition()
+Vector Player::getPosition()
 {
     return m_body->getPosition();
 }
