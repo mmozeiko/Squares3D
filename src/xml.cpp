@@ -76,10 +76,12 @@ void outputNode(const XMLnode& node, std::ostream& stream, int level)
     stream << endl;
 }
 
-std::ostream& operator << (std::ostream& stream, const XMLnode& xml)
+void XMLnode::save(File::Writer& writer)
 {
-    outputNode(xml, stream, 0);
-    return stream;
+    std::stringstream ss;
+    outputNode(*this, ss, 0);
+    string s = ss.str();
+    writer.write(s.c_str(), s.size());
 }
 
 /** INPUT **/
@@ -87,8 +89,8 @@ std::ostream& operator << (std::ostream& stream, const XMLnode& xml)
 class XMLreader
 {
 public:
-    XMLreader(std::istream& stream) : 
-        stream(stream), charBuf(0), curLine(1)
+    XMLreader(File::Reader& reader) : 
+        reader(reader), charBuf(0), curLine(1)
     {
     }
 
@@ -125,7 +127,7 @@ public:
     }
 
 private:
-    std::istream& stream;
+    File::Reader& reader;
     char charBuf;
     int curLine;
 
@@ -144,8 +146,7 @@ private:
         }
         else
         {
-            stream.read(&ch, 1);
-            if (stream.fail())
+            if (reader.read(&ch, 1) != 1)
             {
                 throw Exception(makeError("Failed to read stream"));
             }
@@ -635,18 +636,8 @@ private:
 
 };
 
-std::istream& operator >> (std::istream& stream, XMLnode& xml)
+void XMLnode::load(File::Reader& reader)
 {
-    XMLreader reader(stream);
-    reader.parse(xml);
-    return stream;
-}
-
-XMLnode::XMLnode()
-{
-}
-
-XMLnode::XMLnode(const string& name, const string& value) :
-    name(name), value(value), line(0)
-{
+    XMLreader xmlReader(reader);
+    xmlReader.parse(*this);
 }

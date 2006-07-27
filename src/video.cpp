@@ -331,7 +331,7 @@ unsigned int Video::loadTexture(const string& name)
     {
         throw Exception("Texture '" + name + "' not found");
     }
-    unsigned int filesize = file.filesize();
+    size_t filesize = file.size();
 
     vector<char> data(filesize);
     file.read(&data[0], filesize);
@@ -346,7 +346,7 @@ unsigned int Video::loadTexture(const string& name)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    if (glfwLoadMemoryTexture2D(static_cast<void*>(&data[0]), filesize, GLFW_BUILD_MIPMAPS_BIT) == GL_FALSE)
+    if (glfwLoadMemoryTexture2D(static_cast<void*>(&data[0]), static_cast<long>(filesize), GLFW_BUILD_MIPMAPS_BIT) == GL_FALSE)
     {
         throw Exception("Texture '" + name + "' failed to load");
     }
@@ -376,8 +376,8 @@ Shader* Video::loadShader(const string& vp, const string& fp)
         {
             throw Exception("Shader '" + vp + "' not found");
         }
-        vector<char> v(file.filesize());
-        file.read(&v[0], file.filesize());
+        vector<char> v(file.size());
+        file.read(&v[0], file.size());
         file.close();
         vprogram.assign(v.begin(), v.end());
 
@@ -386,8 +386,8 @@ Shader* Video::loadShader(const string& vp, const string& fp)
         {
             throw Exception("Shader '" + fp + "' not found");
         }
-        v.resize(file.filesize());
-        file.read(&v[0], file.filesize());
+        v.resize(file.size());
+        file.read(&v[0], file.size());
         file.close();
         fprogram.assign(v.begin(), v.end());
 

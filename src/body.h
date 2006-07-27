@@ -11,19 +11,12 @@ class Video;
 class Body : public Renderable
 {
 public:
-    enum BodyType
-    {
-        FloorBody,
-        PlayerBody,
-    };
 
-    Body(Game* game, const BodyType type);
+    Body(Game* game);
     virtual ~Body();
 
     virtual void prepare();
     void create(const NewtonCollision* collision, const Matrix& matrix);
-
-    BodyType getType() const;
 
 protected:
     virtual void onSetForceAndTorque();
@@ -33,7 +26,6 @@ protected:
     const NewtonCollision*  m_collision;
 
     Matrix                  m_matrix;
-    const BodyType          m_type;
 
 private:
     void update(float delta);

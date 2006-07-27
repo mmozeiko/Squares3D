@@ -1,8 +1,8 @@
 #ifndef __FILE_H__
 #define __FILE_H__
 
-#include <istream>
-#include <ostream>
+#include <cstdio>
+#include <cstddef>
 #include "common.h"
 
 namespace File
@@ -11,37 +11,41 @@ namespace File
     void done();
     bool exists(const string& filename);
 
-    class InputBuffer;
-    class OutputBuffer;
-
-    class Reader : public std::istream
+    class File
     {
     public:
-        Reader(const string& filename = "");
-        ~Reader();
-
-        bool is_open() const;
-        bool open(const string& filename);
+        virtual ~File();
+        void seek(int position, int type = SEEK_SET);
+        bool is_open();
+        size_t tell();
+        size_t size();
         void close();
 
-        unsigned int filesize() const;
+    protected:
+        struct _PHYSFS_File;
+        _PHYSFS_File* m_handle;
 
-    private:
-        InputBuffer* m_buf;
+        File(_PHYSFS_File* handle);
+        File(const File&);
+        File& operator = (const File&);
     };
 
-    class Writer : public std::ostream
+    class Reader : public File
     {
     public:
-        Writer(const string& filename = "", bool append = false);
-        ~Writer();
+        Reader(const string& filename);
+        void open(const string& filename);
 
-        bool is_open() const;
-        bool open(const string& filename, bool append = false);
-        void close();
+        size_t read(void* buffer, size_t size);
+        bool eof();
+    };
 
-    private:
-        OutputBuffer* m_buf;
+    class Writer : public File
+    {
+    public:
+        Writer(const string& filename, bool append = false);
+
+        size_t write(const void* buffer, size_t size);
     };
 
 };

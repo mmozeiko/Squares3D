@@ -74,7 +74,8 @@ void Game::run()
         if (deltaTime > 0.01f) deltaTime = 0.01f;
         accum += deltaTime;
 
-        m_input->process();
+        m_audio->update();
+        m_input->update();
         m_world->control(m_input.get());
         m_world->m_camera->update(static_cast<float>(deltaTime));
         while (accum >= DT)

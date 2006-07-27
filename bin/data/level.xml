@@ -274,15 +274,15 @@
       <collision>bumbaLiela</collision>
     </body-->
 
-    <!--body id="combinedbox">
+    <body id="player">
       <position x="-2.0" y="1.55" z="-2.0" />
       <rotation x="0.0" y="0.5" z="4.6" />
       <collision>box2</collision>
       <collision>thinBox</collision>
       <collision>heavyBox</collision>
-    </body-->
+    </body>
 
-    <body id="lady">
+    <body id="playerDura">
       <position x="3.0" y="2.0" z="-3.0" />
       <rotation x="0.0" y="45.0" z="0.0" />
       <collision>body</collision>

@@ -9,13 +9,15 @@ class Input;
 class LocalPlayer : public Player
 {
 public:
-    LocalPlayer(Game* game, int material, const Vector& pos, const Vector& size);
+    LocalPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation);
     ~LocalPlayer();
 
     void control(const Input* input);
 
 private:
     IntPair m_lastMouse;
+    LevelObjects::Body* m_body;
+
 };
 
 #endif

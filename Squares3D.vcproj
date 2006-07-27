@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1257"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Squares3D"
 	ProjectGUID="{3E1CA81C-2956-4551-8EAC-035AC52863F1}"
 	RootNamespace="Squares3D"
@@ -402,14 +402,6 @@
 				Name="Physics"
 				>
 				<File
-					RelativePath=".\src\body.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\body.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\player.cpp"
 					>
 				</File>
@@ -490,6 +482,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\music.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\music.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\network.cpp"
 					>
 				</File>
@@ -503,6 +503,14 @@
 				</File>
 				<File
 					RelativePath=".\src\shader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\sound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\sound.h"
 					>
 				</File>
 				<File

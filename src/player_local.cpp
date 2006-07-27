@@ -5,12 +5,13 @@
 #include "game.h"
 #include "world.h"
 
-LocalPlayer::LocalPlayer(Game* game, int material, const Vector& pos, const Vector& size) :
-    Player(game, material, pos, size)
+LocalPlayer::LocalPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
+    Player(id, game, position, rotation)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
     m_lastMouse = make_pair(w/2, h/2);
+
 }
 
 LocalPlayer::~LocalPlayer()
@@ -48,5 +49,5 @@ void LocalPlayer::control(const Input* input)
         direction.y += 1.0f;
     }
     
-    setDirection(Matrix::rotateY(m_game->m_world->m_camera->angleY()) * direction );
+    setDirection(Matrix::rotateY(m_world->m_camera->angleY()) * direction );
 }

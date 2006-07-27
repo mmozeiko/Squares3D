@@ -2,6 +2,7 @@
 #include "game.h"
 #include "config.h"
 #include "common.h"
+#include "music.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -46,4 +47,23 @@ Audio::~Audio()
     alcMakeContextCurrent(NULL);
     alcDestroyContext(m_context);
     alcCloseDevice(m_device);
+}
+
+Music* Audio::loadMusic(const string& filename)
+{
+    MusicMap::iterator iter = m_musics.find(filename);
+    if (iter == m_musics.end())
+    {
+        m_musics[filename] = new Music(filename, this);
+        iter = m_musics.find(filename);
+    }
+    return iter->second;
+}
+
+void Audio::update()
+{
+    for each_(MusicMap, m_musics, iter)
+    {
+        iter->second->update();
+    }
 }

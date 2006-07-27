@@ -1,42 +1,34 @@
 #include "player.h"
 #include "video.h"
 #include "game.h"
+#include "world.h"
 
 #include <cmath>
 
-Player::Player(Game* game, int material, const Vector& pos, const Vector& size) :
-    Body(game, PlayerBody),
-    m_radius(size * 0.5f), m_isOnGround(true)
+Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
+    m_body(game->m_world->m_level->getBody(id)),
+    m_isOnGround(true),
+    m_world(game->m_world.get()),
+    m_rotation(rotation * DEG_IN_RAD)
 {
-    Matrix location = Matrix::translate(pos);
+    m_body->setPositionAndRotation(position, m_rotation);
 
-    NewtonCollision* sphere = NewtonCreateSphere(m_world, m_radius.x, m_radius.y, m_radius.z, NULL); 
-    Body::create(sphere, location);
-    
 	// set the viscous damping the the minimum
     const float damp[] = { 0.0f, 0.0f, 0.0f };
-	NewtonBodySetLinearDamping(m_body, 0.0f);
-	NewtonBodySetAngularDamping(m_body, damp);
+	NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
+	NewtonBodySetAngularDamping(m_body->m_newtonBody, damp);
 
-	// Set Material Id for this object
-	NewtonBodySetMaterialGroupID(m_body, material);
-
-	// set the mas
-    Vector intertia, origin;
-    NewtonConvexCollisionCalculateInertialMatrix(sphere, intertia.v, origin.v);
-    NewtonBodySetMassMatrix(m_body, 100.0f, 100.0f*intertia.x, 100.0f*intertia.y, 100.0f*intertia.z);
-
-  	// add and up vector constraint to help in keeping the body upright
+  	// add an up vector constraint to help in keeping the body upright
 	const Vector upDirection (0.0f, 1.0f, 0.0f);
 
-    m_upVector = NewtonConstraintCreateUpVector(m_world, upDirection.v, m_body); 
-
-    m_texture = m_game->m_video->loadTexture("player.tga");
+    m_upVector = NewtonConstraintCreateUpVector(m_world->m_world, upDirection.v, m_body->m_newtonBody); 
+    NewtonBodySetUserData(m_body->m_newtonBody, this);
+    NewtonBodySetForceAndTorqueCallback(m_body->m_newtonBody, onSetForceAndTorque);
 }
 
 Player::~Player()
 {
-    NewtonDestroyJoint(m_world, m_upVector);
+    NewtonDestroyJoint(m_world->m_world, m_upVector);
 }
 
 void Player::setDirection(const Vector& direction)
@@ -49,78 +41,46 @@ void Player::setRotation(const Vector& rotation)
     m_rotation = rotation;
 }
 
-void Player::render(const Video* video) const
-{
-    video->begin(m_matrix);
-
-    glColor3f(0.5f, 0.5f, 0.5f);
-    glScalef(m_radius.x, m_radius.y, m_radius.z);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-
-    glPushMatrix();
-    glMatrixMode(GL_TEXTURE_MATRIX);
-    glRotatef(-90.0, 1, 0, 0);
-    glRotatef(90.0, 0, 0, 1);
-
-    video->renderSphere(1.0f);
-
-    glPopMatrix();
-
-    glDisable(GL_TEXTURE_2D);
-
-    video->end();
-}
-
-#include "world.h"
-
 void Player::onSetForceAndTorque()
 {
-//    clog << NewtonGetTimeStep(m_game->m_world->m_world) << endl;
+    //    clog << NewtonGetTimeStep(m_game->m_world->m_world) << endl;
     float timestepInv = 1.0f / 0.01f; // 0.01f == DT
 
     float mass;
     float Ixx, Iyy, Izz;
 
     // Get the mass of the object
-    NewtonBodyGetMassMatrix(m_body, &mass, &Ixx, &Iyy, &Izz );
+    NewtonBodyGetMassMatrix(m_body->m_newtonBody, &mass, &Ixx, &Iyy, &Izz );
 
-    if (m_matrix.m31+0.05f < m_radius.y)
-    {
-        //NewtonBodyAddForce(m_body, Vector(0.0f, 70*mass, 0.0f).v);
-    }
-    
     Vector force = gravityVec * mass;
-    NewtonBodyAddForce(m_body, force.v);
+    NewtonBodyAddForce(m_body->m_newtonBody, force.v);
 
     Vector currentVel;
-    NewtonBodyGetVelocity(m_body, currentVel.v);
+    NewtonBodyGetVelocity(m_body->m_newtonBody, currentVel.v);
       
     Vector targetVel = m_direction;
     targetVel.norm();
-//    if (!m_isOnGround)
-//    {
-//    }
-
-    Matrix m;
-    
-    //m = m_matrix;
-    //m.m30 = m.m31 = m.m32 = 0.0f;
 
     force = (targetVel * 5.0f - currentVel ) * timestepInv * mass;
     if (!m_isOnGround && glfwGetKey(GLFW_KEY_SPACE)==GLFW_RELEASE) force.y = 0.0f;
 
-    NewtonBodyAddForce(m_body, force.v);
+    NewtonBodyAddForce(m_body->m_newtonBody, force.v);
 
     m_isOnGround = false;
   
     Vector omega;
-	NewtonBodyGetOmega(m_body, omega.v);
+	NewtonBodyGetOmega(m_body->m_newtonBody, omega.v);
 
 	Vector torque = m_rotation;
     torque.norm();
     torque = (10.0f * torque - omega) * timestepInv * Iyy;
-	NewtonBodySetTorque (m_body, torque.v);
+	NewtonBodySetTorque (m_body->m_newtonBody, torque.v);
+}
+
+void Player::onSetForceAndTorque(const NewtonBody* body)
+{
+    Player* self = static_cast<Player*>(NewtonBodyGetUserData(body));
+    self->onSetForceAndTorque();
 }
 
 void Player::onCollision(const NewtonMaterial* material, const NewtonContact* contact)

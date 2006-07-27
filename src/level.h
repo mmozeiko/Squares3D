@@ -59,10 +59,10 @@ namespace LevelObjects
         void create(NewtonCollision* collision, float mass);
 
     private:
-        const NewtonWorld* m_newtonWorld;
-        Vector       m_origin;
-        Vector       m_inertia;
-        float        m_mass;
+        const NewtonWorld*     m_newtonWorld;
+        Vector                 m_origin;
+        Vector                 m_inertia;
+        float                  m_mass;
     };
 
     class Body
@@ -71,18 +71,30 @@ namespace LevelObjects
 
     public:
         void prepare();
-        
-    private:
+        void render(const Video* video);
+        void setPositionAndRotation(const Vector& position,
+                                    const Vector& rotation);
+
+        NewtonBody*     m_newtonBody;        
+
+    protected:
+
         Body(const XMLnode& node, const Game* game);
+
+        const NewtonWorld*     m_newtonWorld;
+        Matrix                 m_matrix;
+
         ~Body();
 
-        void render(const Video* video);
+        void createNewtonBody(const NewtonCollision* newtonCollision,
+                              const Vector& totalOrigin,
+                              const Vector& position,
+                              const Vector& rotation);
 
-        NewtonBody*     m_newtonBody;
-        Matrix          m_matrix;
+    private:
+
         float           m_totalMass;
         Vector          m_totalInertia;
-        NewtonWorld*    m_newtonWorld;
         set<Collision*> m_collisions;
 
         void onSetForceAndTorque();
@@ -94,9 +106,10 @@ namespace LevelObjects
     public:
         Level(const Game* game);
         ~Level();
-        void load(const string& levelFile);
-        void render(const Video* video) const;
-        void prepare();
+        void  load(const string& levelFile);
+        void  render(const Video* video) const;
+        void  prepare();
+        Body* getBody(string id);
 
         BodiesMap     m_bodies;
         CollisionsMap m_collisions;

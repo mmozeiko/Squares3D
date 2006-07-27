@@ -4,9 +4,9 @@
 #include "game.h"
 #include "world.h"
 
-Body::Body(Game* game, const BodyType type) :
+Body::Body(Game* game) :
     Renderable(game),
-    m_body(NULL), m_type(type)
+    m_body(NULL)
 {
     m_world = m_game->m_world->m_world;
 }
@@ -43,11 +43,6 @@ void Body::update(float delta)
 void Body::prepare()
 {
     NewtonBodyGetMatrix(m_body, m_matrix.m);
-}
-
-Body::BodyType Body::getType() const
-{
-    return m_type;
 }
 
 void Body::onSetForceAndTorque()

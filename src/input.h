@@ -18,7 +18,7 @@ public:
     Input();
     ~Input();
 
-    void process();
+    void update();
 
     bool key(int key) const;
     const Mouse& mouse(int id = 0) const;

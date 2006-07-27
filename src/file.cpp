@@ -3,7 +3,6 @@
 
 #pragma warning(disable : 4996)
 
-#include <streambuf>
 #include <algorithm>
 #include "file.h"
 
@@ -14,397 +13,172 @@ static const size_t BUFSIZE = 4096;
 namespace File
 {
 
-class InputBuffer : public std::streambuf
-{
-public:
-    InputBuffer() : std::streambuf(), m_handle(NULL)
-    {
-    }
+    struct File::_PHYSFS_File : public PHYSFS_File {};
 
-    ~InputBuffer()
+    File::File(_PHYSFS_File* handle) : m_handle(handle)
     {
-        close();
-    }
-
-    bool is_open() const
-    {
-        return m_handle != NULL;
-    }
-
-    bool open(const string& filename)
-    {
-        if (m_handle!=NULL)
+        if (m_handle != NULL && PHYSFS_setBuffer(m_handle, BUFSIZE) == 0)
         {
-            close();
-        }
-
-        m_handle = PHYSFS_openRead(filename.c_str());
-
-        if (m_handle!=NULL)
-        {
-            setg(_buffer, _buffer, _buffer);
-        }
-        return m_handle!=NULL;
-    }
-
-    void close()
-    {
-        if (m_handle != NULL)
-        {
-            PHYSFS_close(m_handle);
-            setg(0, 0, 0);
-            m_handle = NULL;
+            throw Exception(PHYSFS_getLastError());
         }
     }
 
-    unsigned int filesize() const
+    void File::seek(int position, int type)
     {
-        if (m_handle != NULL)
+        size_t pos;
+        if (type == SEEK_CUR)
         {
-            return static_cast<unsigned int>(PHYSFS_fileLength(m_handle));
+            pos = tell() - position;
         }
-        return 0;
+        else if (type == SEEK_END)
+        {
+            pos = size() + position;
+        }
+        else // SEEK_BEG
+        {
+            pos = static_cast<size_t>(position);
+        }
+
+        if (PHYSFS_seek(m_handle, pos) == 0)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
     }
-
-protected:
-    int underflow()
-    {
-        int bytes_read = static_cast<int>(PHYSFS_read(m_handle, _buffer, 1, BUFSIZE));
-        if (bytes_read <= 0)
-        {
-            setg(_buffer, _buffer, _buffer);
-            return EOF;
-        }
-        setg(_buffer, _buffer, _buffer + bytes_read);
-        return traits_type::to_int_type(*(gptr()));
-    }
-
-    int showmanyc()
-    {
-        if (gptr() && ( gptr()<egptr() ))
-        {
-            return std::streamsize(egptr() - gptr());
-        }
-        return 0;
-    }
-
-    std::streamsize xsgetn(char* s, std::streamsize n)
-    {
-        int cnt = 0;
-        if (gptr()<egptr())
-        {
-            cnt = std::min(n, static_cast<int>(egptr()-gptr()));
-            std::copy(gptr(), gptr()+n, s);
-            n -= cnt;
-            setg(_buffer, _buffer+cnt+1, egptr());
-        }
-        else
-        {
-            setg(_buffer, _buffer, _buffer);
-        }
-        if (n > 0)
-        {
-            if (PHYSFS_read(m_handle, s+cnt, 1, n) != n)
-            {
-                return EOF;
-            }
-            cnt += n;
-        }
-        return cnt;
-    }
-
-    std::streampos seekpos(
-        std::streampos sp, 
-        std::ios_base::openmode which = std::ios_base::in)
-    {
-        int curbpos = static_cast<int>(PHYSFS_tell(m_handle));
-        if (curbpos==-1)
-        {
-            return -1;
-        }
-        curbpos += -static_cast<int>(egptr()-eback());
-        if ( sp>curbpos && sp<curbpos+static_cast<int>(egptr()-eback()) )
-        {
-            setg(_buffer, _buffer + (static_cast<int>(sp)-curbpos), egptr());
-        }
-        else
-        {
-            if (PHYSFS_seek(m_handle, sp)==0)
-            {
-                return EOF;
-            }
-            setg(_buffer, _buffer, _buffer);
-        }
-        return sp;
-    }
-
-    std::streampos seekoff(
-        std::streamoff off, 
-        std::ios_base::seekdir way, 
-        std::ios_base::openmode which = std::ios_base::in)
-    {
-        std::streampos newpos;
-        int curbpos = static_cast<int>(PHYSFS_tell(m_handle));
-        if (curbpos==-1)
-        {
-            return EOF;
-        }
-        curbpos += -static_cast<int>(egptr()-eback());
-
-        if (way==std::ios_base::beg)
-        {
-            newpos = off;
-        }
-        else if (way==std::ios_base::cur)
-        {
-            newpos = curbpos + off + (gptr()-eback());
-        }
-        else if (way==std::ios_base::end)
-        {
-            newpos = static_cast<int>(PHYSFS_fileLength(m_handle))-off;
-        }
-        else
-        {
-            return EOF;
-        }
-
-        if ( newpos>=curbpos && newpos<curbpos+(egptr()-eback()) )
-        {
-            setg(_buffer, _buffer + (static_cast<int>(newpos)-curbpos), egptr());
-        }
-        else
-        {
-            if (PHYSFS_seek(m_handle, newpos)==0)
-            {
-                return EOF;
-            }
-            setg(_buffer, _buffer, _buffer);
-        }
-        return newpos;
-    }
-
-private:
-    PHYSFS_File* m_handle;
-    char _buffer[BUFSIZE];
-};
-
-class OutputBuffer : public std::streambuf
-{
-public:
-    OutputBuffer() : std::streambuf(), m_handle(NULL)
-    {
-    }
-
-    ~OutputBuffer()
-    {
-        close();
-    }
-
-    bool is_open() const
+    
+    bool File::is_open()
     {
         return m_handle != NULL;
     }
 
-    bool open(const string& filename, bool append)
+    size_t File::tell()
+    {
+        long long curpos = PHYSFS_tell(m_handle);
+
+        if (curpos == -1)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        return static_cast<size_t>(curpos);
+    }
+
+    size_t File::size()
+    {
+        long long filesize = PHYSFS_fileLength(m_handle);
+
+        if (filesize == -1)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        return static_cast<size_t>(filesize);
+    }
+
+    void File::close()
+    {
+        if (m_handle == NULL)
+        {
+            return;
+        }
+
+        if (PHYSFS_flush(m_handle)==0)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        if (PHYSFS_close(m_handle)==0)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        m_handle = NULL;
+    }
+
+    File::~File()
     {
         if (m_handle != NULL)
         {
             close();
         }
-
-        if (append)
-        {
-            m_handle = PHYSFS_openAppend(filename.c_str());
-        }
-        else
-        {
-            m_handle = PHYSFS_openWrite(filename.c_str());
-        }
-        if (m_handle != NULL)
-        {
-            setp(_buffer, _buffer + BUFSIZE);
-        }
-        return m_handle != NULL;
     }
 
-    void close()
+    Reader::Reader(const string& filename) :
+        File(reinterpret_cast<_PHYSFS_File*>(PHYSFS_openRead(filename.c_str())))
     {
-        if (m_handle != NULL)
-        {
-            sync();
-            PHYSFS_close(m_handle);
-            setp(0, 0);
-            m_handle = NULL;
-        }
     }
 
-protected:
-    int overflow(int c)
+    void Reader::open(const string& filename)
     {
-        if (!pptr() || c==EOF)
+        close();
+        m_handle = reinterpret_cast<_PHYSFS_File*>(PHYSFS_openRead(filename.c_str()));
+    }
+
+    size_t Reader::read(void* buffer, size_t size)
+    {
+        long long result = PHYSFS_read(m_handle, buffer, 1, static_cast<PHYSFS_uint32>(size));
+
+        if (result == -1)
         {
-            return EOF;
+            throw Exception(PHYSFS_getLastError());
         }
 
-        if (epptr()-pptr()<=0)
+        return static_cast<size_t>(result);
+    }
+
+    bool Reader::eof()
+    {
+        return PHYSFS_eof(m_handle) != 0;
+    }
+
+    Writer::Writer(const string& filename, bool append) :
+        File(reinterpret_cast<_PHYSFS_File*>(
+            append ? PHYSFS_openAppend(filename.c_str()) : PHYSFS_openWrite(filename.c_str())
+        ))
+    {
+    }
+
+    size_t Writer::write(const void* buffer, size_t size)
+    {
+        long long result = PHYSFS_write(m_handle, buffer, 1, static_cast<PHYSFS_uint32>(size));
+
+        if (result == -1)
         {
-            if (sync()==EOF)
-            {
-                return EOF;
-            }
-            setp(_buffer, _buffer + BUFSIZE);
+            throw Exception(PHYSFS_getLastError());
         }
-        *pptr() = static_cast<char>(c);
-        pbump(1);
-        return traits_type::not_eof(c);
+
+        return static_cast<size_t>(result);
     }
 
-    int sync()
+    void init(const char* argv0)
     {
-        if (pptr() > pbase())
+        clog << "Initializing filesystem." << endl;
+
+        if (PHYSFS_init(argv0)==0 ||
+            PHYSFS_setWriteDir(PHYSFS_getBaseDir())==0)
         {
-            if (PHYSFS_write(m_handle, pbase(), 1, static_cast<unsigned int>(pptr()-pbase())) != pptr()-pbase())
-            {
-                return EOF;
-            }
-            PHYSFS_flush(m_handle);
-            setp(_buffer, _buffer + BUFSIZE);
+            throw Exception(PHYSFS_getLastError());
         }
-        return 0;
-    }
-  
-    std::streamsize xsputn(char* s, std::streamsize n)
-    {
-        if (sync()==EOF)
+
+        if (PHYSFS_mount("data.zip", "/data", 1) == 0 ||
+            PHYSFS_mount(PHYSFS_getBaseDir(), "/", 1) == 0)
         {
-            return EOF;
+            throw Exception(PHYSFS_getLastError());
         }
-        if (PHYSFS_write(m_handle, s, 1, n) != n)
+    }
+
+    void done()
+    {
+        clog << "Closing filesystem." << endl;
+
+        if (PHYSFS_deinit()==0)
         {
-            return EOF;
+            throw Exception(PHYSFS_getLastError());
         }
-        setp(_buffer, _buffer + BUFSIZE);
-        return n;
     }
 
-    std::streampos seekoff(
-        std::streamoff off, 
-        std::ios_base::seekdir way, 
-        std::ios_base::openmode which = std::ios_base::out)
+    bool exists(const string& filename)
     {
-        if (off==0 && way==std::ios_base::cur)
-        {
-            return static_cast<int>(PHYSFS_tell(m_handle));
-        }
-        return EOF;
+        return PHYSFS_exists(filename.c_str()) != 0;
     }
-
-private:
-    PHYSFS_File* m_handle;
-    char _buffer[BUFSIZE];
-};
-
-// PUBLIC part
-
-Reader::Reader(const string& filename) : 
-    m_buf(new InputBuffer()), 
-    std::istream(std::_Uninitialized())
-{
-    clear();
-    init(m_buf);
-    if (!filename.empty())
-    {
-        m_buf->open(filename);
-    }
-}
-
-Reader::~Reader()
-{
-    delete m_buf;
-}
-
-bool Reader::is_open() const
-{
-    return m_buf->is_open();
-}
-
-bool Reader::open(const string& filename)
-{
-    return m_buf->open(filename);
-}
-
-void Reader::close()
-{
-    m_buf->close();
-}
-
-unsigned int Reader::filesize() const
-{
-    return m_buf->filesize();
-}
-
-Writer::Writer(const string& filename, bool append) : 
-    m_buf(new OutputBuffer()), 
-    std::ostream(std::_Uninitialized())
-{
-    clear();
-    init(m_buf);
-    if (!filename.empty())
-    {
-        m_buf->open(filename, append);
-    }
-}
-
-Writer::~Writer()
-{
-    delete m_buf;
-}
-
-bool Writer::is_open() const
-{
-    return m_buf->is_open();
-}
-
-bool Writer::open(const string& filename, bool append)
-{
-    return m_buf->open(filename, append);
-}
-
-void Writer::close()
-{
-    m_buf->close();
-}
-
-void init(const char* argv0)
-{
-    clog << "Initializing filesystem." << endl;
-
-    if (PHYSFS_init(argv0)==0 ||
-        PHYSFS_setWriteDir(PHYSFS_getBaseDir())==0)
-    {
-        throw Exception(PHYSFS_getLastError());
-    }
-
-    if (PHYSFS_mount("data.zip", "/data", 1) == 0 ||
-        PHYSFS_mount(PHYSFS_getBaseDir(), "/", 1) == 0)
-    {
-        throw Exception(PHYSFS_getLastError());
-    }
-}
-
-void done()
-{
-    clog << "Closing filesystem." << endl;
-
-    if (PHYSFS_deinit()==0)
-    {
-        throw Exception(PHYSFS_getLastError());
-    }
-}
-
-bool exists(const string& filename)
-{
-    return PHYSFS_exists(filename.c_str()) != 0;
-}
 
 }

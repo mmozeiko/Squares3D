@@ -1,15 +1,16 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "body.h"
+#include "level.h"
 
 class Input;
 class Game;
+class World;
 
-class Player : public Body
+class Player
 {
 public:
-    Player(Game* game, int material, const Vector& pos,const Vector& size);
+    Player(const string& id, const Game* game, const Vector& position, const Vector& rotation);
     virtual ~Player();
 
     void setDirection(const Vector& direction);
@@ -17,21 +18,20 @@ public:
 
     virtual void control(const Input* input) = 0;
 
-    void render(const Video* video) const;
-
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 
 protected:
-    NewtonJoint*    m_upVector;
+    NewtonJoint*        m_upVector;
 
-    Vector          m_radius;
-    bool            m_isOnGround;
-    Vector          m_direction;
-    Vector          m_rotation;
-    
-    unsigned int    m_texture;
+    bool                m_isOnGround;
+    Vector              m_direction;
+    Vector              m_rotation;
+    World*              m_world;
+    LevelObjects::Body* m_body;
 
     void onSetForceAndTorque();
+
+    static void onSetForceAndTorque(const NewtonBody* body);
 
 };
 

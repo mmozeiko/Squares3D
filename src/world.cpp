@@ -2,10 +2,14 @@
 #include "camera.h"
 #include "world.h"
 #include "video.h"
+#include "audio.h"
 #include "game.h"
 #include "player_local.h"
 #include "input.h"
 #include "level.h"
+#include "music.h"
+#include "file.h"
+
 /*
 struct ContactBodies
 {
@@ -45,6 +49,9 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
 
 ContactBodies contactBodies;
 */
+
+Music* music;
+
 World::World(Game* game) : 
     Renderable(game),
     m_camera(new Camera(game))
@@ -53,6 +60,9 @@ World::World(Game* game) :
     NewtonWorldSetUserData(m_world, static_cast<void*>(this));
     NewtonSetSolverModel(m_world, 10);
     NewtonSetFrictionModel(m_world, 1);
+    
+    music = m_game->m_audio->loadMusic("music.ogg");
+    //music->play();
 }
 
 void World::init()
@@ -68,15 +78,23 @@ void World::init()
 
  //   NewtonBodySetMaterialGroupID(floorBody, floorID);
 
-    m_localPlayer.reset(new LocalPlayer(m_game, charID, Vector(1.0f, 2.0f, 0.0f), Vector(0.75, 2, 0.75)));
-
     m_level.reset(new LevelObjects::Level(m_game));
     m_level->load("/data/level.xml");
+
+    m_localPlayers.insert(new LocalPlayer("playerDura", m_game, Vector(1.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
+    m_localPlayers.insert(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(180.0f, 0.0f, 0.0f)));
 }
 
 World::~World()
 {
-    delete m_localPlayer.release();
+    music->stop();
+    //delete music;
+
+    for each_const(set<Player*>, m_localPlayers, player)
+    {
+        delete *player;
+    }
+
     delete m_level.release();
 
     NewtonMaterialDestroyAllGroupID(m_world);
@@ -89,7 +107,10 @@ void World::control(const Input* input)
     if (glfwGetWindowParam(GLFW_ACTIVE) == GL_TRUE)
     {
         m_camera->control(input);
-        m_localPlayer->control(input);
+        for each_const(set<Player*>, m_localPlayers, player)
+        {
+            (*player)->control(input);
+        }
     }
 
     // other objects go here
@@ -104,7 +125,6 @@ void World::update(float delta)
 void World::prepare()
 {
     m_camera->prepare();
-    m_localPlayer->prepare();
     m_level->prepare();
 }
 
@@ -114,10 +134,8 @@ void World::render(const Video* video) const
 
     m_camera->render(video);
 
-    video->renderAxes();
-
-    m_localPlayer->render(video);
     m_level->render(video);
 
+    video->renderAxes();
     glfwSwapBuffers();
 }

@@ -41,7 +41,7 @@ Input::~Input()
     ManyMouse_Quit();
 }
 
-void Input::process()
+void Input::update()
 {
     if (m_manymouses)
     {

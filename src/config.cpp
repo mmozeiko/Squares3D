@@ -17,7 +17,7 @@ Config::Config() :
     File::Reader in(CONFIG_FILE);
     if (in.is_open())
     {
-        in >> xml;
+        xml.load(in);
         in.close();
     }
 
@@ -118,6 +118,6 @@ Config::~Config()
     xml.childs.push_back(XMLnode("misc"));
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
 
-    out << xml;
+    xml.save(out);
     out.close();
 }
