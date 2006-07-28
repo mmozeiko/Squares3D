@@ -1,6 +1,7 @@
 #include "player_ai.h"
 #include "game.h"
 #include "input.h"
+#include "world.h"
 
 AiPlayer::AiPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     Player(id, game, position, rotation)

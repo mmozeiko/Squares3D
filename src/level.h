@@ -74,6 +74,7 @@ namespace LevelObjects
         void render(const Video* video);
         void setPositionAndRotation(const Vector& position,
                                     const Vector& rotation);
+        Vector getPosition();
 
         NewtonBody*     m_newtonBody;        
 
