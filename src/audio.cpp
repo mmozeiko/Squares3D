@@ -51,19 +51,20 @@ Audio::~Audio()
 
 Music* Audio::loadMusic(const string& filename)
 {
-    MusicMap::iterator iter = m_musics.find(filename);
-    if (iter == m_musics.end())
-    {
-        m_musics[filename] = new Music(filename, this);
-        iter = m_musics.find(filename);
-    }
-    return iter->second;
+    return *m_music.insert(new Music(filename)).first;
+}
+
+void Audio::unloadMusic(Music* music)
+{
+    m_music.erase(music);
+    delete music;
+
 }
 
 void Audio::update()
 {
-    for each_(MusicMap, m_musics, iter)
+    for each_(MusicSet, m_music, iter)
     {
-        iter->second->update();
+        (*iter)->update();
     }
 }

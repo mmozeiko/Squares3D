@@ -9,15 +9,6 @@
       </colors>
     </material>
 
-    <material id="player">
-      <texture>
-        <path>player.tga</path>
-      </texture>
-      <colors>
-        <ambient r="0.8" g="0.8" b="0.8" />
-      </colors>
-    </material>
-    
     <material id="football">
       <texture>
         <path>ball.tga</path>
@@ -99,12 +90,6 @@
   </materials>
   
   <collisions>
-    <collision id="player" type="sphere" mass="20.0" material="player">
-      <radius x="0.1" y="0.3" z="0.15" />
-      <offset x="0.0" y="0.0" z="0.0" />
-      <!--rotation x="0.0" y="0.0" z="0.0" /-->
-    </collision>   
-    
     <collision id="box1" type="box" mass="0.2" material="box">
       <size x="0.50" y="0.20" z="0.15" />
     </collision>
@@ -317,13 +302,6 @@
       <collision>wall3</collision>
       <collision>wall4</collision-->
     </body>
-
-    <body id="penguin">
-      <position x="-8.0" y="5.5" z="2.0" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player</collision>
-    </body>
-    
     
   </bodies>
 

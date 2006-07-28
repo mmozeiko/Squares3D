@@ -11,7 +11,7 @@ class Game;
 class Config;
 
 class Music;
-typedef map<string, Music*> MusicMap;
+typedef set<Music*> MusicSet;
 
 class Audio
 {
@@ -20,6 +20,7 @@ public:
     ~Audio();
 
     Music* loadMusic(const string& filename);
+    void unloadMusic(Music* music);
 
     void update();
 
@@ -28,7 +29,7 @@ private:
     ALCdevice*    m_device;
     ALCcontext*   m_context;
 
-    MusicMap      m_musics;
+    MusicSet      m_music;
 };
 
 #endif

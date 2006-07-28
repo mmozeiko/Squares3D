@@ -4,6 +4,7 @@
 #include "video.h"
 #include "game.h"
 #include "world.h"
+#include "player_local.h"
 
 using namespace LevelObjects;
 
@@ -461,11 +462,6 @@ Body::~Body()
 void Body::prepare()
 {
     NewtonBodyGetMatrix(m_newtonBody, m_matrix.m);
-}
-
-Vector Body::getPosition()
-{
-    return m_matrix.row(3);
 }
 
 void Body::onSetForceAndTorque()

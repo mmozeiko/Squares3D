@@ -2,10 +2,10 @@
 #define __PLAYER_H__
 
 #include "level.h"
-#include "world.h"
 
 class Input;
 class Game;
+class World;
 
 class Player
 {
@@ -17,8 +17,6 @@ public:
     void setRotation(const Vector& rotation);
 
     virtual void control(const Input* input) = 0;
-
-    Vector getPosition();
 
     void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
 

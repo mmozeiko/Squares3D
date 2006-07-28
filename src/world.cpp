@@ -5,10 +5,10 @@
 #include "audio.h"
 #include "game.h"
 #include "player_local.h"
-#include "player_ai.h"
 #include "input.h"
 #include "level.h"
 #include "music.h"
+#include "sound.h"
 #include "file.h"
 
 /*
@@ -52,6 +52,57 @@ ContactBodies contactBodies;
 */
 
 Music* music;
+/*
+unsigned int _iCubeTextureID;
+
+void loadCubemap(const string& filename)
+{
+    
+void load_png_cubemap(const char * string, bool mipmap)
+{
+	char buff[1024];
+	GLenum tgt = array_texture_target;
+
+	array2<vec3ub> cubeface;
+	
+	sprintf(buff, string, "posx");
+	read_png_rgb(buff, cubeface);
+	array_texture_target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+	make_rgb_texture(cubeface, mipmap);
+
+	sprintf(buff, string, "negx");
+	read_png_rgb(buff, cubeface);
+	array_texture_target = GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB;
+	make_rgb_texture(cubeface, mipmap);
+
+	sprintf(buff, string, "posy");
+	read_png_rgb(buff, cubeface);
+	array_texture_target = GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB;
+	make_rgb_texture(cubeface, mipmap);
+
+	sprintf(buff, string, "negy");
+	read_png_rgb(buff, cubeface);
+	array_texture_target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB;
+	make_rgb_texture(cubeface, mipmap);
+
+	sprintf(buff, string, "posz");
+	read_png_rgb(buff, cubeface);
+	array_texture_target = GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB;
+	make_rgb_texture(cubeface, mipmap);
+
+	sprintf(buff, string, "negz");
+	read_png_rgb(buff, cubeface);
+	array_texture_target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB;
+	make_rgb_texture(cubeface, mipmap);
+
+    GL_TEXTURE_CUBE_MAP_ARB
+
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+}
+*/
 
 World::World(Game* game) : 
     Renderable(game),
@@ -62,8 +113,18 @@ World::World(Game* game) :
     NewtonSetSolverModel(m_world, 10);
     NewtonSetFrictionModel(m_world, 1);
     
+    //music = new Sound("music.ogg");
     music = m_game->m_audio->loadMusic("music.ogg");
-    //music->play();
+    music->play();
+/*
+    glGenTextures(1, &_iCubeTextureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _iCubeTextureID);
+
+    loadCubemap("cube_face_");
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    */
 }
 
 void World::init()
@@ -82,17 +143,16 @@ void World::init()
     m_level.reset(new LevelObjects::Level(m_game));
     m_level->load("/data/level.xml");
 
-    m_localPlayers.push_back(new LocalPlayer("playerDura", m_game, Vector(1.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
-    m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(180.0f, 0.0f, 0.0f)));
-    m_localPlayers.push_back(new AiPlayer("penguin", m_game, Vector(0.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
+    m_localPlayers.insert(new LocalPlayer("playerDura", m_game, Vector(1.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
+    m_localPlayers.insert(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(180.0f, 0.0f, 0.0f)));
 }
 
 World::~World()
 {
     music->stop();
-    //delete music;
+    m_game->m_audio->unloadMusic(music);
 
-    for each_const(vector<Player*>, m_localPlayers, player)
+    for each_const(set<Player*>, m_localPlayers, player)
     {
         delete *player;
     }
@@ -109,7 +169,7 @@ void World::control(const Input* input)
     if (glfwGetWindowParam(GLFW_ACTIVE) == GL_TRUE)
     {
         m_camera->control(input);
-        for each_const(vector<Player*>, m_localPlayers, player)
+        for each_const(set<Player*>, m_localPlayers, player)
         {
             (*player)->control(input);
         }

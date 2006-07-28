@@ -1,42 +1,31 @@
 #ifndef __MUSIC_H__
 #define __MUSIC_H__
 
-#include <vorbis/vorbisfile.h>
-#include "file.h"
+#include "oggDecoder.h"
 
 #define BUFFER_COUNT 4
 
-class Audio;
-
-class Music
+class Music : public OggDecoder
 {
     friend class Audio;
 
 public:
-    ~Music();
     void play(bool looping = true);
     void stop();
 
 private:
-    Music(const string& filename, Audio* audio);
+    Music(const string& filename);
+    ~Music();
 
-    void update();
-
-    Audio* m_audio;
     unsigned int m_source;
     unsigned int m_buffers[BUFFER_COUNT];
     char* m_buffer;
     size_t m_bufferSize;
 
-    unsigned int m_frequency;
-    unsigned int m_format;
     bool m_looping;
 
-    File::Reader m_file;
-    OggVorbis_File m_oggFile;
-
+    void update();
     void init();
-    int decode();
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "player.h"
 #include "video.h"
 #include "game.h"
+#include "world.h"
 
 #include <cmath>
 
@@ -28,11 +29,6 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
 Player::~Player()
 {
     NewtonDestroyJoint(m_world->m_world, m_upVector);
-}
-
-Vector Player::getPosition()
-{
-    return m_body->getPosition();
 }
 
 void Player::setDirection(const Vector& direction)
@@ -63,7 +59,7 @@ void Player::onSetForceAndTorque()
     NewtonBodyGetVelocity(m_body->m_newtonBody, currentVel.v);
       
     Vector targetVel = m_direction;
-    //targetVel.norm();
+    targetVel.norm();
 
     force = (targetVel * 5.0f - currentVel ) * timestepInv * mass;
     if (!m_isOnGround && glfwGetKey(GLFW_KEY_SPACE)==GLFW_RELEASE) force.y = 0.0f;
