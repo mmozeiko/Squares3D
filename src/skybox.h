@@ -14,7 +14,7 @@ public:
     void render(const Video* video) const;
 
 private:
-    unsigned int textures[6];
+    unsigned int cubemap;
 };
 
 #endif

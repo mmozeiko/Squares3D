@@ -58,7 +58,7 @@ Music* music;
 World::World(Game* game) : 
     Renderable(game),
     m_camera(new Camera(game)),
-    m_skybox(new SkyBox(m_game->m_video.get(), "cubemap/cube_face2_"))
+    m_skybox(new SkyBox(m_game->m_video.get(), "cubemap/cube_face_"))
 {
     m_world = NewtonCreate(NULL, NULL);
     NewtonWorldSetUserData(m_world, static_cast<void*>(this));
@@ -67,7 +67,7 @@ World::World(Game* game) :
     
     //music = new Sound("music.ogg");
     music = m_game->m_audio->loadMusic("music.ogg");
-    music->play();
+    //music->play();
 }
 
 void World::init()

@@ -1,30 +1,74 @@
 #include "skybox.h"
 #include "video.h"
 #include "vmath.h"
+#include "file.h"
 
 #include <GL/glfw.h>
 
+void loadTex(const string& name, GLFWimage* image)
+{
+    string filename = "/data/textures/" + name;
+    File::Reader file(filename);
+    if (!file.is_open())
+    {
+        throw Exception("Texture '" + name + "' not found");
+    }
+    size_t filesize = file.size();
+
+    vector<char> data(filesize);
+    file.read(&data[0], filesize);
+    file.close();
+
+    glEnable(GL_TEXTURE_2D);
+
+    glfwReadMemoryImage(&data[0], filesize, image, GLFW_NO_RESCALE_BIT);
+}
+
 SkyBox::SkyBox(Video* video, const string& name)
 {
-    static const string images[] = {
-        name + "posx.tga",
-        name + "posz.tga",
-        name + "negx.tga",
-        name + "negz.tga",
-        name + "posy.tga",
-        name + "negy.tga",
+    static const pair<int, string> texs[] = {
+        make_pair(GL_TEXTURE_CUBE_MAP_POSITIVE_X, name + "posx.tga"),
+        make_pair(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, name + "negx.tga"),
+        make_pair(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, name + "posy.tga"),
+        make_pair(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, name + "negy.tga"),
+        make_pair(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, name + "posz.tga"),
+        make_pair(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, name + "negz.tga"),
     };
+
+    glGenTextures(1, &cubemap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, cubemap);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    GLFWimage img;
+
+    const Vector X(1.0f, 0.0f, 0.0f, 0.0f);
+    const Vector Y(0.0f, 1.0f, 0.0f, 0.0f);
+    const Vector Z(0.0f, 0.0f, 1.0f, 0.0f);
 
     for (int i=0; i<6; i++)
     {
-        textures[i] = video->loadTexture(images[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        loadTex(texs[i].second, &img);
+        glTexImage2D(texs[i].first, 0, img.Format, img.Width, img.Height, 0, img.Format, GL_UNSIGNED_BYTE, img.Data);
+        glfwFreeImage(&img);
+
+        glTexGenf(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+        glTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+        glTexGenf(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+
+        glTexGenfv(GL_S, GL_OBJECT_PLANE, X.v);
+        glTexGenfv(GL_T, GL_OBJECT_PLANE, Y.v);
+        glTexGenfv(GL_R, GL_OBJECT_PLANE, Z.v);
     }
 }
 
 SkyBox::~SkyBox()
 {
+    glDeleteTextures(1, &cubemap);
 }
 
 void SkyBox::render(const Video* video) const
@@ -39,71 +83,64 @@ void SkyBox::render(const Video* video) const
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_2D);
 
+    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, cubemap);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-    video->applyTexture(textures[0]);
-
-    const float r = 1.0;
-    const float t = 1.0;
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-r, -r, -t);
-        glTexCoord2f(1, 0); glVertex3f(r, -r, -t);
-        glTexCoord2f(1, 1); glVertex3f(r, r, -t);
-        glTexCoord2f(0, 1); glVertex3f(-r, r, -t);
-
-    glEnd();
-
-    video->applyTexture(textures[1]);
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+    glEnable(GL_TEXTURE_GEN_R);
 
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(t, -r, -r);
-        glTexCoord2f(1, 0); glVertex3f(t, -r, r);
-        glTexCoord2f(1, 1); glVertex3f(t, r, r);
-        glTexCoord2f(0, 1); glVertex3f(t, r, -r);
+        glTexCoord2f(0, 0); glVertex3f(-1.0f, -r, -t);
+        glTexCoord2f(1, 0); glVertex3f(1.0f, -r, -t);
+        glTexCoord2f(1, 1); glVertex3f(1.0f, r, -t);
+        glTexCoord2f(0, 1); glVertex3f(-1.0f, r, -t);
     glEnd();
-
-    video->applyTexture(textures[2]);
 
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(r, -r, t);
-        glTexCoord2f(1, 0); glVertex3f(-r, -r, t);
-        glTexCoord2f(1, 1); glVertex3f(-r, r, t);
-        glTexCoord2f(0, 1); glVertex3f(r, r, t);
+        glTexCoord2f(0, 0); glVertex3f(1.0f, -r, -r);
+        glTexCoord2f(1, 0); glVertex3f(1.0f, -r, r);
+        glTexCoord2f(1, 1); glVertex3f(1.0f, r, r);
+        glTexCoord2f(0, 1); glVertex3f(1.0f, r, -r);
     glEnd();
-
-    video->applyTexture(textures[3]);
 
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-t, -r, r);
-        glTexCoord2f(1, 0); glVertex3f(-t, -r, -r);
-        glTexCoord2f(1, 1); glVertex3f(-t, r, -r);
-        glTexCoord2f(0, 1); glVertex3f(-t, r, r);
+        glTexCoord2f(0, 0); glVertex3f(1.0f, -r, t);
+        glTexCoord2f(1, 0); glVertex3f(-1.0f, -r, t);
+        glTexCoord2f(1, 1); glVertex3f(-1.0f, r, t);
+        glTexCoord2f(0, 1); glVertex3f(1.0f, r, t);
     glEnd();
-
-    video->applyTexture(textures[4]);
 
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-r, t, -r);
-        glTexCoord2f(1, 0); glVertex3f(r, t, -r);
-        glTexCoord2f(1, 1); glVertex3f(r, t, r);
-        glTexCoord2f(0, 1); glVertex3f(-r, t, r);
+        glTexCoord2f(0, 0); glVertex3f(-1.0f, -r, r);
+        glTexCoord2f(1, 0); glVertex3f(-1.0f, -r, -r);
+        glTexCoord2f(1, 1); glVertex3f(-1.0f, r, -r);
+        glTexCoord2f(0, 1); glVertex3f(-1.0f, r, r);
     glEnd();
-
-    video->applyTexture(textures[5]);
 
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-r, -t, r);
-        glTexCoord2f(1, 0); glVertex3f(r, -t, r);
-        glTexCoord2f(1, 1); glVertex3f(r, -t, -r);
-        glTexCoord2f(0, 1); glVertex3f(-r, -t, -r);
+        glTexCoord2f(0, 0); glVertex3f(-1.0f, 1.0f, -1.0f);
+        glTexCoord2f(1, 0); glVertex3f(1.0f, 1.0f, -1.0f);
+        glTexCoord2f(1, 1); glVertex3f(1.0f, 1.0f, 1.0f);
+        glTexCoord2f(0, 1); glVertex3f(-1.0f, 1.0f, 1.0f);
     glEnd();
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex3f(-1.0f, -1.0f, 1.0f);
+        glTexCoord2f(1, 0); glVertex3f(1.0f, -1.0f, 1.0f);
+        glTexCoord2f(1, 1); glVertex3f(1.0f, -1.0f, -1.0f);
+        glTexCoord2f(0, 1); glVertex3f(-1.0f, -1.0f, -1.0f);
+    glEnd();
+
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+    glDisable(GL_TEXTURE_GEN_R);
 
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
 
-    glDisable(GL_TEXTURE_2D);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
