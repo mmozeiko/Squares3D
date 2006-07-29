@@ -162,8 +162,6 @@ void Material::enable(const Video* video) const
         glBindTexture(GL_TEXTURE_2D, m_textureBump);
         video->begin(m_shader);
     }
-    
-
 }
 
 void Material::disable(const Video* video) const

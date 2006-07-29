@@ -344,7 +344,6 @@ unsigned int Video::loadTexture(const string& name)
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     if (glfwLoadMemoryTexture2D(static_cast<void*>(&data[0]), static_cast<long>(filesize), GLFW_BUILD_MIPMAPS_BIT) == GL_FALSE)
     {

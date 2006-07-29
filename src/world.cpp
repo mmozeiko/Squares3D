@@ -11,6 +11,7 @@
 #include "music.h"
 #include "sound.h"
 #include "file.h"
+#include "skybox.h"
 
 /*
 struct ContactBodies
@@ -53,61 +54,11 @@ ContactBodies contactBodies;
 */
 
 Music* music;
-/*
-unsigned int _iCubeTextureID;
-
-void loadCubemap(const string& filename)
-{
-    
-void load_png_cubemap(const char * string, bool mipmap)
-{
-	char buff[1024];
-	GLenum tgt = array_texture_target;
-
-	array2<vec3ub> cubeface;
-	
-	sprintf(buff, string, "posx");
-	read_png_rgb(buff, cubeface);
-	array_texture_target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
-	make_rgb_texture(cubeface, mipmap);
-
-	sprintf(buff, string, "negx");
-	read_png_rgb(buff, cubeface);
-	array_texture_target = GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB;
-	make_rgb_texture(cubeface, mipmap);
-
-	sprintf(buff, string, "posy");
-	read_png_rgb(buff, cubeface);
-	array_texture_target = GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB;
-	make_rgb_texture(cubeface, mipmap);
-
-	sprintf(buff, string, "negy");
-	read_png_rgb(buff, cubeface);
-	array_texture_target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB;
-	make_rgb_texture(cubeface, mipmap);
-
-	sprintf(buff, string, "posz");
-	read_png_rgb(buff, cubeface);
-	array_texture_target = GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB;
-	make_rgb_texture(cubeface, mipmap);
-
-	sprintf(buff, string, "negz");
-	read_png_rgb(buff, cubeface);
-	array_texture_target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB;
-	make_rgb_texture(cubeface, mipmap);
-
-    GL_TEXTURE_CUBE_MAP_ARB
-
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-}
-*/
 
 World::World(Game* game) : 
     Renderable(game),
-    m_camera(new Camera(game))
+    m_camera(new Camera(game)),
+    m_skybox(new SkyBox(m_game->m_video.get(), "cubemap/cube_face2_"))
 {
     m_world = NewtonCreate(NULL, NULL);
     NewtonWorldSetUserData(m_world, static_cast<void*>(this));
@@ -117,15 +68,6 @@ World::World(Game* game) :
     //music = new Sound("music.ogg");
     music = m_game->m_audio->loadMusic("music.ogg");
     music->play();
-/*
-    glGenTextures(1, &_iCubeTextureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _iCubeTextureID);
-
-    loadCubemap("cube_face_");
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    */
 }
 
 void World::init()
@@ -194,12 +136,15 @@ void World::prepare()
 
 void World::render(const Video* video) const
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
     m_camera->render(video);
+
+    m_skybox->render(video); // !! immediately  after camera render !!
 
     m_level->render(video);
 
     video->renderAxes();
+
     glfwSwapBuffers();
 }

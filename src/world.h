@@ -7,6 +7,7 @@
 
 class Camera;
 class Player;
+class SkyBox;
 
 namespace LevelObjects
 {
@@ -27,6 +28,7 @@ public:
     void render(const Video* video) const;
 
 	auto_ptr<Camera>                m_camera;
+    auto_ptr<SkyBox>                m_skybox;
     NewtonWorld*                    m_world;
     auto_ptr<LevelObjects::Level>   m_level;
     vector<Player*>                 m_localPlayers;
