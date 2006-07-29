@@ -29,7 +29,7 @@ public:
 
 	auto_ptr<Camera>                m_camera;
     auto_ptr<SkyBox>                m_skybox;
-    NewtonWorld*                    m_world;
+    NewtonWorld*                    m_newtonWorld;
     auto_ptr<LevelObjects::Level>   m_level;
     vector<Player*>                 m_localPlayers;
 

@@ -60,10 +60,10 @@ World::World(Game* game) :
     m_camera(new Camera(game)),
     m_skybox(new SkyBox(m_game->m_video.get(), "cubemap/cube_face_"))
 {
-    m_world = NewtonCreate(NULL, NULL);
-    NewtonWorldSetUserData(m_world, static_cast<void*>(this));
-    NewtonSetSolverModel(m_world, 10);
-    NewtonSetFrictionModel(m_world, 1);
+    m_newtonWorld = NewtonCreate(NULL, NULL);
+    NewtonWorldSetUserData(m_newtonWorld, static_cast<void*>(this));
+    NewtonSetSolverModel(m_newtonWorld, 10);
+    NewtonSetFrictionModel(m_newtonWorld, 1);
     
     //music = new Sound("music.ogg");
     music = m_game->m_audio->loadMusic("music.ogg");
@@ -72,7 +72,7 @@ World::World(Game* game) :
 
 void World::init()
 {
-	int charID = NewtonMaterialCreateGroupID(m_world);
+	int charID = NewtonMaterialCreateGroupID(m_newtonWorld);
 
 	//NewtonMaterialSetDefaultElasticity(m_world, floorID, charID, 0.4f);
 	//NewtonMaterialSetDefaultFriction(m_world, floorID, charID, 0.4f, 0.4f);
@@ -103,9 +103,9 @@ World::~World()
 
     delete m_level.release();
 
-    NewtonMaterialDestroyAllGroupID(m_world);
-    NewtonDestroyAllBodies(m_world);
-    NewtonDestroy(m_world);
+    NewtonMaterialDestroyAllGroupID(m_newtonWorld);
+    NewtonDestroyAllBodies(m_newtonWorld);
+    NewtonDestroy(m_newtonWorld);
 }
 
 void World::control(const Input* input)
@@ -125,7 +125,7 @@ void World::control(const Input* input)
 
 void World::update(float delta)
 {
-    NewtonUpdate(m_world, delta);
+    NewtonUpdate(m_newtonWorld, delta);
 }
 
 void World::prepare()

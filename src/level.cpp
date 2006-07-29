@@ -240,7 +240,7 @@ void Level::load(const string& levelFile)
                 const XMLnode& node = *iter;
                 if (node.name == "collision")
                 {
-                    m_collisions[getAttribute(node, "id")] = Collision::create(node, m_game->m_world->m_world, &m_materials);
+                    m_collisions[getAttribute(node, "id")] = Collision::create(node, m_game->m_world->m_newtonWorld, &m_materials);
                 }
                 else
                 {
@@ -323,7 +323,7 @@ Body::Body(const XMLnode& node, const Game* game):
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),
-    m_newtonWorld(game->m_world->m_world)
+    m_newtonWorld(game->m_world->m_newtonWorld)
 {
     NewtonCollision* newtonCollision = NULL;
     string id = getAttribute(node, "id");

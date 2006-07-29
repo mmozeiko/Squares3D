@@ -22,14 +22,14 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
   	// add an up vector constraint to help in keeping the body upright
 	const Vector upDirection (0.0f, 1.0f, 0.0f);
 
-    m_upVector = NewtonConstraintCreateUpVector(m_world->m_world, upDirection.v, m_body->m_newtonBody); 
+    m_upVector = NewtonConstraintCreateUpVector(m_world->m_newtonWorld, upDirection.v, m_body->m_newtonBody); 
     NewtonBodySetUserData(m_body->m_newtonBody, this);
     NewtonBodySetForceAndTorqueCallback(m_body->m_newtonBody, onSetForceAndTorque);
 }
 
 Player::~Player()
 {
-    NewtonDestroyJoint(m_world->m_world, m_upVector);
+    NewtonDestroyJoint(m_world->m_newtonWorld, m_upVector);
 }
 
 Vector Player::getPosition()

@@ -100,9 +100,9 @@
   
   <collisions>
     <collision id="player" type="sphere" mass="20.0" material="player">
-      <radius x="0.1" y="0.3" z="0.15" />
+      <radius x="0.25" y="0.25" z="0.5" />
       <offset x="0.0" y="0.0" z="0.0" />
-      <!--rotation x="0.0" y="0.0" z="0.0" /-->
+      <rotation x="270.0" y="0.0" z="0.0" />
     </collision>   
     
     <collision id="box1" type="box" mass="0.2" material="box">
