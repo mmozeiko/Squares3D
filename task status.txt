@@ -1,0 +1,13 @@
+Available:
+
+Implement ai players;
+Port coach class and name it "Referee";
+Use materials on collisions;
+Fix shader lighting position;
+
+Construction:
+
+
+
+Done:
+
