@@ -11,3 +11,4 @@ Construction:
 
 Done:
 
+Create skybox around game space;

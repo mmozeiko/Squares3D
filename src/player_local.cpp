@@ -49,5 +49,5 @@ void LocalPlayer::control(const Input* input)
         direction.y += 1.0f;
     }
     
-    setDirection(Matrix::rotateY(m_world->m_camera->angleY()) * direction );
+    setDirection(Matrix::rotateY(m_game->m_world.get()->m_camera->angleY()) * direction );
 }

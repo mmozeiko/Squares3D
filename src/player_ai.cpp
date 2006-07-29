@@ -16,13 +16,13 @@ AiPlayer::~AiPlayer()
 void AiPlayer::control(const Input* input)
 {
 
-    Player* humanPlayer = m_world->m_localPlayers[0];
+    LevelObjects::Body* ball = m_game->m_world->m_level.get()->getBody("football");
 
-    Vector direction = humanPlayer->getPosition() - getPosition();
+    Vector direction = ball->getPosition() - getPosition();
 
     direction.norm();
     
-    direction /=  2.0f;
+//    direction \= 2.0f;
 
     setDirection(direction);
 }

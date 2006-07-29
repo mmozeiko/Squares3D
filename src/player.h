@@ -5,7 +5,6 @@
 
 class Input;
 class Game;
-class World;
 
 class Player
 {
@@ -28,7 +27,7 @@ protected:
     bool                m_isOnGround;
     Vector              m_direction;
     Vector              m_rotation;
-    World*              m_world;
+    const Game*         m_game;
     LevelObjects::Body* m_body;
 
     void onSetForceAndTorque();

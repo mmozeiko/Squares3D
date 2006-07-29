@@ -110,7 +110,7 @@ namespace LevelObjects
         void  load(const string& levelFile);
         void  render(const Video* video) const;
         void  prepare();
-        Body* getBody(string id);
+        Body* getBody(const string id);
 
         BodiesMap     m_bodies;
         CollisionsMap m_collisions;
