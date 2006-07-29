@@ -21,7 +21,7 @@ void loadTex(const string& name, GLFWimage* image)
 
     glEnable(GL_TEXTURE_2D);
 
-    glfwReadMemoryImage(&data[0], filesize, image, GLFW_NO_RESCALE_BIT);
+    glfwReadMemoryImage(&data[0], static_cast<int>(filesize), image, GLFW_NO_RESCALE_BIT);
 }
 
 SkyBox::SkyBox(Video* video, const string& name)
@@ -46,9 +46,9 @@ SkyBox::SkyBox(Video* video, const string& name)
 
     GLFWimage img;
 
-    const Vector X(1.0f, 0.0f, 0.0f, 0.0f);
-    const Vector Y(0.0f, 1.0f, 0.0f, 0.0f);
-    const Vector Z(0.0f, 0.0f, 1.0f, 0.0f);
+    static const Vector X(1.0f, 0.0f, 0.0f, 0.0f);
+    static const Vector Y(0.0f, 1.0f, 0.0f, 0.0f);
+    static const Vector Z(0.0f, 0.0f, 1.0f, 0.0f);
 
     for (int i=0; i<6; i++)
     {
@@ -92,47 +92,7 @@ void SkyBox::render(const Video* video) const
     glEnable(GL_TEXTURE_GEN_T);
     glEnable(GL_TEXTURE_GEN_R);
 
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, -r, -t);
-        glTexCoord2f(1, 0); glVertex3f(1.0f, -r, -t);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, r, -t);
-        glTexCoord2f(0, 1); glVertex3f(-1.0f, r, -t);
-    glEnd();
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(1.0f, -r, -r);
-        glTexCoord2f(1, 0); glVertex3f(1.0f, -r, r);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, r, r);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, r, -r);
-    glEnd();
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(1.0f, -r, t);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, -r, t);
-        glTexCoord2f(1, 1); glVertex3f(-1.0f, r, t);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, r, t);
-    glEnd();
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, -r, r);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, -r, -r);
-        glTexCoord2f(1, 1); glVertex3f(-1.0f, r, -r);
-        glTexCoord2f(0, 1); glVertex3f(-1.0f, r, r);
-    glEnd();
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, 1.0f, -1.0f);
-        glTexCoord2f(1, 0); glVertex3f(1.0f, 1.0f, -1.0f);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, 1.0f, 1.0f);
-        glTexCoord2f(0, 1); glVertex3f(-1.0f, 1.0f, 1.0f);
-    glEnd();
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 0); glVertex3f(1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, -1.0f, -1.0f);
-        glTexCoord2f(0, 1); glVertex3f(-1.0f, -1.0f, -1.0f);
-    glEnd();
+    video->renderCube();
 
     glDisable(GL_TEXTURE_GEN_S);
     glDisable(GL_TEXTURE_GEN_T);
