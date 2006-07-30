@@ -1,6 +1,7 @@
 #include "xml.h"
 #include "utilities.h"
 
+
 #include <istream>
 #include <ostream>
 #include <sstream>
@@ -640,4 +641,28 @@ void XMLnode::load(File::Reader& reader)
 {
     XMLreader xmlReader(reader);
     xmlReader.parse(*this);
+}
+
+/* CUSTOM */
+
+string getAttribute(const XMLnode& node, const string& name)
+{
+    if (foundInMap(node.attributes, name))
+    {
+        return node.attributes.find(name)->second;
+    }
+
+    throw Exception("Missing attribute '" + name + "' in node '" + node.name + "'");
+}
+
+Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols)
+{
+    Vector vector;
+    for (size_t i = 0; i < attributeSymbols.size(); i++)
+    {
+        string key(1, attributeSymbols[i]);
+        vector[i] = cast<float>(getAttribute(node, key));
+    }
+    return vector;
+
 }

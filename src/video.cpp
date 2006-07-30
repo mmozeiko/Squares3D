@@ -4,6 +4,7 @@
 #include "file.h"
 #include "shader.h"
 #include "level.h"
+#include "material.h"
 
 #include <GL/glfw.h>
 
@@ -295,7 +296,7 @@ void Video::end(const Shader* shader) const
     }
 }
 
-void Video::enableMaterial(const LevelObjects::Material* material) const
+void Video::enableMaterial(const Material* material) const
 {
     if (material != NULL)
     {
@@ -303,7 +304,7 @@ void Video::enableMaterial(const LevelObjects::Material* material) const
     }
 }
 
-void Video::disableMaterial(const LevelObjects::Material* material) const
+void Video::disableMaterial(const Material* material) const
 {
     if (material != NULL)
     {

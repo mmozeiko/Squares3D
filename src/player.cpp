@@ -2,6 +2,7 @@
 #include "video.h"
 #include "game.h"
 #include "world.h"
+#include "body.h"
 
 #include <cmath>
 

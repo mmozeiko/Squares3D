@@ -3,9 +3,12 @@
 
 #include "file.h"
 #include "common.h"
+#include "vmath.h"
 
 class XMLnode;
+
 typedef vector<XMLnode> XMLnodes;
+
 class XMLnode
 {
 public:
@@ -22,5 +25,8 @@ public:
     string value;
     unsigned int line;
 };
+
+string getAttribute(const XMLnode& node, const string& name);
+Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols);
 
 #endif // __XML_H__

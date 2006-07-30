@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1257"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Squares3D"
 	ProjectGUID="{3E1CA81C-2956-4551-8EAC-035AC52863F1}"
 	RootNamespace="Squares3D"
@@ -414,11 +414,35 @@
 				Name="Level"
 				>
 				<File
+					RelativePath=".\src\body.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\body.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\collision.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\collision.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\level.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\level.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\material.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\material.h"
 					>
 				</File>
 			</Filter>

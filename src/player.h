@@ -28,7 +28,7 @@ protected:
     Vector              m_direction;
     Vector              m_rotation;
     const Game*         m_game;
-    LevelObjects::Body* m_body;
+    Body* m_body;
 
     void onSetForceAndTorque();
 

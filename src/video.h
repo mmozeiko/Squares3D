@@ -10,10 +10,8 @@
 class Game;
 class Config;
 class Shader;
-namespace LevelObjects
-{
-    class Material;
-}
+class Material;
+
 
 struct UV
 {
@@ -57,8 +55,8 @@ public:
     void begin(const Shader* shader) const;
     void end(const Shader* shader) const;
 
-    void enableMaterial(const LevelObjects::Material* material) const;
-    void disableMaterial(const LevelObjects::Material* material) const;
+    void enableMaterial(const Material* material) const;
+    void disableMaterial(const Material* material) const;
 
     void applyTexture(unsigned int texture) const;
 

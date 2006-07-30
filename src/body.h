@@ -1,36 +1,52 @@
 #ifndef __BODY_H__
 #define __BODY_H__
 
+#include "newton.h"
+#include "common.h"
 #include "vmath.h"
-#include "renderable.h"
 
-#include <Newton.h>
-
+class Collision;
+class Level;
 class Video;
+class XMLnode;
+class Game;
 
-class Body : public Renderable
+class Body
 {
+    friend class Level;
+
 public:
+    void prepare();
+    void render(const Video* video);
+    void setPositionAndRotation(const Vector& position,
+                                const Vector& rotation);
+    Vector getPosition();
 
-    Body(Game* game);
-    virtual ~Body();
-
-    virtual void prepare();
-    void create(const NewtonCollision* collision, const Matrix& matrix);
+    NewtonBody*     m_newtonBody;        
 
 protected:
-    virtual void onSetForceAndTorque();
 
-    const NewtonWorld*      m_world;
-    NewtonBody*             m_body;
-    const NewtonCollision*  m_collision;
+    Body(const XMLnode& node, const Game* game);
 
-    Matrix                  m_matrix;
+    const NewtonWorld*     m_newtonWorld;
+    Matrix                 m_matrix;
+
+    ~Body();
+
+    void createNewtonBody(const NewtonCollision* newtonCollision,
+                          const Vector& totalOrigin,
+                          const Vector& position,
+                          const Vector& rotation);
 
 private:
-    void update(float delta);
-    static void onSetForceAndTorque(const NewtonBody* body);
 
+    float           m_totalMass;
+    Vector          m_totalInertia;
+    set<Collision*> m_collisions;
+
+    void onSetForceAndTorque();
+    static void onSetForceAndTorque(const NewtonBody* newtonBody);
 };
+
 
 #endif

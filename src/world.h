@@ -8,11 +8,8 @@
 class Camera;
 class Player;
 class SkyBox;
+class Level;
 
-namespace LevelObjects
-{
-    class Level;
-}
 
 class World : public Renderable, NoCopy
 {
@@ -30,7 +27,7 @@ public:
 	auto_ptr<Camera>                m_camera;
     auto_ptr<SkyBox>                m_skybox;
     NewtonWorld*                    m_newtonWorld;
-    auto_ptr<LevelObjects::Level>   m_level;
+    auto_ptr<Level>                 m_level;
     vector<Player*>                 m_localPlayers;
 
 };
