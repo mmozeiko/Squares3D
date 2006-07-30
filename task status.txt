@@ -16,6 +16,8 @@ Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
 Construction:
 =============
 
+Add font rendering.
+
 
 Done:
 =====
