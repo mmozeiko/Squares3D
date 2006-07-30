@@ -8,6 +8,8 @@
 #include "input.h"
 #include "world.h"
 #include "camera.h"
+#include "font.h"
+#include "fps.h"
 
 #include "vmath.h"
 
@@ -58,7 +60,6 @@ void Game::run()
 
     Timer timer;
 
-    int    frames = 0;
     double accum = 0.0;
     double currentTime = timer.read();
     double startTime = currentTime;
@@ -67,6 +68,9 @@ void Game::run()
 
     bool previous_active = true;
     
+    Font font("Arial_32pt_bold.bff");
+    FPS fps(timer, font);
+
     while (running)
     {
         double newTime = timer.read();
@@ -87,10 +91,14 @@ void Game::run()
         }
         m_world->prepare();
         m_world->render(m_video.get());
-        frames++;
 
+        fps.update();
+        fps.render();
+
+        glfwSwapBuffers();
         glfwPollEvents();
         
+        // glfw minmize/restore focus bug
         if (glfwGetWindowParam(GLFW_ACTIVE)==GL_FALSE && previous_active)
         {
             previous_active = false;
@@ -106,7 +114,6 @@ void Game::run()
     }
 
     clog << "Game finished... " << endl;
-    clog << "Rendered " << frames << " frames in " << (currentTime-startTime) << " seconds = " 
-         << frames/(currentTime-startTime) << " FPS" << endl;
+    clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;
 }
 

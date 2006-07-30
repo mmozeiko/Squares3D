@@ -16,10 +16,10 @@ Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
 Construction:
 =============
 
-Add font rendering.
 
 
 Done:
 =====
 
+2006-07-30 Add font rendering.
 2006-07-29 Create skybox around game space.

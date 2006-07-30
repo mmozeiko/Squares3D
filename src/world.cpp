@@ -145,6 +145,4 @@ void World::render(const Video* video) const
     m_level->render(video);
 
     video->renderAxes();
-
-    glfwSwapBuffers();
 }

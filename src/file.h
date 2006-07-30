@@ -26,8 +26,6 @@ namespace File
         _PHYSFS_File* m_handle;
 
         File(_PHYSFS_File* handle);
-        File(const File&);
-        File& operator = (const File&);
     };
 
     class Reader : public File

@@ -446,10 +446,21 @@ void Video::loadProcAddress(const char* name, T& proc) const
 
 void Video::loadExtensions()
 {
-    if (glfwExtensionSupported("GL_ARB_multitexture"))
+    static const char* needed[] = {
+        "GL_ARB_multitexture",
+        "GL_ARB_texture_cube_map",
+        "GL_SGIS_texture_edge_clamp",
+        "GL_SGIS_generate_mipmap",
+    };
+    for (size_t i=0; i<sizeOfArray(needed); i++)
     {
-        loadProc(glActiveTextureARB);
+        if (!glfwExtensionSupported(needed[i]))
+        {
+            throw Exception("Needed OpenGL extension '" + string(needed[i]) + "' not supported");
+        }
     }
+
+    loadProc(glActiveTextureARB);
 
 /*
 if (glfwExtensionSupported("GL_ARB_fragment_program") && 
