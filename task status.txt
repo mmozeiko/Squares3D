@@ -13,6 +13,22 @@ Fix camera movement speed.
 Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
 Implement shadows.
 Split large polygon rendering (ex. cubes) into smaller polygons. May need restructuring collision type="tree" face loading. Needed for correct lightning.
+Implement menu system.
+Network?? (vajag precîzâku tâskiòu ðeit).
+Fill menu system with Options/Multiplayer/Credits/Rules and some other menus you can think of (which are reasonable).
+Add sounds to collision events in world.
+Build some nice scenery around game field (like houses, some roads, etc.).
+Implement model loading.
+Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
+Implement model animation.
+Implement game Scoreboard.
+Implement basic tournament gameplay.
+Implement score counting system.
+Implement basic moves for player, kicking the ball, joggling the ball in air, hitting it with head..
+Upgrade the ball control to be more submissive to player actions.
+Add a referee model who whistles when a fault is detected. (optional task)
+
+
 
 Construction:
 =============
