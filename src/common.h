@@ -80,4 +80,13 @@ inline bool foundInSet(const set<KeyType>& Set,
 #define STR(X) STR2(X)
 #define Exception(msg) string(string(__FILE__"(") + STR(__LINE__) + ") : " + (msg))
 
+class NoCopy
+{
+public:
+    NoCopy() {}
+private:
+    NoCopy(const NoCopy&);
+    NoCopy& operator = (const NoCopy&);
+};
+
 #endif

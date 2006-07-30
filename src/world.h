@@ -14,7 +14,7 @@ namespace LevelObjects
     class Level;
 }
 
-class World : public Renderable
+class World : public Renderable, NoCopy
 {
 public:
 	World(Game* game);

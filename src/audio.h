@@ -13,7 +13,7 @@ class Config;
 class Music;
 typedef set<Music*> MusicSet;
 
-class Audio
+class Audio : NoCopy
 {
 public:
     Audio(const Game* game);

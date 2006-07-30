@@ -22,7 +22,7 @@ struct MiscConfig
 };
 
 
-class Config
+class Config : NoCopy
 {
 public:
     Config();

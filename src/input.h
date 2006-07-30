@@ -12,7 +12,7 @@ struct Mouse
     int b;
 };
 
-class Input
+class Input : NoCopy
 {
 public:
     Input();

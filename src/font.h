@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-class Font
+class Font : NoCopy
 {
 public:
     Font(const string& filename);

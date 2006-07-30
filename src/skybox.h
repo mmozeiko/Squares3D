@@ -5,7 +5,7 @@
 
 class Video;
 
-class SkyBox
+class SkyBox : NoCopy
 {
 public:
     SkyBox(Video* video, const string& name);

@@ -1,7 +1,9 @@
 #ifndef __NETWORK_H__
 #define __NETWORK_H__
 
-class Network
+#include "common.h"
+
+class Network : NoCopy
 {
 public:
     Network();

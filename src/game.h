@@ -15,7 +15,7 @@ class World;
 
 const Vector gravityVec(0.0f, -9.81f, 0.0f);
 
-class Game
+class Game : NoCopy
 {
 public:
     Game();

@@ -38,7 +38,7 @@ struct Face
 
 typedef map<string, Shader*> ShaderMap;
 
-class Video
+class Video : NoCopy
 {
 public:
     Video(const Game* game);

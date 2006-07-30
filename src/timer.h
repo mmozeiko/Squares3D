@@ -1,7 +1,9 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
-class Timer
+#include "common.h"
+
+class Timer : NoCopy
 {
 public:
     Timer(bool start = true);

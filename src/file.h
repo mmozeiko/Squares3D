@@ -11,7 +11,7 @@ namespace File
     void done();
     bool exists(const string& filename);
 
-    class File
+    class File : NoCopy
     {
     public:
         virtual ~File();

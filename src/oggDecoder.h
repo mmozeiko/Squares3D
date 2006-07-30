@@ -5,7 +5,7 @@
 #include "file.h"
 #include <vorbis/vorbisfile.h>
 
-class OggDecoder
+class OggDecoder : NoCopy
 {
 public:
     OggDecoder(const string& filename);

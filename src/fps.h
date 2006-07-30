@@ -2,14 +2,15 @@
 #define __FPS_H__
 
 #include "common.h"
+#include "vmath.h"
 
 class Font;
 class Timer;
 
-class FPS
+class FPS : NoCopy
 {
 public:
-    FPS(const Timer& timer, const Font& font);
+    FPS(const Timer& timer, const Font& font, const Vector& color = Vector(1.0f, 1.0f, 0.0f));
     void update();
     void render() const;
 
@@ -17,8 +18,12 @@ public:
     double time() const;
     double fps() const;
 
+    Vector color;
+
 private:
+    double m_time;
     unsigned int m_frames;
+    unsigned int m_totalFrames;
     const Timer& m_timer;
     const Font& m_font;
     string m_fps;
