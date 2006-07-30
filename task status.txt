@@ -1,14 +1,23 @@
 Available:
+==========
 
-Implement ai players;
-Port coach class and name it "Referee";
-Use materials on collisions;
-Fix shader lighting position;
+Implement AI controlled players.
+Port coach class and name it "Referee".
+Use materials on collisions.
+Fix shader lighting position.
+Cleanup SkyBox class, move texture loading to video, don't cache textures.
+Cleanup Material class, move to video.
+Implement correctly loading shaders from level.xml file.
+Split level.cpp file in smaller ones.
+Fix camera movement speed.
+Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
+
 
 Construction:
-
+=============
 
 
 Done:
+=====
 
-Create skybox around game space;
+2006-07-29 Create skybox around game space.
