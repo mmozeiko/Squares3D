@@ -1,6 +1,7 @@
 Available:
 ==========
 
+Split level.cpp file in smaller ones. !! HIGH PRIORITY !! :)
 Implement AI controlled players.
 Port coach class and name it "Referee".
 Use materials on collisions.
@@ -8,10 +9,10 @@ Fix shader lighting position.
 Cleanup SkyBox class, move texture loading to video, don't cache textures.
 Cleanup Material class, move to video.
 Implement correctly loading shaders from level.xml file.
-Split level.cpp file in smaller ones.
 Fix camera movement speed.
 Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
-
+Implement shadows.
+Split large polygon rendering (ex. cubes) into smaller polygons. May need restructuring collision type="tree" face loading. Needed for correct lightning.
 
 Construction:
 =============
@@ -22,4 +23,5 @@ Done:
 =====
 
 2006-07-30 Add font rendering.
+           Implemented xml file linking (loading from many xml files).
 2006-07-29 Create skybox around game space.

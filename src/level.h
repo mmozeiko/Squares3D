@@ -107,7 +107,7 @@ namespace LevelObjects
     public:
         Level(const Game* game);
         ~Level();
-        void  load(const string& levelFile);
+        void  load(const string& levelFile, StringSet& loaded = StringSet());
         void  render(const Video* video) const;
         void  prepare();
         Body* getBody(const string id);
@@ -115,6 +115,7 @@ namespace LevelObjects
         BodiesMap     m_bodies;
         CollisionsMap m_collisions;
         MaterialsMap  m_materials;
+    
     private:
         const Game* m_game;
     };

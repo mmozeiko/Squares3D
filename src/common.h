@@ -29,6 +29,7 @@ using std::make_pair;
 using std::auto_ptr;
 
 typedef map<string, string>         StringMap;
+typedef set<string>                 StringSet;
 typedef map<string, unsigned int>   UIntMap;
 typedef pair<int, int>              IntPair;
 

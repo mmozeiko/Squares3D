@@ -655,6 +655,10 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\task status.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

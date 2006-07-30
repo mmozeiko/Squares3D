@@ -1,0 +1,64 @@
+<xml>
+  <bodies>
+    <body id="level">
+      <position x="0.0" y="0.0" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      <collision>tree1</collision>
+    </body>
+
+    <body id="box">
+      <position x="-4.0" y="0.5" z="2.0" />
+      <rotation x="0.0" y="0.5" z="0.0" />
+      <collision>box2</collision>
+    </body>
+
+    <body id="football">
+      <position x="0.0" y="0.5" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      <collision>football</collision>
+    </body>
+    
+    <!--body id="sphere">
+      <position x="-8.0" y="5.5" z="2.0" />
+      <rotation x="0.0" y="0.5" z="0.0" />
+      <collision>bumbaLiela</collision>
+    </body-->
+
+    <body id="player">
+      <position x="-2.0" y="1.55" z="-2.0" />
+      <rotation x="0.0" y="0.5" z="4.6" />
+      <collision>box2</collision>
+      <collision>thinBox</collision>
+      <collision>heavyBox</collision>
+    </body>
+
+    <body id="playerDura">
+      <position x="3.0" y="2.0" z="-3.0" />
+      <rotation x="0.0" y="45.0" z="0.0" />
+      <collision>body</collision>
+      <collision>head</collision>
+      <collision>hand1</collision>
+      <collision>hand2</collision>
+      <collision>boob1</collision>
+      <collision>boob2</collision>
+      <collision>leg</collision>
+    </body>
+
+    <body id="walls">
+      <position x="0.0" y="1.0" z="0.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      <collision>wall1</collision>
+      <!--collision>wall2</collision>
+      <collision>wall3</collision>
+      <collision>wall4</collision-->
+    </body>
+
+    <body id="penguin">
+      <position x="-8.0" y="5.5" z="2.0" />
+      <rotation x="0.0" y="0.0" z="0.0" />
+      <collision>player</collision>
+    </body>
+    
+    
+  </bodies>
+</xml>

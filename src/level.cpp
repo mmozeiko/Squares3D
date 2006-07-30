@@ -177,17 +177,23 @@ void Material::disable(const Video* video) const
     glDisable(GL_TEXTURE_2D);
 }
 
-Level::Level(const Game* game) :
-    m_game(game)
+Level::Level(const Game* game) : m_game(game)
 {
 }
 
-void Level::load(const string& levelFile)
+void Level::load(const string& levelFile, StringSet& loaded)
 {
-    clog << "Reading level data." << endl;
+    clog << "Reading '" << levelFile << "' data." << endl;
+
+    if (foundInSet(loaded, levelFile))
+    {
+        clog << "ERROR: " << levelFile << " already is loaded!" << endl;
+        return;
+    }
+    loaded.insert(levelFile);
 
     XMLnode xml;
-    File::Reader in(levelFile);
+    File::Reader in("/data/level/" + levelFile);
     if (!in.is_open())
     {
         throw Exception("Level file '" + levelFile + "' not found");  
@@ -198,7 +204,11 @@ void Level::load(const string& levelFile)
     for each_const(XMLnodes, xml.childs, iter)
     {
         const XMLnode& node = *iter;
-        if (node.name == "bodies")
+        if (node.name == "link")
+        {
+            load(getAttribute(node, "file"), loaded);
+        }
+        else if (node.name == "bodies")
         {
             for each_const(XMLnodes, node.childs, iter)
             {
@@ -225,7 +235,7 @@ void Level::load(const string& levelFile)
                 }
                 else if (node.name == "properties")
                 {
-                    
+                    // TODO: load NewtonMaterial properties
                 }
                 else
                 {
@@ -255,7 +265,7 @@ void Level::load(const string& levelFile)
                 const XMLnode& node = *iter;
                 if (node.name == "joint")
                 {
-
+                    // TODO: load joints
                 }
                 else
                 {

@@ -446,30 +446,17 @@ void Video::loadProcAddress(const char* name, T& proc) const
 
 void Video::loadExtensions()
 {
-    const GLubyte* version = glGetString(GL_VERSION);
-    int dot=0;
-    while (version[dot]!=0 && version[dot]!='.')
-    {
-        dot++;
-    }
-    if (version[dot]==0)
-    {
-        throw Exception("Unknown OpenGL version");
-    }
-    int major = version[dot-1]-'0';
-    int minor = version[dot+1]-'0';
-
+    int major=0, minor=0;
+    glfwGetGLVersion(&major, &minor, NULL);
     if (major<2 && minor<5)
     {
         static const char* needed[] = {
             "GL_ARB_multitexture",
             "GL_ARB_texture_cube_map",
-            "GL_SGIS_texture_edge_clamp",
-            "GL_SGIS_generate_mipmap",
         };
         for (size_t i=0; i<sizeOfArray(needed); i++)
         {
-            if (!glfwExtensionSupported(needed[i]))
+            if (glfwExtensionSupported(needed[i])==GL_FALSE)
             {
                 throw Exception("Needed OpenGL extension '" + string(needed[i]) + "' not supported");
             }
