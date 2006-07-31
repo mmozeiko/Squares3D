@@ -1,7 +1,6 @@
 Available:
 ==========
 
-Split level.cpp file in smaller ones. !! HIGH PRIORITY !! :)
 Implement AI controlled players.
 Port coach class and name it "Referee".
 Use materials on collisions.
@@ -37,7 +36,7 @@ Construction:
 
 Done:
 =====
-
+2006-07-30 Split level.cpp file in smaller ones. !! HIGH PRIORITY !! :)
 2006-07-30 Add font rendering.
            Implemented xml file linking (loading from many xml files).
 2006-07-29 Create skybox around game space.
