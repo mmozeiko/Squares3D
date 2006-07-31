@@ -1,15 +1,12 @@
 #ifndef __INPUT_H__
 #define __INPUT_H__
 
-#include "common.h"
 #include <GL/glfw.h>
+#include "common.h"
 
 struct Mouse
 {
-    int x;
-    int y;
-    int z;
-    int b;
+    int x, y, z, b;
 };
 
 class Input : NoCopy
@@ -23,9 +20,13 @@ public:
     bool key(int key) const;
     const Mouse& mouse(int id = 0) const;
 
-    void    startKeyBuffer();
-    string  getKeyBuffer() const;
-    void    endKeyBuffer();
+    void          startKeyBuffer();
+    const string& getKeyBuffer() const;
+    string&       getKeyBuffer();
+    void          endKeyBuffer();
+
+    // private method, don't use it
+    void    addChar(char c);
 
 private:
     int           m_mouseCount;
@@ -33,6 +34,5 @@ private:
     vector<Mouse> m_mouses;
     string        m_keyBuffer;
 };
-
 
 #endif

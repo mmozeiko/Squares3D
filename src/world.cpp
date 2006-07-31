@@ -1,6 +1,6 @@
+#include "world.h"
 #include "player.h"
 #include "camera.h"
-#include "world.h"
 #include "video.h"
 #include "audio.h"
 #include "game.h"

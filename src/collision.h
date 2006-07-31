@@ -1,7 +1,7 @@
 #ifndef __COLLISION_H__
 #define __COLLISION_H__
 
-#include "newton.h"
+#include <Newton.h>
 #include "common.h"
 #include "vmath.h"
 

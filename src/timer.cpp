@@ -1,6 +1,6 @@
-#include "timer.h"
-
 #include <GL/glfw.h>
+
+#include "timer.h"
 
 Timer::Timer(bool start) :
     m_running(start ? 1 : 0),

@@ -1,11 +1,10 @@
+#include <cmath>
+
 #include "player.h"
 #include "video.h"
 #include "game.h"
 #include "world.h"
 #include "body.h"
-
-#include <cmath>
-
 
 Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     m_body(game->m_world->m_level->getBody(id)),

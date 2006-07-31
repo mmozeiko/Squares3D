@@ -1,8 +1,8 @@
-#include "font.h"
-#include "file.h"
-
 #include <GL/glfw.h>
 #include <GL/glext.h>
+
+#include "font.h"
+#include "file.h"
 
 struct BFFheader
 {

@@ -1,5 +1,5 @@
-#include "video.h"
 #include "shader.h"
+#include "video.h"
 
 /*Shader::Shader(const string& vp, const string& fp)
 {

@@ -1,11 +1,10 @@
-#include "xml.h"
-#include "utilities.h"
-
-
 #include <istream>
 #include <ostream>
 #include <sstream>
 #include <iomanip>
+
+#include "xml.h"
+#include "utilities.h"
 
 /** OUTPUT **/
 

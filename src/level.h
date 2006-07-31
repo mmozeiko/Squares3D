@@ -1,9 +1,9 @@
 #ifndef __LEVEL_H__
 #define __LEVEL_H__
 
+#include <Newton.h>
 #include "common.h"
 #include "vmath.h"
-#include "newton.h"
 
 class XMLnode;
 class Game;

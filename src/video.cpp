@@ -1,3 +1,5 @@
+#include <GL/glfw.h>
+
 #include "video.h"
 #include "game.h"
 #include "config.h"
@@ -5,8 +7,6 @@
 #include "shader.h"
 #include "level.h"
 #include "material.h"
-
-#include <GL/glfw.h>
 
 static void GLFWCALL sizeCb(int width, int height)
 {
@@ -105,6 +105,11 @@ Video::~Video()
     for each_(UIntMap, m_textures, iter)
     {
         glDeleteTextures(1, &iter->second);
+    }
+
+    for each_(ShaderMap, m_shaders, iter)
+    {
+        delete iter->second;
     }
 
     glfwCloseWindow();

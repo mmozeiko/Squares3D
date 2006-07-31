@@ -1,8 +1,8 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
-#include "vmath.h"
 #include "common.h"
+#include "vmath.h"
 #include "renderable.h"
 
 class Camera : public Renderable

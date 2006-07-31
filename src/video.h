@@ -1,11 +1,11 @@
 #ifndef __VIDEO_H__
 #define __VIDEO_H__
 
-#include "vmath.h"
-#include "common.h"
-
 #include <GL/glfw.h>
 #include <GL/glext.h>
+
+#include "common.h"
+#include "vmath.h"
 
 class Game;
 class Config;

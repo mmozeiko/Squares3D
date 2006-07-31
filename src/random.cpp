@@ -1,9 +1,3 @@
-#include "random.h"
-#include "common.h"
-
-#include <ctime>
-#include <climits>
-
 #if WIN32
     #define VC_EXTRALEAN
     #include <windows.h>
@@ -13,6 +7,11 @@
 #else
     #error Not implemented!
 #endif
+
+#include <ctime>
+#include <climits>
+
+#include "random.h"
 
 static const unsigned int N = 624;
 static const unsigned int M = 397;

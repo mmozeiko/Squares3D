@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1257"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Squares3D"
 	ProjectGUID="{3E1CA81C-2956-4551-8EAC-035AC52863F1}"
 	RootNamespace="Squares3D"
@@ -249,6 +249,30 @@
 					RelativePath=".\src\xml.h"
 					>
 				</File>
+				<Filter
+					Name="mmgr"
+					>
+					<File
+						RelativePath=".\src\mmgr.cpp"
+						>
+						<FileConfiguration
+							Name="Release|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\src\mmgr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\nommgr.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="System"
@@ -450,10 +474,6 @@
 		<Filter
 			Name="data"
 			>
-			<File
-				RelativePath=".\bin\data\level.xml"
-				>
-			</File>
 			<Filter
 				Name="shaders"
 				>
@@ -463,6 +483,30 @@
 				</File>
 				<File
 					RelativePath=".\bin\data\shaders\bump.vp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="level"
+				>
+				<File
+					RelativePath=".\bin\data\level\bodies.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\collisions.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\joints.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\level.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\materials.xml"
 					>
 				</File>
 			</Filter>

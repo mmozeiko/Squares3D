@@ -1,5 +1,6 @@
 #include <fstream>
 
+#include "common.h"
 #include "file.h"
 #include "random.h"
 #include "utilities.h"
@@ -35,6 +36,10 @@ int main(int, char* argv[])
     }
 
     clog << "Finished: " << getDateTime() << endl;
+
+#ifndef NDEBUG    
+    m_dumpMemoryReport();
+#endif
     
     return 0;
 }

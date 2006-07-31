@@ -1,6 +1,7 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
+#include "common.h"
 #include "oggDecoder.h"
 #include "vmath.h"
 

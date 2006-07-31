@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <ostream>
 
+#include "common.h"
+
 class Vector
 {
 public:

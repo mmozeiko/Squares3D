@@ -1,6 +1,7 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
+#include "common.h"
 #include "level.h"
 
 class Input;

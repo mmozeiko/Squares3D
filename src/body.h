@@ -1,7 +1,7 @@
 #ifndef __BODY_H__
 #define __BODY_H__
 
-#include "newton.h"
+#include <Newton.h>
 #include "common.h"
 #include "vmath.h"
 

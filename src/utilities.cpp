@@ -1,7 +1,7 @@
-#include "utilities.h"
-
 #include <ctime>
 #include <cctype>
+
+#include "utilities.h"
 
 string getDateTime()
 {

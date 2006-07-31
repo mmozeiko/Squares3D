@@ -1,6 +1,6 @@
-#include "sound.h"
-#include "common.h"
 #include <AL/al.h>
+
+#include "sound.h"
 
 Sound::Sound(const string& filename) : OggDecoder("/data/sound/"+filename)
 {

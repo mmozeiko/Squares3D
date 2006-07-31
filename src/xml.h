@@ -1,8 +1,8 @@
 #ifndef __XML_H__
 #define __XML_H__
 
-#include "file.h"
 #include "common.h"
+#include "file.h"
 #include "vmath.h"
 
 class XMLnode;

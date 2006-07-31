@@ -8,10 +8,14 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <memory>
 #include <sstream>
 #include <iostream>
+#include <memory>
 #include <algorithm>
+
+#ifndef NDEBUG
+#include "mmgr.h"
+#endif
 
 using std::set;
 using std::map; 

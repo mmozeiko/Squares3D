@@ -1,12 +1,11 @@
+#include <GL/glfw.h>
+
 #include "camera.h"
-#include "common.h"
 #include "input.h"
 #include "game.h"
 
-#include <GL/glfw.h>
-
-static const float LOOK_SPEED = 1.0f;
-static const float MOVE_SPEED = 5.0f;
+static const float LOOK_SPEED = 5.0f;
+static const float MOVE_SPEED = 10.0f;
 
 /*
 Translate(Camera.Position);

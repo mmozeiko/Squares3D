@@ -1,8 +1,8 @@
 #ifndef __PLAYER_LOCAL_H__
 #define __PLAYER_LOCAL_H__
 
-#include "player.h"
 #include "common.h"
+#include "player.h"
 
 class Input;
 

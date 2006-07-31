@@ -1,9 +1,9 @@
 #ifndef __OGG_DECODER_H__
 #define __OGG_DECODER_H__
 
+#include <vorbis/vorbisfile.h>
 #include "common.h"
 #include "file.h"
-#include <vorbis/vorbisfile.h>
 
 class OggDecoder : NoCopy
 {

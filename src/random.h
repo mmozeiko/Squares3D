@@ -1,6 +1,8 @@
 #ifndef __RANDOM_H__
 #define __RANDOM_H__
 
+#include "common.h"
+
 namespace Random
 {
     void init();

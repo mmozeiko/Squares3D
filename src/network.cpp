@@ -1,8 +1,7 @@
+#include <enet/enet.h>
+
 #include "network.h"
 #include "random.h"
-#include "common.h"
-
-#include <enet/enet.h>
 
 Network::Network()
 {

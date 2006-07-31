@@ -1,5 +1,4 @@
 #include "player_local.h"
-
 #include "input.h"
 #include "camera.h"
 #include "game.h"

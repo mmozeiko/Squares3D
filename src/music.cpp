@@ -1,6 +1,6 @@
-#include "music.h"
-#include "common.h"
 #include <AL/al.h>
+
+#include "music.h"
 
 Music::Music(const string& filename) : OggDecoder("/data/music/"+filename)
 {

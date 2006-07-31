@@ -1,9 +1,9 @@
+#include <GL/glfw.h>
+
 #include "skybox.h"
 #include "video.h"
 #include "vmath.h"
 #include "file.h"
-
-#include <GL/glfw.h>
 
 static void loadTex(const string& name, GLFWimage* image)
 {

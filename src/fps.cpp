@@ -1,8 +1,9 @@
+#include <cmath>
+#include <GL/glfw.h>
+
 #include "fps.h"
 #include "font.h"
 #include "timer.h"
-#include <cmath>
-#include <GL/glfw.h>
 
 FPS::FPS(const Timer& timer, const Font& font, const Vector& color)
     : m_time(timer.read()), m_frames(0), m_totalFrames(0), m_timer(timer), m_font(font), m_fps(),

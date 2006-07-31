@@ -1,6 +1,7 @@
 #ifndef __MUSIC_H__
 #define __MUSIC_H__
 
+#include "common.h"
 #include "oggDecoder.h"
 
 #define BUFFER_COUNT 4

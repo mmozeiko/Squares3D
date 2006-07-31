@@ -1,11 +1,10 @@
+#include <AL/al.h>
+#include <AL/alc.h>
+
 #include "audio.h"
 #include "game.h"
 #include "config.h"
-#include "common.h"
 #include "music.h"
-
-#include <AL/al.h>
-#include <AL/alc.h>
 
 Audio::Audio(const Game* game) : m_config(game->m_config.get())
 {

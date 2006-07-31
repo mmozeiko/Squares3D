@@ -1,12 +1,14 @@
-#include "input.h"
-
 #include <manymouse.h>
 
+#include "input.h"
+
+static Input* instance = NULL;
 
 Input::Input() :
     m_mouseCount(0), m_manymouses(false), m_mouses(), m_keyBuffer()
 {
     clog << "Initializing input... ";
+    instance = this;
 
     int tmp = ManyMouse_Init();
     if (tmp > 0)
@@ -113,23 +115,43 @@ const Mouse& Input::mouse(int id) const
 {
     if (id >= m_mouseCount)
     {
-        string sid = cast<string>(id);
-        throw Exception("Invalid mouse id - " + id);
+        throw Exception("Invalid mouse id - " + cast<string>(id));
     }
     return m_mouses[id];
 }
 
 
+void GLFWCALL keyFunc(int key, int action)
+{
+    if (action == GLFW_PRESS)
+    {
+        instance->addChar(key);
+    }
+}
+
 void Input::startKeyBuffer()
 {
     m_keyBuffer = "";
+    glfwSetKeyCallback(keyFunc);
 }
 
-string Input::getKeyBuffer() const
+const string& Input::getKeyBuffer() const
+{
+    return m_keyBuffer;
+}
+
+string& Input::getKeyBuffer()
 {
     return m_keyBuffer;
 }
 
 void Input::endKeyBuffer()
 {
+    glfwSetCharCallback(NULL);
 }
+
+void Input::addChar(char c)
+{
+    m_keyBuffer.push_back(c);
+}
+
