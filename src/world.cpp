@@ -53,21 +53,18 @@ static int PlayerContactProcess(const NewtonMaterial* material, const NewtonCont
 ContactBodies contactBodies;
 */
 
-Music* music;
-
-World::World(Game* game) : 
-    Renderable(game),
-    m_camera(new Camera(game)),
-    m_skybox(new SkyBox(m_game->m_video.get(), "cubemap/cube_face_"))
+World::World(Game* game) : Renderable(game)
 {
+    m_camera = new Camera(m_game);
+    m_skybox = new SkyBox(m_game->m_video);
+
     m_newtonWorld = NewtonCreate(NULL, NULL);
     NewtonWorldSetUserData(m_newtonWorld, static_cast<void*>(this));
     NewtonSetSolverModel(m_newtonWorld, 10);
     NewtonSetFrictionModel(m_newtonWorld, 1);
     
-    //music = new Sound("music.ogg");
-    music = m_game->m_audio->loadMusic("music.ogg");
-    //music->play();
+    m_music = m_game->m_audio->loadMusic("music.ogg");
+    //m_music->play();
 }
 
 void World::init()
@@ -83,7 +80,7 @@ void World::init()
 
  //   NewtonBodySetMaterialGroupID(floorBody, floorID);
 
-    m_level.reset(new Level(m_game));
+    m_level = new Level(m_game);
     m_level->load("level.xml");
 
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
@@ -97,19 +94,22 @@ void World::init()
 
 World::~World()
 {
-    music->stop();
-    m_game->m_audio->unloadMusic(music);
+    m_music->stop();
+    m_game->m_audio->unloadMusic(m_music);
 
     for each_const(vector<Player*>, m_localPlayers, player)
     {
         delete *player;
     }
 
-    delete m_level.release();
+    delete m_level;
 
     NewtonMaterialDestroyAllGroupID(m_newtonWorld);
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
+
+    delete m_skybox;
+    delete m_camera;
 }
 
 void World::control(const Input* input)

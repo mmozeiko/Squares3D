@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "level.h"
 #include "material.h"
+#include "texture.h"
 
 static void GLFWCALL sizeCb(int width, int height)
 {
@@ -20,8 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
   glLoadIdentity();
 }
 
-Video::Video(const Game* game) : 
-    m_config(game->m_config.get()), m_haveShaders(false)
+Video::Video(const Game* game) : m_config(game->m_config), m_haveShaders(false)
 {
     clog << "Initializing video." << endl;
 
@@ -96,15 +96,25 @@ Video::Video(const Game* game) :
     glfwDisable(GLFW_MOUSE_CURSOR);
 
     loadExtensions();
+    m_quadricSphere = gluNewQuadric();
+    m_quadricAxes = gluNewQuadric();
+    m_quadricWireSphere = gluNewQuadric();
+    gluQuadricTexture(m_quadricSphere, GLU_TRUE);
+    gluQuadricNormals(m_quadricSphere, GLU_TRUE);
+    gluQuadricDrawStyle(m_quadricWireSphere, GLU_SILHOUETTE);
 }
 
 Video::~Video()
 {
     clog << "Closing video." << endl;
 
-    for each_(UIntMap, m_textures, iter)
+    gluDeleteQuadric(m_quadricSphere);
+    gluDeleteQuadric(m_quadricAxes);
+    gluDeleteQuadric(m_quadricWireSphere);
+
+    for each_(TextureMap, m_textures, iter)
     {
-        glDeleteTextures(1, &iter->second);
+        delete iter->second;
     }
 
     for each_(ShaderMap, m_shaders, iter)
@@ -197,19 +207,12 @@ void Video::renderFace(const Face& face) const
 
 void Video::renderSphere(float radius) const
 {
-    GLUquadric* q =  gluNewQuadric();
-    gluQuadricTexture(q, GLU_TRUE);
-    gluQuadricNormals(q, GLU_TRUE);
-    gluSphere(q, radius, 64, 64);
-    gluDeleteQuadric(q);
+    gluSphere(m_quadricSphere, radius, 64, 64);
 }
     
 void Video::renderWireSphere(float radius) const
 {
-    GLUquadric* q =  gluNewQuadric();
-    gluQuadricDrawStyle(q, GLU_SILHOUETTE);
-    gluSphere(q, radius, 64, 64);
-    gluDeleteQuadric(q);
+    gluSphere(m_quadricWireSphere, radius, 64, 64);
 }
   
 void Video::renderAxes(float size) const
@@ -218,7 +221,6 @@ void Video::renderAxes(float size) const
     const float green[] = {0.0, 1.0, 0.0};
     const float blue[] = {0.0, 0.0, 1.0};
 
-    
     glDisable(GL_LIGHTING);
 
     glBegin(GL_LINES);
@@ -236,36 +238,32 @@ void Video::renderAxes(float size) const
     glEnd();
 
     glEnable(GL_LIGHTING);
-    
-    GLUquadric* q =  gluNewQuadric();
-    
+
     glPushMatrix();
     glColor3fv(red);
     glTranslatef(size, 0.0, 0.0);
     glRotatef(90.0, 0.0, 1.0, 0.0);
-    gluCylinder(q, 0.2, 0.0, 1.0, 32, 32);
+    gluCylinder(m_quadricWireSphere, 0.2, 0.0, 1.0, 32, 32);
     glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(q, 0.0, 0.2, 32, 32);
+    gluDisk(m_quadricWireSphere, 0.0, 0.2, 32, 32);
     glPopMatrix();
 
     glPushMatrix();
     glColor3fv(green);
     glTranslatef(0.0, size, 0.0);
     glRotatef(-90.0, 1.0, 0.0, 0.0);
-    gluCylinder(q, 0.2, 0.0, 1.0, 32, 32);
+    gluCylinder(m_quadricWireSphere, 0.2, 0.0, 1.0, 32, 32);
     glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(q, 0.0, 0.2, 32, 32);
+    gluDisk(m_quadricWireSphere, 0.0, 0.2, 32, 32);
     glPopMatrix();
 
     glPushMatrix();
     glColor3fv(blue);
     glTranslatef(0.0, 0.0, size);
-    gluCylinder(q, 0.2, 0.0, 1.0, 32, 32);
+    gluCylinder(m_quadricWireSphere, 0.2, 0.0, 1.0, 32, 32);
     glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(q, 0.0, 0.2, 32, 32);
+    gluDisk(m_quadricWireSphere, 0.0, 0.2, 32, 32);
     glPopMatrix();
-
-    gluDeleteQuadric(q);
 }
 
 void Video::begin() const
@@ -317,48 +315,28 @@ void Video::disableMaterial(const Material* material) const
     }
 }
 
-
-void Video::applyTexture(unsigned int texture) const
+Texture* Video::loadTexture(const string& name)
 {
-    glBindTexture(GL_TEXTURE_2D, texture);
-}
-
-unsigned int Video::loadTexture(const string& name)
-{
-    UIntMap::const_iterator iter = m_textures.find(name);
+    TextureMap::iterator iter = m_textures.find(name);
     if (iter != m_textures.end())
     {
         return iter->second;
     }
-
-    string filename = "/data/textures/" + name;
-    File::Reader file(filename);
-    if (!file.is_open())
-    {
-        throw Exception("Texture '" + name + "' not found");
-    }
-    size_t filesize = file.size();
-
-    vector<char> data(filesize);
-    file.read(&data[0], filesize);
-    file.close();
-
-    glEnable(GL_TEXTURE_2D);
-
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    if (glfwLoadMemoryTexture2D(static_cast<void*>(&data[0]), static_cast<long>(filesize), GLFW_BUILD_MIPMAPS_BIT) == GL_FALSE)
-    {
-        throw Exception("Texture '" + name + "' failed to load");
-    }
-    glDisable(GL_TEXTURE_2D);
     
-    m_textures.insert(make_pair(name, texture));
-    return texture;
+    Texture* texture = new Texture2D(name);
+    return m_textures.insert(make_pair(name, texture)).first->second;
+}
+
+Texture* Video::loadCubeMap(const string& name)
+{
+    TextureMap::iterator iter = m_textures.find(name);
+    if (iter != m_textures.end())
+    {
+        return iter->second;
+    }
+    
+    Texture* texture = new TextureCube(name);
+    return m_textures.insert(make_pair(name, texture)).first->second;
 }
 
 Shader* Video::loadShader(const string& vp, const string& fp)
@@ -398,8 +376,7 @@ Shader* Video::loadShader(const string& vp, const string& fp)
 
 
         Shader* shader = new Shader(vprogram, fprogram);
-        m_shaders.insert(make_pair(vp+"::"+fp, shader));
-        return shader;
+        return m_shaders.insert(make_pair(vp+"::"+fp, shader)).first->second;
     }
 
     return NULL;

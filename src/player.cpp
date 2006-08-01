@@ -4,7 +4,6 @@
 #include "video.h"
 #include "game.h"
 #include "world.h"
-#include "body.h"
 
 //, const Vector& rotation
 Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
@@ -13,20 +12,19 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
     m_game(game)
 {
     m_rotation = (rotation * DEG_IN_RAD) + m_body->getRotation();
-
-    m_body->setPositionAndRotation(position, m_rotation);
+    
+    m_body->setTransform(position, m_rotation);
 
 	// set the viscous damping the the minimum
-    const float damp[] = { 0.0f, 0.0f, 0.0f };
 	NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
-	NewtonBodySetAngularDamping(m_body->m_newtonBody, damp);
+    NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);
 
   	// add an up vector constraint to help in keeping the body upright
-	const Vector upDirection (0.0f, 1.0f, 0.0f);
-
-    m_upVector = NewtonConstraintCreateUpVector(m_game->m_world->m_newtonWorld, upDirection.v, m_body->m_newtonBody); 
+    m_upVector = NewtonConstraintCreateUpVector(m_game->m_world->m_newtonWorld, Vector::Y.v, m_body->m_newtonBody); 
     NewtonBodySetUserData(m_body->m_newtonBody, this);
     NewtonBodySetForceAndTorqueCallback(m_body->m_newtonBody, onSetForceAndTorque);
+
+    m_body->setCollideable(this);
 }
 
 Player::~Player()
@@ -98,7 +96,7 @@ void Player::onCollision(const NewtonMaterial* material, const NewtonContact* co
    NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
 
    // Determine if this contact is on the ground
-   float angle = Vector(0.0f, 1.0f, 0.0f) % nor;
+   float angle = Vector::Y % nor;
    m_isOnGround = (angle > 0.0f);
 
    NewtonMaterialSetContactElasticity( material, 0.0f );

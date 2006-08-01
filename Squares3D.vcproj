@@ -238,6 +238,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\vmath.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\vmath.h"
 					>
 				</File>
@@ -381,6 +385,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\texture.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\texture.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\video.cpp"
 						>
 					</File>
@@ -467,6 +479,14 @@
 				</File>
 				<File
 					RelativePath=".\src\material.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\materials.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\materials.h"
 					>
 				</File>
 			</Filter>

@@ -25,6 +25,12 @@ class Vector
 public:
     friend inline Vector operator ^ (const Vector& first, const Vector& second);
 
+    static const Vector Zero;
+    static const Vector One;
+    static const Vector X;
+    static const Vector Y;
+    static const Vector Z;
+
     union
     {
         float v[4];

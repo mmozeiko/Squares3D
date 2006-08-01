@@ -23,12 +23,12 @@ public:
 	
     void run();
 
-    auto_ptr<Config>    m_config;
-    auto_ptr<Video>     m_video;
-    auto_ptr<Audio>     m_audio;
-    auto_ptr<Network>   m_network;
-    auto_ptr<Input>     m_input;
-    auto_ptr<World>     m_world;
+    Config*  m_config;
+    Video*   m_video;
+    Audio*   m_audio;
+    Network* m_network;
+    Input*   m_input;
+    World*   m_world;
 };
 
 #endif

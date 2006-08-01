@@ -17,7 +17,7 @@ AiPlayer::~AiPlayer()
 void AiPlayer::control(const Input* input)
 {
 
-    Body* ball = m_game->m_world->m_level.get()->getBody("football");
+    Body* ball = m_game->m_world->m_level->getBody("football");
 
     Vector direction = ball->getPosition() - getPosition();
     direction.norm();

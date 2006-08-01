@@ -99,8 +99,7 @@ Body::Body(const XMLnode& node, const Game* game):
     }
 }
 
-void Body::setPositionAndRotation(const Vector& position,
-                                  const Vector& rotation)
+void Body::setTransform(const Vector& position, const Vector& rotation)
 {
     NewtonSetEulerAngle(rotation.v, m_matrix.m);
     m_matrix = Matrix::translate(position) * m_matrix;
@@ -124,7 +123,7 @@ void Body::createNewtonBody(const NewtonCollision* newtonCollision,
     
     NewtonBodySetForceAndTorqueCallback(m_newtonBody, onSetForceAndTorque);
 
-    setPositionAndRotation(position, rotation);
+    setTransform(position, rotation);
 
     NewtonBodySetAutoFreeze(m_newtonBody, 0);
 
@@ -185,4 +184,14 @@ void Body::render(const Video* video)
     }
 
     video->end();
+}
+
+bool Body::isCollideable() const
+{
+    return m_collideable != NULL;
+}
+
+void Body::setCollideable(Collideable* collideable)
+{
+    m_collideable = collideable;
 }

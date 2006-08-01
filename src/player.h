@@ -3,11 +3,12 @@
 
 #include "common.h"
 #include "level.h"
+#include "body.h"
 
 class Input;
 class Game;
 
-class Player
+class Player : public Collideable
 {
 public:
     Player(const string& id, const Game* game, const Vector& position, const Vector& rotation);
@@ -29,10 +30,12 @@ protected:
     Vector              m_direction;
     Vector              m_rotation;
     const Game*         m_game;
-    Body* m_body;
+    Body*               m_body;
+
+    virtual void onImpact(const Vector& position, const float speed) {} // TODO: remove
+    virtual void onScratch(const Vector& position, const float speed) {}
 
     void onSetForceAndTorque();
-
     static void onSetForceAndTorque(const NewtonBody* body);
 
 };

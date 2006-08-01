@@ -7,9 +7,11 @@
 #include "material.h"
 #include "collision.h"
 #include "body.h"
+#include "materials.h"
 
 Level::Level(const Game* game) : m_game(game)
 {
+    m_materials = new Materials(game);
 }
 
 void Level::load(const string& levelFile, StringSet& loaded)
@@ -62,7 +64,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "material")
                 {
-                    m_materials[getAttribute(node, "id")] = new Material(node, m_game->m_video.get());
+                    m_materials->add(getAttribute(node, "id"), new Material(node, m_game->m_video));
                 }
                 else if (node.name == "properties")
                 {
@@ -81,7 +83,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "collision")
                 {
-                    m_collisions[getAttribute(node, "id")] = Collision::create(node, m_game->m_world->m_newtonWorld, &m_materials);
+                    m_collisions[getAttribute(node, "id")] = Collision::create(node, m_game->m_world->m_newtonWorld, this);
                 }
                 else
                 {
@@ -121,10 +123,7 @@ Level::~Level()
     {
         delete iter->second;
     }
-    for each_(MaterialsMap, m_materials, iter)
-    {
-        delete iter->second;
-    }
+    delete m_materials;
 }
 
 Body* Level::getBody(const string id)
@@ -159,3 +158,35 @@ void Level::render(const Video* video) const
     glPopAttrib();
 }
 
+string getAttribute(const XMLnode& node, const string& name)
+{
+    StringMap::const_iterator iter = node.attributes.find(name);
+    if (iter != node.attributes.end())
+    {
+        return iter->second;
+    }
+
+    throw Exception("Missing attribute '" + name + "' in node '" + node.name + "'");
+}
+
+string getAttribute(const XMLnode& node, const string& name, const string& defaultValue)
+{
+    StringMap::const_iterator iter = node.attributes.find(name);
+    if (iter != node.attributes.end())
+    {
+        return iter->second;
+    }
+    return defaultValue;
+}
+
+Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols)
+{
+    Vector vector;
+    for (size_t i = 0; i < attributeSymbols.size(); i++)
+    {
+        string key(1, attributeSymbols[i]);
+        vector[i] = cast<float>(getAttribute(node, key));
+    }
+    return vector;
+
+}

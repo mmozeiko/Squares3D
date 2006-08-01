@@ -9,14 +9,14 @@ class Body;
 class XMLnode;
 class Video;
 class Material;
-typedef map<string, Material*>  MaterialsMap;
+class Level;
 
 class Collision
 {
     friend class Body;
 
 public:
-    static Collision* create(const XMLnode& node, const NewtonWorld* newtonWorld, const MaterialsMap* materials);
+    static Collision* create(const XMLnode& node, const NewtonWorld* newtonWorld, const Level* level);
     
     virtual void render(const Video* video) const = 0;
 

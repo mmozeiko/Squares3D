@@ -8,8 +8,10 @@
 
 int main(int, char* argv[])
 {
-    //std::ofstream log("log.txt");
-    //clog.rdbuf(log.rdbuf());
+#ifdef NDEBUG    
+    std::ofstream log("log.txt");
+    clog.rdbuf(log.rdbuf());
+#endif
 
     clog << "Started: " << getDateTime() << endl;
 

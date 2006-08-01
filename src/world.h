@@ -9,7 +9,7 @@ class Camera;
 class Player;
 class SkyBox;
 class Level;
-
+class Music;
 
 class World : public Renderable, NoCopy
 {
@@ -24,11 +24,12 @@ public:
     void prepare();
     void render(const Video* video) const;
 
-	auto_ptr<Camera>                m_camera;
-    auto_ptr<SkyBox>                m_skybox;
-    NewtonWorld*                    m_newtonWorld;
-    auto_ptr<Level>                 m_level;
-    vector<Player*>                 m_localPlayers;
+	Music*           m_music;
+    Camera*          m_camera;
+    SkyBox*          m_skybox;
+    NewtonWorld*     m_newtonWorld;
+    Level*           m_level;
+    vector<Player*>  m_localPlayers;
 
 };
 

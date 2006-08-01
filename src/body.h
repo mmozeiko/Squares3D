@@ -11,6 +11,13 @@ class Video;
 class XMLnode;
 class Game;
 
+class Collideable
+{
+public:
+    virtual void onImpact(const Vector& position, const float speed) {}
+    virtual void onScratch(const Vector& position, const float speed) {}
+};
+
 class Body
 {
     friend class Level;
@@ -18,10 +25,11 @@ class Body
 public:
     void prepare();
     void render(const Video* video);
-    void setPositionAndRotation(const Vector& position,
-                                const Vector& rotation);
+    void setTransform(const Vector& position, const Vector& rotation);
     Vector getPosition();
     Vector getRotation();
+    bool isCollideable() const;
+    void setCollideable(Collideable* collideable);
 
     NewtonBody*     m_newtonBody;        
 
@@ -44,6 +52,7 @@ private:
     float           m_totalMass;
     Vector          m_totalInertia;
     set<Collision*> m_collisions;
+    Collideable*    m_collideable;
 
     void onSetForceAndTorque();
     static void onSetForceAndTorque(const NewtonBody* newtonBody);

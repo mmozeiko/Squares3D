@@ -10,7 +10,6 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <memory>
 #include <algorithm>
 
 #ifndef NDEBUG
@@ -30,10 +29,9 @@ using std::endl;
 using std::pair;
 using std::make_pair;
 
-using std::auto_ptr;
-
 typedef map<string, string>         StringMap;
 typedef set<string>                 StringSet;
+typedef map<string, int>            IntMap;
 typedef map<string, unsigned int>   UIntMap;
 typedef pair<int, int>              IntPair;
 

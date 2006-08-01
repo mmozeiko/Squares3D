@@ -6,7 +6,7 @@
 #include "config.h"
 #include "music.h"
 
-Audio::Audio(const Game* game) : m_config(game->m_config.get())
+Audio::Audio(const Game* game) : m_config(game->m_config)
 {
     clog << "Initializing audio." << endl;
 

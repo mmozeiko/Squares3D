@@ -13,19 +13,26 @@
 
 #include "vmath.h"
 
-Game::Game() : m_config(new Config())
+Game::Game()
 {
-    m_video.reset(new Video(this));
-    m_audio.reset(new Audio(this));
-    m_network.reset(new Network());
-    m_input.reset(new Input());
-    m_world.reset(new World(this));
-    
+    m_config = new Config();
+    m_video = new Video(this);
+    m_audio = new Audio(this);
+    m_network = new Network();
+    m_input = new Input();
+    m_world = new World(this);
+
     m_world->init();
 }
 
 Game::~Game()
 {
+    delete m_world;
+    delete m_input;
+    delete m_network;
+    delete m_audio;
+    delete m_video;
+    delete m_config;
 }
 
 void Game::run()
@@ -76,13 +83,14 @@ void Game::run()
         double newTime = timer.read();
         double deltaTime = newTime - currentTime;
         currentTime = newTime;
-        // TODO: REMOVE!!!!!
-        if (deltaTime > 0.01f) deltaTime = 0.01f;
+        
+        if (deltaTime > 0.01f) deltaTime = 0.01f; // TODO: REMOVE!!!!!
+
         accum += deltaTime;
 
         m_audio->update();
         m_input->update();
-        m_world->control(m_input.get());
+        m_world->control(m_input);
         m_world->m_camera->update(static_cast<float>(deltaTime));
         while (accum >= DT)
         {
@@ -90,7 +98,7 @@ void Game::run()
             accum -= DT;
         }
         m_world->prepare();
-        m_world->render(m_video.get());
+        m_world->render(m_video);
 
         fps.update();
         fps.render();

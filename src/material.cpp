@@ -2,6 +2,8 @@
 #include "shader.h"
 #include "xml.h"
 #include "video.h"
+#include "texture.h"
+#include "level.h"
 
 Material::Material(const XMLnode& node, Video* video) :
     m_id(),
@@ -79,8 +81,7 @@ Material::Material(const XMLnode& node, Video* video) :
 void Material::enable(const Video* video) const
 {
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+    m_texture->begin();
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_cSpecular.v);
@@ -90,8 +91,7 @@ void Material::enable(const Video* video) const
     if (video->m_haveShaders && (m_shader != NULL))
     {
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, m_textureBump);
+        m_textureBump->begin();
         video->begin(m_shader);
     }
 }
@@ -102,9 +102,9 @@ void Material::disable(const Video* video) const
     {
         video->end(m_shader);
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
-        glDisable(GL_TEXTURE_2D);
+        m_textureBump->end();
     }
 
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
-    glDisable(GL_TEXTURE_2D);
+    m_texture->end();
 }

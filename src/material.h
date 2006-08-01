@@ -7,6 +7,7 @@
 class Level;
 class Video;
 class Shader;
+class Texture;
 class XMLnode;
 
 class Material
@@ -26,8 +27,8 @@ public:
 private: 
     Material(const XMLnode& node, Video* video);
 
-    unsigned int m_texture;
-    unsigned int m_textureBump;
+    Texture* m_texture;
+    Texture* m_textureBump;
 };
 
 #endif

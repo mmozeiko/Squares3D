@@ -1,11 +1,11 @@
 Available:
 ==========
 
+Move NewtonMaterial id from Materials to Material class.
 Implement AI controlled players.
 Port coach class and name it "Referee".
 Use materials on collisions.
 Fix shader lighting position.
-Cleanup SkyBox class, move texture loading to video, don't cache textures.
 Cleanup Material class, move to video.
 Implement correctly loading shaders from level.xml file.
 Fix camera movement speed.
@@ -36,7 +36,8 @@ Construction:
 
 Done:
 =====
-2006-07-30 Split level.cpp file in smaller ones. !! HIGH PRIORITY !! :)
+2006-08-01 Cleanup SkyBox class, move texture loading to video.
+2006-07-31 Split level.cpp file in smaller ones.
 2006-07-30 Add font rendering.
            Implemented xml file linking (loading from many xml files).
 2006-07-29 Create skybox around game space.

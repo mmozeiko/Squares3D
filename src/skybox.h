@@ -4,17 +4,17 @@
 #include "common.h"
 
 class Video;
+class Texture;
 
 class SkyBox : NoCopy
 {
 public:
-    SkyBox(Video* video, const string& name);
-    ~SkyBox();
+    SkyBox(Video* video);
 
     void render(const Video* video) const;
 
 private:
-    unsigned int cubemap;
+    Texture* m_texture;
 };
 
 #endif

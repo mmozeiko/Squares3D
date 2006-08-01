@@ -11,7 +11,7 @@ class Game;
 class Config;
 class Shader;
 class Material;
-
+class Texture;
 
 struct UV
 {
@@ -35,6 +35,7 @@ struct Face
 };
 
 typedef map<string, Shader*> ShaderMap;
+typedef map<string, Texture*> TextureMap;
 
 class Video : NoCopy
 {
@@ -58,10 +59,9 @@ public:
     void enableMaterial(const Material* material) const;
     void disableMaterial(const Material* material) const;
 
-    void applyTexture(unsigned int texture) const;
-
-    unsigned int loadTexture(const string& name);
-    Shader*      loadShader(const string& vp, const string& fp);
+    Texture* loadTexture(const string& name);
+    Texture* loadCubeMap(const string& name);
+    Shader*  loadShader(const string& vp, const string& fp);
 
     static PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;
 
@@ -102,10 +102,13 @@ private:
 
     void loadExtensions();
 
-    const Config* m_config;
-    UIntMap       m_textures;
-    ShaderMap     m_shaders;
+    GLUquadric*   m_quadricSphere;
+    GLUquadric*   m_quadricWireSphere;
+    GLUquadric*   m_quadricAxes;
 
+    const Config* m_config;
+    ShaderMap     m_shaders;
+    TextureMap    m_textures;
 };
 
 #endif
