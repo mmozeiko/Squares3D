@@ -69,10 +69,17 @@ World::World(Game* game) : Renderable(game)
 
 void World::init()
 {
-	int charID = NewtonMaterialCreateGroupID(m_newtonWorld);
+    int id = NewtonMaterialGetDefaultGroupID(m_newtonWorld);
+    NewtonMaterialSetDefaultFriction(m_newtonWorld, id, id, 0.0, 1.0);
+
+	int ballID = NewtonMaterialCreateGroupID(m_newtonWorld);
+	int penguinID = NewtonMaterialCreateGroupID(m_newtonWorld);
 
 	//NewtonMaterialSetDefaultElasticity(m_world, floorID, charID, 0.4f);
-	//NewtonMaterialSetDefaultFriction(m_world, floorID, charID, 0.4f, 0.4f);
+	//NewtonMaterialSetDefaultFriction(m_newtonWorld, id, ballID, 0.2f, 0.8f);
+	NewtonMaterialSetDefaultFriction(m_newtonWorld, ballID, penguinID, 0.0f, 0.0f);
+	NewtonMaterialSetDefaultFriction(m_newtonWorld, penguinID, penguinID, 0.0f, 0.0f);
+	NewtonMaterialSetDefaultFriction(m_newtonWorld, id, penguinID, 0.0f, 0.0f);
 
 	//NewtonMaterialSetCollisionCallback(m_world, floorID, charID, 
  //       static_cast<void*>(&contactBodies), 
@@ -83,12 +90,15 @@ void World::init()
     m_level = new Level(m_game);
     m_level->load("level.xml");
 
+    NewtonBodySetMaterialGroupID(m_level->getBody("football")->m_newtonBody, ballID);
+
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
     
     int z = -9;
     for (int i = 0; i < 10; i++)
     { 
         m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, Vector(-9.0f, 2.0f, z + i * 2), Vector(0.0f, 0.0f, 0.0f)));
+        NewtonBodySetMaterialGroupID(m_level->getBody("penguin" + cast<string>(i))->m_newtonBody, penguinID);
     }
 }
 

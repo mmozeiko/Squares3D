@@ -6,7 +6,7 @@
       <rotation x="-90.0" y="0.0"  z="0.0" />
     </collision>
 
-    <collision id="player_biggy" type="sphere" mass="70.0" material="player">
+    <collision id="player_biggy" type="sphere" mass="300.0" material="player">
       <radius   x="0.35"  y="0.35" z="0.9" />
       <offset   x="0.0"   y="0.0"  z="0.0" />
       <rotation x="-90.0" y="0.0"  z="0.0" />
@@ -20,7 +20,7 @@
       <radius x="0.11" y="0.11" z="0.11" />
     </collision-->
 
-    <collision id="football" type="sphere" mass="0.4" material="football">
+    <collision id="football" type="sphere" mass="20.0" material="football">
       <radius x="0.4" y="0.4" z="0.4" />
     </collision>
     
