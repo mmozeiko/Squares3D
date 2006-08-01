@@ -79,7 +79,9 @@ gluLookAt(
 
 Camera::Camera(Game* game, const Vector& pos, float angleX, float angleY) :
     Renderable(game),
-    m_pos(-pos), m_angleX(angleX), m_angleY(angleY),
+    m_pos(-pos), 
+    m_angleX(angleX * DEG_IN_RAD), 
+    m_angleY(angleY * DEG_IN_RAD),
     m_strafeRotation(Matrix::rotateY(-M_PI/2)),
     m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f)))
 {
