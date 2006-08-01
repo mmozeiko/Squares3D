@@ -21,6 +21,7 @@ public:
     void setPositionAndRotation(const Vector& position,
                                 const Vector& rotation);
     Vector getPosition();
+    Vector getRotation();
 
     NewtonBody*     m_newtonBody;        
 

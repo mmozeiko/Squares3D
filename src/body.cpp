@@ -156,6 +156,13 @@ Vector Body::getPosition()
     return m_matrix.row(3);
 }
 
+Vector Body::getRotation()
+{
+    Vector angles;
+    NewtonGetEulerAngle(m_matrix.m, angles.v);
+    return angles;
+}
+
 void Body::onSetForceAndTorque()
 {
     Vector force = gravityVec * m_totalMass;

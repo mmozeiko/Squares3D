@@ -86,9 +86,13 @@ void World::init()
     m_level.reset(new Level(m_game));
     m_level->load("level.xml");
 
-    m_localPlayers.push_back(new LocalPlayer("playerDura", m_game, Vector(1.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
-    //m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(180.0f, 0.0f, 0.0f)));
-    m_localPlayers.push_back(new AiPlayer("penguin", m_game, Vector(0.0f, 2.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f)));
+    m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
+    
+    int z = -9;
+    for (int i = 0; i < 10; i++)
+    { 
+        m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, Vector(-9.0f, 2.0f, z + i * 2), Vector(0.0f, 0.0f, 0.0f)));
+    }
 }
 
 World::~World()

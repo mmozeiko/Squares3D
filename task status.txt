@@ -21,9 +21,9 @@ Implement model loading.
 Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
 Implement model animation.
 Implement game Scoreboard.
-Implement basic tournament gameplay.
 Implement score counting system.
 Implement basic moves for player, kicking the ball, joggling the ball in air, hitting it with head..
+Implement basic tournament gameplay.
 Upgrade the ball control to be more submissive to player actions.
 Add a referee model who whistles when a fault is detected. (optional task)
 

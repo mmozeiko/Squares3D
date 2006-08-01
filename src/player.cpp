@@ -6,12 +6,14 @@
 #include "world.h"
 #include "body.h"
 
+//, const Vector& rotation
 Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     m_body(game->m_world->m_level->getBody(id)),
     m_isOnGround(true),
-    m_game(game),
-    m_rotation(rotation * DEG_IN_RAD)
+    m_game(game)
 {
+    m_rotation = (rotation * DEG_IN_RAD) + m_body->getRotation();
+
     m_body->setPositionAndRotation(position, m_rotation);
 
 	// set the viscous damping the the minimum

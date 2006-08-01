@@ -22,5 +22,9 @@ void AiPlayer::control(const Input* input)
     Vector direction = ball->getPosition() - getPosition();
     direction.norm();
 
+    //Vector rotation = m_body->getRotation();
+
+
+
     setDirection(direction);
 }
