@@ -4,8 +4,10 @@
 #include "video.h"
 #include "texture.h"
 #include "level.h"
+#include "game.h"
+#include "world.h"
 
-Material::Material(const XMLnode& node, Video* video) :
+Material::Material(const XMLnode& node, const Game* game) :
     m_id(),
     m_shader(NULL),
     m_cAmbient(0.2f, 0.2f, 0.2f),
@@ -13,7 +15,8 @@ Material::Material(const XMLnode& node, Video* video) :
     m_cEmission(0.0f, 0.0f, 0.0f),
     m_cShine(0.0f),
     m_texture(0),
-    m_textureBump(0)
+    m_textureBump(0),
+    m_game(game)
 {
     m_id = getAttribute(node, "id");
 
@@ -27,11 +30,11 @@ Material::Material(const XMLnode& node, Video* video) :
                 const XMLnode& node = *iter;
                 if (node.name == "path")
                 {
-                    m_texture = video->loadTexture(node.value);
+                    m_texture = m_game->m_video->loadTexture(node.value);
                 }
                 else if (node.name == "bump_path")
                 {
-                    m_textureBump = video->loadTexture(node.value);
+                    m_textureBump = m_game->m_video->loadTexture(node.value);
                 }
                 else
                 {
@@ -69,13 +72,14 @@ Material::Material(const XMLnode& node, Video* video) :
         else if (node.name == "shader")
         {
             std::string name = getAttribute(node, "name");
-            m_shader = video->loadShader(name + ".vp", name + ".fp");
+            m_shader = m_game->m_video->loadShader(name + ".vp", name + ".fp");
         }
         else
         {
             throw Exception("Invalid material, unknown node - " + node.name);
         }
     }
+    m_newtonID = NewtonMaterialCreateGroupID(m_game->m_world->m_newtonWorld);
 }
 
 void Material::enable(const Video* video) const

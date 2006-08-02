@@ -16,7 +16,7 @@ static void GLFWCALL sizeCb(int width, int height)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   // TODO : fix fov
-  gluPerspective(45.0, ((double)width) / ((double)height), 0.1, 102.4);
+  gluPerspective(45.0, static_cast<float>(width)/height, 0.1, 102.4);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -128,58 +128,74 @@ Video::~Video()
 
 void Video::renderCube() const
 {
-    // -0.5 .. 0.5
-    static const Vector vertices[] = {
-        /* 0 */ Vector(-0.5, -0.5, -0.5),
-        /* 1 */ Vector( 0.5, -0.5, -0.5),
-        /* 2 */ Vector( 0.5, -0.5,  0.5),
-        /* 3 */ Vector(-0.5, -0.5,  0.5),
+    static bool first = true;
+    static unsigned int list;
 
-        /* 4 */ Vector(-0.5, 0.5, -0.5),
-        /* 5 */ Vector( 0.5, 0.5, -0.5),
-        /* 6 */ Vector( 0.5, 0.5,  0.5),
-        /* 7 */ Vector(-0.5, 0.5,  0.5),
-    };
-
-    static const int faces[][4] = {
-        { 0, 1, 2, 3 }, // bottom
-        { 4, 7, 6, 5 }, // up
-        { 4, 5, 1, 0 }, // front
-        { 6, 7, 3, 2 }, // back
-        { 7, 4, 0, 3 }, // left
-        { 5, 6, 2, 1 }, // right
-    };
-    
-    static const Vector normals[] = {
-        Vector(0.0, -1.0, 0.0), // bottom
-        Vector(0.0,  1.0, 0.0), // up
-        Vector(0.0, 0.0, -1.0), // front
-        Vector(0.0, 0.0,  1.0), // back
-        Vector(-1.0, 0.0, 0.0), // left
-        Vector( 1.0, 0.0, 0.0), // right
-    };
-
-    static const UV uv[] = {
-        UV(1.0, 0.0),
-        UV(0.0, 0.0),
-        UV(0.0, 1.0),
-        UV(1.0, 1.0),
-    };
-
-    Face f;
-    f.vertexes.resize(4);
-    f.uv.resize(4);
-
-    for (size_t i = 0; i < sizeOfArray(faces); i++)
+    if (first)
     {
-        f.normal = normals[i];
-        for (int k=0; k<4; k++)
+        list = glGenLists(1);
+        glNewList(list, GL_COMPILE);
+
+        // -0.5 .. 0.5
+        static const Vector vertices[] = {
+            /* 0 */ Vector(-0.5, -0.5, -0.5),
+            /* 1 */ Vector( 0.5, -0.5, -0.5),
+            /* 2 */ Vector( 0.5, -0.5,  0.5),
+            /* 3 */ Vector(-0.5, -0.5,  0.5),
+
+            /* 4 */ Vector(-0.5, 0.5, -0.5),
+            /* 5 */ Vector( 0.5, 0.5, -0.5),
+            /* 6 */ Vector( 0.5, 0.5,  0.5),
+            /* 7 */ Vector(-0.5, 0.5,  0.5),
+        };
+
+        static const int faces[][4] = {
+            { 0, 1, 2, 3 }, // bottom
+            { 4, 7, 6, 5 }, // up
+            { 4, 5, 1, 0 }, // front
+            { 6, 7, 3, 2 }, // back
+            { 7, 4, 0, 3 }, // left
+            { 5, 6, 2, 1 }, // right
+        };
+        
+        static const Vector normals[] = {
+            Vector(0.0, -1.0, 0.0), // bottom
+            Vector(0.0,  1.0, 0.0), // up
+            Vector(0.0, 0.0, -1.0), // front
+            Vector(0.0, 0.0,  1.0), // back
+            Vector(-1.0, 0.0, 0.0), // left
+            Vector( 1.0, 0.0, 0.0), // right
+        };
+
+        static const UV uv[] = {
+            UV(1.0, 0.0),
+            UV(0.0, 0.0),
+            UV(0.0, 1.0),
+            UV(1.0, 1.0),
+        };
+
+        Face f;
+        f.vertexes.resize(4);
+        f.uv.resize(4);
+
+
+        for (size_t i = 0; i < sizeOfArray(faces); i++)
         {
-            f.vertexes[k] = vertices[faces[i][k]];
-            f.uv[k] = uv[k];
+            f.normal = normals[i];
+            for (int k=0; k<4; k++)
+            {
+                f.vertexes[k] = vertices[faces[i][k]];
+                f.uv[k] = uv[k];
+            }
+            renderFace(f);
         }
-        renderFace(f);
+
+        glEndList();
+
+        first = false;
     }
+
+    glCallList(list);
 }
 
 void Video::renderFace(const Face& face) const
@@ -217,53 +233,67 @@ void Video::renderWireSphere(float radius) const
   
 void Video::renderAxes(float size) const
 {
-    const float red[] = {1.0, 0.0, 0.0};
-    const float green[] = {0.0, 1.0, 0.0};
-    const float blue[] = {0.0, 0.0, 1.0};
+    static const float red[] = {1.0, 0.0, 0.0};
+    static const float green[] = {0.0, 1.0, 0.0};
+    static const float blue[] = {0.0, 0.0, 1.0};
 
-    glDisable(GL_LIGHTING);
+    static bool first = true;
+    static unsigned int list;
+    
+    if (first)
+    {
+        list = glGenLists(1);
+        glNewList(list, GL_COMPILE);
 
-    glBegin(GL_LINES);
-    glColor3fv(red);
-    glVertex3f(-size, 0.0, 0.0);
-    glVertex3f(size, 0.0, 0.0);
+        glDisable(GL_LIGHTING);
 
-    glColor3fv(green);
-    glVertex3f(0.0, -size, 0.0);
-    glVertex3f(0.0, size, 0.0);
+        glBegin(GL_LINES);
+        glColor3fv(red);
+        glVertex3f(-size, 0.0, 0.0);
+        glVertex3f(size, 0.0, 0.0);
 
-    glColor3fv(blue);
-    glVertex3f(0.0, 0.0, -size);
-    glVertex3f(0.0, 0.0, size);
-    glEnd();
+        glColor3fv(green);
+        glVertex3f(0.0, -size, 0.0);
+        glVertex3f(0.0, size, 0.0);
 
-    glEnable(GL_LIGHTING);
+        glColor3fv(blue);
+        glVertex3f(0.0, 0.0, -size);
+        glVertex3f(0.0, 0.0, size);
+        glEnd();
 
-    glPushMatrix();
-    glColor3fv(red);
-    glTranslatef(size, 0.0, 0.0);
-    glRotatef(90.0, 0.0, 1.0, 0.0);
-    gluCylinder(m_quadricWireSphere, 0.2, 0.0, 1.0, 32, 32);
-    glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(m_quadricWireSphere, 0.0, 0.2, 32, 32);
-    glPopMatrix();
+        glEnable(GL_LIGHTING);
 
-    glPushMatrix();
-    glColor3fv(green);
-    glTranslatef(0.0, size, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
-    gluCylinder(m_quadricWireSphere, 0.2, 0.0, 1.0, 32, 32);
-    glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(m_quadricWireSphere, 0.0, 0.2, 32, 32);
-    glPopMatrix();
+        glPushMatrix();
+        glColor3fv(red);
+        glTranslatef(size, 0.0, 0.0);
+        glRotatef(90.0, 0.0, 1.0, 0.0);
+        gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+        glRotatef(180.0, 0.0, 1.0, 0.0);
+        gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+        glPopMatrix();
 
-    glPushMatrix();
-    glColor3fv(blue);
-    glTranslatef(0.0, 0.0, size);
-    gluCylinder(m_quadricWireSphere, 0.2, 0.0, 1.0, 32, 32);
-    glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(m_quadricWireSphere, 0.0, 0.2, 32, 32);
-    glPopMatrix();
+        glPushMatrix();
+        glColor3fv(green);
+        glTranslatef(0.0, size, 0.0);
+        glRotatef(-90.0, 1.0, 0.0, 0.0);
+        gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+        glRotatef(180.0, 0.0, 1.0, 0.0);
+        gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+        glPopMatrix();
+
+        glPushMatrix();
+        glColor3fv(blue);
+        glTranslatef(0.0, 0.0, size);
+        gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+        glRotatef(180.0, 0.0, 1.0, 0.0);
+        gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+        glPopMatrix();
+
+        glEndList();
+        first = false;
+    }
+
+    glCallList(list);
 }
 
 void Video::begin() const
@@ -463,7 +493,7 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
     if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
         glfwExtensionSupported("GL_ARB_vertex_shader"))
     {
-        m_haveShaders = true;
+        //m_haveShaders = true;
 
         loadProc(glCreateShaderObjectARB);
         loadProc(glShaderSourceARB);

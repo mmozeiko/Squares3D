@@ -12,12 +12,12 @@ public:
     void resume();
     void reset(bool start = true);
 
-    double read() const;
+    float read() const;
 
 private:
     int     m_running;
-    double  m_elapsed;
-    double  m_resumed;
+    float  m_elapsed;
+    float  m_resumed;
 };
 
 #endif

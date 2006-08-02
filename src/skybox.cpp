@@ -28,7 +28,7 @@ void SkyBox::render(const Video* video) const
     m_texture->end();
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE); // TODO: hack
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 

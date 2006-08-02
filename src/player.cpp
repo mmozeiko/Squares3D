@@ -11,9 +11,7 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
     m_isOnGround(true),
     m_game(game)
 {
-    m_rotation = (rotation * DEG_IN_RAD) + m_body->getRotation();
-    
-    m_body->setTransform(position, m_rotation);
+    m_body->setTransform(position, rotation);
 
 	// set the viscous damping the the minimum
 	NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
@@ -65,7 +63,6 @@ void Player::onSetForceAndTorque()
     NewtonBodyGetVelocity(m_body->m_newtonBody, currentVel.v);
       
     Vector targetVel = m_direction;
-    //targetVel.norm();
 
     force = (targetVel * 5.0f - currentVel ) * timestepInv * mass;
     if (!m_isOnGround && glfwGetKey(GLFW_KEY_SPACE)==GLFW_RELEASE) force.y = 0.0f;
@@ -78,7 +75,6 @@ void Player::onSetForceAndTorque()
 	NewtonBodyGetOmega(m_body->m_newtonBody, omega.v);
 
 	Vector torque = m_rotation;
-    torque.norm();
     torque = (10.0f * torque - omega) * timestepInv * Iyy;
 	NewtonBodySetTorque (m_body->m_newtonBody, torque.v);
 }

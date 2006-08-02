@@ -26,6 +26,7 @@ using std::stringstream;
 using std::clog;
 using std::endl;
 
+using std::swap;
 using std::pair;
 using std::make_pair;
 

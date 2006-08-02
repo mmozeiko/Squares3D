@@ -64,11 +64,11 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "material")
                 {
-                    m_materials->add(getAttribute(node, "id"), new Material(node, m_game->m_video));
+                    m_materials->add(getAttribute(node, "id"), new Material(node, m_game));
                 }
                 else if (node.name == "properties")
                 {
-                    // TODO: load NewtonMaterial properties
+                    m_materials->loadProperties(node);
                 }
                 else
                 {
@@ -153,7 +153,10 @@ void Level::render(const Video* video) const
     glDisable(GL_COLOR_MATERIAL);
     for each_const(BodiesMap, m_bodies, iter)
     {
-       (iter->second)->render(video);
+        if (iter->first != "invisibleFloor") // TODO: hack
+        {
+            (iter->second)->render(video);
+        }
     }    
     glPopAttrib();
 }

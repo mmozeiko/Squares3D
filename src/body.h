@@ -31,14 +31,14 @@ public:
     bool isCollideable() const;
     void setCollideable(Collideable* collideable);
 
-    NewtonBody*     m_newtonBody;        
+    NewtonBody* m_newtonBody;        
+    Matrix      m_matrix;
 
 protected:
 
     Body(const XMLnode& node, const Game* game);
 
     const NewtonWorld*     m_newtonWorld;
-    Matrix                 m_matrix;
 
     ~Body();
 

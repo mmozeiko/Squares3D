@@ -95,6 +95,6 @@
       </colors>
     </material>
 
-    <properties material1="brick" material2="human" sF="1.0" kF="0.0" />
+    <properties material1="player" material2="player" staticFriction="1.0" kineticFriction="0.0" elasticityCoeficient="0.5" softnessCoeficient="0.15"/>
   </materials>
 </xml>

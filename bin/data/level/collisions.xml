@@ -2,26 +2,30 @@
   <collisions>
     <collision id="player_small" type="sphere" mass="20.0" material="player">
       <radius   x="0.25"  y="0.25" z="0.5" />
-      <offset   x="0.0"   y="0.0"  z="0.0" />
+      <!--offset   x="0.0"   y="0.0"  z="0.0" /-->
       <rotation x="-90.0" y="0.0"  z="0.0" />
     </collision>
 
     <collision id="player_biggy" type="sphere" mass="300.0" material="player">
       <radius   x="0.35"  y="0.35" z="0.9" />
-      <offset   x="0.0"   y="0.0"  z="0.0" />
+      <!--offset   x="0.0"   y="0.0"  z="0.0" /-->
       <rotation x="-90.0" y="0.0"  z="0.0" />
     </collision>
 
     <collision id="box1" type="box" mass="0.2" material="box">
-      <size x="0.50" y="0.20" z="0.15" />
+        <size x="0.50" y="0.20" z="0.15" />
     </collision>
 
-    <!--collision id="football" type="sphere" mass="0.4" material="football">
+    <collision id="corner" type="box" mass="1000.0" material="box">
+        <size x="1.0" y="0.5" z="1.0" />
+    </collision>
+
+      <!--collision id="football" type="sphere" mass="0.4" material="football">
       <radius x="0.11" y="0.11" z="0.11" />
     </collision-->
 
-    <collision id="football" type="sphere" mass="20.0" material="football">
-      <radius x="0.4" y="0.4" z="0.4" />
+    <collision id="football" type="sphere" mass="0.2" material="football">
+      <radius x="0.3" y="0.3" z="0.3" />
     </collision>
     
     <collision id="bumbaLiela" type="sphere" mass="100.0" material="box">
@@ -51,9 +55,30 @@
       <offset x="0.0" y="0.0" z="10.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
     </collision-->
-    
-    
-    <collision id="tree1" type="tree">
+
+      <collision id="invisibleFloor" mass="0.0" type="box">
+          <size x="20.0" y="1.0" z="20.0"/>
+          <offset x="0.0" y="-0.5" z="0.0"/>
+      </collision>
+      <collision id="invisibleWall1" mass="0.0" type="box">
+          <size x="1.0" y="10.0" z="20.0"/>
+          <offset x="10.5" y="0.0" z="0.0"/>
+      </collision>
+      <collision id="invisibleWall2" mass="0.0" type="box">
+          <size x="1.0" y="10.0" z="20.0"/>
+          <offset x="-10.5" y="0.0" z="0.0"/>
+      </collision>
+      <collision id="invisibleWall3" mass="0.0" type="box">
+          <size x="20.0" y="10.0" z="1.0"/>
+          <offset x="0.0" y="0.0" z="10.5"/>
+      </collision>
+      <collision id="invisibleWall4" mass="0.0" type="box">
+          <size x="20.0" y="10.0" z="1.0"/>
+          <offset x="0.0" y="0.0" z="-10.5"/>
+      </collision>
+
+
+      <collision id="tree1" type="tree">
       <face material="pavement">
         <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
         <vertex x="0.0"  y="0.0" z="3.0" u="1.0" v="0.0" />

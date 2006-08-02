@@ -15,13 +15,13 @@ public:
     void render() const;
 
     unsigned int frames() const;
-    double time() const;
-    double fps() const;
+    float time() const;
+    float fps() const;
 
     Vector color;
 
 private:
-    double m_time;
+    float m_time;
     unsigned int m_frames;
     unsigned int m_totalFrames;
     const Timer& m_timer;

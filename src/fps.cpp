@@ -16,9 +16,9 @@ void FPS::update()
     m_frames++;
     if (m_frames%128==0)
     {
-        double curTime = m_timer.read();
-        double fps = m_frames/(curTime-m_time);
-        fps = std::floor(fps*10.0)/10.0;
+        float curTime = m_timer.read();
+        float fps = m_frames/(curTime-m_time);
+        fps = std::floor(fps*10.0f)/10.0f;
         m_fps = "FPS: " + cast<string>(fps) + (fps-std::floor(fps)==0.0 ? ".0" : "");
         m_time = curTime;
         m_frames = 0;
@@ -41,13 +41,13 @@ unsigned int FPS::frames() const
     return m_totalFrames;
 }
 
-double FPS::time() const
+float FPS::time() const
 {
     return m_timer.read();
 }
 
-double FPS::fps() const
+float FPS::fps() const
 {
-    double fps = m_totalFrames/m_timer.read();
-    return std::floor(fps*10.0)/10.0;
+    float fps = m_totalFrames/m_timer.read();
+    return std::floor(fps*10.0f)/10.0f;
 }

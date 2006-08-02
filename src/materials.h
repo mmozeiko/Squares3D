@@ -5,14 +5,25 @@
 
 class Game;
 class Material;
+class XMLnode;
 
-struct MaterialID
+typedef map<string, Material*> MaterialMap;
+
+struct Properties
 {
-    MaterialID(int id, Material* material) : id(id), material(material) {}
-    int id;
-    Material* material;
+    Properties(float sF, float kF, float eC, float sC) : 
+        staticFriction(sF),
+        kineticFriction(kF),
+        elasticityCoefficient(eC),
+        softnessCoefficient(sC) {}
+
+    float staticFriction;
+    float kineticFriction;
+    float elasticityCoefficient;
+    float softnessCoefficient;
 };
-typedef map<string, MaterialID> MaterialMap;
+
+typedef map<long long, Properties> PropertiesMap;
 
 class Materials
 {
@@ -20,12 +31,17 @@ public:
     Materials(const Game* game);
     ~Materials();
 
+    void loadProperties(const XMLnode& node);
+
     void add(const string& name, Material* material);
-    Material* get(const string& name);
+    Material* get(const string& name) const;
 
 private:
-    MaterialMap m_materials;
+    MaterialMap   m_materials;
+    PropertiesMap m_properties;
     const Game* m_game;
+
+    long long makePID(int id1, int id2) const;
 };
 
 #endif

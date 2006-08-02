@@ -40,7 +40,7 @@ void Game::run()
     clog << "Starting game..." << endl;
 
     glFrontFace(GL_CW);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE); // TODO: hack
     glCullFace(GL_BACK);
 
     glEnable(GL_NORMALIZE);
@@ -67,9 +67,9 @@ void Game::run()
 
     Timer timer;
 
-    double accum = 0.0;
-    double currentTime = timer.read();
-    double startTime = currentTime;
+    float accum = 0.0;
+    float currentTime = timer.read();
+    float startTime = currentTime;
 
     bool running = true;
 
@@ -80,11 +80,11 @@ void Game::run()
 
     while (running)
     {
-        double newTime = timer.read();
-        double deltaTime = newTime - currentTime;
+        float newTime = timer.read();
+        float deltaTime = newTime - currentTime;
         currentTime = newTime;
         
-        if (deltaTime > 0.01f) deltaTime = 0.01f; // TODO: REMOVE!!!!!
+        //if (deltaTime > 0.01f) deltaTime = 0.01f; // TODO: REMOVE!!!!!
 
         accum += deltaTime;
 
@@ -92,11 +92,12 @@ void Game::run()
         m_input->update();
         m_world->control(m_input);
         m_world->m_camera->update(static_cast<float>(deltaTime));
-        while (accum >= DT)
-        {
-            m_world->update(DT);
-            accum -= DT;
-        }
+        m_world->update(deltaTime);
+        //while (accum >= DT)
+        //{
+        //    m_world->update(DT);
+        //    accum -= DT;
+        //}
         m_world->prepare();
         m_world->render(m_video);
 

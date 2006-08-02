@@ -4,8 +4,9 @@
 #include "common.h"
 #include "vmath.h"
 
-class Level;
 class Video;
+class Game;
+class Level;
 class Shader;
 class Texture;
 class XMLnode;
@@ -22,13 +23,17 @@ public:
     Vector  m_cEmission; // (0.0f, 0.0f, 0.0f, 1.0f)
     float   m_cShine;    // 0.0f
 
+    int     m_newtonID;
+
     void enable(const Video* video) const;
     void disable(const Video* video) const;
 private: 
-    Material(const XMLnode& node, Video* video);
+    Material(const XMLnode& node, const Game* game);
 
     Texture* m_texture;
     Texture* m_textureBump;
+    
+    const Game* m_game;
 };
 
 #endif

@@ -55,7 +55,7 @@ ContactBodies contactBodies;
 
 World::World(Game* game) : Renderable(game)
 {
-    m_camera = new Camera(m_game);
+    m_camera = new Camera(m_game, Vector(0.0f, 7.0f, 0.0f));
     m_skybox = new SkyBox(m_game->m_video);
 
     m_newtonWorld = NewtonCreate(NULL, NULL);
@@ -70,7 +70,7 @@ World::World(Game* game) : Renderable(game)
 void World::init()
 {
     int id = NewtonMaterialGetDefaultGroupID(m_newtonWorld);
-    NewtonMaterialSetDefaultFriction(m_newtonWorld, id, id, 0.0, 1.0);
+    //NewtonMaterialSetDefaultFriction(m_newtonWorld, id, id, 0.0, 1.0);
 
 	int ballID = NewtonMaterialCreateGroupID(m_newtonWorld);
 	int penguinID = NewtonMaterialCreateGroupID(m_newtonWorld);
@@ -91,13 +91,16 @@ void World::init()
     m_level->load("level.xml");
 
     NewtonBodySetMaterialGroupID(m_level->getBody("football")->m_newtonBody, ballID);
+    NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
     
     int z = -9;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 21; i++)
     { 
-        m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, Vector(-9.0f, 2.0f, z + i * 2), Vector(0.0f, 0.0f, 0.0f)));
+        Vector pos((i<10 ? -9.0f : -8.0f), 1.0f, z+(i%10)*2.0f);
+
+        m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, pos, Vector(0.0f, 0.0f, 0.0f)));
         NewtonBodySetMaterialGroupID(m_level->getBody("penguin" + cast<string>(i))->m_newtonBody, penguinID);
     }
 }

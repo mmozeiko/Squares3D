@@ -157,9 +157,9 @@ Vector Body::getPosition()
 
 Vector Body::getRotation()
 {
-    Vector angles;
-    NewtonGetEulerAngle(m_matrix.m, angles.v);
-    return angles;
+    //Vector angles;
+    //NewtonGetEulerAngle(m_matrix.m, angles.v);
+    return m_matrix.row(0);
 }
 
 void Body::onSetForceAndTorque()

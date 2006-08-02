@@ -281,11 +281,18 @@ CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld
             throw Exception("Invalid collision, unknown node - " + node.name);
         }
     }
+    
     NewtonCollision* collision = NewtonCreateTreeCollision(newtonWorld, NULL);
     NewtonTreeCollisionBeginBuild(collision);
-    for each_const(vector<Face>, m_faces, iter)
+    for (size_t i=0; i<m_faces.size(); i++)
     {
-        NewtonTreeCollisionAddFace(collision, static_cast<int>(iter->vertexes.size()), iter->vertexes[0].v, sizeof(Vector), 0);
+        Material* material = m_materials[i];
+        Face& face = m_faces[i];
+        NewtonTreeCollisionAddFace(
+            collision, 
+            static_cast<int>(face.vertexes.size()), 
+            face.vertexes[0].v, 
+            sizeof(Vector), *reinterpret_cast<int*>(&material));
     }
     NewtonTreeCollisionEndBuild(collision, 0);
     

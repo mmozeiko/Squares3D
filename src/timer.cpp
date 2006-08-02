@@ -4,8 +4,8 @@
 
 Timer::Timer(bool start) :
     m_running(start ? 1 : 0),
-    m_elapsed(0.0),
-    m_resumed(0.0)
+    m_elapsed(0.0f),
+    m_resumed(0.0f)
 {
     reset(start);
 }
@@ -18,7 +18,7 @@ void Timer::pause()
         return;
     }
 
-    m_elapsed += glfwGetTime() - m_resumed;
+    m_elapsed += static_cast<float>(glfwGetTime()) - m_resumed;
 }
 
 void Timer::resume()
@@ -29,7 +29,7 @@ void Timer::resume()
         return;
     }
 
-    m_resumed = glfwGetTime();
+    m_resumed = static_cast<float>(glfwGetTime());
 }
 
 void Timer::reset(bool start)
@@ -37,16 +37,16 @@ void Timer::reset(bool start)
     m_running = (start ? 1 : 0);
     if (start)
     {
-        m_resumed = glfwGetTime();
+        m_resumed = static_cast<float>(glfwGetTime());
     }
     m_elapsed = 0;
 }
 
-double Timer::read() const
+float Timer::read() const
 {
     if (m_running <= 0)
     {
         return m_elapsed;
     }
-    return glfwGetTime() - m_resumed + m_elapsed;
+    return static_cast<float>(glfwGetTime()) - m_resumed + m_elapsed;
 }

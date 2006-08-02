@@ -3,9 +3,12 @@
 #include "camera.h"
 #include "input.h"
 #include "game.h"
+#include "world.h"
+#include "level.h"
+#include "body.h"
 
-static const float LOOK_SPEED = 5.0f;
-static const float MOVE_SPEED = 10.0f;
+static const float LOOK_SPEED = 2.0f;
+static const float MOVE_SPEED = 30.0f;
 
 /*
 Translate(Camera.Position);
@@ -135,6 +138,25 @@ void Camera::control(const Input* input)
 
 void Camera::update(float delta)
 {
+    Body* ball = m_game->m_world->m_level->getBody("football");
+    Vector ballPos = ball->getPosition();
+
+    Vector d = ballPos - m_pos;
+    /*
+
+    m_angleY = std::atan2f(d.z, d.x) + M_PI;
+
+    Vector t = Vector(d.x, 0.0f, d.y);
+    m_angleX = std::atan2f(d.y,  t.len());
+    */
+    d.y = 0;
+    m_angleY = std::atan2f(ballPos.x, ballPos.z);
+    m_angleX = -std::atan2f(m_pos.y,  d.len());
+//        Vector rot = m_body->getRotation();
+//    Vector dir = ball->getPosition() - m_body->getPosition();
+
+
+    /*
     m_targetRotation *= delta;
     m_targetDirection *= delta;
 
@@ -146,12 +168,16 @@ void Camera::update(float delta)
 
     Vector deltaPos = m_targetDirection.z * moveMatrix.row(2) + m_targetDirection.x * strafeMatrix.row(2);
     m_pos += MOVE_SPEED * deltaPos;
+    */
 }
 
 void Camera::prepare()
 {
+    Vector p = m_pos;
+    p.z = -p.z;
     m_matrix = Matrix::rotateX(m_angleX) * Matrix::rotateY(m_angleY) * 
-               Matrix::translate(m_pos) * m_scaleMatrix;
+               Matrix::translate(p) * m_scaleMatrix;
+    glPopMatrix();
 }
 
 void Camera::render(const Video* video) const

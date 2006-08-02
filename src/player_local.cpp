@@ -33,8 +33,20 @@ void LocalPlayer::control(const Input* input)
         return;
     }
     
-    Vector rotation(0.0f, static_cast<float>(dx)/w2, 0.0f);
-    setRotation(rotation);
+    float t;
+    if (dx > 0)
+    {
+        t = 1.0f;
+    }
+    else if (dx < 0)
+    {
+        t = -1.0f;
+    }
+    else
+    {
+        t = 0.0f;
+    }
+    setRotation(Vector(0.0f, t, 0.0f));
 
     Vector direction;
 
