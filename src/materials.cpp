@@ -6,6 +6,20 @@
 #include "world.h"
 #include "level.h"
 
+struct MaterialContact
+{
+    static int onBegin(const NewtonMaterial* material, const NewtonBody* body1, const NewtonBody* body2);
+    static int onProcess(const NewtonMaterial* material, const NewtonContact* contact);
+    static void onEnd(const NewtonMaterial* material);
+
+    Body* body1;
+    Body* body2;
+	
+    Vector position;
+	float  maxNormalSpeed;
+	float  maxTangentSpeed;
+};
+
 Materials::Materials(const Game* game) : m_game(game)
 {
 }
@@ -15,6 +29,10 @@ Materials::~Materials()
     for each_(MaterialMap, m_materials, iter)
     {
         delete iter->second;
+    }
+    for each_(MaterialContactSet, m_materialContacts, iter)
+    {
+        delete *iter;
     }
     NewtonMaterialDestroyAllGroupID(m_game->m_world->m_newtonWorld);
 }
@@ -54,9 +72,18 @@ void Materials::loadProperties(const XMLnode& node)
     NewtonMaterialSetDefaultElasticity(world, id1, id2, eC);
     NewtonMaterialSetDefaultFriction(world, id1, id2, sF, kF);
     NewtonMaterialSetDefaultSoftness(world, id1, id2, sC);
-    //NewtonMaterialSetCollisionCallback(world, id1, id2, static_cast<void*>(this), onContactBegin, onContactProcess, onContactEnd);
+    
+    MaterialContact* materialContact = new MaterialContact();
+    
+    NewtonMaterialSetCollisionCallback(
+        world, id1, id2,
+        static_cast<void*>(materialContact), 
+        MaterialContact::onBegin, 
+        MaterialContact::onProcess,
+        MaterialContact::onEnd);
 
     m_properties.insert(make_pair(makePID(id1, id2), Properties(sF, kF, eC, sC)));
+    m_materialContacts.insert(materialContact);
 }
 
 long long Materials::makePID(int id1, int id2) const
@@ -66,26 +93,29 @@ long long Materials::makePID(int id1, int id2) const
         swap(id1, id2);
     }
     // now id1 always <= id2
-    return (static_cast<long long>(id1) <<32) + id2;
+    return (static_cast<long long>(id1) << 32) + id2;
 }
-/*
-int Materials::onContactBegin(const NewtonMaterial* material, const NewtonBody* body0, const NewtonBody* body1)
+
+int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* body1, const NewtonBody* body2)
 {
-    Materials* self = static_cast<Materials*>(NewtonMaterialGetMaterialPairUserData(material));
-    Body* firstBody = static_cast<Body*>(body0);
-    Body* secondBody = static_cast<Body*>(body1);
-    self->onContactBegin(firstBody, secondBody);
+    MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
+    self->body1 = static_cast<Body*>(NewtonBodyGetUserData(body1));
+    self->body2 = static_cast<Body*>(NewtonBodyGetUserData(body2));
+
+	self->maxNormalSpeed = 0.0f;
+	self->maxTangentSpeed = 0.0f;
+
     return 1;
 }
 
-int ContactProcess(const NewtonMaterial* material, const NewtonContact* contact)
+int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonContact* contact)
 {
-    Materials* self = static_cast<Materials*>(NewtonMaterialGetMaterialPairUserData(material));
-    //
+    MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
+    
     return 1;
 }
 
-void ContactEnd(const NewtonMaterial* material)
+void MaterialContact::onEnd(const NewtonMaterial* material)
 {
+    MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
 }
-*/

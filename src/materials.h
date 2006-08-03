@@ -7,6 +7,8 @@ class Game;
 class Material;
 class XMLnode;
 
+struct MaterialContact;
+typedef set<MaterialContact*> MaterialContactSet;
 typedef map<string, Material*> MaterialMap;
 
 struct Properties
@@ -37,8 +39,9 @@ public:
     Material* get(const string& name) const;
 
 private:
-    MaterialMap   m_materials;
-    PropertiesMap m_properties;
+    MaterialMap         m_materials;
+    PropertiesMap       m_properties;
+    MaterialContactSet  m_materialContacts;
     const Game* m_game;
 
     long long makePID(int id1, int id2) const;
