@@ -8,7 +8,7 @@
 class Camera : public Renderable
 {
 public:
-    Camera(Game* game, const Vector& pos = Vector(15.0f, 20.0f, 15.0f), float angleX = 45, float angleY = -45);
+    Camera(Game* game, const Vector& pos = Vector(15.0f, 20.0f, 15.0f), float angleX = 0, float angleY = 0);
     ~Camera();  
 
     void control(const Input* input);

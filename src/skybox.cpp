@@ -6,7 +6,7 @@
 
 SkyBox::SkyBox(Video* video)
 {
-    m_texture = video->loadCubeMap("skybox");
+    m_texture = video->loadCubeMap("skybox_1");
 }
 
 void SkyBox::render(const Video* video) const

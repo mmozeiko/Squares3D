@@ -55,7 +55,7 @@ ContactBodies contactBodies;
 
 World::World(Game* game) : Renderable(game)
 {
-    m_camera = new Camera(m_game, Vector(0.0f, 7.0f, 0.0f));
+    m_camera = new Camera(m_game, Vector(0.0f, 15.0f, 0.0f), 90.0f, 0.0f);
     m_skybox = new SkyBox(m_game->m_video);
 
     m_newtonWorld = NewtonCreate(NULL, NULL);
@@ -96,7 +96,7 @@ void World::init()
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
     
     int z = -9;
-    for (int i = 0; i < 21; i++)
+    for (int i = 0; i < 12; i++)
     { 
         Vector pos((i<10 ? -9.0f : -8.0f), 1.0f, z+(i%10)*2.0f);
 

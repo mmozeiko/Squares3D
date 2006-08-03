@@ -16,7 +16,6 @@ public:
 
 private:
     IntPair m_lastMouse;
-    Body* m_body;
 
 };
 
