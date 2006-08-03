@@ -24,7 +24,7 @@
       <radius x="0.11" y="0.11" z="0.11" />
     </collision-->
 
-    <collision id="football" type="sphere" mass="0.2" material="football">
+    <collision id="football" type="sphere" mass="0.4" material="football">
       <radius x="0.3" y="0.3" z="0.3" />
     </collision>
     

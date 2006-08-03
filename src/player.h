@@ -30,6 +30,7 @@ protected:
     Vector              m_direction;
     Vector              m_rotation;
     const Game*         m_game;
+    Body*               m_body;
 
     virtual void onImpact(const Vector& position, const float speed) {} // TODO: remove
     virtual void onScratch(const Vector& position, const float speed) {}

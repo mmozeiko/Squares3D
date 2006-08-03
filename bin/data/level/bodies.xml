@@ -11,7 +11,7 @@
     </body>
 
     <body id="football">
-      <position x="0.0" y="0.5" z="0.0" />
+      <position x="2.0" y="3.5" z="2.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>football</collision>
     </body>
