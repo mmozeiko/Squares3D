@@ -20,12 +20,8 @@
         <size x="1.0" y="0.5" z="1.0" />
     </collision>
 
-      <!--collision id="football" type="sphere" mass="0.4" material="football">
-      <radius x="0.11" y="0.11" z="0.11" />
-    </collision-->
-
     <collision id="football" type="sphere" mass="0.4" material="football">
-      <radius x="0.3" y="0.3" z="0.3" />
+      <radius x="0.11" y="0.11" z="0.11" />
     </collision>
     
     <collision id="bumbaLiela" type="sphere" mass="100.0" material="box">

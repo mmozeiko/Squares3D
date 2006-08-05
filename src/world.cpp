@@ -95,13 +95,16 @@ void World::init()
 
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
     
-    int z = -9;
-    for (int i = 0; i < 12; i++)
+    int i = 0;
+    for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
     { 
-        Vector pos((i<10 ? -9.0f : -8.0f), 1.0f, z+(i%10)*2.0f);
-
-        m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, pos, Vector(0.0f, 0.0f, 0.0f)));
-        NewtonBodySetMaterialGroupID(m_level->getBody("penguin" + cast<string>(i))->m_newtonBody, penguinID);
+        for (float x = -1.5f; x <= 1.5f; x += 3.0f)
+        { 
+            Vector pos(x, 1.0f, z);
+            m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, pos, Vector(0.0f, 0.0f, 0.0f)));
+            NewtonBodySetMaterialGroupID(m_level->getBody("penguin" + cast<string>(i))->m_newtonBody, penguinID);
+            i++;
+        }
     }
 }
 

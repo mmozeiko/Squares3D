@@ -15,6 +15,8 @@ public:
     void control(const Input* input);
 
 private:
+    Vector m_lowerLeft;
+    Vector m_upperRight;
 
 };
 
