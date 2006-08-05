@@ -2,7 +2,7 @@ Available:
 ==========
 
 Get rid of hacks - Material IDs in world.cpp, Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
-Implement AI controlled players.
+Make Ai players smarter.
 Port coach class and name it "Referee".
 Use materials on collisions.
 Fix shader lighting position.
@@ -36,6 +36,7 @@ Construction:
 
 Done:
 =====
+2006-08-06 Implement AI controlled players.
 2006-08-02 Move NewtonMaterial id from Materials to Material class.
 2006-08-01 Cleanup SkyBox class, move texture loading to video.
 2006-07-31 Split level.cpp file in smaller ones.

@@ -25,34 +25,54 @@ bool isBallInSquare(const Vector& ballPosition, const Vector& lowerLeft, const V
 
 Vector getSquareCenter(const Vector& lowerLeft, const Vector& upperRight)
 {
-    Vector center;
-    if (lowerLeft[0] < 0) center[0] = lowerLeft[0] / 2;
-    else center[0] = upperRight[0] / 2;
-
-    if (lowerLeft[2] < 0) center[2] = lowerLeft[2] / 2;
-    else center[2] = upperRight[2] / 2;
-    return center;
+    return Vector((upperRight[0] + lowerLeft[0])/2, 0.0f, (upperRight[2] + lowerLeft[2])/2);
 }
-//def getBallAndSquareIntersection(position, velocity, min, max):
-//  adjust = 0.0f #how far can we exceed own square border
-//
-//  min0 = min[0]
-//  min1 = min[1]
-//  max0 = max[0]
-//  max1 = max[1]
-//
-//  
-//  t = position[2] / (velocity[2] + 1e-06)
-//  if t >= 0:
-//    x = position[0] + velocity[0] * t
-//    if x > min0 and x < max0:
-//      return (x, 0.0, 0.0)
-//  t = position[0] / (velocity[0] + 1e-06)
-//  if t >= 0:
-//    y = position[2] + velocity[2] * t
-//    if y > min1 and y < max1:
-//      return (0.0, 0.0, y)
-//  return ((max[0] + min[0])/2, 0.0, (max[1] + min[1])/2)
+
+unsigned int getQuarter(const Vector& point)
+{
+    if ((point[0] <= 0) && (point[2] >= 0)) return 1;
+    else if ((point[0] >= 0) && (point[2] >= 0)) return 2;
+    else if ((point[0] >= 0) && (point[2] <= 0)) return 3;
+    else return 4;
+}
+
+Vector findBallAndSquareIntersection(const Vector& position, 
+                                     const Vector& velocity, 
+                                     const Vector& lowerLeft, 
+                                     const Vector& upperRight)
+{
+    //this function returns the center of square if no intersection is found
+
+    //if ((abs(velocity[0]) > 0.001f) || (abs(velocity[1]) > 0.001f) || (abs(velocity[2]) > 0.001f))
+    //clog << velocity[0] << " " << velocity[1] << " " << velocity[2] << endl;
+
+    float min0 = lowerLeft[0];
+    float min2 = lowerLeft[2];
+    float max0 = upperRight[0];
+    float max2 = upperRight[2];
+
+    float t = 0.0f, x = 0.0f, z = 0.0f;
+    Vector result;
+
+    t = position[2] / static_cast<float>(velocity[2] + 1e-06);
+    
+    if (-t >= 0) 
+    {
+        x = position[0] + velocity[0] * t;
+        Vector pointInField = getSquareCenter(lowerLeft, upperRight);
+        if (((x > min0) && (x < max0)) && ((position[2] > 0) != (pointInField[2] > 0))) return Vector(x, 0.0f, 0.0f);
+    }
+
+    t = position[0] / static_cast<float>(velocity[0] + 1e-06);
+
+    if (-t >= 0) 
+    {
+        z = position[2] - velocity[2] * t;
+        Vector pointInField = getSquareCenter(lowerLeft, upperRight);
+        if (((z > min2) && (z < max2)) && ((position[0] > 0) != (pointInField[0] > 0))) return Vector(0.0f, 0.0f, z);
+    }
+    return getSquareCenter(lowerLeft, upperRight);
+}
 
 AiPlayer::AiPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     Player(id, game, position, rotation)
@@ -78,7 +98,6 @@ void AiPlayer::control(const Input* input)
 
     Vector ballPosition = ball->getPosition();
     Vector selfPosition = m_body->getPosition();
-    Vector squareCenter = getSquareCenter(m_lowerLeft, m_upperRight);
 
     Vector rot = m_body->getRotation();
     Vector dir = ballPosition - selfPosition;
@@ -90,13 +109,20 @@ void AiPlayer::control(const Input* input)
     Vector rotation;
 
     rotation.y = ( rot % dir ) / 1.0f;
-    
 
     Vector direction(-rot.z, 0, rot.x);
 
     if (!isBallInSquare(ballPosition, m_lowerLeft, m_upperRight))
     {
-        direction = squareCenter - selfPosition;
+        Vector ballVelocity;
+        NewtonBodyGetVelocity(ball->m_newtonBody, ballVelocity.v);
+
+        Vector intersection = findBallAndSquareIntersection(
+                                                  ballPosition, 
+                                                  ballVelocity, 
+                                                  m_lowerLeft, 
+                                                  m_upperRight);
+        direction = intersection - selfPosition;
     }
 
     direction.norm();
