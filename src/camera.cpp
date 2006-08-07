@@ -164,7 +164,7 @@ void Camera::update(float delta)
         */
         d.y = 0;
         m_angleY = std::atan2f(ballPos.x, ballPos.z);
-        m_angleX = -std::atan2f(m_pos.y,  d.len());
+        m_angleX = -std::atan2f(m_pos.y,  d.magnitude());
     //        Vector rot = m_body->getRotation();
     //    Vector dir = ball->getPosition() - m_body->getPosition();
     }

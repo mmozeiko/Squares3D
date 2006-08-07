@@ -28,7 +28,7 @@ Vector getSquareCenter(const Vector& lowerLeft, const Vector& upperRight)
     return Vector((upperRight[0] + lowerLeft[0])/2, 0.0f, (upperRight[2] + lowerLeft[2])/2);
 }
 
-unsigned int getQuarter(const Vector& point)
+unsigned int getQuadrant(const Vector& point)
 {
     if ((point[0] <= 0) && (point[2] >= 0)) return 1;
     else if ((point[0] >= 0) && (point[2] >= 0)) return 2;
@@ -43,35 +43,55 @@ Vector findBallAndSquareIntersection(const Vector& position,
 {
     //this function returns the center of square if no intersection is found
 
-    //if ((abs(velocity[0]) > 0.001f) || (abs(velocity[1]) > 0.001f) || (abs(velocity[2]) > 0.001f))
-    //clog << velocity[0] << " " << velocity[1] << " " << velocity[2] << endl;
-
     float min0 = lowerLeft[0];
     float min2 = lowerLeft[2];
     float max0 = upperRight[0];
     float max2 = upperRight[2];
 
     float t = 0.0f, x = 0.0f, z = 0.0f;
-    Vector result;
+    bool intersectsX = false, intersectsZ = false;
+
+    Vector squareCenter = getSquareCenter(lowerLeft, upperRight);
+    Vector result(squareCenter), intersectionX, intersectionZ;
 
     t = position[2] / static_cast<float>(velocity[2] + 1e-06);
     
-    if (-t >= 0) 
+    if (t <= 0) 
     {
-        x = position[0] + velocity[0] * t;
-        Vector pointInField = getSquareCenter(lowerLeft, upperRight);
-        if (((x > min0) && (x < max0)) && ((position[2] > 0) != (pointInField[2] > 0))) return Vector(x, 0.0f, 0.0f);
+        x = position[0] - velocity[0] * t;
+        if (((x > min0) && (x < max0)) 
+            && ((getQuadrant(position)) != (getQuadrant(squareCenter)))) 
+        {
+            intersectionX = Vector(x, 0.0f, 0.0f);
+            intersectsX = true;
+        }
     }
 
     t = position[0] / static_cast<float>(velocity[0] + 1e-06);
 
-    if (-t >= 0) 
+    if (t <= 0) 
     {
         z = position[2] - velocity[2] * t;
-        Vector pointInField = getSquareCenter(lowerLeft, upperRight);
-        if (((z > min2) && (z < max2)) && ((position[0] > 0) != (pointInField[0] > 0))) return Vector(0.0f, 0.0f, z);
+        if (((z > min2) && (z < max2)) 
+            && ((getQuadrant(position)) != (getQuadrant(squareCenter))))
+        {
+            intersectionZ = Vector(0.0f, 0.0f, z);
+            intersectsZ = true;
+        }
     }
-    return getSquareCenter(lowerLeft, upperRight);
+
+    if (intersectsX && intersectsZ)
+    {
+        if ((intersectionX - position).magnitude() < (intersectionZ - position).magnitude())
+        {
+            result = intersectionX;
+        }
+        else { result = intersectionZ; }
+    }
+    else if (intersectsX) { result = intersectionX; }
+    else if (intersectsZ) { result = intersectionZ; }
+
+    return result;
 }
 
 AiPlayer::AiPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :

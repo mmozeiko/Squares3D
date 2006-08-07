@@ -136,7 +136,7 @@ public:
         return v[idx];
     }
 
-    float len() const
+    float magnitude() const
     {
         return std::sqrt(x*x + y*y + z*z);
     }
