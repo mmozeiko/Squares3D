@@ -63,6 +63,7 @@
 				Name="VCLinkerTool"
 				OutputFile="bin\$(ProjectName)_d.exe"
 				LinkIncremental="0"
+				GenerateManifest="false"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -119,11 +120,13 @@
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="3rdparty\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="1"
 				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
@@ -144,6 +147,7 @@
 				Name="VCLinkerTool"
 				OutputFile="bin\$(ProjectName).exe"
 				LinkIncremental="1"
+				GenerateManifest="false"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -482,11 +486,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\materials.cpp"
+					RelativePath=".\src\properties.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\materials.h"
+					RelativePath=".\src\properties.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\property.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\property.h"
 					>
 				</File>
 			</Filter>
@@ -527,6 +539,10 @@
 				</File>
 				<File
 					RelativePath=".\bin\data\level\materials.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\properties.xml"
 					>
 				</File>
 			</Filter>

@@ -62,7 +62,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="src\zlib\gvmat32.obj src\zlib\inffas32.obj"
 				OutputFile="lib\$(ProjectName)_d.lib"
 			/>
 			<Tool
@@ -113,8 +112,7 @@
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
-				EnableEnhancedInstructionSet="1"
-				FloatingPointModel="2"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -132,7 +130,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="src\zlib\gvmat32.obj src\zlib\inffas32.obj"
 				OutputFile="lib\$(ProjectName).lib"
 			/>
 			<Tool
@@ -184,23 +181,21 @@
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="true"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="$(InputFileName)"
-					CommandLine="ml /coff /c /Fo$(IntDir)\$(InputName).obj /DNOOLDPENTIUMCODE $(InputPath)&#x0D;&#x0A;"
+					CommandLine="ml /coff /c /Fo&quot;$(IntDir)\$(InputName).obj&quot; /DNOOLDPENTIUMCODE &quot;$(InputPath)&#x0D;&quot;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32"
-				ExcludedFromBuild="true"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="$(InputFileName)"
-					CommandLine="ml /coff /c /Fo$(IntDir)\$(InputName).obj /DNOOLDPENTIUMCODE $(InputPath)&#x0D;&#x0A;"
+					CommandLine="ml /coff /c &quot;/Fo$(IntDir)\$(InputName).obj&quot; /DNOOLDPENTIUMCODE &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -214,23 +209,21 @@
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="true"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="$(InputFileName)"
-					CommandLine="ml /coff /c /Fo$(IntDir)\$(InputName).obj /DNOOLDPENTIUMCODE $(InputPath)&#x0D;&#x0A;"
+					CommandLine="ml /coff /c &quot;/Fo$(IntDir)\$(InputName).obj&quot; /DNOOLDPENTIUMCODE &quot;$(InputPath)&#x0D;&quot;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32"
-				ExcludedFromBuild="true"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="$(InputFileName)"
-					CommandLine="ml /coff /c /Fo$(IntDir)\$(InputName).obj /DNOOLDPENTIUMCODE $(InputPath)&#x0D;&#x0A;"
+					CommandLine="ml /coff /c &quot;/Fo$(IntDir)\$(InputName).obj&quot; /DNOOLDPENTIUMCODE &quot;$(InputPath)&#x0D;&quot;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>

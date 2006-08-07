@@ -30,10 +30,22 @@ Vector getSquareCenter(const Vector& lowerLeft, const Vector& upperRight)
 
 unsigned int getQuadrant(const Vector& point)
 {
-    if ((point[0] <= 0) && (point[2] >= 0)) return 1;
-    else if ((point[0] >= 0) && (point[2] >= 0)) return 2;
-    else if ((point[0] >= 0) && (point[2] <= 0)) return 3;
-    else return 4;
+    if ((point[0] <= 0) && (point[2] >= 0))
+    {
+        return 1;
+    }
+    else if ((point[0] >= 0) && (point[2] >= 0))
+    {
+        return 2;
+    }
+    else if ((point[0] >= 0) && (point[2] <= 0))
+    {
+        return 3;
+    }
+    else
+    {
+        return 4;
+    }
 }
 
 Vector findBallAndSquareIntersection(const Vector& position, 

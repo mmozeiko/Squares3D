@@ -1,0 +1,37 @@
+<xml>
+  <properties property0 = "ball" 
+              property1 = "penguin" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/>
+
+  <properties property0 = "penguin" 
+              property1 = "penguin" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/>
+
+  <properties property0 = "brick" 
+              property1 = "penguin" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/>
+
+  <properties property0 = "player" 
+              property1 = "penguin" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/>
+
+  <properties property0 = "ball" 
+              property1 = "grass" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.0"
+              softnessCoeficient   = "0.0"/>
+
+</xml>

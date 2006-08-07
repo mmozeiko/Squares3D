@@ -47,7 +47,6 @@ void Player::setRotation(const Vector& rotation)
 
 void Player::onSetForceAndTorque()
 {
-    //    clog << NewtonGetTimeStep(m_game->m_world->m_world) << endl;
     float timestepInv = 1.0f / 0.01f; // 0.01f == DT
 
     float mass;
@@ -85,7 +84,7 @@ void Player::onSetForceAndTorque(const NewtonBody* body)
     self->onSetForceAndTorque();
 }
 
-void Player::onCollision(const NewtonMaterial* material, const NewtonContact* contact)
+void Player::onCollide(Body* other, const NewtonMaterial* material)
 {
    Vector pos, nor;
 

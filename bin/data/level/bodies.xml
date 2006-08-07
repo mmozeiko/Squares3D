@@ -4,130 +4,130 @@
       <collision>tree1</collision>
     </body>
 
-    <body id="player">
+    <body id="player" property="player">
       <position x="-4.0" y="2.5" z="2.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_biggy</collision>
     </body>
 
-    <body id="football">
+    <body id="football" property="ball">
       <position x="0.0" y="0.5" z="0.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>football</collision>
     </body>
 
-    <body id="penguin0">
+    <body id="penguin0" property="penguin">
       <position x="-8.0" y="5.5" z="5.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
     
-    <body id="penguin1">
+    <body id="penguin1" property="penguin">
       <position x="-8.0" y="5.5" z="4.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin2">
+    <body id="penguin2" property="penguin">
       <position x="-8.0" y="5.5" z="4.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin3">
+    <body id="penguin3" property="penguin">
       <position x="-8.0" y="5.5" z="3.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin4">
+    <body id="penguin4" property="penguin">
       <position x="-8.0" y="5.5" z="3.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin5">
+    <body id="penguin5" property="penguin">
       <position x="-8.0" y="5.5" z="2.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin6">
+    <body id="penguin6" property="penguin">
       <position x="-8.0" y="5.5" z="2.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin7">
+    <body id="penguin7" property="penguin">
       <position x="-8.0" y="5.5" z="1.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin8">
+    <body id="penguin8" property="penguin">
       <position x="-8.0" y="5.5" z="1.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin9">
+    <body id="penguin9" property="penguin">
       <position x="-8.0" y="5.5" z="0.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-      <body id="penguin10">
+      <body id="penguin10" property="penguin">
           <position x="-6.0" y="5.5" z="-9.0" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
 
-      <body id="penguin11">
+      <body id="penguin11" property="penguin">
           <position x="-6.0" y="5.5" z="-5.0" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin12">
+      <body id="penguin12" property="penguin">
           <position x="-6.0" y="5.5" z="-4.5" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin13">
+      <body id="penguin13" property="penguin">
           <position x="-6.0" y="5.5" z="-4.0" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin14">
+      <body id="penguin14" property="penguin">
           <position x="-6.0" y="5.5" z="-3.5" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin15">
+      <body id="penguin15" property="penguin">
           <position x="-6.0" y="5.5" z="-3.0" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin16">
+      <body id="penguin16" property="penguin">
           <position x="-6.0" y="5.5" z="-2.5" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin17">
+      <body id="penguin17" property="penguin">
           <position x="-6.0" y="5.5" z="-2.0" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin18">
+      <body id="penguin18" property="penguin">
           <position x="-6.0" y="5.5" z="-1.5" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin19">
+      <body id="penguin19" property="penguin">
           <position x="-6.0" y="5.5" z="-1.0" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
       </body>
-      <body id="penguin20">
+      <body id="penguin20" property="penguin">
           <position x="-6.0" y="5.5" z="-0.5" />
           <rotation x="0.0" y="0.0" z="0.0" />
           <collision>player_small</collision>
@@ -147,38 +147,13 @@
       <collision>heavyBox</collision>
     </body-->
 
-      <body id="invisibleFloor">
+      <!--body id="invisibleFloor">
           <collision>invisibleFloor</collision>
           <collision>invisibleWall1</collision>
           <collision>invisibleWall2</collision>
           <collision>invisibleWall3</collision>
           <collision>invisibleWall4</collision>
-      </body>
-
-      <!--body id="corner1">
-          <position x="-9.4" y="0.25" z="-9.4" />
-          <collision>corner</collision>
-      </body>
-      <body id="corner2">
-          <position x="9.4" y="0.25" z="-9.4" />
-          <collision>corner</collision>
-      </body>
-      <body id="corner3">
-          <position x="9.4" y="0.25" z="9.4" />
-          <collision>corner</collision>
-      </body>
-      <body id="corner4">
-          <position x="-9.4" y="0.25" z="9.4" />
-          <collision>corner</collision>
       </body-->
 
-      <!--body id="walls">
-      <position x="0.0" y="1.0" z="0.0" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>wall1</collision>
-      <collision>wall2</collision>
-      <collision>wall3</collision>
-      <collision>wall4</collision>
-    </body-->
   </bodies>
 </xml>

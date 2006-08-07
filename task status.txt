@@ -1,8 +1,11 @@
 Available:
 ==========
 
-Get rid of hacks - Material IDs in world.cpp, Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
-Make Ai players smarter.
+Implement NewtonMaterial properties in collisions between TreeCollision faces.
+Implement default Property attributes in xml file.
+Allow Property attributes be optional (in xml file).
+Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
+Make AI players smarter.
 Port coach class and name it "Referee".
 Use materials on collisions.
 Fix shader lighting position.
@@ -26,6 +29,7 @@ Implement basic moves for player, kicking the ball, joggling the ball in air, hi
 Implement basic tournament gameplay.
 Upgrade the ball control to be more submissive to player actions.
 Add a referee model who whistles when a fault is detected. (optional task)
+Look for TODOs, FIXMEs.
 
 
 
@@ -36,6 +40,7 @@ Construction:
 
 Done:
 =====
+2006-08-07 Implemented collision callbacks for body objects.
 2006-08-06 Implement AI controlled players.
 2006-08-02 Move NewtonMaterial id from Materials to Material class.
 2006-08-01 Cleanup SkyBox class, move texture loading to video.

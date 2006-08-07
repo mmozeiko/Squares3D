@@ -11,7 +11,7 @@ class Shader;
 class Texture;
 class XMLnode;
 
-class Material
+class Material : NoCopy
 {
     friend class Level;
 public:
@@ -22,8 +22,6 @@ public:
     Vector  m_cSpecular; // (0.0f, 0.0f, 0.0f)
     Vector  m_cEmission; // (0.0f, 0.0f, 0.0f, 1.0f)
     float   m_cShine;    // 0.0f
-
-    int     m_newtonID;
 
     void enable(const Video* video) const;
     void disable(const Video* video) const;

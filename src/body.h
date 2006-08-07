@@ -10,15 +10,18 @@ class Level;
 class Video;
 class XMLnode;
 class Game;
+class Body;
 
 class Collideable
 {
 public:
-    virtual void onImpact(const Vector& position, const float speed) {}
-    virtual void onScratch(const Vector& position, const float speed) {}
+    // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
+    virtual void onCollide(Body* other, const NewtonMaterial* material) {}
+    virtual void onImpact(Body* other, const Vector& position, const float speed) {}
+    virtual void onScratch(Body* other, const Vector& position, const float speed) {}
 };
 
-class Body
+class Body : public Collideable, NoCopy
 {
     friend class Level;
 
@@ -28,8 +31,11 @@ public:
     void setTransform(const Vector& position, const Vector& rotation);
     Vector getPosition();
     Vector getRotation();
-    bool isCollideable() const;
     void setCollideable(Collideable* collideable);
+
+    void onCollide(Body* other, const NewtonMaterial* material);
+    void onImpact(Body* other, const Vector& position, const float speed);
+    void onScratch(Body* other, const Vector& position, const float speed);
 
     NewtonBody* m_newtonBody;        
     Matrix      m_matrix;
@@ -37,15 +43,15 @@ public:
 protected:
 
     Body(const XMLnode& node, const Game* game);
+    ~Body();
 
     const NewtonWorld*     m_newtonWorld;
-
-    ~Body();
 
     void createNewtonBody(const NewtonCollision* newtonCollision,
                           const Vector& totalOrigin,
                           const Vector& position,
-                          const Vector& rotation);
+                          const Vector& rotation,
+                          const int     materialID);
 
 private:
 

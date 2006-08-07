@@ -10,10 +10,11 @@ class Game;
 class Video;
 
 class Material;    
-class Materials;
+class Properties;
 class Collision;
 class Body;
 
+typedef map<string, Material*>  MaterialMap;
 typedef map<string, Collision*> CollisionsMap;
 typedef map<string, Body*>      BodiesMap;
 
@@ -21,7 +22,7 @@ string getAttribute(const XMLnode& node, const string& name);
 string getAttribute(const XMLnode& node, const string& name, const string& defaultValue);
 Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols);
 
-class Level
+class Level : NoCopy
 {
 public:
     Level(const Game* game);
@@ -33,7 +34,8 @@ public:
 
     BodiesMap     m_bodies;
     CollisionsMap m_collisions;
-    Materials*    m_materials;
+    MaterialMap   m_materials;
+    Properties*   m_properties;
 
 private:
     const Game* m_game;

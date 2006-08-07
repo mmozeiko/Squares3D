@@ -3,7 +3,8 @@
 #include "video.h"
 #include "material.h"
 #include "level.h"
-#include "materials.h"
+#include "property.h"
+#include "properties.h"
 
 class CollisionConvex : public Collision
 {
@@ -66,6 +67,7 @@ Collision::~Collision()
 void Collision::create(NewtonCollision* collision)
 {
     m_newtonCollision = collision;
+    NewtonConvexCollisionSetUserID(m_newtonCollision, 0);
 }
 
 void Collision::create(NewtonCollision* collision, float mass)
@@ -74,6 +76,7 @@ void Collision::create(NewtonCollision* collision, float mass)
     m_mass = mass;
 
     NewtonConvexCollisionCalculateInertialMatrix(m_newtonCollision, m_inertia.v, m_origin.v);
+
     m_inertia *= mass;
     m_origin *= mass;
 }
@@ -115,7 +118,13 @@ CollisionConvex::CollisionConvex(const XMLnode& node,
     string name = "material";
     if (foundInMap(node.attributes, name))
     {
-        m_material = level->m_materials->get(getAttribute(node, name));
+        string material = getAttribute(node, name);
+        MaterialMap::const_iterator iter = level->m_materials.find(material);
+        if (iter == level->m_materials.end())
+        {
+            throw Exception("Couldn't find material '" + material + "'");
+        }
+        m_material = iter->second;;
     }
 
     for each_const(XMLnodes, node.childs, iter)
@@ -237,6 +246,8 @@ void CollisionSphere::render(const Video* video) const
 CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld, const Level* level) :
     Collision(node, newtonWorld)
 {
+    vector<int> props;
+
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
@@ -249,9 +260,24 @@ CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld
             }
             else
             {
-                m_materials.push_back(level->m_materials->get(material));
+                MaterialMap::const_iterator iter = level->m_materials.find(material);
+                if (iter == level->m_materials.end())
+                {
+                    throw Exception("Couldn't find material '" + material + "'");
+                }
+                m_materials.push_back(iter->second);
             }
- 
+            
+            string p = getAttribute(node, "property");
+            if (p.empty())
+            {
+                props.push_back(0);
+            }
+            else
+            {
+                props.push_back(level->m_properties->getPropertyID(p));
+            }
+
             m_faces.push_back(Face());
             Face& face = m_faces.back();
             for each_const(XMLnodes, node.childs, iter)
@@ -286,13 +312,13 @@ CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld
     NewtonTreeCollisionBeginBuild(collision);
     for (size_t i=0; i<m_faces.size(); i++)
     {
-        Material* material = m_materials[i];
+        int prop = props[i];
         Face& face = m_faces[i];
         NewtonTreeCollisionAddFace(
             collision, 
             static_cast<int>(face.vertexes.size()), 
             face.vertexes[0].v, 
-            sizeof(Vector), *reinterpret_cast<int*>(&material));
+            sizeof(Vector), prop);
     }
     NewtonTreeCollisionEndBuild(collision, 0);
     

@@ -11,7 +11,7 @@ class Video;
 class Material;
 class Level;
 
-class Collision
+class Collision : NoCopy
 {
     friend class Body;
 

@@ -79,7 +79,6 @@ Material::Material(const XMLnode& node, const Game* game) :
             throw Exception("Invalid material, unknown node - " + node.name);
         }
     }
-    m_newtonID = NewtonMaterialCreateGroupID(m_game->m_world->m_newtonWorld);
 }
 
 void Material::enable(const Video* video) const

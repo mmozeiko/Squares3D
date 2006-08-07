@@ -29,7 +29,7 @@
       <radius x="0.11" y="0.11" z="0.11" />
     </collision-->
 
-    <collision id="football" type="sphere" mass="0.4" material="football">
+    <collision id="football" type="sphere" mass="0.4" material="football" property="ball">
       <radius x="0.31" y="0.31" z="0.31" />
     </collision>
     
@@ -80,84 +80,84 @@
 
 
       <collision id="tree1" type="tree">
-      <face material="pavement">
+      <face material="pavement" property="pavement">
         <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
         <vertex x="0.0"  y="0.0" z="3.0" u="1.0" v="0.0" />
         <vertex x="0.0"  y="0.0" z="0.0" u="1.0" v="1.0" />
         <vertex x="-3.0" y="0.0" z="0.0" u="0.0" v="1.0" />
       </face>
 
-      <face material="pavement">
+      <face material="pavement" property="pavement">
         <vertex x="0.0" y="0.0" z="3.0" u="0.0" v="0.0" />
         <vertex x="3.0" y="0.0" z="3.0" u="1.0" v="0.0" />
         <vertex x="3.0" y="0.0" z="0.0" u="1.0" v="1.0" />
         <vertex x="0.0" y="0.0" z="0.0" u="0.0" v="1.0" />
       </face>
 
-      <face material="pavement">
+      <face material="pavement" property="pavement">
         <vertex x="0.0" y="0.0" z="0.0"  u="0.0" v="0.0" />
         <vertex x="3.0" y="0.0" z="0.0"  u="1.0" v="0.0" />
         <vertex x="3.0" y="0.0" z="-3.0" u="1.0" v="1.0" />
         <vertex x="0.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
       </face>
 
-      <face material="pavement">
+      <face material="pavement" property="pavement">
         <vertex x="-3.0" y="0.0" z="0.0"  u="0.0" v="0.0" />
         <vertex x="0.0"  y="0.0" z="0.0"  u="1.0" v="0.0" />
         <vertex x="0.0"  y="0.0" z="-3.0" u="1.0" v="1.0" />
         <vertex x="-3.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
       </face>
 
-      <face material="grass">
+      <face material="grass" property="grass">
         <vertex x="-10.0" y="0.0" z="10.0" u="0.0"  v="0.0" />
         <vertex x="10.0"  y="0.0" z="10.0" u="10.0" v="0.0" />
         <vertex x="10.0"  y="0.0" z="3.0"  u="10.0" v="3.5" />
         <vertex x="-10.0" y="0.0" z="3.0"  u="0.0"  v="3.5" />
       </face>
 
-      <face material="grass">
+      <face material="grass" property="grass">
         <vertex x="3.0"  y="0.0" z="3.0"  u="0.0" v="0.0" />
         <vertex x="10.0" y="0.0" z="3.0"  u="3.5" v="0.0" />
         <vertex x="10.0" y="0.0" z="-3.0" u="3.5" v="3.0" />
         <vertex x="3.0"  y="0.0" z="-3.0" u="0.0" v="3.0" />
       </face>
 
-      <face material="grass">
+      <face material="grass" property="grass">
         <vertex x="-10.0" y="0.0" z="-3.0"  u="0.0"  v="0.0"  />
         <vertex x="10.0"  y="0.0" z="-3.0"  u="10.0" v="0.0"  />
         <vertex x="10.0"  y="0.0" z="-10.0" u="10.0" v="3.5"  />
         <vertex x="-10.0" y="0.0" z="-10.0" u="0.0"  v="3.5"  />
       </face>
 
-      <face material="grass">
+      <face material="grass" property="grass">
         <vertex x="-10.0" y="0.0" z="3.0"  u="0.0" v="0.0" />
         <vertex x="-3.0"  y="0.0" z="3.0"  u="3.5" v="0.0" />
         <vertex x="-3.0"  y="0.0" z="-3.0" u="3.5" v="3.0" />
         <vertex x="-10.0" y="0.0" z="-3.0" u="0.0" v="3.0" />
       </face>
 
-      <face material="brick">
+      <face material="brick" property="brick">
         <vertex x="-10.0" y="3.0" z="10.0" u="0.0"  v="0.0" />
         <vertex x="10.0"  y="3.0" z="10.0" u="10.0" v="0.0" />
         <vertex x="10.0"  y="0.0" z="10.0" u="10.0" v="1.5" />
         <vertex x="-10.0" y="0.0" z="10.0" u="0.0"  v="1.5" />
       </face>
 
-      <face material="brick">
+      <face material="brick" property="brick">
         <vertex x="10.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
         <vertex x="10.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
         <vertex x="10.0" y="0.0" z="-10.0" u="10.0" v="1.5" />
         <vertex x="10.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
       </face>
 
-      <face material="brick">
+      <face material="brick" property="brick">
         <vertex x="-10.0" y="3.0" z="-10.0" u="0.0"  v="0.0" />
         <vertex x="-10.0" y="0.0" z="-10.0" u="0.0"  v="1.5" />
         <vertex x="10.0"  y="0.0" z="-10.0" u="10.0" v="1.5" />
         <vertex x="10.0"  y="3.0" z="-10.0" u="10.0" v="0.0" />
       </face>
 
-      <face material="brick">
+      <face material="brick" property="brick">
         <vertex x="-10.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
         <vertex x="-10.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
         <vertex x="-10.0" y="0.0" z="-10.0" u="10.0" v="1.5" />

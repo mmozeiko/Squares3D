@@ -7,8 +7,6 @@
 
 class Sound : public OggDecoder
 {
-    friend class Audio;
-
 public:
     Sound(const string& filename);
     ~Sound();

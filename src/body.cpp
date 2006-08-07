@@ -5,6 +5,7 @@
 #include "world.h"
 #include "video.h"
 #include "level.h"
+#include "properties.h"
 
 typedef map<string, Collision*> CollisionsMap;
 typedef map<string, Body*>      BodiesMap;
@@ -13,10 +14,19 @@ Body::Body(const XMLnode& node, const Game* game):
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),
-    m_newtonWorld(game->m_world->m_newtonWorld)
+    m_newtonWorld(game->m_world->m_newtonWorld),
+    m_collideable(NULL)
+
 {
     NewtonCollision* newtonCollision = NULL;
     string id = getAttribute(node, "id");
+    
+    int materialID = -1;
+    StringMap::const_iterator iter = node.attributes.find("property");
+    if (iter != node.attributes.end())
+    {
+        materialID = game->m_world->m_level->m_properties->getPropertyID(iter->second);
+    }
 
     Vector position(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
@@ -91,7 +101,7 @@ Body::Body(const XMLnode& node, const Game* game):
         throw Exception("No collisions were found for body '" + id + "'");
     }
 
-    createNewtonBody(newtonCollision, totalOrigin, position, rotation);
+    createNewtonBody(newtonCollision, totalOrigin, position, rotation, materialID);
 
     if (id == "football")
     {
@@ -110,13 +120,16 @@ void Body::setTransform(const Vector& position, const Vector& rotation)
 void Body::createNewtonBody(const NewtonCollision* newtonCollision,
                             const Vector&          totalOrigin,
                             const Vector&          position,
-                            const Vector&          rotation)
+                            const Vector&          rotation,
+                            const int              materialID)
 {
     m_newtonBody = NewtonCreateBody(m_newtonWorld, newtonCollision);
     NewtonBodySetUserData(m_newtonBody, static_cast<void*>(this));
 
-    // Set Material Id for this object
-    //NewtonBodySetMaterialGroupID(m_body, material);
+    if (materialID != -1)
+    {
+        NewtonBodySetMaterialGroupID(m_newtonBody, materialID);
+    }
 
     NewtonBodySetMassMatrix(m_newtonBody, m_totalMass, m_totalInertia.x, m_totalInertia.y, m_totalInertia.z);
     NewtonBodySetCentreOfMass(m_newtonBody, totalOrigin.v);
@@ -132,17 +145,12 @@ void Body::createNewtonBody(const NewtonCollision* newtonCollision,
 
 Body::~Body()
 {
+    /*
     for each_const(set<Collision*>, m_collisions, iter)
     {
-        //NewtonReleaseCollision(m_newtonWorld, (*iter)->m_newtonCollision);
+        NewtonReleaseCollision(m_newtonWorld, (*iter)->m_newtonCollision);
     }
-    //for each_const(set<Body*>, m_clones, iter)
-    {
-        //delete *iter;
-        
-    }
-
-
+    */
 }
 
 void Body::prepare()
@@ -186,12 +194,31 @@ void Body::render(const Video* video)
     video->end();
 }
 
-bool Body::isCollideable() const
-{
-    return m_collideable != NULL;
-}
-
 void Body::setCollideable(Collideable* collideable)
 {
     m_collideable = collideable;
+}
+
+void Body::onCollide(Body* other, const NewtonMaterial* material)
+{
+    if (m_collideable != NULL)
+    {
+        m_collideable->onCollide(other, material);
+    }
+}
+
+void Body::onImpact(Body* other, const Vector& position, const float speed)
+{
+    if (m_collideable != NULL)
+    {
+        m_collideable->onImpact(other, position, speed);
+    }
+}
+
+void Body::onScratch(Body* other, const Vector& position, const float speed)
+{
+    if (m_collideable != NULL)
+    {
+        m_collideable->onScratch(other, position, speed);
+    }
 }

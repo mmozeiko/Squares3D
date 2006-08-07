@@ -7,11 +7,11 @@
 #include "material.h"
 #include "collision.h"
 #include "body.h"
-#include "materials.h"
+#include "properties.h"
 
 Level::Level(const Game* game) : m_game(game)
 {
-    m_materials = new Materials(game);
+    m_properties = new Properties(game);
 }
 
 void Level::load(const string& levelFile, StringSet& loaded)
@@ -64,11 +64,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "material")
                 {
-                    m_materials->add(getAttribute(node, "id"), new Material(node, m_game));
-                }
-                else if (node.name == "properties")
-                {
-                    m_materials->loadProperties(node);
+                    m_materials.insert(make_pair(getAttribute(node, "id"), new Material(node, m_game)));
                 }
                 else
                 {
@@ -106,6 +102,10 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 }
             }
         }
+        else if (node.name == "properties")
+        {
+            m_properties->load(node);
+        }
         else
         {
             throw Exception("Invalid level file, unknown section - " + node.name);
@@ -123,7 +123,11 @@ Level::~Level()
     {
         delete iter->second;
     }
-    delete m_materials;
+    for each_const(MaterialMap, m_materials, iter)
+    {
+        delete iter->second;
+    }
+    delete m_properties;
 }
 
 Body* Level::getBody(const string id)

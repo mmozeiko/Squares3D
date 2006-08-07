@@ -21,8 +21,8 @@ public:
 
     Vector getPosition();
 
-    void onCollision(const NewtonMaterial* material, const NewtonContact* contact);
-
+    void onCollide(Body* other, const NewtonMaterial* material);
+    
 protected:
     NewtonJoint*        m_upVector;
 
@@ -31,9 +31,6 @@ protected:
     Vector              m_rotation;
     const Game*         m_game;
     Body*               m_body;
-
-    virtual void onImpact(const Vector& position, const float speed) {} // TODO: remove
-    virtual void onScratch(const Vector& position, const float speed) {}
 
     void onSetForceAndTorque();
     static void onSetForceAndTorque(const NewtonBody* body);
