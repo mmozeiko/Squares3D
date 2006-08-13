@@ -10,6 +10,8 @@ Port coach class and name it "Referee".
 Use materials on collisions.
 Fix shader lighting position.
 Cleanup Material class, move to video.
+Split materials into visual and physical.
+Introduce invisible visual material.
 Implement correctly loading shaders from level.xml file.
 Fix camera movement speed.
 Cleanup begin/end, enable/disable methods in video, make it somehow simplier.

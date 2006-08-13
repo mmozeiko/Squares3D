@@ -60,17 +60,17 @@ Vector findBallAndSquareIntersection(const Vector& position,
     float max0 = upperRight[0];
     float max2 = upperRight[2];
 
-    float t = 0.0f, x = 0.0f, z = 0.0f;
+    float t1 = 0.0f, t2 = 0.0f, x = 0.0f, z = 0.0f;
     bool intersectsX = false, intersectsZ = false;
 
     Vector squareCenter = getSquareCenter(lowerLeft, upperRight);
     Vector result(squareCenter), intersectionX, intersectionZ;
 
-    t = position[2] / static_cast<float>(velocity[2] + 1e-06);
+    t1 = position[2] / static_cast<float>(velocity[2] + 1e-06);
     
-    if (t <= 0) 
+    if (t1 <= 0) 
     {
-        x = position[0] - velocity[0] * t;
+        x = position[0] - velocity[0] * t1;
         if (((x > min0) && (x < max0)) 
             && ((getQuadrant(position)) != (getQuadrant(squareCenter)))) 
         {
@@ -79,11 +79,11 @@ Vector findBallAndSquareIntersection(const Vector& position,
         }
     }
 
-    t = position[0] / static_cast<float>(velocity[0] + 1e-06);
+    t2 = position[0] / static_cast<float>(velocity[0] + 1e-06);
 
-    if (t <= 0) 
+    if (t2 <= 0) 
     {
-        z = position[2] - velocity[2] * t;
+        z = position[2] - velocity[2] * t2;
         if (((z > min2) && (z < max2)) 
             && ((getQuadrant(position)) != (getQuadrant(squareCenter))))
         {
@@ -94,7 +94,7 @@ Vector findBallAndSquareIntersection(const Vector& position,
 
     if (intersectsX && intersectsZ)
     {
-        if ((intersectionX - position).magnitude() < (intersectionZ - position).magnitude())
+        if (t1 > t2)
         {
             result = intersectionX;
         }

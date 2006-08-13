@@ -5,7 +5,6 @@
 #include "game.h"
 #include "world.h"
 
-//, const Vector& rotation
 Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     m_body(game->m_world->m_level->getBody(id)),
     m_isOnGround(true),
