@@ -7,6 +7,7 @@
 
 class Input;
 class Game;
+class Referee;
 
 class Player : public Collideable
 {
@@ -23,6 +24,8 @@ public:
 
     void onCollide(Body* other, const NewtonMaterial* material);
     
+	Referee* m_referee;
+
 protected:
     NewtonJoint*        m_upVector;
 

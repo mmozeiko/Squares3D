@@ -4,6 +4,7 @@
 #include "video.h"
 #include "game.h"
 #include "world.h"
+#include "referee.h"
 
 Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     m_body(game->m_world->m_level->getBody(id)),
@@ -85,19 +86,19 @@ void Player::onSetForceAndTorque(const NewtonBody* body)
 
 void Player::onCollide(Body* other, const NewtonMaterial* material)
 {
-   Vector pos, nor;
+	m_referee->process();
+	Vector pos, nor;
 
-   NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
+	NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
 
-   // Determine if this contact is on the ground
-   float angle = Vector::Y % nor;
-   m_isOnGround = (angle > 0.0f);
+	// Determine if this contact is on the ground
+	float angle = Vector::Y % nor;
+	m_isOnGround = (angle > 0.0f);
 
-   NewtonMaterialSetContactElasticity( material, 0.0f );
+	NewtonMaterialSetContactElasticity( material, 0.0f );
 
-   NewtonMaterialSetContactFrictionState( material, 0, 0 );
-   NewtonMaterialSetContactFrictionState( material, 0, 1 );
+	NewtonMaterialSetContactFrictionState( material, 0, 0 );
+	NewtonMaterialSetContactFrictionState( material, 0, 1 );
 
-   NewtonMaterialSetContactSoftness( material, 0 );
-
+	NewtonMaterialSetContactSoftness( material, 0 );
 }

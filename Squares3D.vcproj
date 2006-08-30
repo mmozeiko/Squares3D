@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1257"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Squares3D"
 	ProjectGUID="{3E1CA81C-2956-4551-8EAC-035AC52863F1}"
 	RootNamespace="Squares3D"
@@ -759,6 +759,14 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\src\referee.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\referee.h"
+			>
+		</File>
 		<File
 			RelativePath=".\task status.txt"
 			>

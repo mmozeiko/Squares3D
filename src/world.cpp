@@ -13,6 +13,7 @@
 #include "file.h"
 #include "skybox.h"
 #include "properties.h"
+#include "referee.h"
 
 World::World(Game* game) : Renderable(game)
 {
@@ -32,6 +33,7 @@ void World::init()
 {
     m_level = new Level(m_game);
     m_level->load("level.xml");
+	m_referee = new Referee();
 
     // TODO: move to level file
     int id = NewtonMaterialGetDefaultGroupID(m_newtonWorld);
@@ -40,8 +42,13 @@ void World::init()
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
+	m_referee->ball = m_level->getBody("football");
+
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
-    
+
+	m_referee->players["player1"] = m_localPlayers.back();
+	m_localPlayers.back()->m_referee = m_referee;
+
     int i = 0;
     for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
     { 
@@ -65,6 +72,7 @@ World::~World()
     }
 
     delete m_level;
+	delete m_referee;
 
     NewtonMaterialDestroyAllGroupID(m_newtonWorld);
     NewtonDestroyAllBodies(m_newtonWorld);

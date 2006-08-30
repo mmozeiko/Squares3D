@@ -10,6 +10,7 @@ class Player;
 class SkyBox;
 class Level;
 class Music;
+class Referee;
 
 class World : public Renderable, NoCopy
 {
@@ -30,6 +31,7 @@ public:
     NewtonWorld*     m_newtonWorld;
     Level*           m_level;
     vector<Player*>  m_localPlayers;
+	Referee*         m_referee;
 
 };
 
