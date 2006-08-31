@@ -16,7 +16,6 @@ Body::Body(const XMLnode& node, const Game* game):
     m_totalInertia(0.0f, 0.0f, 0.0f),
     m_newtonWorld(game->m_world->m_newtonWorld),
     m_collideable(NULL)
-
 {
     NewtonCollision* newtonCollision = NULL;
     string id = getAttribute(node, "id");
@@ -174,6 +173,10 @@ void Body::onSetForceAndTorque()
 {
     Vector force = gravityVec * m_totalMass;
     NewtonBodyAddForce(m_newtonBody, force.v);
+    if (m_collideable != NULL)
+    {
+        m_collideable->onSetForceAndTorque();
+    }
 }
 
 void Body::onSetForceAndTorque(const NewtonBody* body)

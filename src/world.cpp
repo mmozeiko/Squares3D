@@ -45,8 +45,6 @@ void World::init()
 	m_referee->ball = m_level->getBody("football");
 
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
-
-	m_referee->players["player1"] = m_localPlayers.back();
 	m_localPlayers.back()->m_referee = m_referee;
 
     int i = 0;
@@ -56,9 +54,11 @@ void World::init()
         { 
             Vector pos(x, 1.0f, z);
             m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, pos, Vector(0.0f, 0.0f, 0.0f)));
+            m_localPlayers.back()->m_referee = m_referee;
             i++;
         }
     }
+    m_referee->registerPlayers(&m_localPlayers);
 }
 
 World::~World()

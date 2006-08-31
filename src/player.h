@@ -22,9 +22,12 @@ public:
 
     Vector getPosition();
 
+    // maybe private
     void onCollide(Body* other, const NewtonMaterial* material);
+    void onSetForceAndTorque();
     
-	Referee* m_referee;
+	Referee*            m_referee;
+    Body*               m_body;
 
 protected:
     NewtonJoint*        m_upVector;
@@ -33,11 +36,6 @@ protected:
     Vector              m_direction;
     Vector              m_rotation;
     const Game*         m_game;
-    Body*               m_body;
-
-    void onSetForceAndTorque();
-    static void onSetForceAndTorque(const NewtonBody* body);
-
 };
 
 #endif

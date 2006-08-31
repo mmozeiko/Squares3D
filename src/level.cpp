@@ -157,7 +157,7 @@ void Level::render(const Video* video) const
     glDisable(GL_COLOR_MATERIAL);
     for each_const(BodiesMap, m_bodies, iter)
     {
-        if (iter->first != "invisibleFloor") // TODO: hack
+        if (iter->first != "invisibleWalls") // TODO: hack
         {
             (iter->second)->render(video);
         }

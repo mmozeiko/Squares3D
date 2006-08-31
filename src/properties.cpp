@@ -157,6 +157,7 @@ void MaterialContact::onEnd(const NewtonMaterial* material)
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
     if (self->body[0] == self->body[1])
     {
+        assert(false);
         return;
     }
 

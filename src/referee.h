@@ -9,11 +9,11 @@
 class Referee
 {
 public:
-	std::map<std::string, Player*> players;
+	vector<Body*> m_players;
 	Body* ball;
 
-
-	void process(){clog<<"tiesnesis redzeeja!\n";}
+    void registerPlayers(vector<Player*>* players);
+	void process(Body* body1, Body* body2);
 	void registerGroundEvent(){}
 	void registerPlayerEvent(){}
 };

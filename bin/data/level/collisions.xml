@@ -33,23 +33,23 @@
       <radius x="0.31" y="0.31" z="0.31" />
     </collision>
     
-    <!--collision id="box2" type="box" mass="500.0" material="box">
-      <size x="1.5" y="1.0" z="1.5" /-->
+    <collision id="box2" type="box" mass="500.0" material="box">
+      <size x="1.5" y="1.0" z="1.5" />
       <!--offset x="2.0" y="0.0" z="2.0" />
         <rotation x="0.0" y="0.0" z="0.0" /-->
-    <!--/collision-->
+    </collision>
 
-    <!--collision id="thinBox" type="box" mass="50.0" material="box">
+    <collision id="thinBox" type="box" mass="50.0" material="box">
       <size   x="0.1" y="1.0" z="0.1" />
-      <offset x="0.0" y="1.0" z="0.0" /-->
+      <offset x="0.0" y="1.0" z="0.0" />
       <!--rotation x="0.0" y="0.0" z="0.0" /-->
-    <!--/collision>
+    </collision>
 
     <collision id="heavyBox" type="sphere" mass="10000.0" material="box">
       <radius x="0.2" y="0.1"  z="0.2" />
-      <offset x="0.0" y="1.55" z="0.0" /-->
+      <offset x="0.0" y="1.55" z="0.0" />
       <!--rotation x="0.0" y="0.0" z="0.0" /-->
-    <!--/collision-->
+    </collision>
 
     <!--collision id="wall1" type="box" mass="0.0" material="brick">
       <size x="20.0" y="2.0" z="0.4" />
@@ -57,25 +57,21 @@
       <rotation x="0.0" y="0.0" z="0.0" />
     </collision-->
 
-      <collision id="invisibleFloor" mass="0.0" type="box">
-          <size x="20.0" y="1.0" z="20.0"/>
-          <offset x="0.0" y="-0.5" z="0.0"/>
-      </collision>
       <collision id="invisibleWall1" mass="0.0" type="box">
-          <size x="1.0" y="10.0" z="20.0"/>
-          <offset x="10.5" y="0.0" z="0.0"/>
+          <size x="1.0" y="10.0" z="6.0"/>
+          <offset x="3.5" y="0.0" z="0.0"/>
       </collision>
       <collision id="invisibleWall2" mass="0.0" type="box">
-          <size x="1.0" y="10.0" z="20.0"/>
-          <offset x="-10.5" y="0.0" z="0.0"/>
+          <size x="1.0" y="10.0" z="6.0"/>
+          <offset x="-3.5" y="0.0" z="0.0"/>
       </collision>
       <collision id="invisibleWall3" mass="0.0" type="box">
-          <size x="20.0" y="10.0" z="1.0"/>
-          <offset x="0.0" y="0.0" z="10.5"/>
+          <size x="6.0" y="10.0" z="1.0"/>
+          <offset x="0.0" y="0.0" z="3.5"/>
       </collision>
       <collision id="invisibleWall4" mass="0.0" type="box">
-          <size x="20.0" y="10.0" z="1.0"/>
-          <offset x="0.0" y="0.0" z="-10.5"/>
+          <size x="6.0" y="10.0" z="1.0"/>
+          <offset x="0.0" y="0.0" z="-3.5"/>
       </collision>
 
 

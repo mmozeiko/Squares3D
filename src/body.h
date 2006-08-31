@@ -19,6 +19,8 @@ public:
     virtual void onCollide(Body* other, const NewtonMaterial* material) {}
     virtual void onImpact(Body* other, const Vector& position, const float speed) {}
     virtual void onScratch(Body* other, const Vector& position, const float speed) {}
+
+    virtual void onSetForceAndTorque() {}
 };
 
 class Body : public Collideable, NoCopy

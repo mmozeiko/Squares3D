@@ -138,10 +138,12 @@ void TextureCube::begin() const
     glEnable(GL_TEXTURE_GEN_S);
     glEnable(GL_TEXTURE_GEN_T);
     glEnable(GL_TEXTURE_GEN_R);
+    glDisable(GL_LIGHTING);
 }
 
 void TextureCube::end() const
 {
+    glEnable(GL_LIGHTING);
     glDisable(GL_TEXTURE_GEN_S);
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_GEN_R);

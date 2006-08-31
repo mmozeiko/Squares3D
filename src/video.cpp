@@ -223,12 +223,12 @@ void Video::renderFace(const Face& face) const
 
 void Video::renderSphere(float radius) const
 {
-    gluSphere(m_quadricSphere, radius, 64, 64);
+    gluSphere(m_quadricSphere, radius, 16, 16);
 }
     
 void Video::renderWireSphere(float radius) const
 {
-    gluSphere(m_quadricWireSphere, radius, 64, 64);
+    gluSphere(m_quadricWireSphere, radius, 8, 8);
 }
   
 void Video::renderAxes(float size) const

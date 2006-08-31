@@ -1,3 +1,22 @@
+#include "referee.h"
+
+void Referee::registerPlayers(vector<Player*>* players)
+{
+    m_players.resize(players->size());
+    for (size_t idx = 0; idx < players->size(); idx++)
+    {
+        m_players[idx] = (*players)[idx]->m_body;
+    }
+}
+
+void Referee::process(Body* body1, Body* body2)
+{
+    if (foundInVector(m_players, body1) && foundInVector(m_players, body2))
+    {
+        clog << "pleijers pret pleijeru!\n";
+    }
+}
+
 
 //from random import randint
 //from glfont.glfont import GLFont
