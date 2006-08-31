@@ -9,11 +9,16 @@
 class Referee
 {
 public:
-	vector<Body*> m_players;
-	Body* ball;
+	map<string, Body*> m_players;
+	Body*              m_ball;
+	Body*        	   m_level;
+	StringMap          m_events;
+	bool			   m_gameOver;
 
-    void registerPlayers(vector<Player*>* players);
-	void process(Body* body1, Body* body2);
+	Referee();
+
+    void registerPlayer(const string& name, const Player* player);
+	void process(const Body* body1, const Body* body2);
 	void registerGroundEvent(){}
 	void registerPlayerEvent(){}
 };

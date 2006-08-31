@@ -79,6 +79,21 @@ inline bool foundInSet(const set<KeyType>& Set,
         Iterator != (Container).end(); \
         Iterator++)
 
+template <typename KeyType, typename ValueType>
+inline bool foundInMapValues(const map<KeyType, ValueType*>& Map,
+							 const ValueType*               Value)
+{
+	map<KeyType, ValueType*>::const_iterator iter;
+	for (iter = Map.begin(); iter != Map.end(); iter++)
+	{
+		if (iter->second == Value)
+		{
+			return true;
+		}
+	}
+    return false;
+}
+
 #define STR2(X) #X
 #define STR(X) STR2(X)
 #define Exception(msg) string(string(__FILE__"(") + STR(__LINE__) + ") : " + (msg))

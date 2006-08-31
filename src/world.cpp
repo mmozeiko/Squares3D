@@ -1,3 +1,4 @@
+#include <sstream>
 #include "world.h"
 #include "player.h"
 #include "camera.h"
@@ -42,10 +43,12 @@ void World::init()
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
-	m_referee->ball = m_level->getBody("football");
+	m_referee->m_ball = m_level->getBody("football");
+	m_referee->m_level = m_level->getBody("level");
 
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
 	m_localPlayers.back()->m_referee = m_referee;
+	m_referee->registerPlayer("player1", m_localPlayers.back());
 
     int i = 0;
     for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
@@ -55,10 +58,12 @@ void World::init()
             Vector pos(x, 1.0f, z);
             m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, pos, Vector(0.0f, 0.0f, 0.0f)));
             m_localPlayers.back()->m_referee = m_referee;
+		    stringstream ss;
+			ss << i;
+			m_referee->registerPlayer("ai_player1" + ss.str(), m_localPlayers.back());
             i++;
         }
     }
-    m_referee->registerPlayers(&m_localPlayers);
 }
 
 World::~World()

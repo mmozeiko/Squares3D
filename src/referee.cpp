@@ -1,17 +1,21 @@
 #include "referee.h"
 
-void Referee::registerPlayers(vector<Player*>* players)
+Referee::Referee():
+m_gameOver(false)
 {
-    m_players.resize(players->size());
-    for (size_t idx = 0; idx < players->size(); idx++)
-    {
-        m_players[idx] = (*players)[idx]->m_body;
-    }
+	m_events["lastFieldOwner"] = "None";
+	m_events["lastTouchedObject"] = "None";
+	m_events["lastTouchedPlayer"] = "None";
 }
 
-void Referee::process(Body* body1, Body* body2)
+void Referee::registerPlayer(const string& name, const Player* player)
 {
-    if (foundInVector(m_players, body1) && foundInVector(m_players, body2))
+    m_players[name] = player->m_body;
+}
+
+void Referee::process(const Body* body1, const Body* body2)
+{
+    if (foundInMapValues(m_players, body1) && foundInMapValues(m_players, body2))
     {
         clog << "pleijers pret pleijeru!\n";
     }
