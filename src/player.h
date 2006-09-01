@@ -9,6 +9,8 @@ class Input;
 class Game;
 class Referee;
 
+#define FIELDLENGTH 3.0f
+
 class Player : public Collideable
 {
 public:
@@ -28,6 +30,9 @@ public:
     
 	Referee*            m_referee;
     Body*               m_body;
+	//player must recognize his field
+	Vector			    m_lowerLeft;
+    Vector				m_upperRight;
 
 protected:
     NewtonJoint*        m_upVector;

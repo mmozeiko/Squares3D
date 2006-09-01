@@ -512,4 +512,9 @@ inline std::ostream& operator << (std::ostream& os, const Matrix& mx)
     return os;
 }
 
+//    |-----|max
+//    |     |
+// min|-----|
+bool isPointInRectangle(const Vector& position, const Vector& lowerLeft, const Vector& upperRight);
+
 #endif

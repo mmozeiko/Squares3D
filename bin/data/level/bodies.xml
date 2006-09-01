@@ -147,12 +147,12 @@
       <collision>heavyBox</collision>
     </body-->
 
-      <body id="invisibleWalls">
+      <!--body id="invisibleWalls">
           <collision>invisibleWall1</collision>
           <collision>invisibleWall2</collision>
           <collision>invisibleWall3</collision>
           <collision>invisibleWall4</collision>
-      </body>
+      </body-->
 
   </bodies>
 </xml>

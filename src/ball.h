@@ -12,6 +12,7 @@ public:
     Ball(Body* body, const Game* game);
 
     Vector getPosition();
+	void   setPosition0();
 
     // maybe private
     void onCollide(Body* other, const NewtonMaterial* material);

@@ -6,23 +6,6 @@
 #include "camera.h"
 #include "random.h"
 
-#define FIELDLENGTH 3.0f
-
-//    |-----|max
-//    |     |
-// min|-----|
-bool isBallInSquare(const Vector& ballPosition, const Vector& lowerLeft, const Vector& upperRight)
-{
-  if ((ballPosition[0] >= lowerLeft[0]) 
-      && (ballPosition[0] <= upperRight[0])
-      && (ballPosition[2] >= lowerLeft[2]) 
-      && (ballPosition[2] <= upperRight[2]))
-  {
-      return true;
-  }
-  return false;
-}
-
 Vector getSquareCenter(const Vector& lowerLeft, const Vector& upperRight)
 {
     return Vector((upperRight[0] + lowerLeft[0])/2, 0.0f, (upperRight[2] + lowerLeft[2])/2);
@@ -109,14 +92,6 @@ Vector findBallAndSquareIntersection(const Vector& position,
 AiPlayer::AiPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
     Player(id, game, position, rotation)
 {
-    float x = FIELDLENGTH * position[0] / abs(position[0]);
-    float z = FIELDLENGTH * position[2] / abs(position[2]);
-    
-    if (x > 0) m_upperRight[0] = x;
-    else m_lowerLeft[0] = x;
-
-    if (z > 0) m_upperRight[2] = z;
-    else m_lowerLeft[2] = z;
 }
 
 AiPlayer::~AiPlayer()
@@ -144,7 +119,7 @@ void AiPlayer::control(const Input* input)
 
     Vector direction(-rot.z, 0, rot.x);
 
-    if (!isBallInSquare(ballPosition, m_lowerLeft, m_upperRight))
+    if (!isPointInRectangle(ballPosition, m_lowerLeft, m_upperRight))
     {
         Vector ballVelocity;
         NewtonBodyGetVelocity(ball->m_newtonBody, ballVelocity.v);

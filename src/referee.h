@@ -11,21 +11,24 @@ class Referee
 public:
 
 	map<const Body*, string> m_players;
+	vector<Player*>*         m_playersP;
 	Body*                    m_ball;
 	Body*        	         m_ground;
-	string                   m_lastFieldOwner;
-    string                   m_lastTouchedObject;
-    string                   m_lastTouchedPlayer;
+	Body*                    m_lastFieldOwner;
+    Body*                    m_lastTouchedObject;
+    Body*                    m_lastTouchedPlayer;
 	bool			         m_gameOver;
     bool                     m_afterCollideTriggerBox;
     char                     state;
 
 	Referee();
 
+	void processBallGround(const Body* ball, const Body* otherBody);
     void registerPlayer(const string& name, const Player* player);
-	void process(const Body* body1, const Body* body2);
+	void process(Body* body1, Body* body2);
     void manageGame();
-    void registerBallEvent(const Body* ground, const Body* otherBody);
+	void initEvents();
+    void registerBallEvent(const Body* ground, Body* otherBody);
 	void registerPlayerEvent(){}
 };
 

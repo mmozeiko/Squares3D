@@ -31,7 +31,7 @@ public:
     void prepare();
     void render(const Video* video);
     void setTransform(const Vector& position, const Vector& rotation);
-    Vector getPosition();
+    Vector getPosition() const;
     Vector getRotation();
     void setCollideable(Collideable* collideable);
 

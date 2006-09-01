@@ -13,6 +13,15 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
 {
     m_body->setTransform(position, rotation);
 
+    float x = FIELDLENGTH * position[0] / abs(position[0]);
+    float z = FIELDLENGTH * position[2] / abs(position[2]);
+    
+    if (x > 0) m_upperRight[0] = x;
+    else m_lowerLeft[0] = x;
+
+    if (z > 0) m_upperRight[2] = z;
+    else m_lowerLeft[2] = z;
+
 	// set the viscous damping the minimum
 	NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
     NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);

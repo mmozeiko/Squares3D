@@ -36,9 +36,9 @@
 
   <properties property0 = "ball" 
               property1 = "level" 
-              staticFriction       = "0.0"
-              kineticFriction      = "0.0"
-              elasticityCoeficient = "0.0"
+              staticFriction       = "0.5"
+              kineticFriction      = "0.5"
+              elasticityCoeficient = "0.7"
               softnessCoeficient   = "0.0"/>
 
 </xml>
