@@ -15,6 +15,7 @@
 #include "skybox.h"
 #include "properties.h"
 #include "referee.h"
+#include "ball.h"
 
 World::World(Game* game) : Renderable(game)
 {
@@ -43,8 +44,10 @@ void World::init()
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
-	m_referee->m_ball = m_level->getBody("football");
-	m_referee->m_level = m_level->getBody("level");
+    m_ball = new Ball(m_level->getBody("football"), m_game);
+	m_referee->m_ball = m_ball->m_body;
+    m_ball->m_referee = m_referee;
+	m_referee->m_ground = m_level->getBody("level");
 
     m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(4.0f, 2.0f, 2.0f), Vector(0.0f, 0.0f, 0.0f)));
 	m_localPlayers.back()->m_referee = m_referee;
@@ -78,6 +81,7 @@ World::~World()
 
     delete m_level;
 	delete m_referee;
+    delete m_ball;
 
     NewtonMaterialDestroyAllGroupID(m_newtonWorld);
     NewtonDestroyAllBodies(m_newtonWorld);

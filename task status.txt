@@ -6,7 +6,6 @@ Implement default Property attributes in xml file.
 Allow Property attributes be optional (in xml file).
 Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
 Make AI players smarter.
-Port coach class and name it "Referee".
 Use materials on collisions.
 Fix shader lighting position.
 Cleanup Material class, move to video.
@@ -37,7 +36,7 @@ Look for TODOs, FIXMEs.
 
 Construction:
 =============
-
+Port coach class and name it "Referee".
 
 
 Done:

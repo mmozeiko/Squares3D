@@ -34,4 +34,11 @@
               elasticityCoeficient = "0.0"
               softnessCoeficient   = "0.0"/>
 
+  <properties property0 = "ball" 
+              property1 = "level" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.0"
+              softnessCoeficient   = "0.0"/>
+
 </xml>

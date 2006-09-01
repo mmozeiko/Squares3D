@@ -1,6 +1,6 @@
 <xml>
   <bodies>
-    <body id="level">
+    <body id="level" property="level">
       <collision>tree1</collision>
     </body>
 

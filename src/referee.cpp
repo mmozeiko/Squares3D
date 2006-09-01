@@ -1,172 +1,47 @@
 #include "referee.h"
 
 Referee::Referee():
-m_gameOver(false)
+    m_gameOver(false),
+    m_lastFieldOwner("None"),
+    m_lastTouchedObject("None"),
+    m_lastTouchedPlayer("None")
 {
-	m_events["lastFieldOwner"] = "None";
-	m_events["lastTouchedObject"] = "None";
-	m_events["lastTouchedPlayer"] = "None";
 }
 
 void Referee::registerPlayer(const string& name, const Player* player)
 {
-    m_players[name] = player->m_body;
+    m_players[player->m_body] = name;
 }
 
 void Referee::process(const Body* body1, const Body* body2)
 {
-    if (foundInMapValues(m_players, body1) && foundInMapValues(m_players, body2))
+    //if (foundInMap(m_players, body1) && foundInMap(m_players, body2))
+    //{
+    //    clog << "pleijers pret pleijeru!\n";
+    //}
+    if (body1 == m_ball)
     {
-        clog << "pleijers pret pleijeru!\n";
+        registerBallEvent(body1, body2);
     }
 }
 
+void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
+{
+    bool ground_ball;
+    if (otherBody == m_ground)
+    {
+        ground_ball = true;
+        clog << "bumba-zeme!!!" << endl;
+    }
+    else if (foundInMap(m_players, otherBody))
+    {
+        ground_ball = false;
+        clog << "bumba-pleijers!!!" << endl;
+    }
+    else { return; } //we are not interested in other collisions here
+}
 
-//from random import randint
-//from glfont.glfont import GLFont
-//from pyglfw.glfw import glfwGetWindowSize
-//from OpenGL.GL import *
-//from OpenGL.GLU import gluProject
-//from sound import sounds
-//import vectormath
-//import gameglobals
-//
-//
-//class ScoreBoard(dict):
-//  def __init__(self, players):
-//    self.players = players
-//    self.joinedCombo = 0
-//
-//  def getTotalPoints(self):
-//    return self.joinedCombo
-//
-//  def addTotalPoints(self, playerName):
-//    pts = self.getTotalPoints()
-//    self[playerName][0] += pts #update player score account
-//    self.resetJoinedCombo()
-//    return pts
-//
-//  def addSelfPoints(self, playerName):
-//    playerAccount = self[playerName]
-//    pts = playerAccount[1]
-//    playerAccount[0] += pts #update player score account by earned pts
-//    self.resetJoinedCombo()
-//    return pts
-//
-//  def incrementCombo(self, player, hitMsgList):
-//    playerName = player.name
-//    self[playerName][1] += 1 #update own combo
-//    self.joinedCombo += 1 #update joined combo
-//    #renew floating coords
-//    hitMsgList.append([self[playerName][1],
-//                       1.0,
-//                       player.getPosition(),
-//                       self.players[playerName].color])
-//
-//  def addPoint(self, playerName):
-//    self[playerName][0] += 1
-//    return 1
-//
-//  def resetJoinedCombo(self):
-//    for val in self.values(): #reset player combos
-//      val[1] = 0 #null them
-//    self.joinedCombo = 0 #reset joined as well
-//    
-//  def reset(self):
-//    for playerName in self.players.keys():
-//      # (player`s total score (minuses), current combo points
-//      self[playerName] = [0, 0]
-//    self.joinedCombo = 0
-//
-//  def resetOwnCombo(self, playerName):
-//    self[playerName][1] = 0
-//
-//
-//class Coach:
-//  def __init__(self):
-//    self.state = 1
-//    self.afterCollideTriggerBox = False
-//    self.beforeCollideTriggerBox = False
-//    self.initEvents()
-//    self.matchPoints = 21
-//    
-//    self.ball = None
-//    self.gameOver = False
-//
-//    #faults list will contain msg text, points, and delta up px for text
-//    self.faultMsgList = []
-//    #hits list will contain combo, delta up px and coords of the collision (X HITS!)
-//    self.hitMsgList = []
-//
-//    self.taunts = []
-//
-//    self.players = {}
-//    self.scoreBoard = ScoreBoard(self.players)
-//    self.objectList = []
-//    self.font_aa = GLFont(r"DATA\\FNT\\bold_aa.glf")
-//      
-//  def addTaunt(self, player, msg):
-//    pos = [player.body.getPosition()[0], player.body.getPosition()[1], player.body.getPosition()[2]]
-//    self.taunts.append([msg,
-//                        1.0,
-//                        pos, player.color])
-//
-//  def restart(self):
-//    self.gameOver = False
-//    self.scoreBoard.reset()
-//    self.resetBall()
-//    self.resetPlayers()
-//
-//  def setGameOver(self):
-//    sounds.playSound("GameOver", (0,0,0))
-//    self.gameOver = True
-//
-//  def getLoserNameColor(self):
-//    for name, object in self.players.items():
-//      if self.scoreBoard[name][0] >= self.matchPoints:
-//        return name, object.color
-//    
-//  def initEvents(self):
-//    self.events = {'lastFieldOwner':None,
-//                   'lastTouchedObject':None,
-//                   'lastTouchedPlayer':None}
-//
-//  def resetBall(self, resetCoords = (0.0, 10.0, 0.0)):
-//    if resetCoords == (0.0, 10.0, 0.0): #a little bit misadjust centered coords
-//      pairs = ((-0.01, 0.0), (-0.01, -0.01), (0.0, -0.01), (0.01, -0.01), (0.01, 0.0), (0.01, 0.01), (0.0, 0.01))
-//      newXZ = pairs[randint(0, 6)]
-//      resetCoords = (newXZ[0], 10.0, newXZ[1])
-//      
-//    self.ball.geom.reset = True
-//    self.ball.geom.resetCoords = resetCoords
-//
-//  def resetPlayers(self):
-//    for player in self.players.values():
-//      player.setInitPosition()
-//      player.setAngle()
-//
-//  def getBallCoords(self, playerName):
-//    player = self.players[playerName]
-//    littleBit = ((player.min[0] + player.max[0]) / 5, (player.min[1] + player.max[1]) / 5)
-//    ballCoords = ((player.min[0] + player.max[0]) / 2 - littleBit[0],
-//                  3.3, (player.min[1] + player.max[1]) / 2 - littleBit[1])
-//    return ballCoords
-//
-//  def checkIsBallInSquare(self, ball, min, max):
-//    min0 = min[0]
-//    min1 = min[1]
-//    max0 = max[0]
-//    max1 = max[1]
-//    #0.5 is for the middle line 
-//    if min0 == 0: min0 = max0 / 10 * 0.5
-//    if min1 == 0: min1 = max1 / 10 * 0.5
-//    if max0 == 0: max0 = min0 / 10 * 0.5
-//    if max1 == 0: max1 = min1 / 10 * 0.5
-//    return vectormath.isPointInSquare(ball, (min0, min1), (max0, max1))
-//
-//  def registerGroundEvent(self):
-//    #our objects of interest:
-//    ball, ground = self.ball, None
+        
 //
 //    #asign objects of interest
 //    for object in self.objectList:
@@ -309,12 +184,95 @@ void Referee::process(const Body* body1, const Body* body2)
 //        
 //    self.events['lastTouchedObject'] = player
 //    self.events['lastTouchedPlayer'] = player
+
+//class Coach:
+//  def __init__(self):
+//    self.state = 1
+//    self.afterCollideTriggerBox = False
+//    self.beforeCollideTriggerBox = False
+//    self.initEvents()
+//    self.matchPoints = 21
 //    
-//  def register(self, player):
-//    name = player.geom.name
-//    self.players[name] = player
-//    #see scoreBoard.reset
-//    self.scoreBoard[name] = [0, 0]
+//    self.ball = None
+//    self.gameOver = False
+//
+//    #faults list will contain msg text, points, and delta up px for text
+//    self.faultMsgList = []
+//    #hits list will contain combo, delta up px and coords of the collision (X HITS!)
+//    self.hitMsgList = []
+//
+//    self.taunts = []
+//
+//    self.players = {}
+//    self.scoreBoard = ScoreBoard(self.players)
+//    self.objectList = []
+//    self.font_aa = GLFont(r"DATA\\FNT\\bold_aa.glf")
+//      
+//  def addTaunt(self, player, msg):
+//    pos = [player.body.getPosition()[0], player.body.getPosition()[1], player.body.getPosition()[2]]
+//    self.taunts.append([msg,
+//                        1.0,
+//                        pos, player.color])
+//
+//  def restart(self):
+//    self.gameOver = False
+//    self.scoreBoard.reset()
+//    self.resetBall()
+//    self.resetPlayers()
+//
+//  def setGameOver(self):
+//    sounds.playSound("GameOver", (0,0,0))
+//    self.gameOver = True
+//
+//  def getLoserNameColor(self):
+//    for name, object in self.players.items():
+//      if self.scoreBoard[name][0] >= self.matchPoints:
+//        return name, object.color
+//    
+//  def initEvents(self):
+//    self.events = {'lastFieldOwner':None,
+//                   'lastTouchedObject':None,
+//                   'lastTouchedPlayer':None}
+//
+//  def resetBall(self, resetCoords = (0.0, 10.0, 0.0)):
+//    if resetCoords == (0.0, 10.0, 0.0): #a little bit misadjust centered coords
+//      pairs = ((-0.01, 0.0), (-0.01, -0.01), (0.0, -0.01), (0.01, -0.01), (0.01, 0.0), (0.01, 0.01), (0.0, 0.01))
+//      newXZ = pairs[randint(0, 6)]
+//      resetCoords = (newXZ[0], 10.0, newXZ[1])
+//      
+//    self.ball.geom.reset = True
+//    self.ball.geom.resetCoords = resetCoords
+//
+//  def resetPlayers(self):
+//    for player in self.players.values():
+//      player.setInitPosition()
+//      player.setAngle()
+//
+//  def getBallCoords(self, playerName):
+//    player = self.players[playerName]
+//    littleBit = ((player.min[0] + player.max[0]) / 5, (player.min[1] + player.max[1]) / 5)
+//    ballCoords = ((player.min[0] + player.max[0]) / 2 - littleBit[0],
+//                  3.3, (player.min[1] + player.max[1]) / 2 - littleBit[1])
+//    return ballCoords
+//
+//  def checkIsBallInSquare(self, ball, min, max):
+//    min0 = min[0]
+//    min1 = min[1]
+//    max0 = max[0]
+//    max1 = max[1]
+//    #0.5 is for the middle line 
+//    if min0 == 0: min0 = max0 / 10 * 0.5
+//    if min1 == 0: min1 = max1 / 10 * 0.5
+//    if max0 == 0: max0 = min0 / 10 * 0.5
+//    if max1 == 0: max1 = min1 / 10 * 0.5
+//    return vectormath.isPointInSquare(ball, (min0, min1), (max0, max1))
+//
+//    
+////  def register(self, player):
+////    name = player.geom.name
+////    self.players[name] = player
+////    #see scoreBoard.reset
+////    self.scoreBoard[name] = [0, 0]
 //
 //  def msgFlowFunction(self, x, px):
 //    #this method is used to make the fault messages and "HITS" msg flow up and dissapear
@@ -463,20 +421,22 @@ void Referee::process(const Body* body1, const Body* body2)
 //      glColor4f(1.0, 0.0, 0.0, 0.9)
 //      self.font_aa.render(msg, x1, y1, gOverScale)
 //      self.font_aa.end()
-//
-//  def manageGame(self):
-//    #This is the main logic function of the coach
-//    #Coach has 3 states to keep in mind when registering event
-//    #States are needed to avoid registering ball+player event when
-//    #the ball is standing on player not bouncing
-//    #This is the place where TriggerBox is used
-//    
-//    if not self.gameOver:
+
+  
+
+void Referee::manageGame()
+//This is the main logic function of the coach
+//Coach has 3 states to keep in mind when registering event
+//States are needed to avoid registering ball+player event when
+//the ball is standing on player not bouncing
+//This is the place where TriggerBox is used
+{
+    //if (!m_gameOver):
+    //{
 //      objectNames = [object.name for object in self.objectList]
 //      beforeCollideTriggerBox = self.afterCollideTriggerBox #initvalue=False
-//
-//      self.afterCollideTriggerBox = ('Trigger' in objectNames)# True if ball and TriggerBox collide else False
-//      afterCollidePlayer = ('Player' in ''.join(objectNames)) # True if ball and Player collide else False
+        //m_afterCollideTriggerBox = true; //('Trigger' in objectNames)# True if ball and TriggerBox collide else False
+        //afterCollidePlayer = ('Player' in ''.join(objectNames)) # True if ball and Player collide else False
 //      if 'Ground' in objectNames:
 //        self.registerGroundEvent()
 //     
@@ -489,4 +449,65 @@ void Referee::process(const Body* body1, const Body* body2)
 //        self.state=1
 //      elif self.state==3 and self.afterCollideTriggerBox==False:
 //        self.state=1
-  
+}
+
+//from random import randint
+//from glfont.glfont import GLFont
+//from pyglfw.glfw import glfwGetWindowSize
+//from OpenGL.GL import *
+//from OpenGL.GLU import gluProject
+//from sound import sounds
+//import vectormath
+//import gameglobals
+//
+//
+//class ScoreBoard(dict):
+//  def __init__(self, players):
+//    self.players = players
+//    self.joinedCombo = 0
+//
+//  def getTotalPoints(self):
+//    return self.joinedCombo
+//
+//  def addTotalPoints(self, playerName):
+//    pts = self.getTotalPoints()
+//    self[playerName][0] += pts #update player score account
+//    self.resetJoinedCombo()
+//    return pts
+//
+//  def addSelfPoints(self, playerName):
+//    playerAccount = self[playerName]
+//    pts = playerAccount[1]
+//    playerAccount[0] += pts #update player score account by earned pts
+//    self.resetJoinedCombo()
+//    return pts
+//
+//  def incrementCombo(self, player, hitMsgList):
+//    playerName = player.name
+//    self[playerName][1] += 1 #update own combo
+//    self.joinedCombo += 1 #update joined combo
+//    #renew floating coords
+//    hitMsgList.append([self[playerName][1],
+//                       1.0,
+//                       player.getPosition(),
+//                       self.players[playerName].color])
+//
+//  def addPoint(self, playerName):
+//    self[playerName][0] += 1
+//    return 1
+//
+//  def resetJoinedCombo(self):
+//    for val in self.values(): #reset player combos
+//      val[1] = 0 #null them
+//    self.joinedCombo = 0 #reset joined as well
+//    
+//  def reset(self):
+//    for playerName in self.players.keys():
+//      # (player`s total score (minuses), current combo points
+//      self[playerName] = [0, 0]
+//    self.joinedCombo = 0
+//
+//  def resetOwnCombo(self, playerName):
+//    self[playerName][1] = 0
+//
+//

@@ -194,6 +194,14 @@
 				Name="Game Logic"
 				>
 				<File
+					RelativePath=".\src\ball.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ball.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\player.cpp"
 					>
 				</File>

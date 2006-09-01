@@ -4,26 +4,23 @@
 #include "body.h"
 
 class Game;
-class Shader;
-class Input;
+class Referee;
 
-class Ball : public Body
+class Ball : public Collideable
 {
 public:
-    Ball(Game* game, const Vector& pos, const float radius = 1.0f);
-    ~Ball();
+    Ball(Body* body, const Game* game);
 
-    void render(const Video* video) const;
+    Vector getPosition();
 
-private:
-    unsigned int m_texture;
-    unsigned int m_textureBump;
-    Shader*      m_shader;
+    // maybe private
+    void onCollide(Body* other, const NewtonMaterial* material);
+    
+	Referee*            m_referee;
+    Body*               m_body;
 
-    float m_radius;
-
-    void onSetForceAndTorque();
-    void control(const Input*);
+protected:
+    const Game*         m_game;
 };
 
 #endif

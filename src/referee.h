@@ -9,17 +9,23 @@
 class Referee
 {
 public:
-	map<string, Body*> m_players;
-	Body*              m_ball;
-	Body*        	   m_level;
-	StringMap          m_events;
-	bool			   m_gameOver;
+
+	map<const Body*, string> m_players;
+	Body*                    m_ball;
+	Body*        	         m_ground;
+	string                   m_lastFieldOwner;
+    string                   m_lastTouchedObject;
+    string                   m_lastTouchedPlayer;
+	bool			         m_gameOver;
+    bool                     m_afterCollideTriggerBox;
+    char                     state;
 
 	Referee();
 
     void registerPlayer(const string& name, const Player* player);
 	void process(const Body* body1, const Body* body2);
-	void registerGroundEvent(){}
+    void manageGame();
+    void registerBallEvent(const Body* ground, const Body* otherBody);
 	void registerPlayerEvent(){}
 };
 
