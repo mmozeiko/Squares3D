@@ -6,6 +6,8 @@
 // Authors:     Marcus Geelnard (marcus.geelnard at home.se)
 //              Camilla Berglund (elmindreda at users.sourceforge.net)
 //              Robin Leffmann (djinky at gmail.com)
+//              Bobyshev Alexander (alxxl at rambler.ru)
+//              Martins Mozeiko (martins.mozeiko at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -44,8 +46,6 @@
 
 
 // Include files
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN
 #include <windows.h>
 #include <mmsystem.h>
 #include "../../include/GL/glfw.h"
@@ -140,8 +140,32 @@ typedef struct tagKBDLLHOOKSTRUCT {
 
 // wglSwapIntervalEXT typedef (Win32 buffer-swap interval control)
 typedef int (APIENTRY * WGLSWAPINTERVALEXT_T) (int interval);
+// wglChoosePixelFormatARB typedef
+typedef BOOL (WINAPI * WGLCHOOSEPIXELFORMATARB_T) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
+// wglGetPixelFormatAttribivARB typedef
+typedef BOOL (WINAPI * WGLGETPIXELFORMATATTRIBIVARB_T) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues);
 
-
+#define WGL_DRAW_TO_WINDOW_ARB    0x2001
+#define WGL_SUPPORT_OPENGL_ARB    0x2010
+#define WGL_ACCELERATION_ARB      0x2003
+#define WGL_FULL_ACCELERATION_ARB 0x2027
+#define WGL_DOUBLE_BUFFER_ARB     0x2011
+#define WGL_STEREO_ARB            0x2012
+#define WGL_COLOR_BITS_ARB        0x2014
+#define WGL_RED_BITS_ARB          0x2015
+#define WGL_GREEN_BITS_ARB        0x2017
+#define WGL_BLUE_BITS_ARB         0x2019
+#define WGL_ALPHA_BITS_ARB        0x201B
+#define WGL_ACCUM_BITS_ARB        0x201D 
+#define WGL_ACCUM_RED_BITS_ARB    0x201E 
+#define WGL_ACCUM_GREEN_BITS_ARB  0x201F 
+#define WGL_ACCUM_BLUE_BITS_ARB   0x2020 
+#define WGL_ACCUM_ALPHA_BITS_ARB  0x2021 
+#define WGL_DEPTH_BITS_ARB        0x2022
+#define WGL_STENCIL_BITS_ARB      0x2023
+#define WGL_AUX_BUFFERS_ARB       0x2024 
+#define WGL_SAMPLE_BUFFERS_ARB    0x2041
+#define WGL_SAMPLES_ARB           0x2042
 
 //========================================================================
 // Global variables (GLFW internals)
@@ -213,12 +237,16 @@ struct _GLFWwin_struct {
 
     // Platform specific extensions (context specific)
     WGLSWAPINTERVALEXT_T SwapInterval;
+    WGLCHOOSEPIXELFORMATARB_T wglChoosePixelFormat;
+    WGLGETPIXELFORMATATTRIBIVARB_T wglGetPixelFormatAttribiv;
 
     // Various platform specific internal variables
     int       OldMouseLock;    // Old mouse-lock flag (used for remembering
                                // mouse-lock state when iconifying)
     int       OldMouseLockValid;
     int       DesiredRefreshRate; // Desired vertical monitor refresh rate
+
+    int       Samples;         // Multisampling
 
 };
 
@@ -261,10 +289,10 @@ GLFWGLOBAL struct {
 GLFWGLOBAL struct {
     int          HasPerformanceCounter;
     int          HasRDTSC;
-    unsigned int timerResolution;
     double       Resolution;
     unsigned int t0_32;
     __int64      t0_64;
+    UINT         timerResolution;
 } _glfwTimer;
 
 
@@ -343,17 +371,12 @@ typedef BOOL (WINAPI * SWAPBUFFERS_T) (HDC);
 typedef MMRESULT (WINAPI * JOYGETDEVCAPSA_T) (UINT,LPJOYCAPSA,UINT);
 typedef MMRESULT (WINAPI * JOYGETPOS_T) (UINT,LPJOYINFO);
 typedef MMRESULT (WINAPI * JOYGETPOSEX_T) (UINT,LPJOYINFOEX);
-typedef MMRESULT (WINAPI * TIMEGETTIME_T) (void);
-typedef MMRESULT (WINAPI * TIMEGETDEVCAPS_T) (LPTIMECAPS,UINT);
-typedef MMRESULT (WINAPI * TIMEBEGINPERIOD_T) (UINT);
-typedef MMRESULT (WINAPI * TIMEENDPERIOD_T) (UINT);
-UINT 
+typedef DWORD (WINAPI * TIMEGETTIME_T) (void);
 #endif // _GLFW_NO_DLOAD_WINMM
 
 // Library handles and function pointers
-#if !defined(_GLFW_NO_DLOAD_GDI32) || !defined(_GLFW_NO_DLOAD_WINMM)
+#if !defined(_GLFW_NO_DLOAD_GDI32) && !defined(_GLFW_NO_DLOAD_WINMM)
 GLFWGLOBAL struct {
-#endif
 #ifndef _GLFW_NO_DLOAD_GDI32
     // gdi32.dll
     HINSTANCE             gdi32;
@@ -371,11 +394,7 @@ GLFWGLOBAL struct {
     JOYGETPOS_T           joyGetPos;
     JOYGETPOSEX_T         joyGetPosEx;
     TIMEGETTIME_T         timeGetTime;
-    TIMEGETDEVCAPS_T      timeGetDevCaps;
-    TIMEBEGINPERIOD_T     timeBeginPeriod;
-    TIMEENDPERIOD_T       timeEndPeriod;
 #endif // _GLFW_NO_DLOAD_WINMM
-#if !defined(_GLFW_NO_DLOAD_GDI32) || !defined(_GLFW_NO_DLOAD_WINMM)
 } _glfwLibs;
 #endif
 
@@ -396,21 +415,18 @@ GLFWGLOBAL struct {
 
 // winmm.dll shortcuts
 #ifndef _GLFW_NO_DLOAD_WINMM
-#define _glfw_joyGetDevCaps     _glfwLibs.joyGetDevCapsA
-#define _glfw_joyGetPos         _glfwLibs.joyGetPos
-#define _glfw_joyGetPosEx       _glfwLibs.joyGetPosEx
-#define _glfw_timeGetTime       _glfwLibs.timeGetTime
-#define _glfw_timeGetDevCaps    _glfwLibs.timeGetDevCaps
-#define _glfw_timeBeginPeriod   _glfwLibs.timeBeginPeriod
-#define _glfw_timeEndPeriod     _glfwLibs.timeEndPeriod
+#define _glfw_joyGetDevCaps _glfwLibs.joyGetDevCapsA
+#define _glfw_joyGetPos     _glfwLibs.joyGetPos
+#define _glfw_joyGetPosEx   _glfwLibs.joyGetPosEx
+#define _glfw_timeGetTime   _glfwLibs.timeGetTime
 #else
-#define _glfw_joyGetDevCaps     joyGetDevCapsA
-#define _glfw_joyGetPos         joyGetPos
-#define _glfw_joyGetPosEx       joyGetPosEx
-#define _glfw_timeGetTime       timeGetTime
-#define _glfw_timeGetDevCaps    timeGetDevCaps
-#define _glfw_timeBeginPeriod   timeBeginPeriod
-#define _glfw_timeEndPeriod     timeEndPeriod
+#define _glfw_joyGetDevCaps   joyGetDevCapsA
+#define _glfw_joyGetPos       joyGetPos
+#define _glfw_joyGetPosEx     joyGetPosEx
+#define _glfw_timeGetTime     timeGetTime
+#define _glfw_timeBeginPeriod timeBeginPeriod
+#define _glfw_timeEndPeriod   timeEndPeriod
+#define _glfw_timeGetDevCaps  timeGetDevCaps
 #endif // _GLFW_NO_DLOAD_WINMM
 
 
@@ -448,7 +464,6 @@ GLFWGLOBAL struct {
 
 // Time
 void _glfwInitTimer( void );
-void _glfwDoneTimer( void );
 
 // Fullscreen support
 int _glfwGetClosestVideoModeBPP( int *w, int *h, int *bpp, int *refresh );

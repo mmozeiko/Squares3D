@@ -43,6 +43,10 @@ Video::Video(const Game* game) : m_config(game->m_config), m_haveShaders(false)
     bool fullscr, success = false;
 
     glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, 1);
+    if (m_config->m_video.samples > 0)
+    {
+        glfwOpenWindowHint(GLFW_FSAA_SAMPLES, m_config->m_video.samples);
+    }
 
     for (int m=0; m<sizeOfArray(modes) && !success; m++)
     {

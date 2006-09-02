@@ -6,6 +6,8 @@
 // Authors:     Marcus Geelnard (marcus.geelnard at home.se)
 //              Robin Leffmann (djinky at gmail.com)
 //              Camilla Berglund (elmindreda at users.sourceforge.net)
+//              Bobyshev Alexander (alxxl at rambler.ru)
+//              Martins Mozeiko (martins.mozeiko at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -200,7 +202,7 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
     int depthbits, int stencilbits, int mode )
 {
     int AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits;
-    int AuxBuffers, Stereo, RefreshRate, x;
+    int AuxBuffers, Stereo, RefreshRate, x, Samples;
 
     // Is GLFW initialized?
     if( !_glfwInitialized || _glfwWin.Opened )
@@ -239,6 +241,7 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
     AuxBuffers     = _glfwWinHints.AuxBuffers;
     Stereo         = _glfwWinHints.Stereo;
     RefreshRate    = _glfwWinHints.RefreshRate;
+    Samples        = _glfwWinHints.Samples;
 
     // Check width & height
     if( width > 0 && height <= 0 )
@@ -268,7 +271,7 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
     if( !_glfwPlatformOpenWindow( width, height, redbits, greenbits,
             bluebits, alphabits, depthbits, stencilbits, mode,
             AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits,
-            AuxBuffers, Stereo, RefreshRate ) )
+            AuxBuffers, Stereo, RefreshRate, Samples ) )
     {
         return GL_FALSE;
     }
@@ -285,6 +288,7 @@ GLFWAPI int GLFWAPIENTRY glfwOpenWindow( int width, int height,
     _glfwWinHints.AuxBuffers     = 0;
     _glfwWinHints.Stereo         = 0;
     _glfwWinHints.WindowNoResize = 0;
+    _glfwWinHints.Samples        = 0;
 
     // Get window parameters (such as color buffer bits etc)
     _glfwPlatformRefreshWindowParams();
@@ -348,6 +352,9 @@ GLFWAPI void GLFWAPIENTRY glfwOpenWindowHint( int target, int hint )
             break;
         case GLFW_WINDOW_NO_RESIZE:
             _glfwWinHints.WindowNoResize = hint;
+            break;
+        case GLFW_FSAA_SAMPLES:
+            _glfwWinHints.Samples = hint;
             break;
         default:
             break;
@@ -599,6 +606,8 @@ GLFWAPI int GLFWAPIENTRY glfwGetWindowParam( int param )
             return _glfwWin.RefreshRate;
         case GLFW_WINDOW_NO_RESIZE:
             return _glfwWin.WindowNoResize;
+        case GLFW_FSAA_SAMPLES:
+            return _glfwWin.Samples;
         default:
             return 0;
     }

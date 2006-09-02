@@ -9,7 +9,7 @@ class Property
 public:
     Property(float sF, float kF, float eC, float sC);
 
-    void apply(const NewtonMaterial* material);
+    void apply(const NewtonMaterial* material) const;
 
 private:
     float staticFriction;

@@ -10,7 +10,7 @@ Property::Property(float sF, float kF, float eC, float sC)
 {
 }
 
-void Property::apply(const NewtonMaterial* material)
+void Property::apply(const NewtonMaterial* material) const
 {
     NewtonMaterialSetContactSoftness(material, softnessCoefficient);
     NewtonMaterialSetContactElasticity(material, elasticityCoefficient);

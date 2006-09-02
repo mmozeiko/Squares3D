@@ -129,6 +129,7 @@ void Body::createNewtonBody(const NewtonCollision* newtonCollision,
     {
         NewtonBodySetMaterialGroupID(m_newtonBody, materialID);
     }
+    m_materialID = materialID;
 
     NewtonBodySetMassMatrix(m_newtonBody, m_totalMass, m_totalInertia.x, m_totalInertia.y, m_totalInertia.z);
     NewtonBodySetCentreOfMass(m_newtonBody, totalOrigin.v);

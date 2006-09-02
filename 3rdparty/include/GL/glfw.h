@@ -5,6 +5,8 @@
 // Authors:     Marcus Geelnard (marcus.geelnard at home.se)
 //              Robin Leffmann (djinky at gmail.com)
 //              Camilla Berglund (elmindreda at users.sourceforge.net)
+//              Bobyshev Alexander (alxxl at rambler.ru)
+//              Martins Mozeiko (martins.mozeiko at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -325,6 +327,7 @@ extern "C" {
 #define GLFW_AUX_BUFFERS          0x00020010
 #define GLFW_STEREO               0x00020011
 #define GLFW_WINDOW_NO_RESIZE     0x00020012
+#define GLFW_FSAA_SAMPLES         0x00020013
 
 // glfwEnable/glfwDisable tokens
 #define GLFW_MOUSE_CURSOR         0x00030001

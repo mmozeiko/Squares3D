@@ -23,6 +23,7 @@ public:
 
     void load(const XMLnode& node);
     int getPropertyID(const string& name);
+    const Property* get(int id0, int id1) const;
 
 private:
     PropertiesMap       m_properties;

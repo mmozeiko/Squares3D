@@ -41,6 +41,7 @@ public:
 
     NewtonBody* m_newtonBody;        
     Matrix      m_matrix;
+    int         m_materialID;
 
 protected:
 

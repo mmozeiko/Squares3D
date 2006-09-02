@@ -1,15 +1,11 @@
 Available:
 ==========
 
-Implement NewtonMaterial properties in collisions between TreeCollision faces.
-Implement default Property attributes in xml file.
 Allow Property attributes be optional (in xml file).
 Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
 Make AI players smarter.
-Use materials on collisions.
 Fix shader lighting position.
 Cleanup Material class, move to video.
-Split materials into visual and physical.
 Introduce invisible visual material.
 Implement correctly loading shaders from level.xml file.
 Fix camera movement speed.
@@ -41,6 +37,12 @@ Port coach class and name it "Referee".
 
 Done:
 =====
+2006-09-02 Implement NewtonMaterial properties in collisions between TreeCollision faces.
+           Implement default Property attributes in xml file.
+           Use materials on collisions.
+           Split materials into visual and physical.
+           Added exe file icon.
+           Upgraded GLFW to support multisampling (configurable in config.xml).
 2006-08-07 Implemented collision callbacks for body objects.
 2006-08-06 Implement AI controlled players.
 2006-08-02 Move NewtonMaterial id from Materials to Material class.

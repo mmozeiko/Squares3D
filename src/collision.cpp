@@ -67,7 +67,6 @@ Collision::~Collision()
 void Collision::create(NewtonCollision* collision)
 {
     m_newtonCollision = collision;
-    NewtonConvexCollisionSetUserID(m_newtonCollision, 0);
 }
 
 void Collision::create(NewtonCollision* collision, float mass)
@@ -76,6 +75,7 @@ void Collision::create(NewtonCollision* collision, float mass)
     m_mass = mass;
 
     NewtonConvexCollisionCalculateInertialMatrix(m_newtonCollision, m_inertia.v, m_origin.v);
+    NewtonConvexCollisionSetUserID(m_newtonCollision, 1);
 
     m_inertia *= mass;
     m_origin *= mass;

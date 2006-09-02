@@ -6,6 +6,8 @@
 // Authors:     Marcus Geelnard (marcus.geelnard at home.se)
 //              Camilla Berglund (elmindreda at users.sourceforge.net)
 //              Robin Leffmann (djinky at gmail.com)
+//              Bobyshev Alexander (alxxl at rambler.ru)
+//              Martins Mozeiko (martins.mozeiko at gmail.com)
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2005 Marcus Geelnard
@@ -91,6 +93,7 @@ GLFWGLOBAL struct {
     int          AuxBuffers;
     int          Stereo;
     int          WindowNoResize;
+    int          Samples;
 } _glfwWinHints;
 
 //------------------------------------------------------------------------
@@ -150,7 +153,7 @@ void   _glfwPlatformSetTime( double time );
 void   _glfwPlatformSleep( double time );
 
 // Window management
-int  _glfwPlatformOpenWindow( int width, int height, int redbits, int greenbits, int bluebits, int alphabits, int depthbits, int stencilbits, int mode, int accumredbits, int accumgreenbits, int accumbluebits, int accumalphabits, int auxbuffers, int stereo, int refreshrate );
+int  _glfwPlatformOpenWindow( int width, int height, int redbits, int greenbits, int bluebits, int alphabits, int depthbits, int stencilbits, int mode, int accumredbits, int accumgreenbits, int accumbluebits, int accumalphabits, int auxbuffers, int stereo, int refreshrate, int samples );
 void _glfwPlatformCloseWindow( void );
 void _glfwPlatformSetWindowTitle( const char *title );
 void _glfwPlatformSetWindowSize( int width, int height );

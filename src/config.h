@@ -9,6 +9,7 @@ struct VideoConfig
     int height;
     bool fullscreen;
     bool vsync;
+    int samples;
 };
 
 struct AudioConfig

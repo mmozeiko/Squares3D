@@ -123,6 +123,7 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
   
         initEvents();
         m_ball->setTransform(Vector(0,2,0), Vector(0,0,0));
+        NewtonBodySetVelocity(m_ball->m_newtonBody, Vector().v);
 
 //      self.resetPlayers()
 //      if out!=False and out!="Player":

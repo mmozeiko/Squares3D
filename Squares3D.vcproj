@@ -149,9 +149,10 @@
 				LinkIncremental="1"
 				GenerateManifest="false"
 				GenerateDebugInformation="false"
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				EntryPointSymbol="mainCRTStartup"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -775,6 +776,10 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\resource.rc"
+			>
+		</File>
 		<File
 			RelativePath=".\task status.txt"
 			>

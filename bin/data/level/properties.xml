@@ -1,44 +1,52 @@
 <xml>
   <properties property0 = "ball" 
               property1 = "penguin" 
-              staticFriction       = "0.0"
-              kineticFriction      = "0.0"
+              staticFriction       = "0.5"
+              kineticFriction      = "0.5"
               elasticityCoeficient = "0.5"
               softnessCoeficient   = "0.15"/>
 
   <properties property0 = "penguin" 
               property1 = "penguin" 
-              staticFriction       = "0.0"
-              kineticFriction      = "0.0"
+              staticFriction       = "0.5"
+              kineticFriction      = "0.5"
               elasticityCoeficient = "0.5"
               softnessCoeficient   = "0.15"/>
 
   <properties property0 = "brick" 
               property1 = "penguin" 
-              staticFriction       = "0.0"
-              kineticFriction      = "0.0"
+              staticFriction       = "0.5"
+              kineticFriction      = "0.5"
               elasticityCoeficient = "0.5"
               softnessCoeficient   = "0.15"/>
 
   <properties property0 = "player" 
               property1 = "penguin" 
-              staticFriction       = "0.0"
-              kineticFriction      = "0.0"
+              staticFriction       = "0.5"
+              kineticFriction      = "0.5"
               elasticityCoeficient = "0.5"
               softnessCoeficient   = "0.15"/>
 
-  <properties property0 = "ball" 
-              property1 = "grass" 
-              staticFriction       = "0.0"
-              kineticFriction      = "0.0"
-              elasticityCoeficient = "0.0"
-              softnessCoeficient   = "0.0"/>
-
+  <!-- TODO: make code ignore unused properties, ex. body<->level is unused -->
   <properties property0 = "ball" 
               property1 = "level" 
+              staticFriction       = "0.0"
+              kineticFriction      = "0.0"
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/><!--5-->
+
+  <properties property0 = "ball" 
+              property1 = "pavement" 
+              staticFriction       = "0.9"
+              kineticFriction      = "0.9"
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/><!--6-->
+
+  <properties property0 = "ball" 
+              property1 = "grass" 
               staticFriction       = "0.5"
               kineticFriction      = "0.5"
-              elasticityCoeficient = "0.7"
-              softnessCoeficient   = "0.0"/>
+              elasticityCoeficient = "0.5"
+              softnessCoeficient   = "0.15"/><!--7-->
 
 </xml>

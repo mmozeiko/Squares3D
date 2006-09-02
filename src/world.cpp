@@ -19,7 +19,8 @@
 
 World::World(Game* game) : Renderable(game)
 {
-    m_camera = new Camera(m_game, Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
+    //m_camera = new Camera(m_game, Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
+    m_camera = new Camera(m_game, Vector(0.0f, 5.0f, 8.0f), 30.0f, 0.0f);
     m_skybox = new SkyBox(m_game->m_video);
 
     m_newtonWorld = NewtonCreate(NULL, NULL);

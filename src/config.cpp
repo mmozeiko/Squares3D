@@ -4,7 +4,7 @@
 
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, false };
+const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0 };
 const AudioConfig Config::defaultAudio = { true };
 const MiscConfig Config::defaultMisc = { true };
 
@@ -46,6 +46,10 @@ Config::Config() :
                 else if (node.name == "vsync")
                 {
                     m_video.vsync = cast<int>(node.value)==1;
+                }
+                else if (node.name == "fsaa-samples")
+                {
+                    m_video.samples = cast<int>(node.value);
                 }
                 else
                 {
@@ -111,6 +115,7 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("height", cast<string>(m_video.height)));
     xml.childs.back().childs.push_back(XMLnode("fullscreen", cast<string>(m_video.fullscreen ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("vsync", cast<string>(m_video.vsync ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("fsaa-samples", cast<string>(m_video.samples)));
 
     xml.childs.push_back(XMLnode("audio"));
     xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));

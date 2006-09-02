@@ -14,10 +14,11 @@ struct MaterialContact : NoCopy
     static void onEnd(const NewtonMaterial* material);
 
     Body* body[2];
-    
+    const Properties* properties;
+	
     Vector position;
-    float  maxNormalSpeed;
-    float  maxTangentSpeed;
+	float  maxNormalSpeed;
+	float  maxTangentSpeed;
 };
 
 Properties::Properties(const Game* game) : m_game(game)
@@ -51,8 +52,14 @@ int Properties::getPropertyID(const string& name)
 
 void Properties::load(const XMLnode& node)
 {
-    int id0 = getPropertyID(getAttribute(node, "property0"));
-    int id1 = getPropertyID(getAttribute(node, "property1"));
+    NewtonWorld* world = m_game->m_world->m_newtonWorld;
+
+    string prop1 = getAttribute(node, "property0");
+    string prop2 = getAttribute(node, "property1");
+    
+    int id0 = (prop1.empty() ? NewtonMaterialGetDefaultGroupID(world) : getPropertyID(prop1));
+    int id1 = (prop2.empty() ? NewtonMaterialGetDefaultGroupID(world) : getPropertyID(prop2));
+    
     if (foundInMap(m_properties, makepID(id0, id1)))
     {
         throw Exception("Properties for '" + getAttribute(node, "property0") + "' and '"
@@ -64,12 +71,13 @@ void Properties::load(const XMLnode& node)
     float eC = cast<float>(getAttribute(node, "elasticityCoeficient"));
     float sC = cast<float>(getAttribute(node, "softnessCoeficient"));
 
-    NewtonWorld* world = m_game->m_world->m_newtonWorld;
-    NewtonMaterialSetDefaultElasticity(world, id0, id1, eC);
-    NewtonMaterialSetDefaultFriction(world, id0, id1, sF, kF);
-    NewtonMaterialSetDefaultSoftness(world, id0, id1, sC);
+    // TODO: hmm?
+    //NewtonMaterialSetDefaultElasticity(world, id0, id1, eC);
+    //NewtonMaterialSetDefaultFriction(world, id0, id1, sF, kF);
+    //NewtonMaterialSetDefaultSoftness(world, id0, id1, sC);
     
     MaterialContact* materialContact = new MaterialContact();
+    materialContact->properties = this;
     
     NewtonMaterialSetCollisionCallback(
         world, id0, id1,
@@ -89,7 +97,14 @@ pID Properties::makepID(int id0, int id1) const
         swap(id0, id1);
     }
     // now id0 always <= id1
-    return (static_cast<pID>(id0) << 32) + id1;
+    return (static_cast<pID>(id0) << 32) | (id1);
+}
+
+const Property* Properties::get(int id0, int id1) const
+{
+    PropertiesMap::const_iterator iter = m_properties.find(makepID(id0, id1));
+    assert(iter != m_properties.end());
+    return &iter->second;
 }
 
 int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* body0, const NewtonBody* body1)
@@ -98,8 +113,8 @@ int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* b
     self->body[0] = static_cast<Body*>(NewtonBodyGetUserData(body0));
     self->body[1] = static_cast<Body*>(NewtonBodyGetUserData(body1));
 
-    self->maxNormalSpeed = 0.0f;
-    self->maxTangentSpeed = 0.0f;
+	self->maxNormalSpeed = 0.0f;
+	self->maxTangentSpeed = 0.0f;
 
     return 1;
 }
@@ -108,46 +123,58 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 {
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
     
-    Vector normal;
+	Vector normal;
 
-    float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
-    if (sp > self->maxNormalSpeed)
+	float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
+	if (sp > self->maxNormalSpeed)
     {
         self->maxNormalSpeed = sp;
-        NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-    }
+		NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+	}
 
     for (int i=0; i<2; i++)
     {
         float speed = NewtonMaterialGetContactTangentSpeed(material, contact, i);
         if (speed > self->maxTangentSpeed)
         {
-            self->maxTangentSpeed = speed;
-            NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-        }
+		    self->maxTangentSpeed = speed;
+		    NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+	    }
     }
     
-    // TODO: apply coefficients for tree collision, take in account material group of each face
-    /*
     Material* mat = NULL;
-    unsigned int c0 = NewtonMaterialGetBodyCollisionID(material, self->body[0]);
-    unsigned int c1 = NewtonMaterialGetBodyCollisionID(material, self->body[1]);
+    bool isConvex0 = 1==NewtonMaterialGetBodyCollisionID(material, self->body[0]->m_newtonBody);
+    bool isConvex1 = 1==NewtonMaterialGetBodyCollisionID(material, self->body[1]->m_newtonBody);
     unsigned int faceAttr = NewtonMaterialGetContactFaceAttribute(material);
-    if (collID != 0)
+    
+    int m0, m1;
+    
+    if (isConvex0 && isConvex1)
     {
-        mat = *reinterpret_cast<Material**>(&collID);
+        // both covex
+        m0 = self->body[0]->m_materialID;
+        m1 = self->body[1]->m_materialID;
     }
-    else if (faceAttr != 0)
+    else if (isConvex0)
     {
-            mat =*reinterpret_cast<Material**>(&collID);
+        m0 = self->body[0]->m_materialID;
+        m1 = faceAttr;
     }
-
-    if (mat != NULL)
+    else if (isConvex1)
     {
-        // apply material
-        // mat
+        m0 = faceAttr;
+        m1 = self->body[1]->m_materialID;
     }
-    */
+    else
+    {
+        // both not convex
+        assert(false);
+        // TODO: what to do?
+        //return 1;
+    }
+    
+    const Property* prop = self->properties->get(m0, m1);
+    prop->apply(material);
 
     return 1;
 }
