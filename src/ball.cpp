@@ -23,5 +23,5 @@ void Ball::setPosition0()
 
 void Ball::onCollide(Body* other, const NewtonMaterial* material)
 {
-	m_referee->process(m_body, other);
+    m_referee->process(m_body, other);
 }

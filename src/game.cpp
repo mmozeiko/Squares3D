@@ -53,14 +53,14 @@ void Game::run()
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
-	GLfloat lightColor[] = { 0.8f, 0.8f, 0.8f, 1.0 };
-	GLfloat lightAmbientColor[] = { 0.5f, 0.5f, 0.5f, 1.0 };
-	GLfloat lightPosition[] = { 500.0f, 200.0f, 500.0f, 0.0 };
-	
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbientColor);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
+    GLfloat lightColor[] = { 0.8f, 0.8f, 0.8f, 1.0 };
+    GLfloat lightAmbientColor[] = { 0.5f, 0.5f, 0.5f, 1.0 };
+    GLfloat lightPosition[] = { 500.0f, 200.0f, 500.0f, 0.0 };
+    
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbientColor);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);

@@ -6,30 +6,33 @@
 #include "body.h"
 
 
+typedef map<Body*, string>        BodyStringMap;
+typedef map<Body*, Player*> BodyPlayerMap;
+
 class Referee
 {
 public:
 
-	map<const Body*, string> m_players;
-	vector<Player*>*         m_playersP;
-	Body*                    m_ball;
-	Body*        	         m_ground;
-	Body*                    m_lastFieldOwner;
+    BodyStringMap            m_players;
+    BodyPlayerMap            m_playersP;
+    Body*                    m_ball;
+    Body*                     m_ground;
+    Body*                    m_lastFieldOwner;
     Body*                    m_lastTouchedObject;
     Body*                    m_lastTouchedPlayer;
-	bool			         m_gameOver;
+    bool                     m_gameOver;
     bool                     m_afterCollideTriggerBox;
     char                     state;
 
-	Referee();
+    Referee();
 
-	void processBallGround(const Body* ball, const Body* otherBody);
-    void registerPlayer(const string& name, const Player* player);
-	void process(Body* body1, Body* body2);
+    void processBallGround(Body* ball, Body* otherBody);
+    void registerPlayer(const string& name, Player* player);
+    void process(Body* body1, Body* body2);
     void manageGame();
-	void initEvents();
-    void registerBallEvent(const Body* ground, Body* otherBody);
-	void registerPlayerEvent(){}
+    void initEvents();
+    void registerBallEvent(Body* ground, Body* otherBody);
+    void registerPlayerEvent(Body* player, Body* other);
 };
 
 class ScoreBoard : public std::map<std::string, std::string>

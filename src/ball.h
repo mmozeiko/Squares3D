@@ -12,12 +12,12 @@ public:
     Ball(Body* body, const Game* game);
 
     Vector getPosition();
-	void   setPosition0();
+    void   setPosition0();
 
     // maybe private
     void onCollide(Body* other, const NewtonMaterial* material);
     
-	Referee*            m_referee;
+    Referee*            m_referee;
     Body*               m_body;
 
 protected:

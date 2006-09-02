@@ -11,7 +11,7 @@ class Video;
 class Renderable
 {
 public:
-	Renderable(Game* game);
+    Renderable(Game* game);
 
     virtual void control(const Input* input) = 0;
     virtual void update(float delta) = 0;
@@ -19,7 +19,7 @@ public:
     virtual void render(const Video* video) const = 0;
     
 protected:
-	Game* m_game;
+    Game* m_game;
 };
 
 #endif

@@ -22,11 +22,11 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
     if (z > 0) m_upperRight[2] = z;
     else m_lowerLeft[2] = z;
 
-	// set the viscous damping the minimum
-	NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
+    // set the viscous damping the minimum
+    NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
     NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);
 
-  	// add an up vector constraint to help in keeping the body upright
+      // add an up vector constraint to help in keeping the body upright
     m_upVector = NewtonConstraintCreateUpVector(m_game->m_world->m_newtonWorld, Vector::Y.v, m_body->m_newtonBody); 
 
     m_body->setCollideable(this);
@@ -75,28 +75,28 @@ void Player::onSetForceAndTorque()
     m_isOnGround = false;
   
     Vector omega;
-	NewtonBodyGetOmega(m_body->m_newtonBody, omega.v);
+    NewtonBodyGetOmega(m_body->m_newtonBody, omega.v);
 
-	Vector torque = m_rotation;
+    Vector torque = m_rotation;
     torque = (10.0f * torque - omega) * timestepInv * Iyy;
-	NewtonBodyAddTorque (m_body->m_newtonBody, torque.v);
+    NewtonBodyAddTorque (m_body->m_newtonBody, torque.v);
 }
 
 void Player::onCollide(Body* other, const NewtonMaterial* material)
 {
-	m_referee->process(m_body, other);
-	Vector pos, nor;
+    m_referee->process(m_body, other);
+    Vector pos, nor;
 
-	NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
+    NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
 
-	// Determine if this contact is on the ground
-	float angle = Vector::Y % nor;
-	m_isOnGround = (angle > 0.0f);
+    // Determine if this contact is on the ground
+    float angle = Vector::Y % nor;
+    m_isOnGround = (angle > 0.0f);
 
-	NewtonMaterialSetContactElasticity( material, 0.0f );
+    NewtonMaterialSetContactElasticity( material, 0.0f );
 
-	NewtonMaterialSetContactFrictionState( material, 0, 0 );
-	NewtonMaterialSetContactFrictionState( material, 0, 1 );
+    NewtonMaterialSetContactFrictionState( material, 0, 0 );
+    NewtonMaterialSetContactFrictionState( material, 0, 1 );
 
-	NewtonMaterialSetContactSoftness( material, 0 );
+    NewtonMaterialSetContactSoftness( material, 0 );
 }

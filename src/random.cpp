@@ -15,7 +15,7 @@
 
 static const unsigned int N = 624;
 static const unsigned int M = 397;
-	
+    
 static unsigned int  state[N];
 static unsigned int* pNext;
 static unsigned int  left;
@@ -111,35 +111,35 @@ void Random::init()
 {
     clog << "Initializing random seed." << endl;
 
-	left = 0;
-	bool success = false;
-	unsigned int bigSeed[N];
+    left = 0;
+    bool success = false;
+    unsigned int bigSeed[N];
 
 #if WIN32
-	HCRYPTPROV hProv;
-	if (CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)==TRUE)
-	{
-		success = (CryptGenRandom(hProv, 
-								  N*sizeof(unsigned int), 
-								  reinterpret_cast<BYTE*>(bigSeed))==TRUE);
-		CryptReleaseContext(hProv, 0);
-	}
+    HCRYPTPROV hProv;
+    if (CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)==TRUE)
+    {
+        success = (CryptGenRandom(hProv, 
+                                  N*sizeof(unsigned int), 
+                                  reinterpret_cast<BYTE*>(bigSeed))==TRUE);
+        CryptReleaseContext(hProv, 0);
+    }
 #elif LINUX
-	FILE* urandom = std::fopen("/dev/urandom", "rb");
-	if (urandom)
-	{
-		success = std::fread(bigSeed, sizeof(unsigned int), N, urandom)==N;
-		std::fclose(urandom);
-	}
+    FILE* urandom = std::fopen("/dev/urandom", "rb");
+    if (urandom)
+    {
+        success = std::fread(bigSeed, sizeof(unsigned int), N, urandom)==N;
+        std::fclose(urandom);
+    }
 #endif
-	if (success)
-	{
-		seed(bigSeed, N);
-	}
-	else
-	{
-		seed(hash(time(NULL), std::clock()));
-	}
+    if (success)
+    {
+        seed(bigSeed, N);
+    }
+    else
+    {
+        seed(hash(time(NULL), std::clock()));
+    }
 }
 
 unsigned int Random::getInt()

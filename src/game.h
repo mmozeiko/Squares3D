@@ -20,7 +20,7 @@ class Game : NoCopy
 public:
     Game();
     ~Game();
-	
+    
     void run();
 
     Config*  m_config;

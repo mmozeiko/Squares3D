@@ -14,10 +14,10 @@ struct MaterialContact : NoCopy
     static void onEnd(const NewtonMaterial* material);
 
     Body* body[2];
-	
+    
     Vector position;
-	float  maxNormalSpeed;
-	float  maxTangentSpeed;
+    float  maxNormalSpeed;
+    float  maxTangentSpeed;
 };
 
 Properties::Properties(const Game* game) : m_game(game)
@@ -98,8 +98,8 @@ int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* b
     self->body[0] = static_cast<Body*>(NewtonBodyGetUserData(body0));
     self->body[1] = static_cast<Body*>(NewtonBodyGetUserData(body1));
 
-	self->maxNormalSpeed = 0.0f;
-	self->maxTangentSpeed = 0.0f;
+    self->maxNormalSpeed = 0.0f;
+    self->maxTangentSpeed = 0.0f;
 
     return 1;
 }
@@ -108,23 +108,23 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 {
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
     
-	Vector normal;
+    Vector normal;
 
-	float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
-	if (sp > self->maxNormalSpeed)
+    float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
+    if (sp > self->maxNormalSpeed)
     {
         self->maxNormalSpeed = sp;
-		NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-	}
+        NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+    }
 
     for (int i=0; i<2; i++)
     {
         float speed = NewtonMaterialGetContactTangentSpeed(material, contact, i);
         if (speed > self->maxTangentSpeed)
         {
-		    self->maxTangentSpeed = speed;
-		    NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-	    }
+            self->maxTangentSpeed = speed;
+            NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+        }
     }
     
     // TODO: apply coefficients for tree collision, take in account material group of each face

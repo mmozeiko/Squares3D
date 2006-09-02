@@ -81,16 +81,16 @@ inline bool foundInSet(const set<KeyType>& Set,
 
 template <typename KeyType, typename ValueType>
 inline bool foundInMapValues(const map<KeyType, ValueType>& Map,
-							 const ValueType&               Value)
+                             const ValueType&               Value)
 {
     typedef map<KeyType, ValueType> MapType;
-	for each_const(MapType, Map, iter)
-	{
-		if (iter->second == Value)
-		{
-			return true;
-		}
-	}
+    for each_const(MapType, Map, iter)
+    {
+        if (iter->second == Value)
+        {
+            return true;
+        }
+    }
     return false;
 }
 

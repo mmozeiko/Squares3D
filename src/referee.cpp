@@ -3,7 +3,7 @@
 Referee::Referee():
     m_gameOver(false)
 {
-	initEvents();
+    initEvents();
 }
 
 void Referee::initEvents()
@@ -13,9 +13,10 @@ void Referee::initEvents()
     m_lastTouchedPlayer = NULL;
 }
 
-void Referee::registerPlayer(const string& name, const Player* player)
+void Referee::registerPlayer(const string& name, Player* player)
 {
     m_players[player->m_body] = name;
+    m_playersP[player->m_body] = player;
 }
 
 void Referee::process(Body* body1, Body* body2)
@@ -30,39 +31,39 @@ void Referee::process(Body* body1, Body* body2)
     }
 }
 
-void Referee::registerBallEvent(const Body* ball, Body* otherBody)
+void Referee::registerBallEvent(Body* ball, Body* otherBody)
 {
     if (otherBody == m_ground)
     {
         //clog << "bumba-zeme!!!" << endl;
-		processBallGround(ball, otherBody);
+        processBallGround(ball, otherBody);
     }
-    else if (foundInMap(m_players, reinterpret_cast<const Body*>(otherBody)))
+    else if (foundInMap(m_players, otherBody))
     {
-		m_lastTouchedObject = otherBody;
+        m_lastTouchedObject = otherBody;
         //clog << "bumba-pleijers!!!" << endl;
     }
     else { return; } //we are not interested in other collisions here
 }
 
-void Referee::processBallGround(const Body* ball, const Body* otherBody)
+void Referee::processBallGround(Body* ball, Body* otherBody)
 {
     Vector ballCoords(ball->getPosition());
 
-	//out = False
+    //out = False
 
-	if (!isPointInRectangle(ballCoords, Vector(-3.0f, 0.0f, -3.0f), Vector(3.0f, 0.0f, 3.0f))) 
-	{
-		//critical event
+    if (!isPointInRectangle(ballCoords, Vector(-3.0f, 0.0f, -3.0f), Vector(3.0f, 0.0f, 3.0f))) 
+    {
+        //critical event
         //BALL HAS HIT THE FIELD OUTSIDE
         //and we handle score here
 
-		if (m_lastTouchedObject != NULL) //if last touched was not middle line
-		{    
-			if (foundInMap(m_players, static_cast<const Body*>(m_lastTouchedObject)))
-			{
-				clog << "pleijers izsit bumbu laukaa" << endl;
-			//player has kicked the ball out
+        if (m_lastTouchedObject != NULL) //if last touched was not middle line
+        {    
+            if (foundInMap(m_players, m_lastTouchedObject))
+            {
+                clog << "pleijers izsit bumbu laukaa" << endl;
+            //player has kicked the ball out
 //          pts = self.scoreBoard.addSelfPoints(lastTouchedObject)
 //          resetCoords = self.getBallCoords(lastTouchedObject)
 //          self.faultMsgList.append(['Out from ' + lastTouchedObject + '!', str(pts), 0])
@@ -70,38 +71,38 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
 //          out = lastTouchedObject
 //          
 //          getsPoints = lastTouchedObject
-			}
+            }
 
-			else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
-			{
-				string owner = m_players[m_lastFieldOwner];
-				clog << "bumba izripo no " + owner + " laukuma!" << endl;
-	//          if self.events['lastTouchedPlayer']:
-	//            #case when noone touched the ball after throwing minus
-	//            lastPlayer = self.events['lastTouchedPlayer'].name
-	//            if owner == lastPlayer:
-	//              pts = self.scoreBoard.addSelfPoints(owner)
-	//            else:
-	//              pts = self.scoreBoard.addTotalPoints(owner)
-	//          else:
-	//            pts = self.scoreBoard.addPoint(owner)
-	//
-	//          out = owner
-	//
-	//          self.faultMsgList.append(['Out from ' + owner + '`s field!', str(pts), 0])
-	//          resetCoords = self.getBallCoords(owner)
-	//          getsPoints = owner
-	//        if self.scoreBoard[getsPoints][0] >= self.matchPoints:
-	//          self.setGameOver()
-	//          return
-			}
-		}
-	    else
-		{
-			clog << "bumba izripo no vidlînijas, nûbi iet uz skolu" << endl;
+            else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
+            {
+                string owner = m_players[m_lastFieldOwner];
+                clog << "bumba izripo no " + owner + " laukuma!" << endl;
+    //          if self.events['lastTouchedPlayer']:
+    //            #case when noone touched the ball after throwing minus
+    //            lastPlayer = self.events['lastTouchedPlayer'].name
+    //            if owner == lastPlayer:
+    //              pts = self.scoreBoard.addSelfPoints(owner)
+    //            else:
+    //              pts = self.scoreBoard.addTotalPoints(owner)
+    //          else:
+    //            pts = self.scoreBoard.addPoint(owner)
+    //
+    //          out = owner
+    //
+    //          self.faultMsgList.append(['Out from ' + owner + '`s field!', str(pts), 0])
+    //          resetCoords = self.getBallCoords(owner)
+    //          getsPoints = owner
+    //        if self.scoreBoard[getsPoints][0] >= self.matchPoints:
+    //          self.setGameOver()
+    //          return
+            }
+        }
+        else
+        {
+            clog << "bumba izripo no vidliinijas, nuubi iet uz skolu" << endl;
 //        self.faultMsgList.append(['Ball out from middle line!', '', 0])
 //        resetCoords = (0, 10, 0)
-		}
+        }
 //
 //      if out=="Player":
 //        pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
@@ -120,8 +121,8 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
 //      #finishing handling critical branch
 //      self.scoreBoard.resetJoinedCombo()
   
-		initEvents();
-		m_ball->setTransform(Vector(0,2,0), Vector(0,0,0));
+        initEvents();
+        m_ball->setTransform(Vector(0,2,0), Vector(0,0,0));
 
 //      self.resetPlayers()
 //      if out!=False and out!="Player":
@@ -130,79 +131,85 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
 //        self.addTaunt(pl, "Move in!")
 //
 //
-	}
-	else
-	{
+    }
+    else
+    {
       //BALL HAS HIT THE FIELD INSIDE
       //save the touched field
-      for each_const(vector<Player*>, *m_playersP, player)
-	  {
-          if (isPointInRectangle(ballCoords, (*player)->m_lowerLeft, (*player)->m_upperRight))
-		  {
-			 m_lastFieldOwner =    (*player)->m_body;
-			 m_lastTouchedObject = m_ground;
-			 break;
-		  }
-		  m_lastTouchedObject = NULL; //if has hit the middle line
-	  }
-		
-	}
+      for each_const(BodyPlayerMap, m_playersP, player)
+      {
+          if (isPointInRectangle(ballCoords, 
+                                 player->second->m_lowerLeft, 
+                                 player->second->m_upperRight))
+          {
+             m_lastFieldOwner =    player->first;
+             m_lastTouchedObject = m_ground;
+             break;
+          }
+          m_lastTouchedObject = NULL; //if has hit the middle line
+      }
+        
+    }
 }
 
-//  def registerPlayerEvent(self):
-//    ball = self.ball
-//    for object in self.objectList:
-//      if 'Player' in object.name:
-//        player = object
-//    
-//    #ball + player
+void Referee::registerPlayerEvent(Body* player, Body* other)
+{
+    //ball + player
+
 //    sounds.playSound("BallPlayer", ball.geom.getPosition())
-//    lastTouchedObject = self.events['lastTouchedObject']
-//    
-//    if lastTouchedObject == None: #picked from middle line
+    if (m_lastTouchedObject == NULL)
+    {
 //      self.scoreBoard.resetJoinedCombo() #clear combo
 //      self.scoreBoard.incrementCombo(player, self.hitMsgList) #(+1)
-//    else:#picked from ground or player
-//      if lastTouchedObject.name == 'Ground': #picked from ground inside
-//        self.scoreBoard.resetJoinedCombo()
-//        playerName = player.name
-//        self.scoreBoard.incrementCombo(player, self.hitMsgList)
-//        if (self.events['lastFieldOwner'] == player)\
-//          and (self.events['lastTouchedPlayer'] == player)\
-//          and vectormath.isPointInSquare(ball.geom.getPosition()
-//                                         , self.players[playerName].min
-//                                         , self.players[playerName].max): #critical event. double-touched -> fault
-//
-//          if playerName=="Player":
-//            pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
-//            #pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
-//            #while pl2==pl:
-//            #  pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
-//
-//            sounds.playTauntMsg(pl, "AreYouCrazy", pl.body.getPosition())
-//            self.addTaunt(pl, "Are you crazy?")
-//
-//            #sounds.playTauntMsg(pl2, "No", pl.body.getPosition())
-//            #self.addTaunt(pl2, "No!")
-//
-//          resetCoords = self.getBallCoords(playerName)
-//          self.scoreBoard.addSelfPoints(playerName)
-//          self.faultMsgList.append([playerName + ' touched twice!', '1', 0])
-//          if self.scoreBoard[playerName][0] >= self.matchPoints:
-//            self.setGameOver()
-//            return
-//          self.initEvents()
-//          self.resetBall(resetCoords)
-//          self.resetPlayers()
-//          return 
+    }
+    else //picked from ground or player
+    {
+        if (m_lastTouchedObject == m_ground) //picked from ground inside
+        {
+//          self.scoreBoard.resetJoinedCombo()
+            string playerName = m_players[player];
+//          self.scoreBoard.incrementCombo(player, self.hitMsgList)
+            if ((m_lastFieldOwner == player)
+                && (m_lastTouchedPlayer == player)
+                && (isPointInRectangle(m_ball->getPosition(), 
+                                       m_playersP[player]->m_lowerLeft, 
+                                       m_playersP[player]->m_upperRight)))
+            {
+                //critical event. double-touched -> fault
+
+    //          if playerName=="Player":
+    //            pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
+    //            #pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
+    //            #while pl2==pl:
+    //            #  pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
+    //
+    //            sounds.playTauntMsg(pl, "AreYouCrazy", pl.body.getPosition())
+    //            self.addTaunt(pl, "Are you crazy?")
+    //
+    //            #sounds.playTauntMsg(pl2, "No", pl.body.getPosition())
+    //            #self.addTaunt(pl2, "No!")
+    //
+    //          resetCoords = self.getBallCoords(playerName)
+    //          self.scoreBoard.addSelfPoints(playerName)
+    //          self.faultMsgList.append([playerName + ' touched twice!', '1', 0])
+    //          if self.scoreBoard[playerName][0] >= self.matchPoints:
+    //            self.setGameOver()
+    //            return
+    //          self.initEvents()
+    //          self.resetBall(resetCoords)
+    //          self.resetPlayers()
+    //          return 
+            }
+        }
 //      else: #picked from player
 //        if self.events['lastTouchedPlayer'] != player: #reset own combo, when picked from other
 //          self.scoreBoard.resetOwnCombo(player.name)
 //        self.scoreBoard.incrementCombo(player, self.hitMsgList)
-
+    }
 //        
 //    self.events['lastTouchedObject'] = player
 //    self.events['lastTouchedPlayer'] = player
+}
 
 //class Coach:
 //  def __init__(self):

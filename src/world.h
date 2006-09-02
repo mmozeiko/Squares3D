@@ -16,7 +16,7 @@ class Ball;
 class World : public Renderable, NoCopy
 {
 public:
-	World(Game* game);
+    World(Game* game);
     ~World();
 
     void init();
@@ -26,14 +26,14 @@ public:
     void prepare();
     void render(const Video* video) const;
 
-	Music*           m_music;
+    Music*           m_music;
     Camera*          m_camera;
     SkyBox*          m_skybox;
     NewtonWorld*     m_newtonWorld;
     Level*           m_level;
     vector<Player*>  m_localPlayers;
     Ball*            m_ball;
-	Referee*         m_referee;
+    Referee*         m_referee;
 
 };
 
