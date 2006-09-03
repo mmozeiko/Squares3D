@@ -15,12 +15,12 @@ void Referee::initEvents()
 
 void Referee::registerPlayer(const string& name, Player* player)
 {
-    m_players[player->m_body] = name;
-    m_playersP[player->m_body] = player;
+    m_players[player->m_body] = std::make_pair(name, player);
 }
 
 void Referee::process(Body* body1, Body* body2)
 {
+    assert(m_players.size() < 5);
     //if (foundInMap(m_players, body1) && foundInMap(m_players, body2))
     //{
     //    clog << "pleijers pret pleijeru!\n";
@@ -40,7 +40,7 @@ void Referee::registerBallEvent(Body* ball, Body* otherBody)
     }
     else if (foundInMap(m_players, otherBody))
     {
-        m_lastTouchedObject = otherBody;
+        processBallPlayer(ball, otherBody);
         //clog << "bumba-pleijers!!!" << endl;
     }
     else { return; } //we are not interested in other collisions here
@@ -62,7 +62,7 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
         {    
             if (foundInMap(m_players, m_lastTouchedObject))
             {
-                clog << "pleijers izsit bumbu laukaa" << endl;
+                clog << m_players[m_lastTouchedObject].first + " izsit bumbu laukaa" << endl;
             //player has kicked the ball out
 //          pts = self.scoreBoard.addSelfPoints(lastTouchedObject)
 //          resetCoords = self.getBallCoords(lastTouchedObject)
@@ -75,7 +75,7 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
 
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
             {
-                string owner = m_players[m_lastFieldOwner];
+                string owner = m_players[m_lastFieldOwner].first;
                 clog << "bumba izripo no " + owner + " laukuma!" << endl;
     //          if self.events['lastTouchedPlayer']:
     //            #case when noone touched the ball after throwing minus
@@ -137,11 +137,11 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
     {
       //BALL HAS HIT THE FIELD INSIDE
       //save the touched field
-      for each_const(BodyPlayerMap, m_playersP, player)
+      for each_const(BodyToPlayerDataMap, m_players, player)
       {
           if (isPointInRectangle(ballCoords, 
-                                 player->second->m_lowerLeft, 
-                                 player->second->m_upperRight))
+                                 player->second.second->m_lowerLeft, 
+                                 player->second.second->m_upperRight))
           {
              m_lastFieldOwner =    player->first;
              m_lastTouchedObject = m_ground;
@@ -153,7 +153,7 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
     }
 }
 
-void Referee::registerPlayerEvent(Body* player, Body* other)
+void Referee::processBallPlayer(Body* ball, Body* player)
 {
     //ball + player
 
@@ -168,16 +168,17 @@ void Referee::registerPlayerEvent(Body* player, Body* other)
         if (m_lastTouchedObject == m_ground) //picked from ground inside
         {
 //          self.scoreBoard.resetJoinedCombo()
-            string playerName = m_players[player];
+            string playerName = m_players[player].first;
 //          self.scoreBoard.incrementCombo(player, self.hitMsgList)
             if ((m_lastFieldOwner == player)
                 && (m_lastTouchedPlayer == player)
                 && (isPointInRectangle(m_ball->getPosition(), 
-                                       m_playersP[player]->m_lowerLeft, 
-                                       m_playersP[player]->m_upperRight)))
+                                       m_players[player].second->m_lowerLeft, 
+                                       m_players[player].second->m_upperRight)))
             {
                 //critical event. double-touched -> fault
 
+                clog << playerName + " tuu taches!!" << endl;
     //          if playerName=="Player":
     //            pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
     //            #pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
@@ -196,20 +197,22 @@ void Referee::registerPlayerEvent(Body* player, Body* other)
     //          if self.scoreBoard[playerName][0] >= self.matchPoints:
     //            self.setGameOver()
     //            return
-    //          self.initEvents()
+                initEvents();
     //          self.resetBall(resetCoords)
     //          self.resetPlayers()
-    //          return 
+                return ;
             }
         }
-//      else: #picked from player
+        else //picked from player
+        {
 //        if self.events['lastTouchedPlayer'] != player: #reset own combo, when picked from other
 //          self.scoreBoard.resetOwnCombo(player.name)
 //        self.scoreBoard.incrementCombo(player, self.hitMsgList)
+        }
     }
 //        
-//    self.events['lastTouchedObject'] = player
-//    self.events['lastTouchedPlayer'] = player
+    m_lastTouchedObject = player;
+    m_lastTouchedPlayer = player;
 }
 
 //class Coach:
