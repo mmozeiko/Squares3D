@@ -139,6 +139,6 @@ void AiPlayer::control(const Input* input)
         direction *= 1.5f;
     }
 
-    setDirection(direction / 1.5f);
+    setDirection(direction / 1.9f);
     setRotation(rotation);
 }

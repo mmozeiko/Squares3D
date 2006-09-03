@@ -1,6 +1,9 @@
 Available:
 ==========
 
+Fix ball<->player friction (currently none).
+Understand how NewtonReleaseCollision works and release collisions in right places.
+Do something about properties.xml file - make it simplier and more compact.
 Allow Property attributes be optional (in xml file).
 Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
 Make AI players smarter.
@@ -37,6 +40,7 @@ Port coach class and name it "Referee".
 
 Done:
 =====
+2006-09-03 Added ConvexHullModifier support, ball needs it.
 2006-09-02 Implement NewtonMaterial properties in collisions between TreeCollision faces.
            Implement default Property attributes in xml file.
            Use materials on collisions.

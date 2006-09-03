@@ -18,7 +18,7 @@ Body::Body(const XMLnode& node, const Game* game):
     m_collideable(NULL)
 {
     NewtonCollision* newtonCollision = NULL;
-    string id = getAttribute(node, "id");
+    m_id = getAttribute(node, "id");
     
     int materialID = -1;
     StringMap::const_iterator iter = node.attributes.find("property");
@@ -64,7 +64,7 @@ Body::Body(const XMLnode& node, const Game* game):
 
     if (m_collisions.size() == 1)
     {
-        Collision* collision = *m_collisions.begin();
+        const Collision* collision = *m_collisions.begin();
 
         m_totalMass = collision->m_mass;
         m_totalInertia = collision->m_inertia;
@@ -76,9 +76,9 @@ Body::Body(const XMLnode& node, const Game* game):
     {
         vector<NewtonCollision*> newtonCollisions(m_collisions.size());
         int cnt = 0;
-        for each_const(set<Collision*>, m_collisions, iter)
+        for each_const(CollisionSet, m_collisions, iter)
         {
-            Collision* collision = *iter;
+            const Collision* collision = *iter;
             newtonCollisions[cnt++] = collision->m_newtonCollision;
             m_totalMass += collision->m_mass;
             m_totalInertia += collision->m_inertia;
@@ -92,17 +92,17 @@ Body::Body(const XMLnode& node, const Game* game):
                                                 &newtonCollisions[0]);
         for each_const(vector<NewtonCollision*>, newtonCollisions, collision)
         {
-            NewtonReleaseCollision(m_newtonWorld, *collision);
+            //NewtonReleaseCollision(m_newtonWorld, *collision);
         }
     }
     else
     {
-        throw Exception("No collisions were found for body '" + id + "'");
+        throw Exception("No collisions were found for body '" + m_id + "'");
     }
 
     createNewtonBody(newtonCollision, totalOrigin, position, rotation, materialID);
 
-    if (id == "football")
+    if (m_id == "football")
     {
         NewtonBodySetContinuousCollisionMode(m_newtonBody, 1);
     }
@@ -140,13 +140,14 @@ void Body::createNewtonBody(const NewtonCollision* newtonCollision,
 
     NewtonBodySetAutoFreeze(m_newtonBody, 0);
 
-    NewtonReleaseCollision(m_newtonWorld, newtonCollision);
+    // danger - ball depends on newtonCollision variable
+    //NewtonReleaseCollision(m_newtonWorld, newtonCollision);
 }
 
 Body::~Body()
 {
     /*
-    for each_const(set<Collision*>, m_collisions, iter)
+    for each_const(CollisionSet, m_collisions, iter)
     {
         NewtonReleaseCollision(m_newtonWorld, (*iter)->m_newtonCollision);
     }
@@ -190,7 +191,7 @@ void Body::render(const Video* video)
 {
     video->begin(m_matrix);
 
-    for each_const(set<Collision*>, m_collisions, iter)
+    for each_const(CollisionSet, m_collisions, iter)
     {
         (*iter)->render(video);
     }
@@ -208,6 +209,14 @@ void Body::onCollide(Body* other, const NewtonMaterial* material)
     if (m_collideable != NULL)
     {
         m_collideable->onCollide(other, material);
+    }
+}
+
+void Body::onCollideHull(Body* other, const NewtonMaterial* material)
+{
+    if (m_collideable != NULL)
+    {
+        m_collideable->onCollideHull(other, material);
     }
 }
 

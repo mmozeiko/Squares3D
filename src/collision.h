@@ -11,6 +11,12 @@ class Video;
 class Material;
 class Level;
 
+enum CollisionType
+{
+    CollisionType_Convex = 1,
+    CollisionType_Hull = 2,
+};
+
 class Collision : NoCopy
 {
     friend class Body;

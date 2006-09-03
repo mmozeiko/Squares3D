@@ -6,6 +6,7 @@
 #include "world.h"
 #include "level.h"
 #include "body.h"
+#include "collision.h"
 
 struct MaterialContact : NoCopy
 {
@@ -41,6 +42,7 @@ int Properties::getPropertyID(const string& name)
     if (iter == m_newtonMaterials.end())
     {
         result = NewtonMaterialCreateGroupID(m_game->m_world->m_newtonWorld);
+        clog << "Material '" << name << "' is nr." << result << endl;
         m_newtonMaterials.insert(make_pair(name, result));
     }
     else
@@ -103,7 +105,10 @@ pID Properties::makepID(int id0, int id1) const
 const Property* Properties::get(int id0, int id1) const
 {
     PropertiesMap::const_iterator iter = m_properties.find(makepID(id0, id1));
+    
+    // if assert fails, then you probably forgot to put property pair (for id0 and id1) in properties.xml file
     assert(iter != m_properties.end());
+
     return &iter->second;
 }
 
@@ -123,7 +128,21 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 {
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
     
-	Vector normal;
+    int colID0 = NewtonMaterialGetBodyCollisionID(material, self->body[0]->m_newtonBody);
+    int colID1 = NewtonMaterialGetBodyCollisionID(material, self->body[1]->m_newtonBody);
+    
+    if (colID0 == CollisionType_Hull)
+    {
+        self->body[0]->onCollideHull(self->body[1], material);
+        return 0;
+    }
+    else if (colID1 == CollisionType_Hull)
+    {
+        self->body[1]->onCollideHull(self->body[0], material);
+        return 0;
+    }
+    
+    Vector normal;
 
 	float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
 	if (sp > self->maxNormalSpeed)
@@ -141,12 +160,11 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 		    NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
 	    }
     }
-    
-    Material* mat = NULL;
-    bool isConvex0 = 1==NewtonMaterialGetBodyCollisionID(material, self->body[0]->m_newtonBody);
-    bool isConvex1 = 1==NewtonMaterialGetBodyCollisionID(material, self->body[1]->m_newtonBody);
+       
+    bool isConvex0 = ( CollisionType_Convex==colID0 );
+    bool isConvex1 = ( CollisionType_Convex==colID1 );
     unsigned int faceAttr = NewtonMaterialGetContactFaceAttribute(material);
-    
+
     int m0, m1;
     
     if (isConvex0 && isConvex1)

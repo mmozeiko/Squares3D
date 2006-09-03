@@ -12,11 +12,14 @@ class XMLnode;
 class Game;
 class Body;
 
+typedef set<const Collision*> CollisionSet;
+
 class Collideable
 {
 public:
     // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
     virtual void onCollide(Body* other, const NewtonMaterial* material) {}
+    virtual void onCollideHull(Body* other, const NewtonMaterial* material) {}
     virtual void onImpact(Body* other, const Vector& position, const float speed) {}
     virtual void onScratch(Body* other, const Vector& position, const float speed) {}
 
@@ -36,12 +39,16 @@ public:
     void setCollideable(Collideable* collideable);
 
     void onCollide(Body* other, const NewtonMaterial* material);
+    void onCollideHull(Body* other, const NewtonMaterial* material);
     void onImpact(Body* other, const Vector& position, const float speed);
     void onScratch(Body* other, const Vector& position, const float speed);
 
-    NewtonBody* m_newtonBody;        
-    Matrix      m_matrix;
-    int         m_materialID;
+    
+    string       m_id;
+    NewtonBody*  m_newtonBody;        
+    Matrix       m_matrix;
+    int          m_materialID;
+    CollisionSet m_collisions;
 
 protected:
 
@@ -60,7 +67,6 @@ private:
 
     float           m_totalMass;
     Vector          m_totalInertia;
-    set<Collision*> m_collisions;
     Collideable*    m_collideable;
 
     void onSetForceAndTorque();

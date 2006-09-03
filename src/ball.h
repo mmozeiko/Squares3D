@@ -16,6 +16,7 @@ public:
 
     // maybe private
     void onCollide(Body* other, const NewtonMaterial* material);
+    void onCollideHull(Body* other, const NewtonMaterial* material);
     
     Referee*            m_referee;
     Body*               m_body;
