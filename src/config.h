@@ -2,6 +2,7 @@
 #define __CONFIG_H__
 
 #include "common.h"
+#include "system.h"
 
 struct VideoConfig
 {
@@ -10,6 +11,7 @@ struct VideoConfig
     bool fullscreen;
     bool vsync;
     int samples;
+    bool useShaders;
 };
 
 struct AudioConfig
@@ -23,7 +25,7 @@ struct MiscConfig
 };
 
 
-class Config : NoCopy
+class Config : public System<Config>, NoCopy
 {
 public:
     Config();

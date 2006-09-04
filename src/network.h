@@ -2,8 +2,9 @@
 #define __NETWORK_H__
 
 #include "common.h"
+#include "system.h"
 
-class Network : NoCopy
+class Network : public System<Network>, NoCopy
 {
 public:
     Network();

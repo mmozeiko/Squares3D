@@ -9,10 +9,10 @@ class Input;
 class LocalPlayer : public Player
 {
 public:
-    LocalPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation);
+    LocalPlayer(const string& id, const Vector& position, const Vector& rotation);
     ~LocalPlayer();
 
-    void control(const Input* input);
+    void control();
 
 private:
     IntPair m_lastMouse;

@@ -1,5 +1,4 @@
 #include "player_ai.h"
-#include "game.h"
 #include "input.h"
 #include "world.h"
 #include "body.h"
@@ -89,8 +88,8 @@ Vector findBallAndSquareIntersection(const Vector& position,
     return result;
 }
 
-AiPlayer::AiPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
-    Player(id, game, position, rotation)
+AiPlayer::AiPlayer(const string& id, const Vector& position, const Vector& rotation) :
+    Player(id, position, rotation)
 {
 }
 
@@ -98,47 +97,77 @@ AiPlayer::~AiPlayer()
 {
 }
 
-void AiPlayer::control(const Input* input)
+void AiPlayer::control()
 {
 
-    Body* ball = m_game->m_world->m_level->getBody("football");
+    Body* ball = World::instance->m_level->getBody("football");
 
     Vector ballPosition = ball->getPosition();
     Vector selfPosition = m_body->getPosition();
 
-    Vector rot = m_body->getRotation();
-    Vector dir = ballPosition - selfPosition;
-    float r1 = static_cast<float>(rand())/RAND_MAX - 0.5f;
-    float r2 = static_cast<float>(rand())/RAND_MAX - 0.5f;
-    dir += Vector(1.0f*r1, 0.0f, 1.0f*r2);
-    dir.y = 0;
-    dir.norm();
-    Vector rotation;
-
-    rotation.y = ( rot % dir ) / 1.0f;
-
-    Vector direction(-rot.z, 0, rot.x);
+    bool move = true;
 
     if (!isPointInRectangle(ballPosition, m_lowerLeft, m_upperRight))
     {
         Vector ballVelocity;
         NewtonBodyGetVelocity(ball->m_newtonBody, ballVelocity.v);
 
-        Vector intersection = findBallAndSquareIntersection(
-                                                  ballPosition, 
-                                                  ballVelocity, 
-                                                  m_lowerLeft, 
-                                                  m_upperRight);
-        direction = intersection - selfPosition;
+        ballPosition = findBallAndSquareIntersection(
+            ballPosition, 
+            ballVelocity, 
+            m_lowerLeft, 
+            m_upperRight);
     }
+
+    Vector dir = ballPosition - selfPosition;
+
+    if (dir.magnitude() < 0.6f)
+    {
+        move = false;
+    }
+    else
+    {
+        float r1 = static_cast<float>(rand())/RAND_MAX - 0.5f;
+        float r2 = static_cast<float>(rand())/RAND_MAX - 0.5f;
+        //dir += Vector(1.0f*r1, 0.0f, 1.0f*r2);
+        dir.y = 0;
+        dir.norm();
+    }
+
+    Vector rot = m_body->getRotation();
+
+    Vector rotation;
+    if (move)
+    {
+        rotation.y = ( rot % dir );
+    }
+    else
+    {
+        Vector tmp = (ball->getPosition()-selfPosition);
+        tmp.norm();
+        rotation.y = ( rot % tmp );
+    }
+    
+    rotation.y /= 1.0f; // rotation speed
+
+    Vector direction(-rot.z, 0, rot.x);
 
     direction.norm();
 
+    // what does this if do?? a?
     if (m_body->getPosition().y > 0.15f)
     {
         direction *= 1.5f;
     }
 
-    setDirection(direction / 1.9f);
+    if (move)
+    {
+        setDirection(direction / 3.0f); // move speed
+    }
+    else
+    {
+        setDirection(Vector::Zero); // i'm in position!
+    }
+
     setRotation(rotation);
 }

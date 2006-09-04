@@ -3,13 +3,14 @@
 
 #include <GL/glfw.h>
 #include "common.h"
+#include "system.h"
 
 struct Mouse
 {
     int x, y, z, b;
 };
 
-class Input : NoCopy
+class Input : public System<Input>, NoCopy
 {
 public:
     Input();

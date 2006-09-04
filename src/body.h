@@ -7,9 +7,7 @@
 
 class Collision;
 class Level;
-class Video;
 class XMLnode;
-class Game;
 class Body;
 
 typedef set<const Collision*> CollisionSet;
@@ -32,7 +30,7 @@ class Body : public Collideable, NoCopy
 
 public:
     void prepare();
-    void render(const Video* video);
+    void render() const;
     void setTransform(const Vector& position, const Vector& rotation);
     Vector getPosition() const;
     Vector getRotation();
@@ -43,25 +41,31 @@ public:
     void onImpact(Body* other, const Vector& position, const float speed);
     void onScratch(Body* other, const Vector& position, const float speed);
 
-    
-    string       m_id;
-    NewtonBody*  m_newtonBody;        
-    Matrix       m_matrix;
-    int          m_materialID;
-    CollisionSet m_collisions;
+    string              m_id;
+    NewtonBody*         m_newtonBody;        
+    Matrix              m_matrix;
+    CollisionSet        m_collisions;
+
+    // TODO: move to cpp file
+    float getMass() const
+    {
+        return m_totalMass;
+    }
+
+    const Vector& getInertia() const
+    {
+        return m_totalInertia;
+    }
 
 protected:
 
-    Body(const XMLnode& node, const Game* game);
+    Body(const XMLnode& node);
     ~Body();
-
-    const NewtonWorld*     m_newtonWorld;
 
     void createNewtonBody(const NewtonCollision* newtonCollision,
                           const Vector& totalOrigin,
                           const Vector& position,
-                          const Vector& rotation,
-                          const int     materialID);
+                          const Vector& rotation);
 
 private:
 

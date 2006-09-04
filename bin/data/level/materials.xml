@@ -9,7 +9,7 @@
       </colors>
     </material>
 
-    <material id="player">
+    <material id="penguin">
       <texture>
         <path>player.tga</path>
       </texture>

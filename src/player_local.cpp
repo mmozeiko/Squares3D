@@ -1,11 +1,10 @@
 #include "player_local.h"
 #include "input.h"
 #include "camera.h"
-#include "game.h"
 #include "world.h"
 
-LocalPlayer::LocalPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
-    Player(id, game, position, rotation)
+LocalPlayer::LocalPlayer(const string& id, const Vector& position, const Vector& rotation) :
+    Player(id, position, rotation)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
@@ -17,9 +16,9 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::control(const Input* input)
+void LocalPlayer::control()
 {
-    const Mouse& mouse = input->mouse();
+    const Mouse& mouse = Input::instance->mouse();
     int dx = mouse.x - m_lastMouse.first;
     int dy = mouse.y - m_lastMouse.second;
 
@@ -46,19 +45,19 @@ void LocalPlayer::control(const Input* input)
     {
         t = 0.0f;
     }
-    setRotation(Vector(0.0f, t, 0.0f));
+    setRotation(Vector(0.0f, t/3.0f, 0.0f));
 
     Vector direction;
 
-    if (input->key('D')) direction.x =  1.0f;
-    if (input->key('A')) direction.x = -1.0f;
-    if (input->key('W')) direction.z =  1.0f;
-    if (input->key('S')) direction.z = -1.0f;
+    if (Input::instance->key('D')) direction.x =  1.0f;
+    if (Input::instance->key('A')) direction.x = -1.0f;
+    if (Input::instance->key('W')) direction.z =  1.0f;
+    if (Input::instance->key('S')) direction.z = -1.0f;
     
-    if (input->key(GLFW_KEY_SPACE)) 
+    if (Input::instance->key(GLFW_KEY_SPACE)) 
     {
-        direction.y += 1.0f;
+        direction.y += 2.0f;
     }
     
-    setDirection(Matrix::rotateY(m_game->m_world->m_camera->angleY()) * direction );
+    setDirection(Matrix::rotateY(World::instance->m_camera->angleY()) * direction * 0.5f );
 }

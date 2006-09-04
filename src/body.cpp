@@ -10,23 +10,15 @@
 typedef map<string, Collision*> CollisionsMap;
 typedef map<string, Body*>      BodiesMap;
 
-Body::Body(const XMLnode& node, const Game* game):
+Body::Body(const XMLnode& node):
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),
-    m_newtonWorld(game->m_world->m_newtonWorld),
     m_collideable(NULL)
 {
     NewtonCollision* newtonCollision = NULL;
     m_id = getAttribute(node, "id");
     
-    int materialID = -1;
-    StringMap::const_iterator iter = node.attributes.find("property");
-    if (iter != node.attributes.end())
-    {
-        materialID = game->m_world->m_level->m_properties->getPropertyID(iter->second);
-    }
-
     Vector position(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
 
@@ -44,8 +36,8 @@ Body::Body(const XMLnode& node, const Game* game):
         else if (node.name == "collision")
         { 
             string id = node.value;
-            CollisionsMap::const_iterator iter = game->m_world->m_level->m_collisions.find(id);
-            if (iter != game->m_world->m_level->m_collisions.end())
+            CollisionsMap::const_iterator iter = World::instance->m_level->m_collisions.find(id);
+            if (iter != World::instance->m_level->m_collisions.end())
             {
                 m_collisions.insert(iter->second);
             }
@@ -87,12 +79,12 @@ Body::Body(const XMLnode& node, const Game* game):
         totalOrigin /= m_totalMass;
 
         newtonCollision = NewtonCreateCompoundCollision(
-                                                m_newtonWorld,
+                                                World::instance->m_newtonWorld,
                                                 cnt,
                                                 &newtonCollisions[0]);
         for each_const(vector<NewtonCollision*>, newtonCollisions, collision)
         {
-            //NewtonReleaseCollision(m_newtonWorld, *collision);
+            //NewtonReleaseCollision(World::instance->m_newtonWorld, *collision);
         }
     }
     else
@@ -100,7 +92,7 @@ Body::Body(const XMLnode& node, const Game* game):
         throw Exception("No collisions were found for body '" + m_id + "'");
     }
 
-    createNewtonBody(newtonCollision, totalOrigin, position, rotation, materialID);
+    createNewtonBody(newtonCollision, totalOrigin, position, rotation);
 
     if (m_id == "football")
     {
@@ -119,29 +111,23 @@ void Body::setTransform(const Vector& position, const Vector& rotation)
 void Body::createNewtonBody(const NewtonCollision* newtonCollision,
                             const Vector&          totalOrigin,
                             const Vector&          position,
-                            const Vector&          rotation,
-                            const int              materialID)
+                            const Vector&          rotation)
 {
-    m_newtonBody = NewtonCreateBody(m_newtonWorld, newtonCollision);
+    m_newtonBody = NewtonCreateBody(World::instance->m_newtonWorld, newtonCollision);
     NewtonBodySetUserData(m_newtonBody, static_cast<void*>(this));
-
-    if (materialID != -1)
-    {
-        NewtonBodySetMaterialGroupID(m_newtonBody, materialID);
-    }
-    m_materialID = materialID;
-
-    NewtonBodySetMassMatrix(m_newtonBody, m_totalMass, m_totalInertia.x, m_totalInertia.y, m_totalInertia.z);
-    NewtonBodySetCentreOfMass(m_newtonBody, totalOrigin.v);
-    
-    NewtonBodySetForceAndTorqueCallback(m_newtonBody, onSetForceAndTorque);
 
     setTransform(position, rotation);
 
-    NewtonBodySetAutoFreeze(m_newtonBody, 0);
+    if (m_id != "level" && m_id != "wall")
+    {
+        NewtonBodySetMassMatrix(m_newtonBody, m_totalMass, m_totalInertia.x, m_totalInertia.y, m_totalInertia.z);
+        NewtonBodySetCentreOfMass(m_newtonBody, totalOrigin.v);
+        NewtonBodySetAutoFreeze(m_newtonBody, 0);
+        NewtonBodySetForceAndTorqueCallback(m_newtonBody, onSetForceAndTorque);
+    }
 
     // danger - ball depends on newtonCollision variable
-    //NewtonReleaseCollision(m_newtonWorld, newtonCollision);
+    //NewtonReleaseCollision(World::instance->m_newtonWorld, newtonCollision);
 }
 
 Body::~Body()
@@ -149,7 +135,7 @@ Body::~Body()
     /*
     for each_const(CollisionSet, m_collisions, iter)
     {
-        NewtonReleaseCollision(m_newtonWorld, (*iter)->m_newtonCollision);
+        NewtonReleaseCollision(World::instance->m_newtonWorld, (*iter)->m_newtonCollision);
     }
     */
 }
@@ -187,16 +173,16 @@ void Body::onSetForceAndTorque(const NewtonBody* body)
     self->onSetForceAndTorque();
 }
 
-void Body::render(const Video* video)
+void Body::render() const
 {
-    video->begin(m_matrix);
+    Video::instance->begin(m_matrix);
 
     for each_const(CollisionSet, m_collisions, iter)
     {
-        (*iter)->render(video);
+        (*iter)->render();
     }
 
-    video->end();
+    Video::instance->end();
 }
 
 void Body::setCollideable(Collideable* collideable)

@@ -4,12 +4,12 @@
 #include "video.h"
 #include "texture.h"
 
-SkyBox::SkyBox(Video* video)
+SkyBox::SkyBox()
 {
-    m_texture = video->loadCubeMap("skybox_1");
+    m_texture = Video::instance->loadCubeMap("skybox_1");
 }
 
-void SkyBox::render(const Video* video) const
+void SkyBox::render() const
 {
     Matrix modelview;
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview.m);
@@ -24,7 +24,7 @@ void SkyBox::render(const Video* video) const
 
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     m_texture->begin();
-    video->renderCube();
+    Video::instance->renderCube();
     m_texture->end();
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 

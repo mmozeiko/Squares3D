@@ -2,13 +2,11 @@
 
 #include "input.h"
 
-static Input* instance = NULL;
+Input* System<Input>::instance = NULL;
 
-Input::Input() :
-    m_mouseCount(0), m_manymouses(false), m_mouses(), m_keyBuffer()
+Input::Input() : m_mouseCount(0), m_manymouses(false), m_mouses(), m_keyBuffer()
 {
     clog << "Initializing input... ";
-    instance = this;
 
     int tmp = ManyMouse_Init();
     if (tmp > 0)
@@ -125,7 +123,7 @@ void GLFWCALL keyFunc(int key, int action)
 {
     if (action == GLFW_PRESS)
     {
-        instance->addChar(key);
+        Input::instance->addChar(key);
     }
 }
 

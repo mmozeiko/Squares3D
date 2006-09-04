@@ -251,6 +251,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\system.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\utilities.cpp"
 					>
 				</File>
@@ -300,8 +304,96 @@
 				</Filter>
 			</Filter>
 			<Filter
+				Name="Game"
+				>
+				<File
+					RelativePath=".\src\camera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\camera.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\game.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\game.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\world.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\world.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Level"
+				>
+				<File
+					RelativePath=".\src\body.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\body.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\collision.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\collision.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\level.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\level.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\material.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\material.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\properties.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\properties.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\property.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\property.h"
+					>
+				</File>
+			</Filter>
+			<Filter
 				Name="System"
 				>
+				<File
+					RelativePath=".\src\config.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\config.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\file.cpp"
 					>
@@ -316,14 +408,6 @@
 				</File>
 				<File
 					RelativePath=".\src\input.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\network.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\network.h"
 					>
 				</File>
 				<File
@@ -422,107 +506,27 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="Game"
-				>
-				<File
-					RelativePath=".\src\camera.cpp"
+				<Filter
+					Name="Network"
 					>
-				</File>
-				<File
-					RelativePath=".\src\camera.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\config.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\config.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\game.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\game.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\renderable.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\renderable.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\world.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\world.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Level"
-				>
-				<File
-					RelativePath=".\src\body.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\body.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\collision.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\collision.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\level.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\level.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\material.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\material.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\properties.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\properties.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\property.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\property.h"
-					>
-				</File>
+					<File
+						RelativePath=".\src\network.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\network.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="data"
 			>
+			<File
+				RelativePath=".\bin\config.xml"
+				>
+			</File>
 			<Filter
 				Name="shaders"
 				>

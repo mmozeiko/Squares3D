@@ -12,6 +12,7 @@ class Audio;
 class Network;
 class Input;
 class World;
+class FPS;
 
 const Vector gravityVec(0.0f, -9.81f, 0.0f);
 
@@ -22,6 +23,7 @@ public:
     ~Game();
     
     void run();
+    void saveScreenshot(const FPS& fps) const;
 
     Config*  m_config;
     Video*   m_video;

@@ -2,16 +2,15 @@
 #include "file.h"
 #include "xml.h"
 #include "video.h"
-#include "game.h"
 #include "world.h"
 #include "material.h"
 #include "collision.h"
 #include "body.h"
 #include "properties.h"
 
-Level::Level(const Game* game) : m_game(game)
+Level::Level()
 {
-    m_properties = new Properties(game);
+    m_properties = new Properties();
 }
 
 void Level::load(const string& levelFile, StringSet& loaded)
@@ -49,7 +48,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 if (node.name == "body")
                 {
                     string id = getAttribute(node, "id");
-                    m_bodies[id] = new Body(node, m_game);
+                    m_bodies[id] = new Body(node);
                 }
                 else
                 {
@@ -64,7 +63,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "material")
                 {
-                    m_materials.insert(make_pair(getAttribute(node, "id"), new Material(node, m_game)));
+                    m_materials.insert(make_pair(getAttribute(node, "id"), new Material(node)));
                 }
                 else
                 {
@@ -79,7 +78,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "collision")
                 {
-                    m_collisions[getAttribute(node, "id")] = Collision::create(node, m_game->m_world->m_newtonWorld, this);
+                    m_collisions[getAttribute(node, "id")] = Collision::create(node, this);
                 }
                 else
                 {
@@ -105,6 +104,10 @@ void Level::load(const string& levelFile, StringSet& loaded)
         else if (node.name == "properties")
         {
             m_properties->load(node);
+        }
+        else if (node.name == "defaultProperties")
+        {
+            m_properties->loadDefault(node);
         }
         else
         {
@@ -151,7 +154,7 @@ void Level::prepare()
     }
 }
 
-void Level::render(const Video* video) const
+void Level::render() const
 {
     glPushAttrib(GL_LIGHTING_BIT);
     glDisable(GL_COLOR_MATERIAL);
@@ -159,7 +162,7 @@ void Level::render(const Video* video) const
     {
         if (iter->first != "invisibleWalls") // TODO: hack
         {
-            (iter->second)->render(video);
+            (iter->second)->render();
         }
     }    
     glPopAttrib();

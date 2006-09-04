@@ -2,9 +2,9 @@
 #define __REFEREE_H__
 
 #include "common.h"
-#include "player.h"
-#include "body.h"
 
+class Body;
+class Player;
 
 typedef map<Body*, std::pair<string, Player*> > BodyToPlayerDataMap;
 

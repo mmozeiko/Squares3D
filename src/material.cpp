@@ -4,10 +4,9 @@
 #include "video.h"
 #include "texture.h"
 #include "level.h"
-#include "game.h"
 #include "world.h"
 
-Material::Material(const XMLnode& node, const Game* game) :
+Material::Material(const XMLnode& node) :
     m_id(),
     m_shader(NULL),
     m_cAmbient(0.2f, 0.2f, 0.2f),
@@ -15,8 +14,7 @@ Material::Material(const XMLnode& node, const Game* game) :
     m_cEmission(0.0f, 0.0f, 0.0f),
     m_cShine(0.0f),
     m_texture(0),
-    m_textureBump(0),
-    m_game(game)
+    m_textureBump(0)
 {
     m_id = getAttribute(node, "id");
 
@@ -30,11 +28,11 @@ Material::Material(const XMLnode& node, const Game* game) :
                 const XMLnode& node = *iter;
                 if (node.name == "path")
                 {
-                    m_texture = m_game->m_video->loadTexture(node.value);
+                    m_texture = Video::instance->loadTexture(node.value);
                 }
                 else if (node.name == "bump_path")
                 {
-                    m_textureBump = m_game->m_video->loadTexture(node.value);
+                    m_textureBump = Video::instance->loadTexture(node.value);
                 }
                 else
                 {
@@ -72,7 +70,7 @@ Material::Material(const XMLnode& node, const Game* game) :
         else if (node.name == "shader")
         {
             std::string name = getAttribute(node, "name");
-            m_shader = m_game->m_video->loadShader(name + ".vp", name + ".fp");
+            m_shader = Video::instance->loadShader(name + ".vp", name + ".fp");
         }
         else
         {
@@ -81,7 +79,7 @@ Material::Material(const XMLnode& node, const Game* game) :
     }
 }
 
-void Material::enable(const Video* video) const
+void Material::enable() const
 {
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     m_texture->begin();
@@ -91,19 +89,19 @@ void Material::enable(const Video* video) const
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m_cEmission.v);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_cShine);
 
-    if (video->m_haveShaders && (m_shader != NULL))
+    if (Video::instance->m_haveShaders && (m_shader != NULL))
     {
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
         m_textureBump->begin();
-        video->begin(m_shader);
+        Video::instance->begin(m_shader);
     }
 }
 
-void Material::disable(const Video* video) const
+void Material::disable() const
 {
-    if (video->m_haveShaders && (m_shader != NULL))
+    if (Video::instance->m_haveShaders && (m_shader != NULL))
     {
-        video->end(m_shader);
+        Video::instance->end(m_shader);
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
         m_textureBump->end();
     }

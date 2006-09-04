@@ -6,9 +6,8 @@
 
 #include "common.h"
 #include "vmath.h"
+#include "system.h"
 
-class Game;
-class Config;
 class Shader;
 class Material;
 class Texture;
@@ -37,10 +36,10 @@ struct Face
 typedef map<string, Shader*> ShaderMap;
 typedef map<string, Texture*> TextureMap;
 
-class Video : NoCopy
+class Video : public System<Video>, NoCopy
 {
 public:
-    Video(const Game* game);
+    Video();
     ~Video();
 
     void renderCube() const;
@@ -106,7 +105,6 @@ private:
     GLUquadric*   m_quadricWireSphere;
     GLUquadric*   m_quadricAxes;
 
-    const Config* m_config;
     ShaderMap     m_shaders;
     TextureMap    m_textures;
 };

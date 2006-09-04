@@ -15,7 +15,7 @@ public:
     float read() const;
 
 private:
-    int     m_running;
+    int    m_running;
     float  m_elapsed;
     float  m_resumed;
 };

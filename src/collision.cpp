@@ -5,26 +5,24 @@
 #include "level.h"
 #include "property.h"
 #include "properties.h"
+#include "world.h"
 
 class CollisionConvex : public Collision
 {
 protected:
-    CollisionConvex(const XMLnode& node, 
-                    const NewtonWorld* newtonWorld, 
-                    const Level* level);
+    CollisionConvex(const XMLnode& node, const Level* level);
 
     Material* m_material;
     bool      m_hasOffset; // false
     Matrix    m_matrix;
+    int       m_propertyID;
 };
 
 class CollisionBox : public CollisionConvex
 {
 public:
-    CollisionBox(const XMLnode& node, 
-                 const NewtonWorld* newtonWorld, 
-                 const Level* level);
-    void render(const Video* video) const;
+    CollisionBox(const XMLnode& node, const Level* level);
+    void render() const;
 
     Vector m_size;      // (1.0f, 1.0f, 1.0f)
 };
@@ -32,10 +30,8 @@ public:
 class CollisionSphere : public CollisionConvex
 {
 public:
-    CollisionSphere(const XMLnode& node, const 
-                    NewtonWorld* newtonWorld, 
-                    const Level* level);
-    void render(const Video* video) const;
+    CollisionSphere(const XMLnode& node, const Level* level);
+    void render() const;
 
     Vector m_radius;      // (1.0f, 1.0f, 1.0f)
 };
@@ -43,10 +39,8 @@ public:
 class CollisionTree : public Collision
 {
 public:
-    CollisionTree(const XMLnode& node, 
-                  const NewtonWorld* newtonWorld, 
-                  const Level* level);
-    void render(const Video* video) const;
+    CollisionTree(const XMLnode& node, const Level* level);
+    void render() const;
 
     vector<Face>      m_faces;
     vector<Material*> m_materials;
@@ -54,14 +48,13 @@ public:
 
 
 
-Collision::Collision(const XMLnode& node, const NewtonWorld* newtonWorld) :
-    m_inertia(), m_mass(0.0f), m_origin(), m_newtonWorld(newtonWorld)
+Collision::Collision(const XMLnode& node) : m_inertia(), m_mass(0.0f), m_origin()
 {
 }
 
 Collision::~Collision()
 {
-    //NewtonReleaseCollision(m_newtonWorld, m_newtonCollision);
+    //NewtonReleaseCollision(World::instance->m_newtonWorld, m_newtonCollision);
 }
 
 void Collision::create(NewtonCollision* collision)
@@ -69,35 +62,33 @@ void Collision::create(NewtonCollision* collision)
     m_newtonCollision = collision;
 }
 
-void Collision::create(NewtonCollision* collision, float mass)
+void Collision::create(NewtonCollision* collision, int propertyID, float mass)
 {
     m_newtonCollision = collision;
     m_mass = mass;
 
     NewtonConvexCollisionCalculateInertialMatrix(m_newtonCollision, m_inertia.v, m_origin.v);
-    NewtonConvexCollisionSetUserID(m_newtonCollision, CollisionType_Convex);
+    NewtonConvexCollisionSetUserID(m_newtonCollision, propertyID);
 
     m_inertia *= mass;
     m_origin *= mass;
 }
 
-Collision* Collision::create(const XMLnode& node, 
-                             const NewtonWorld* newtonWorld, 
-                             const Level* level)
+Collision* Collision::create(const XMLnode& node, const Level* level)
 {
     string type = getAttribute(node, "type");
     
     if (type == "box")
     {
-        return new CollisionBox(node, newtonWorld, level);
+        return new CollisionBox(node, level);
     }    
     if (type == "sphere")
     {
-        return new CollisionSphere(node, newtonWorld, level);
+        return new CollisionSphere(node, level);
     }
     else if (type == "tree")
     {
-        return new CollisionTree(node, newtonWorld, level);
+        return new CollisionTree(node, level);
     }
     else
     {
@@ -105,20 +96,26 @@ Collision* Collision::create(const XMLnode& node,
     }
 }
 
-CollisionConvex::CollisionConvex(const XMLnode& node, 
-                                 const NewtonWorld* newtonWorld, 
-                                 const Level* level) :
-    Collision(node, newtonWorld),
+CollisionConvex::CollisionConvex(const XMLnode& node, const Level* level) :
+    Collision(node),
     m_hasOffset(false),
     m_material(NULL)
 {
     Vector offset(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
 
-    string name = "material";
-    if (foundInMap(node.attributes, name))
+    if (foundInMap(node.attributes, "property"))
     {
-        string material = getAttribute(node, name);
+        m_propertyID = level->m_properties->getPropertyID(getAttribute(node, "property"));
+    }
+    else
+    {
+        m_propertyID = level->m_properties->getDefault();
+    }
+
+    if (foundInMap(node.attributes, "material"))
+    {
+        string material = getAttribute(node, "material");
         MaterialMap::const_iterator iter = level->m_materials.find(material);
         if (iter == level->m_materials.end())
         {
@@ -126,7 +123,7 @@ CollisionConvex::CollisionConvex(const XMLnode& node,
         }
         m_material = iter->second;;
     }
-
+    
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
@@ -149,8 +146,8 @@ CollisionConvex::CollisionConvex(const XMLnode& node,
     }
 }
 
-CollisionBox::CollisionBox(const XMLnode& node, const NewtonWorld* newtonWorld, const Level* level) :
-    CollisionConvex(node, newtonWorld, level),
+CollisionBox::CollisionBox(const XMLnode& node, const Level* level) :
+    CollisionConvex(node, level),
     m_size(1.0f, 1.0f, 1.0f)
 {
     float mass = cast<float>(getAttribute(node, "mass"));
@@ -170,18 +167,19 @@ CollisionBox::CollisionBox(const XMLnode& node, const NewtonWorld* newtonWorld, 
 
     create(
         NewtonCreateBox(
-            newtonWorld, 
+            World::instance->m_newtonWorld, 
             m_size.x, m_size.y, m_size.z, 
             (m_hasOffset ? m_matrix.m : NULL)
         ),
+        m_propertyID,
         mass);
 }
 
-void CollisionBox::render(const Video* video) const
+void CollisionBox::render() const
 {
     glPushMatrix();
 
-    video->enableMaterial(m_material);
+    Video::instance->enableMaterial(m_material);
 
     if (m_hasOffset)
     {
@@ -189,15 +187,15 @@ void CollisionBox::render(const Video* video) const
     }
 
     glScalef(m_size.x, m_size.y, m_size.z);
-    video->renderCube();
+    Video::instance->renderCube();
 
-    video->disableMaterial(m_material);
+    Video::instance->disableMaterial(m_material);
 
     glPopMatrix();
 }
 
-CollisionSphere::CollisionSphere(const XMLnode& node, const NewtonWorld* newtonWorld, const Level* level) :
-    CollisionConvex(node, newtonWorld, level),
+CollisionSphere::CollisionSphere(const XMLnode& node, const Level* level) :
+    CollisionConvex(node, level),
     m_radius(1.0f, 1.0f, 1.0f)
 {
     float mass = cast<float>(getAttribute(node, "mass"));
@@ -217,18 +215,19 @@ CollisionSphere::CollisionSphere(const XMLnode& node, const NewtonWorld* newtonW
 
     create(
         NewtonCreateSphere(
-            newtonWorld, 
+            World::instance->m_newtonWorld, 
             m_radius.x, m_radius.y, m_radius.z, 
             (m_hasOffset ? m_matrix.m : NULL)
         ),
+        m_propertyID,
         mass);
 }
 
-void CollisionSphere::render(const Video* video) const
+void CollisionSphere::render() const
 {
     glPushMatrix();
 
-    video->enableMaterial(m_material);
+    Video::instance->enableMaterial(m_material);
 
     if (m_hasOffset)
     {
@@ -236,15 +235,14 @@ void CollisionSphere::render(const Video* video) const
     }
 
     glScalef(m_radius.x, m_radius.y, m_radius.z);
-    video->renderSphere();
+    Video::instance->renderSphere();
 
-    video->disableMaterial(m_material);
+    Video::instance->disableMaterial(m_material);
 
     glPopMatrix();
 }
 
-CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld, const Level* level) :
-    Collision(node, newtonWorld)
+CollisionTree::CollisionTree(const XMLnode& node, const Level* level) : Collision(node)
 {
     vector<int> props;
 
@@ -269,14 +267,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld
             }
             
             string p = getAttribute(node, "property");
-            if (p.empty())
-            {
-                props.push_back(0);
-            }
-            else
-            {
-                props.push_back(level->m_properties->getPropertyID(p));
-            }
+            props.push_back(level->m_properties->getPropertyID(p));
 
             m_faces.push_back(Face());
             Face& face = m_faces.back();
@@ -308,7 +299,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld
         }
     }
     
-    NewtonCollision* collision = NewtonCreateTreeCollision(newtonWorld, NULL);
+    NewtonCollision* collision = NewtonCreateTreeCollision(World::instance->m_newtonWorld, NULL);
     NewtonTreeCollisionBeginBuild(collision);
     for (size_t i=0; i<m_faces.size(); i++)
     {
@@ -325,7 +316,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const NewtonWorld* newtonWorld
     create(collision);
 }
 
-void CollisionTree::render(const Video* video) const
+void CollisionTree::render() const
 {
     if (m_faces.size() == 0)
     {
@@ -333,24 +324,24 @@ void CollisionTree::render(const Video* video) const
     }
 
     const Material* last = m_materials[0];
-    video->enableMaterial(last);
+    Video::instance->enableMaterial(last);
     for (size_t i = 0; i < m_faces.size(); i++)
     {
         if (last != m_materials[i])
         {
-            video->disableMaterial(last);
-            video->enableMaterial(m_materials[i]);
+            Video::instance->disableMaterial(last);
+            Video::instance->enableMaterial(m_materials[i]);
             last = m_materials[i];
         }
-        video->renderFace(m_faces[i]);
+        Video::instance->renderFace(m_faces[i]);
     }
-    video->disableMaterial(last);
+    Video::instance->disableMaterial(last);
 /*
     for (size_t i = 0; i < m_faces.size(); i++)
     {
-        video->enableMaterial(m_materials[i]);
-        video->renderFace(m_faces[i]);
-        video->disableMaterial(m_materials[i]);
+        Video::instance->enableMaterial(m_materials[i]);
+        Video::instance->renderFace(m_faces[i]);
+        Video::instance->disableMaterial(m_materials[i]);
     }
 */
 }

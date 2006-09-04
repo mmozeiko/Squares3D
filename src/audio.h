@@ -2,21 +2,21 @@
 #define __AUDIO_H__
 
 #include "common.h"
+#include "system.h"
 
 // forward declarations
 typedef struct ALCdevice_struct ALCdevice;
 typedef struct ALCcontext_struct ALCcontext;
 
-class Game;
 class Config;
 
 class Music;
 typedef set<Music*> MusicSet;
 
-class Audio : NoCopy
+class Audio : public System<Audio>, NoCopy
 {
 public:
-    Audio(const Game* game);
+    Audio();
     ~Audio();
 
     Music* loadMusic(const string& filename);
@@ -25,7 +25,6 @@ public:
     void update();
 
 private:
-    const Config* m_config;
     ALCdevice*    m_device;
     ALCcontext*   m_context;
 

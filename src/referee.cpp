@@ -1,7 +1,8 @@
 #include "referee.h"
+#include "player.h"
+#include "body.h"
 
-Referee::Referee():
-    m_gameOver(false)
+Referee::Referee(): m_gameOver(false)
 {
     initEvents();
 }

@@ -1,37 +1,33 @@
 #include <Newton.h>
 
 #include "ball.h"
-#include "video.h"
-#include "game.h"
 #include "referee.h"
 #include "collision.h"
 #include "world.h"
 
-Ball::Ball(Body* body, 
-           const Game* game) :
-    m_body(body),
-    m_game(game)
+Ball::Ball(Body* body) : m_body(body)
 {
     m_body->setCollideable(this);
-    
-    NewtonCollision* ballCollision = (*m_body->m_collisions.begin())->m_newtonCollision;
-    NewtonCollision* hull = NewtonCreateConvexHullModifier(m_game->m_world->m_newtonWorld, ballCollision);
 
-    // hull scale - 5%
-    static const float t = 3.05f;
+    NewtonCollision* ballCollision = (*m_body->m_collisions.begin())->m_newtonCollision;
+    NewtonCollision* hull = NewtonCreateConvexHullModifier(World::instance->m_newtonWorld, ballCollision);
+
+    // hull scale - 10%
+    static const float t = 1.10f;
     Matrix matrix = Matrix::scale(Vector(t, t, t));
 
     NewtonConvexHullModifierSetMatrix(hull, matrix.m);
-    NewtonConvexCollisionSetUserID(hull, CollisionType_Hull);
+    // TODO: get invisible id (1) from real m_properties
+    NewtonConvexCollisionSetUserID(hull, 1); // m_properties->getInvisible()
 
     NewtonCollision* both[] = { ballCollision, hull };
-    NewtonCollision* newCollision = NewtonCreateCompoundCollision(m_game->m_world->m_newtonWorld, sizeOfArray(both), both);
-   
+    NewtonCollision* newCollision = NewtonCreateCompoundCollision(World::instance->m_newtonWorld, sizeOfArray(both), both);
+
     NewtonBodySetCollision(m_body->m_newtonBody, newCollision);
 
-    // TODO: wtf?
-    //NewtonReleaseCollision(m_game->m_world->m_newtonWorld, hull);
-    //NewtonReleaseCollision(m_game->m_world->m_newtonWorld, newCollision);
+    // TODO: hmm?
+    //NewtonReleaseCollision(hull);
+    //NewtonReleaseCollision(newCollision);
 }
 
 Vector Ball::getPosition()
@@ -51,6 +47,6 @@ void Ball::onCollide(Body* other, const NewtonMaterial* material)
 
 void Ball::onCollideHull(Body* other, const NewtonMaterial* material)
 {
-    // collision with convex hull
+    // collision with hull
     1;
 }

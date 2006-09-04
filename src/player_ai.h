@@ -9,10 +9,10 @@ class Input;
 class AiPlayer : public Player
 {
 public:
-    AiPlayer(const string& id, const Game* game, const Vector& position, const Vector& rotation);
+    AiPlayer(const string& id, const Vector& position, const Vector& rotation);
     ~AiPlayer();
 
-    void control(const Input* input);
+    void control();
 };
 
 #endif

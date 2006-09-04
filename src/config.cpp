@@ -2,9 +2,11 @@
 #include "file.h"
 #include "xml.h"
 
+Config* System<Config>::instance = NULL;
+
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0 };
+const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true };
 const AudioConfig Config::defaultAudio = { true };
 const MiscConfig Config::defaultMisc = { true };
 
@@ -47,9 +49,13 @@ Config::Config() :
                 {
                     m_video.vsync = cast<int>(node.value)==1;
                 }
-                else if (node.name == "fsaa-samples")
+                else if (node.name == "fsaa_samples")
                 {
                     m_video.samples = cast<int>(node.value);
+                }
+                else if (node.name == "use_shaders")
+                {
+                    m_video.useShaders = cast<int>(node.value)==1;
                 }
                 else
                 {
@@ -115,7 +121,8 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("height", cast<string>(m_video.height)));
     xml.childs.back().childs.push_back(XMLnode("fullscreen", cast<string>(m_video.fullscreen ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("vsync", cast<string>(m_video.vsync ? 1 : 0)));
-    xml.childs.back().childs.push_back(XMLnode("fsaa-samples", cast<string>(m_video.samples)));
+    xml.childs.back().childs.push_back(XMLnode("fsaa_samples", cast<string>(m_video.samples)));
+    xml.childs.back().childs.push_back(XMLnode("use_shaders", cast<string>(m_video.useShaders ? 1 : 0)));
 
     xml.childs.push_back(XMLnode("audio"));
     xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));

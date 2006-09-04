@@ -3,15 +3,14 @@
 
 #include "common.h"
 
-class Video;
 class Texture;
 
 class SkyBox : NoCopy
 {
 public:
-    SkyBox(Video* video);
+    SkyBox();
 
-    void render(const Video* video) const;
+    void render() const;
 
 private:
     Texture* m_texture;

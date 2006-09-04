@@ -4,7 +4,6 @@
 #include "camera.h"
 #include "video.h"
 #include "audio.h"
-#include "game.h"
 #include "player_local.h"
 #include "player_ai.h"
 #include "input.h"
@@ -17,40 +16,37 @@
 #include "referee.h"
 #include "ball.h"
 
-World::World(Game* game) : Renderable(game)
+World* System<World>::instance = NULL;
+
+World::World()
 {
-    //m_camera = new Camera(m_game, Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
-    m_camera = new Camera(m_game, Vector(0.0f, 5.0f, 8.0f), 30.0f, 0.0f);
-    m_skybox = new SkyBox(m_game->m_video);
+    //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
+    m_camera = new Camera(Vector(0.0f, 5.0f, 8.0f), 30.0f, 0.0f);
+    m_skybox = new SkyBox();
 
     m_newtonWorld = NewtonCreate(NULL, NULL);
     NewtonWorldSetUserData(m_newtonWorld, static_cast<void*>(this));
     NewtonSetSolverModel(m_newtonWorld, 10);
     NewtonSetFrictionModel(m_newtonWorld, 1);
     
-    m_music = m_game->m_audio->loadMusic("music.ogg");
-    //m_music->play();
+    m_music = Audio::instance->loadMusic("music.ogg");
+    m_music->play();
 }
 
 void World::init()
 {
-    m_level = new Level(m_game);
+    m_level = new Level();
     m_level->load("level.xml");
     m_referee = new Referee();
 
-    // TODO: move to level file
-    int id = NewtonMaterialGetDefaultGroupID(m_newtonWorld);
-    NewtonMaterialSetDefaultFriction(m_newtonWorld, id, id, 0.0, 1.0);
-    NewtonMaterialSetDefaultFriction(m_newtonWorld, id, m_level->m_properties->getPropertyID("penguin"), 0.0f, 0.0f);
-
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
-    m_ball = new Ball(m_level->getBody("football"), m_game);
+    m_ball = new Ball(m_level->getBody("football"));
     m_referee->m_ball = m_ball->m_body;
     m_ball->m_referee = m_referee;
     m_referee->m_ground = m_level->getBody("level");
 
-    m_localPlayers.push_back(new LocalPlayer("player", m_game, Vector(-1.5f, 2.0f, -1.5f), Vector(0.0f, 0.0f, 0.0f)));
+    m_localPlayers.push_back(new LocalPlayer("player", Vector(-1.5f, 2.0f, -1.5f), Vector(0.0f, 0.0f, 0.0f)));
     m_localPlayers.back()->m_referee = m_referee;
     m_referee->registerPlayer("player1", m_localPlayers.back());
 
@@ -63,7 +59,7 @@ void World::init()
             if ((x != -1.5f) || (z != -1.5f))
             {
                 Vector pos(x, 1.0f, z);
-                m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), m_game, pos, Vector(0.0f, 0.0f, 0.0f)));
+                m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), pos, Vector(0.0f, 0.0f, 0.0f)));
                 m_localPlayers.back()->m_referee = m_referee;
                 stringstream ss;
                 ss << i;
@@ -77,7 +73,7 @@ void World::init()
 World::~World()
 {
     m_music->stop();
-    m_game->m_audio->unloadMusic(m_music);
+    Audio::instance->unloadMusic(m_music);
 
     for each_const(vector<Player*>, m_localPlayers, player)
     {
@@ -88,7 +84,6 @@ World::~World()
     delete m_referee;
     delete m_ball;
 
-    NewtonMaterialDestroyAllGroupID(m_newtonWorld);
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
 
@@ -96,19 +91,20 @@ World::~World()
     delete m_camera;
 }
 
-void World::control(const Input* input)
+void World::control()
 {
     if (glfwGetWindowParam(GLFW_ACTIVE) == GL_TRUE)
     {
-        m_camera->control(input);
-        for each_const(vector<Player*>, m_localPlayers, player)
-        {
-            (*player)->control(input);
-        }
+        // only camera and local players
+        m_camera->control();
+        m_localPlayers.front()->control();
     }
+    // other objects go after this
 
-    // other objects go here
-    // ...
+    for (size_t i=1; i<m_localPlayers.size(); i++)
+    {
+        m_localPlayers[i]->control();
+    }
 }
 
 void World::update(float delta)
@@ -122,15 +118,15 @@ void World::prepare()
     m_level->prepare();
 }
 
-void World::render(const Video* video) const
+void World::render() const
 {
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    m_camera->render(video);
+    m_camera->render();
 
-    m_skybox->render(video); // !! immediately  after camera render !!
+    m_skybox->render(); // !! immediately  after camera render !!
 
-    m_level->render(video);
+    m_level->render();
 
-    video->renderAxes();
+    Video::instance->renderAxes();
 }

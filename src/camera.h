@@ -3,18 +3,17 @@
 
 #include "common.h"
 #include "vmath.h"
-#include "renderable.h"
 
-class Camera : public Renderable
+class Camera
 {
 public:
-    Camera(Game* game, const Vector& pos = Vector(15.0f, 20.0f, 15.0f), float angleX = 0, float angleY = 0);
+    Camera(const Vector& pos = Vector(15.0f, 20.0f, 15.0f), float angleX = 0, float angleY = 0);
     ~Camera();  
 
-    void control(const Input* input);
+    void control();
     void update(float delta);
     void prepare();
-    void render(const Video* video) const;
+    void render() const;
 
     float angleY() const;
 

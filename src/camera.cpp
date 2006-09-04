@@ -2,13 +2,12 @@
 
 #include "camera.h"
 #include "input.h"
-#include "game.h"
 #include "world.h"
 #include "level.h"
 #include "body.h"
 
-static const float LOOK_SPEED = 2.0f;
-static const float MOVE_SPEED = 30.0f;
+static const float LOOK_SPEED = 1.0f;
+static const float MOVE_SPEED = 10.0f;
 
 /*
 Translate(Camera.Position);
@@ -80,8 +79,7 @@ gluLookAt(
 */
 
 
-Camera::Camera(Game* game, const Vector& pos, float angleX, float angleY) :
-    Renderable(game),
+Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_pos(-pos), 
     m_angleX(angleX * DEG_IN_RAD), 
     m_angleY(angleY * DEG_IN_RAD),
@@ -99,9 +97,9 @@ Camera::~Camera()
 
 bool userControlled = false;
 
-void Camera::control(const Input* input)
+void Camera::control()
 {
-    const Mouse& mouse = input->mouse();
+    const Mouse& mouse = Input::instance->mouse();
     int dx = mouse.x - m_lastMouse.first;
     int dy = mouse.y - m_lastMouse.second;
 
@@ -125,17 +123,17 @@ void Camera::control(const Input* input)
     m_targetDirection = Vector();
     m_targetRotation = Vector();
 
-    if (input->key(GLFW_KEY_UP)) m_targetDirection.z = +1.0f;
-    if (input->key(GLFW_KEY_DOWN))  m_targetDirection.z = -1.0f;
-    if (input->key(GLFW_KEY_RIGHT))  m_targetDirection.x = +1.0f;
-    if (input->key(GLFW_KEY_LEFT)) m_targetDirection.x = -1.0f;
+    if (Input::instance->key(GLFW_KEY_UP)) m_targetDirection.z = +1.0f;
+    if (Input::instance->key(GLFW_KEY_DOWN))  m_targetDirection.z = -1.0f;
+    if (Input::instance->key(GLFW_KEY_RIGHT))  m_targetDirection.x = +1.0f;
+    if (Input::instance->key(GLFW_KEY_LEFT)) m_targetDirection.x = -1.0f;
 
-    if (input->key(GLFW_KEY_HOME)) m_targetRotation.x = -1.0f;
-    if (input->key(GLFW_KEY_END))  m_targetRotation.x = +1.0f;
-    if (input->key(GLFW_KEY_DEL))  m_targetRotation.y = -1.0f;
-    if (input->key(GLFW_KEY_PAGEDOWN)) m_targetRotation.y = +1.0f;
+    if (Input::instance->key(GLFW_KEY_HOME)) m_targetRotation.x = -1.0f;
+    if (Input::instance->key(GLFW_KEY_END))  m_targetRotation.x = +1.0f;
+    if (Input::instance->key(GLFW_KEY_DEL))  m_targetRotation.y = -1.0f;
+    if (Input::instance->key(GLFW_KEY_PAGEDOWN)) m_targetRotation.y = +1.0f;
 
-    if (input->key(GLFW_KEY_ENTER))
+    if (Input::instance->key(GLFW_KEY_ENTER))
     {
         userControlled = true;
     }
@@ -151,7 +149,7 @@ void Camera::update(float delta)
 {
     if (userControlled)
     {
-        Body* ball = m_game->m_world->m_level->getBody("football");
+        Body* ball = World::instance->m_level->getBody("football");
         Vector ballPos = ball->getPosition();
 
         Vector d = ballPos - m_pos;
@@ -193,7 +191,7 @@ void Camera::prepare()
     glPopMatrix();
 }
 
-void Camera::render(const Video* video) const
+void Camera::render() const
 {
     glLoadMatrixf(m_matrix.m);
 }

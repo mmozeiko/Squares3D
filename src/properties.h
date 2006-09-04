@@ -4,12 +4,8 @@
 #include "common.h"
 #include "property.h"
 
-class Game;
 class Property;
 class XMLnode;
-
-struct MaterialContact;
-typedef set<MaterialContact*> MaterialContactSet;
 
 typedef long long pID;
 typedef map<pID, Property> PropertiesMap;
@@ -18,18 +14,24 @@ class Properties : NoCopy
 {
     friend struct MaterialContact;
 public:
-    Properties(const Game* game);
+    Properties();
     ~Properties();
 
     void load(const XMLnode& node);
-    int getPropertyID(const string& name);
+    void loadDefault(const XMLnode& node);
     const Property* get(int id0, int id1) const;
 
+    int  getUndefined() const;              // 0
+    int  getInvisible() const;              // 1
+    int  getDefault() const;                // 2
+    int  getPropertyID(const string& name); // >=3
+    bool hasPropertyID(int id) const; // id>=3
+
 private:
+    int                 m_uniqueID;
     PropertiesMap       m_properties;
-    MaterialContactSet  m_materialContacts;
-    IntMap              m_newtonMaterials;
-    const Game*         m_game;
+    IntMap              m_propertiesID;
+    MaterialContact*    m_materialContact;
 
     pID makepID(int id0, int id1) const;
 };

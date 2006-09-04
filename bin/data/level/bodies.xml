@@ -1,143 +1,49 @@
 <xml>
-  <bodies>
-    <body id="level" property="level">
-      <collision>tree1</collision>
-    </body>
+    <bodies>
+        <body id="level">
+            <collision>level</collision>
+        </body>
+        
+        <body id="wall">
+            <collision>walls</collision>
+        </body>
+        
 
-    <body id="player" property="player">
+    <body id="player">
       <position x="-4.0" y="2.5" z="2.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_biggy</collision>
     </body>
 
-    <body id="football" property="ball">
+    <body id="football">
       <position x="0.0" y="0.5" z="0.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>football</collision>
     </body>
 
-    <body id="penguin0" property="penguin">
+    <body id="penguin0">
       <position x="-8.0" y="5.5" z="5.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin1" property="penguin">
+    <body id="penguin1">
       <position x="-8.0" y="5.5" z="4.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin2" property="penguin">
+    <body id="penguin2">
       <position x="-8.0" y="5.5" z="4.0" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
 
-    <body id="penguin3" property="penguin">
+    <body id="penguin3">
       <position x="-8.0" y="5.5" z="3.5" />
       <rotation x="0.0" y="0.0" z="0.0" />
       <collision>player_small</collision>
     </body>
-
-    <!--body id="penguin4" property="penguin">
-      <position x="-8.0" y="5.5" z="3.0" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player_small</collision>
-    </body>
-
-    <body id="penguin5" property="penguin">
-      <position x="-8.0" y="5.5" z="2.5" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player_small</collision>
-    </body>
-
-    <body id="penguin6" property="penguin">
-      <position x="-8.0" y="5.5" z="2.0" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player_small</collision>
-    </body>
-
-    <body id="penguin7" property="penguin">
-      <position x="-8.0" y="5.5" z="1.5" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player_small</collision>
-    </body>
-
-    <body id="penguin8" property="penguin">
-      <position x="-8.0" y="5.5" z="1.0" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player_small</collision>
-    </body>
-
-    <body id="penguin9" property="penguin">
-      <position x="-8.0" y="5.5" z="0.5" />
-      <rotation x="0.0" y="0.0" z="0.0" />
-      <collision>player_small</collision>
-    </body>
-
-      <body id="penguin10" property="penguin">
-          <position x="-6.0" y="5.5" z="-9.0" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-
-      <body id="penguin11" property="penguin">
-          <position x="-6.0" y="5.5" z="-5.0" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin12" property="penguin">
-          <position x="-6.0" y="5.5" z="-4.5" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin13" property="penguin">
-          <position x="-6.0" y="5.5" z="-4.0" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin14" property="penguin">
-          <position x="-6.0" y="5.5" z="-3.5" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin15" property="penguin">
-          <position x="-6.0" y="5.5" z="-3.0" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin16" property="penguin">
-          <position x="-6.0" y="5.5" z="-2.5" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin17" property="penguin">
-          <position x="-6.0" y="5.5" z="-2.0" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin18" property="penguin">
-          <position x="-6.0" y="5.5" z="-1.5" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin19" property="penguin">
-          <position x="-6.0" y="5.5" z="-1.0" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body>
-      <body id="penguin20" property="penguin">
-          <position x="-6.0" y="5.5" z="-0.5" />
-          <rotation x="0.0" y="0.0" z="0.0" />
-          <collision>player_small</collision>
-      </body-->
-
-      <!--body id="sphere">
-      <position x="-8.0" y="5.5" z="2.0" />
-      <rotation x="0.0" y="0.5" z="0.0" />
-      <collision>bumbaLiela</collision>
-    </body-->
 
     <!--body id="some_crap">
       <position x="-2.0" y="1.8" z="-2.0" />

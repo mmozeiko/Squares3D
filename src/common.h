@@ -60,6 +60,13 @@ inline bool foundInMap(const map<KeyType, ValueType>& Map,
     return Map.find(Key) != Map.end();
 }
 
+template <typename KeyType, typename ValueType>
+inline bool foundInMap(const map<KeyType, ValueType>& Map,
+                       const char*                    Key)
+{
+    return Map.find(Key) != Map.end();
+}
+
 template <typename KeyType>
 inline bool foundInSet(const set<KeyType>& Set,
                        const KeyType&      Key)

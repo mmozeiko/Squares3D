@@ -3,7 +3,7 @@
 
 #include <Newton.h>
 #include "common.h"
-#include "renderable.h"
+#include "system.h"
 
 class Camera;
 class Player;
@@ -13,18 +13,18 @@ class Music;
 class Referee;
 class Ball;
 
-class World : public Renderable, NoCopy
+class World : public System<World>, NoCopy
 {
 public:
-    World(Game* game);
+    World();
     ~World();
 
     void init();
     
-    void control(const Input* input);
+    void control();
     void update(float delta);
     void prepare();
-    void render(const Video* video) const;
+    void render() const;
 
     Music*           m_music;
     Camera*          m_camera;

@@ -6,9 +6,6 @@
 #include "vmath.h"
 
 class XMLnode;
-class Game;
-class Video;
-
 class Material;    
 class Properties;
 class Collision;
@@ -25,10 +22,10 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
 class Level : NoCopy
 {
 public:
-    Level(const Game* game);
+    Level();
     ~Level();
     void  load(const string& levelFile, StringSet& loaded = StringSet());
-    void  render(const Video* video) const;
+    void  render() const;
     void  prepare();
     Body* getBody(const string id);
 
@@ -36,9 +33,6 @@ public:
     CollisionsMap m_collisions;
     MaterialMap   m_materials;
     Properties*   m_properties;
-
-private:
-    const Game* m_game;
 };
 
 

@@ -7,37 +7,28 @@
 
 class Body;
 class XMLnode;
-class Video;
-class Material;
 class Level;
-
-enum CollisionType
-{
-    CollisionType_Convex = 1,
-    CollisionType_Hull = 2,
-};
 
 class Collision : NoCopy
 {
     friend class Body;
 
 public:
-    static Collision* create(const XMLnode& node, const NewtonWorld* newtonWorld, const Level* level);
+    static Collision* create(const XMLnode& node, const Level* level);
     
-    virtual void render(const Video* video) const = 0;
+    virtual void render() const = 0;
 
     NewtonCollision*  m_newtonCollision;
 
     virtual ~Collision();
 
 protected:
-    Collision(const XMLnode& node, const NewtonWorld* newtonWorld);
+    Collision(const XMLnode& node);
 
     void create(NewtonCollision* collision);
-    void create(NewtonCollision* collision, float mass);
+    void create(NewtonCollision* collision, int propertyID, float mass);
 
 private:
-    const NewtonWorld*     m_newtonWorld;
     Vector                 m_origin;
     Vector                 m_inertia;
     float                  m_mass;

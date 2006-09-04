@@ -1,7 +1,6 @@
 #include <GL/glfw.h>
 
 #include "video.h"
-#include "game.h"
 #include "config.h"
 #include "file.h"
 #include "shader.h"
@@ -21,7 +20,9 @@ static void GLFWCALL sizeCb(int width, int height)
   glLoadIdentity();
 }
 
-Video::Video(const Game* game) : m_config(game->m_config), m_haveShaders(false)
+Video* System<Video>::instance = NULL;
+
+Video::Video() : m_haveShaders(false)
 {
     clog << "Initializing video." << endl;
 
@@ -30,11 +31,11 @@ Video::Video(const Game* game) : m_config(game->m_config), m_haveShaders(false)
         throw Exception("glfwInit failed");
     }
 
-    int width = m_config->m_video.width;;
-    int height = m_config->m_video.height;
-    bool vsync = m_config->m_video.vsync;
-    int mode = (m_config->m_video.fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
-    bool systemKeys = m_config->m_misc.system_keys;
+    int width = Config::instance->m_video.width;;
+    int height = Config::instance->m_video.height;
+    bool vsync = Config::instance->m_video.vsync;
+    int mode = (Config::instance->m_video.fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);
+    bool systemKeys = Config::instance->m_misc.system_keys;
 
     int     modes[]  = { mode, GLFW_WINDOW };
     int     depths[] = { 32, 24, 16 };
@@ -43,9 +44,9 @@ Video::Video(const Game* game) : m_config(game->m_config), m_haveShaders(false)
     bool fullscr, success = false;
 
     glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, 1);
-    if (m_config->m_video.samples > 0)
+    if (Config::instance->m_video.samples > 0)
     {
-        glfwOpenWindowHint(GLFW_FSAA_SAMPLES, m_config->m_video.samples);
+        glfwOpenWindowHint(GLFW_FSAA_SAMPLES, Config::instance->m_video.samples);
     }
 
     for (int m=0; m<sizeOfArray(modes) && !success; m++)
@@ -337,7 +338,7 @@ void Video::enableMaterial(const Material* material) const
 {
     if (material != NULL)
     {
-        material->enable(this);
+        material->enable();
     }
 }
 
@@ -345,7 +346,7 @@ void Video::disableMaterial(const Material* material) const
 {
     if (material != NULL)
     {
-        material->disable(this);
+        material->disable();
     }
 }
 
@@ -495,9 +496,10 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
     }
 */
     if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
-        glfwExtensionSupported("GL_ARB_vertex_shader"))
+        glfwExtensionSupported("GL_ARB_vertex_shader") &&
+        Config::instance->m_video.useShaders)
     {
-        //m_haveShaders = true;
+        m_haveShaders = true;
 
         loadProc(glCreateShaderObjectARB);
         loadProc(glShaderSourceARB);

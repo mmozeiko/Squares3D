@@ -3,6 +3,8 @@
 #include "network.h"
 #include "random.h"
 
+Network* System<Network>::instance = NULL;
+
 Network::Network()
 {
     clog << "Initializing network." << endl;

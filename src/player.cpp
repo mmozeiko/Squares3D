@@ -2,14 +2,12 @@
 
 #include "player.h"
 #include "video.h"
-#include "game.h"
 #include "world.h"
 #include "referee.h"
 
-Player::Player(const string& id, const Game* game, const Vector& position, const Vector& rotation) :
-    m_body(game->m_world->m_level->getBody(id)),
-    m_isOnGround(true),
-    m_game(game)
+Player::Player(const string& id, const Vector& position, const Vector& rotation) :
+    m_body(World::instance->m_level->getBody(id)),
+    m_isOnGround(true)
 {
     m_body->setTransform(position, rotation);
 
@@ -27,14 +25,14 @@ Player::Player(const string& id, const Game* game, const Vector& position, const
     NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);
 
       // add an up vector constraint to help in keeping the body upright
-    m_upVector = NewtonConstraintCreateUpVector(m_game->m_world->m_newtonWorld, Vector::Y.v, m_body->m_newtonBody); 
+    m_upVector = NewtonConstraintCreateUpVector(World::instance->m_newtonWorld, Vector::Y.v, m_body->m_newtonBody); 
 
     m_body->setCollideable(this);
 }
 
 Player::~Player()
 {
-    NewtonDestroyJoint(m_game->m_world->m_newtonWorld, m_upVector);
+    NewtonDestroyJoint(World::instance->m_newtonWorld, m_upVector);
 }
 
 Vector Player::getPosition()
@@ -54,21 +52,20 @@ void Player::setRotation(const Vector& rotation)
 
 void Player::onSetForceAndTorque()
 {
-    float timestepInv = 1.0f / 0.01f; // 0.01f == DT
-
-    float mass;
-    float Ixx, Iyy, Izz;
-
-    // Get the mass of the object
-    NewtonBodyGetMassMatrix(m_body->m_newtonBody, &mass, &Ixx, &Iyy, &Izz );
+    float timestepInv = 1.0f / NewtonGetTimeStep(World::instance->m_newtonWorld);
 
     Vector currentVel;
     NewtonBodyGetVelocity(m_body->m_newtonBody, currentVel.v);
       
     Vector targetVel = m_direction;
 
-    Vector force = (targetVel * 5.0f - currentVel ) * timestepInv * mass;
-    if (!m_isOnGround && glfwGetKey(GLFW_KEY_SPACE)==GLFW_RELEASE) force.y = 0.0f;
+    Vector force = (targetVel * 5.0f - currentVel ) * timestepInv * m_body->getMass();
+
+    // TODO: move to player_local, at least KEY_SPACE part
+    if (glfwGetKey(GLFW_KEY_SPACE)!=GLFW_PRESS || !m_isOnGround)
+    {
+       force.y = 0.0f;
+    }
 
     NewtonBodyAddForce(m_body->m_newtonBody, force.v);
 
@@ -78,25 +75,21 @@ void Player::onSetForceAndTorque()
     NewtonBodyGetOmega(m_body->m_newtonBody, omega.v);
 
     Vector torque = m_rotation;
-    torque = (10.0f * torque - omega) * timestepInv * Iyy;
+    torque = (10.0f * torque - omega) * timestepInv * m_body->getInertia().y;
     NewtonBodyAddTorque (m_body->m_newtonBody, torque.v);
 }
 
 void Player::onCollide(Body* other, const NewtonMaterial* material)
 {
     m_referee->process(m_body, other);
-    Vector pos, nor;
+}
 
-    NewtonMaterialGetContactPositionAndNormal(material, pos.v, nor.v);
+void Player::onImpact(Body* other, const Vector& position, const float speed)
+{
+    m_isOnGround = (other->m_id == "level");
+}
 
-    // Determine if this contact is on the ground
-    float angle = Vector::Y % nor;
-    m_isOnGround = (angle > 0.0f);
-
-    NewtonMaterialSetContactElasticity( material, 0.0f );
-
-    NewtonMaterialSetContactFrictionState( material, 0, 0 );
-    NewtonMaterialSetContactFrictionState( material, 0, 1 );
-
-    NewtonMaterialSetContactSoftness( material, 0 );
+void Player::onScratch(Body* other, const Vector& position, const float speed)
+{
+    onImpact(other, position, speed);
 }

@@ -5,8 +5,6 @@
 #include "level.h"
 #include "body.h"
 
-class Input;
-class Game;
 class Referee;
 
 #define FIELDLENGTH 3.0f
@@ -14,33 +12,34 @@ class Referee;
 class Player : public Collideable
 {
 public:
-    Player(const string& id, const Game* game, const Vector& position, const Vector& rotation);
+    Player(const string& id, const Vector& position, const Vector& rotation);
     virtual ~Player();
 
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);
 
-    virtual void control(const Input* input) = 0;
+    virtual void control() = 0;
 
     Vector getPosition();
 
     // maybe private
     void onCollide(Body* other, const NewtonMaterial* material);
+    void onImpact(Body* other, const Vector& position, const float speed);
+    void onScratch(Body* other, const Vector& position, const float speed);
     void onSetForceAndTorque();
     
-    Referee*            m_referee;
-    Body*               m_body;
+    Referee*     m_referee;
+    Body*        m_body;
     //player must recognize his field
-    Vector                m_lowerLeft;
-    Vector                m_upperRight;
+    Vector       m_lowerLeft;
+    Vector       m_upperRight;
 
 protected:
-    NewtonJoint*        m_upVector;
+    NewtonJoint* m_upVector;
 
-    bool                m_isOnGround;
-    Vector              m_direction;
-    Vector              m_rotation;
-    const Game*         m_game;
+    bool         m_isOnGround;
+    Vector       m_direction;
+    Vector       m_rotation;
 };
 
 #endif

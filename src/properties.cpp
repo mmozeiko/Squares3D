@@ -2,7 +2,6 @@
 
 #include "properties.h"
 #include "property.h"
-#include "game.h"
 #include "world.h"
 #include "level.h"
 #include "body.h"
@@ -22,50 +21,85 @@ struct MaterialContact : NoCopy
 	float  maxTangentSpeed;
 };
 
-Properties::Properties(const Game* game) : m_game(game)
+Properties::Properties() : m_uniqueID(2)
 {
+    NewtonWorld* world = World::instance->m_newtonWorld;
+    int defaultID = NewtonMaterialGetDefaultGroupID(world);
+    NewtonMaterialSetDefaultCollidable(world, defaultID, defaultID, 1);
+  
+    m_materialContact = new MaterialContact();
+    m_materialContact->properties = this;
+    
+    NewtonMaterialSetCollisionCallback(
+        world, defaultID, defaultID,
+        static_cast<void*>(m_materialContact), 
+        MaterialContact::onBegin, 
+        MaterialContact::onProcess,
+        MaterialContact::onEnd);
+    
 }
 
 Properties::~Properties()
 {
-    for each_(MaterialContactSet, m_materialContacts, iter)
-    {
-        delete *iter;
-    }
-    NewtonMaterialDestroyAllGroupID(m_game->m_world->m_newtonWorld);
+    delete m_materialContact;
 }
 
+int  Properties::getUndefined() const
+{
+    return 0;
+}
+
+int  Properties::getInvisible() const
+{
+    return 1;
+}
+
+int  Properties::getDefault() const
+{
+    return 2;
+}
+    
 int Properties::getPropertyID(const string& name)
 {
-    int result;
-    IntMap::const_iterator iter = m_newtonMaterials.find(name);
-    if (iter == m_newtonMaterials.end())
+    if (name.empty())
     {
-        result = NewtonMaterialCreateGroupID(m_game->m_world->m_newtonWorld);
+        return getDefault();
+    }
+
+    IntMap::const_iterator iter = m_propertiesID.find(name);
+    if (iter == m_propertiesID.end())
+    {
+        int result = ++m_uniqueID;
+        m_propertiesID.insert(make_pair(name, result));
+
         clog << "Material '" << name << "' is nr." << result << endl;
-        m_newtonMaterials.insert(make_pair(name, result));
+        return result;
     }
     else
     {
-        result = iter->second;
+        return iter->second;
     }
-    return result;
+}
+
+bool Properties::hasPropertyID(int id) const
+{
+    return id >= 2;
 }
 
 void Properties::load(const XMLnode& node)
 {
-    NewtonWorld* world = m_game->m_world->m_newtonWorld;
+    NewtonWorld* world = World::instance->m_newtonWorld;
 
-    string prop1 = getAttribute(node, "property0");
-    string prop2 = getAttribute(node, "property1");
+    string prop0 = getAttribute(node, "property0");
+    string prop1 = getAttribute(node, "property1");
     
-    int id0 = (prop1.empty() ? NewtonMaterialGetDefaultGroupID(world) : getPropertyID(prop1));
-    int id1 = (prop2.empty() ? NewtonMaterialGetDefaultGroupID(world) : getPropertyID(prop2));
+    const int id0 = getPropertyID(prop0);
+    const int id1 = getPropertyID(prop1);
     
     if (foundInMap(m_properties, makepID(id0, id1)))
     {
-        throw Exception("Properties for '" + getAttribute(node, "property0") + "' and '"
-                                           + getAttribute(node, "property1") + "' already loaded");
+        throw Exception("Properties for '" + prop0 + "' and '"
+                                           + prop1 + "' already loaded");
     }
 
     float sF = cast<float>(getAttribute(node, "staticFriction"));
@@ -73,23 +107,25 @@ void Properties::load(const XMLnode& node)
     float eC = cast<float>(getAttribute(node, "elasticityCoeficient"));
     float sC = cast<float>(getAttribute(node, "softnessCoeficient"));
 
-    // TODO: hmm?
-    //NewtonMaterialSetDefaultElasticity(world, id0, id1, eC);
-    //NewtonMaterialSetDefaultFriction(world, id0, id1, sF, kF);
-    //NewtonMaterialSetDefaultSoftness(world, id0, id1, sC);
-    
-    MaterialContact* materialContact = new MaterialContact();
-    materialContact->properties = this;
-    
-    NewtonMaterialSetCollisionCallback(
-        world, id0, id1,
-        static_cast<void*>(materialContact), 
-        MaterialContact::onBegin, 
-        MaterialContact::onProcess,
-        MaterialContact::onEnd);
-
     m_properties.insert(make_pair(makepID(id0, id1), Property(sF, kF, eC, sC)));
-    m_materialContacts.insert(materialContact);
+}
+
+void Properties::loadDefault(const XMLnode& node)
+{
+    NewtonWorld* world = World::instance->m_newtonWorld;
+
+    int defaultID = NewtonMaterialGetDefaultGroupID(world);
+
+    float sF = cast<float>(getAttribute(node, "staticFriction"));
+    float kF = cast<float>(getAttribute(node, "kineticFriction"));
+    float eC = cast<float>(getAttribute(node, "elasticityCoeficient"));
+    float sC = cast<float>(getAttribute(node, "softnessCoeficient"));
+
+    m_properties.insert(make_pair(makepID(getDefault(), getDefault()), Property(sF, kF, eC, sC)));
+
+    NewtonMaterialSetDefaultElasticity(world, defaultID, defaultID, eC);
+    NewtonMaterialSetDefaultFriction(world, defaultID, defaultID, sF, kF);
+    NewtonMaterialSetDefaultSoftness(world, defaultID, defaultID, sC);
 }
 
 pID Properties::makepID(int id0, int id1) const
@@ -106,10 +142,14 @@ const Property* Properties::get(int id0, int id1) const
 {
     PropertiesMap::const_iterator iter = m_properties.find(makepID(id0, id1));
     
-    // if assert fails, then you probably forgot to put property pair (for id0 and id1) in properties.xml file
-    assert(iter != m_properties.end());
-
-    return &iter->second;
+    if (iter != m_properties.end())
+    {
+        return &iter->second;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* body0, const NewtonBody* body1)
@@ -117,6 +157,12 @@ int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* b
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
     self->body[0] = static_cast<Body*>(NewtonBodyGetUserData(body0));
     self->body[1] = static_cast<Body*>(NewtonBodyGetUserData(body1));
+    
+    if (body0 == body1)
+    {
+        assert(false);
+        return 0;
+    }
 
 	self->maxNormalSpeed = 0.0f;
 	self->maxTangentSpeed = 0.0f;
@@ -131,17 +177,17 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     int colID0 = NewtonMaterialGetBodyCollisionID(material, self->body[0]->m_newtonBody);
     int colID1 = NewtonMaterialGetBodyCollisionID(material, self->body[1]->m_newtonBody);
     
-    if (colID0 == CollisionType_Hull)
+    if (colID0 == self->properties->getInvisible())
     {
         self->body[0]->onCollideHull(self->body[1], material);
         return 0;
     }
-    else if (colID1 == CollisionType_Hull)
+    else if (colID1 == self->properties->getInvisible())
     {
         self->body[1]->onCollideHull(self->body[0], material);
         return 0;
     }
-    
+
     Vector normal;
 
 	float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
@@ -161,8 +207,8 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 	    }
     }
        
-    bool isConvex0 = ( CollisionType_Convex==colID0 );
-    bool isConvex1 = ( CollisionType_Convex==colID1 );
+    bool isConvex0 = self->properties->hasPropertyID(colID0);
+    bool isConvex1 = self->properties->hasPropertyID(colID1);
     unsigned int faceAttr = NewtonMaterialGetContactFaceAttribute(material);
 
     int m0, m1;
@@ -170,18 +216,18 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     if (isConvex0 && isConvex1)
     {
         // both covex
-        m0 = self->body[0]->m_materialID;
-        m1 = self->body[1]->m_materialID;
+        m0 = colID0;
+        m1 = colID1;
     }
     else if (isConvex0)
     {
-        m0 = self->body[0]->m_materialID;
+        m0 = colID0;
         m1 = faceAttr;
     }
     else if (isConvex1)
     {
         m0 = faceAttr;
-        m1 = self->body[1]->m_materialID;
+        m1 = colID1;
     }
     else
     {
@@ -192,6 +238,13 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     }
     
     const Property* prop = self->properties->get(m0, m1);
+    
+    if (prop == NULL)
+    {
+        prop = self->properties->get(self->properties->getDefault(), 
+                                     self->properties->getDefault());
+    }
+
     prop->apply(material);
 
     return 1;
@@ -200,11 +253,6 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 void MaterialContact::onEnd(const NewtonMaterial* material)
 {
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
-    if (self->body[0] == self->body[1])
-    {
-        assert(false);
-        return;
-    }
 
     self->body[0]->onCollide(self->body[1], material);
     self->body[1]->onCollide(self->body[0], material);

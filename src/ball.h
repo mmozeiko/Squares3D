@@ -3,13 +3,12 @@
 
 #include "body.h"
 
-class Game;
 class Referee;
 
 class Ball : public Collideable
 {
 public:
-    Ball(Body* body, const Game* game);
+    Ball(Body* body);
 
     Vector getPosition();
     void   setPosition0();
@@ -20,9 +19,6 @@ public:
     
     Referee*            m_referee;
     Body*               m_body;
-
-protected:
-    const Game*         m_game;
 };
 
 #endif
