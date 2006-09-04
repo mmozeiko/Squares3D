@@ -31,7 +31,8 @@ public:
     void manageGame();
     void initEvents();
     void registerBallEvent(Body* ground, Body* otherBody);
-    void registerPlayerEvent(Body* player, Body* other){}
+    void registerPlayerEvent(Body* player, Body* other);
+    void processPlayerGround(Body* player);
 };
 
 class ScoreBoard : public std::map<std::string, std::string>

@@ -30,30 +30,55 @@ void Referee::process(Body* body1, Body* body2)
     {
         registerBallEvent(body1, body2);
     }
+    if (foundInMap(m_players, body1))
+    {
+        registerPlayerEvent(body1, body2);
+    }
+}
+
+void Referee::registerPlayerEvent(Body* player, Body* otherBody)
+{
+    if (otherBody == m_ground)
+    {
+        processPlayerGround(player);
+    }
 }
 
 void Referee::registerBallEvent(Body* ball, Body* otherBody)
 {
     if (otherBody == m_ground)
     {
-        //clog << "bumba-zeme!!!" << endl;
         processBallGround(ball, otherBody);
     }
     else if (foundInMap(m_players, otherBody))
     {
         processBallPlayer(ball, otherBody);
-        //clog << "bumba-pleijers!!!" << endl;
     }
-    else { return; } //we are not interested in other collisions here
+}
+
+void Referee::processPlayerGround(Body* player)
+{
+    Vector playerPos = player->getPosition();
+    string currentPlayerName = m_players[player].first;
+    Player* currentPlayer = m_players[player].second;
+    if (!isPointInRectangle(playerPos, currentPlayer->m_lowerLeft, currentPlayer->m_upperRight)
+        && isPointInRectangle(playerPos, 
+                              Vector(- FIELDLENGTH, 0 , - FIELDLENGTH),
+                              Vector(FIELDLENGTH, 0 , FIELDLENGTH)))
+    {
+        clog << "pleijeris " + currentPlayerName + " ir iekaapis cita pleijera laukumaa!!.." << endl;
+    }
 }
 
 void Referee::processBallGround(Body* ball, Body* otherBody)
 {
-    Vector ballCoords(ball->getPosition());
+    Vector ballPos(ball->getPosition());
 
     //out = False
 
-    if (!isPointInRectangle(ballCoords, Vector(-3.0f, 0.0f, -3.0f), Vector(3.0f, 0.0f, 3.0f))) 
+    if (!isPointInRectangle(ballPos, 
+                            Vector(- FIELDLENGTH, 0.0f, - FIELDLENGTH), 
+                            Vector(FIELDLENGTH, 0.0f, FIELDLENGTH))) 
     {
         //critical event
         //BALL HAS HIT THE FIELD OUTSIDE
@@ -140,7 +165,7 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
       //save the touched field
       for each_const(BodyToPlayerDataMap, m_players, player)
       {
-          if (isPointInRectangle(ballCoords, 
+          if (isPointInRectangle(ballPos, 
                                  player->second.second->m_lowerLeft, 
                                  player->second.second->m_upperRight))
           {
@@ -282,9 +307,9 @@ void Referee::processBallPlayer(Body* ball, Body* player)
 //  def getBallCoords(self, playerName):
 //    player = self.players[playerName]
 //    littleBit = ((player.min[0] + player.max[0]) / 5, (player.min[1] + player.max[1]) / 5)
-//    ballCoords = ((player.min[0] + player.max[0]) / 2 - littleBit[0],
+//    ballPos = ((player.min[0] + player.max[0]) / 2 - littleBit[0],
 //                  3.3, (player.min[1] + player.max[1]) / 2 - littleBit[1])
-//    return ballCoords
+//    return ballPos
 //
 //  def checkIsBallInSquare(self, ball, min, max):
 //    min0 = min[0]
