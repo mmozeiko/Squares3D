@@ -1,8 +1,10 @@
 #include "referee.h"
 #include "player.h"
 #include "body.h"
+#include "geometry.h"
 
-Referee::Referee(): m_gameOver(false)
+Referee::Referee(): 
+    m_gameOver(false)
 {
     initEvents();
 }
@@ -21,18 +23,16 @@ void Referee::registerPlayer(const string& name, Player* player)
 
 void Referee::process(Body* body1, Body* body2)
 {
-    assert(m_players.size() < 5);
-    //if (foundInMap(m_players, body1) && foundInMap(m_players, body2))
-    //{
-    //    clog << "pleijers pret pleijeru!\n";
-    //}
-    if (body1 == m_ball)
+    if (!m_gameOver)
     {
-        registerBallEvent(body1, body2);
-    }
-    if (foundInMap(m_players, body1))
-    {
-        registerPlayerEvent(body1, body2);
+        if (body1 == m_ball)
+        {
+            registerBallEvent(body1, body2);
+        }
+        if (foundInMap(m_players, body1))
+        {
+            registerPlayerEvent(body1, body2);
+        }
     }
 }
 

@@ -243,6 +243,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\geometry.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\random.cpp"
 					>
 				</File>

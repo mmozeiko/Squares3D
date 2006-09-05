@@ -19,8 +19,6 @@ public:
     Body*                    m_lastTouchedObject;
     Body*                    m_lastTouchedPlayer;
     bool                     m_gameOver;
-    bool                     m_afterCollideTriggerBox;
-    char                     m_state;
 
     Referee();
 

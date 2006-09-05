@@ -46,9 +46,12 @@ void World::init()
     m_ball->m_referee = m_referee;
     m_referee->m_ground = m_level->getBody("level");
 
-    m_localPlayers.push_back(new LocalPlayer("player", Vector(-1.5f, 2.0f, -1.5f), Vector(0.0f, 0.0f, 0.0f)));
-    m_localPlayers.back()->m_referee = m_referee;
-    m_referee->registerPlayer("player1", m_localPlayers.back());
+    Player* human = new LocalPlayer("player", Vector(-1.5f, 2.0f, -1.5f), Vector::Zero);
+    human->m_referee = m_referee;
+    m_localPlayers.push_back(human);
+
+    m_referee->registerPlayer("player1", human);
+    m_ball->addBodyToFilter(human->m_body);
 
     int i = 0;
     //todo: position ai players without such hacks
@@ -59,11 +62,12 @@ void World::init()
             if ((x != -1.5f) || (z != -1.5f))
             {
                 Vector pos(x, 1.0f, z);
-                m_localPlayers.push_back(new AiPlayer("penguin" + cast<string>(i), pos, Vector(0.0f, 0.0f, 0.0f)));
-                m_localPlayers.back()->m_referee = m_referee;
-                stringstream ss;
-                ss << i;
-                m_referee->registerPlayer("ai_player" + ss.str(), m_localPlayers.back());
+                Player* ai = new AiPlayer("penguin" + cast<string>(i), pos, Vector::Zero);
+                ai ->m_referee = m_referee;
+                m_localPlayers.push_back(ai);
+
+                m_referee->registerPlayer("ai_player" + cast<string>(i), m_localPlayers.back());
+                m_ball->addBodyToFilter(ai->m_body);
                 i++;
             }
         }
@@ -109,7 +113,9 @@ void World::control()
 
 void World::update(float delta)
 {
+    m_ball->triggerBegin();
     NewtonUpdate(m_newtonWorld, delta);
+    m_ball->triggerEnd();
 }
 
 void World::prepare()

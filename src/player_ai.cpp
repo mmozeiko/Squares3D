@@ -4,6 +4,7 @@
 #include "body.h"
 #include "camera.h"
 #include "random.h"
+#include "geometry.h"
 
 Vector getSquareCenter(const Vector& lowerLeft, const Vector& upperRight)
 {
@@ -107,6 +108,8 @@ void AiPlayer::control()
 
     bool move = true;
 
+    bool important = true;
+
     if (!isPointInRectangle(ballPosition, m_lowerLeft, m_upperRight))
     {
         Vector ballVelocity;
@@ -117,11 +120,13 @@ void AiPlayer::control()
             ballVelocity, 
             m_lowerLeft, 
             m_upperRight);
+
+        important = false;
     }
 
     Vector dir = ballPosition - selfPosition;
 
-    if (dir.magnitude() < 0.6f)
+    if (dir.magnitude() < 0.6f && !important)
     {
         move = false;
     }

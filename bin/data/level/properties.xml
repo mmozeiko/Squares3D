@@ -9,10 +9,10 @@
     
     <properties property0 = "player" 
                 property1 = "player" 
-                staticFriction       = "0.5"
-                kineticFriction      = "0.5"
-                elasticityCoeficient = "0.5"
-                softnessCoeficient   = "0.15"/>
+                staticFriction       = "0.0"
+                kineticFriction      = "0.0"
+                elasticityCoeficient = "1.0"
+                softnessCoeficient   = "0.0"/>
 
     <properties property0 = "player" 
                 property1 = "pavement" 
@@ -39,30 +39,30 @@
     
     <properties property0 = "football" 
                 property1 = "player" 
-                staticFriction       = "1.2"
-                kineticFriction      = "1.1"
-                elasticityCoeficient = "0.5"
-                softnessCoeficient   = "0.15"/>
-
-    <properties property0 = "football" 
-                property1 = "pavement" 
-                staticFriction       = "0.9"
-                kineticFriction      = "0.9"
-                elasticityCoeficient = "0.5"
-                softnessCoeficient   = "0.15"/>
-
-    <properties property0 = "football" 
-                property1 = "grass" 
-                staticFriction       = "0.5"
+                staticFriction       = "1.0"
                 kineticFriction      = "0.5"
                 elasticityCoeficient = "0.5"
                 softnessCoeficient   = "0.15"/>
 
     <properties property0 = "football" 
+                property1 = "pavement" 
+                staticFriction       = "1.0"
+                kineticFriction      = "0.5"
+                elasticityCoeficient = "0.7"
+                softnessCoeficient   = "0.2"/>
+
+    <properties property0 = "football" 
+                property1 = "grass" 
+                staticFriction       = "1.0"
+                kineticFriction      = "0.5"
+                elasticityCoeficient = "0.7"
+                softnessCoeficient   = "0.2"/>
+
+    <properties property0 = "football" 
                 property1 = "brick" 
-                staticFriction       = "0.2"
-                kineticFriction      = "0.2"
-                elasticityCoeficient = "0.5"
-                softnessCoeficient   = "0.15"/>
+                staticFriction       = "1.0"
+                kineticFriction      = "0.5"
+                elasticityCoeficient = "0.7"
+                softnessCoeficient   = "0.2"/>
     
 </xml>

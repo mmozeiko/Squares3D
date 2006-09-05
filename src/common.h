@@ -48,14 +48,14 @@ inline To cast(const From& from)
 
 template <typename ValueType>
 inline bool foundInVector(const vector<ValueType>& Vector,
-                          const ValueType&         Value)
+                          ValueType                Value)
 {
     return std::find(Vector.begin(), Vector.end(), Value) != Vector.end();
 }
 
 template <typename KeyType, typename ValueType>
 inline bool foundInMap(const map<KeyType, ValueType>& Map,
-                       const KeyType&                 Key)
+                       KeyType                        Key)
 {
     return Map.find(Key) != Map.end();
 }
@@ -69,7 +69,7 @@ inline bool foundInMap(const map<KeyType, ValueType>& Map,
 
 template <typename KeyType>
 inline bool foundInSet(const set<KeyType>& Set,
-                       const KeyType&      Key)
+                       KeyType             Key)
 {
     return Set.find(Key) != Set.end();
 }
