@@ -5,6 +5,17 @@
 
 class Referee;
 
+struct TriggerFlags
+{
+    TriggerFlags();
+    void loadDefaults();
+
+    bool m_wasTriggeredBefore;
+    bool m_shouldRegisterCollision;
+};
+
+typedef map<const Body*, TriggerFlags> TriggerFilterMap;
+
 class Ball : public Collideable
 {
 public:
@@ -18,20 +29,14 @@ public:
     void onCollideHull(Body* other, const NewtonMaterial* material);
     void triggerBegin();
     void triggerEnd();
-    void addBodyToFilter(const Body* body)
-    {
-        m_filteredBodies.insert(body);
-    }
+    void addBodyToFilter(const Body* body);
 
     Referee*            m_referee;
     Body*               m_body;
 
 private:
-    set<const Body*> m_filteredBodies;
-    bool m_wasTriggeredBefore;
-    bool m_hasCollidedWithBall;
-    bool m_shouldRegisterCollision;
-
+    TriggerFilterMap m_filteredBodies;
+    bool m_hasTriggered;
 };
 
 #endif

@@ -100,7 +100,6 @@ AiPlayer::~AiPlayer()
 
 void AiPlayer::control()
 {
-
     Body* ball = World::instance->m_level->getBody("football");
 
     Vector ballPosition = ball->getPosition();

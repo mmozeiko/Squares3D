@@ -6,7 +6,7 @@
 class Body;
 class Player;
 
-typedef map<Body*, std::pair<string, Player*> > BodyToPlayerDataMap;
+typedef map<const Body*, std::pair<string, Player*> > BodyToPlayerDataMap;
 
 class Referee
 {
@@ -15,22 +15,22 @@ public:
     BodyToPlayerDataMap      m_players;
     Body*                    m_ball;
     Body*                    m_ground;
-    Body*                    m_lastFieldOwner;
-    Body*                    m_lastTouchedObject;
-    Body*                    m_lastTouchedPlayer;
+    const Body*              m_lastFieldOwner;
+    const Body*              m_lastTouchedObject;
+    const Body*              m_lastTouchedPlayer;
     bool                     m_gameOver;
 
     Referee();
 
-    void processBallPlayer(Body* ball, Body* otherBody);
-    void processBallGround(Body* ball, Body* otherBody);
+    void processBallPlayer(const Body* ball, const Body* otherBody);
+    void processBallGround(const Body* ball, const Body* otherBody);
     void registerPlayer(const string& name, Player* player);
-    void process(Body* body1, Body* body2);
+    void process(const Body* body1, const Body* body2);
     void manageGame();
     void initEvents();
-    void registerBallEvent(Body* ground, Body* otherBody);
-    void registerPlayerEvent(Body* player, Body* other);
-    void processPlayerGround(Body* player);
+    void registerBallEvent(const Body* ground, const Body* otherBody);
+    void registerPlayerEvent(const Body* player, const Body* other);
+    void processPlayerGround(const Body* player);
 };
 
 class ScoreBoard : public std::map<std::string, std::string>

@@ -5,11 +5,19 @@
 #include "collision.h"
 #include "world.h"
 
+TriggerFlags::TriggerFlags()
+{
+    loadDefaults();
+}
+
+void TriggerFlags::loadDefaults()
+{
+    m_wasTriggeredBefore = false;
+    m_shouldRegisterCollision = false;
+}
+
 Ball::Ball(Body* body) : 
-    m_body(body),
-    m_wasTriggeredBefore(false),
-    m_hasCollidedWithBall(false),
-    m_shouldRegisterCollision(false)
+    m_body(body)
 {
     m_body->setCollideable(this);
     m_body->setTransform(Vector(0, 2, 0), Vector::Zero);
@@ -25,7 +33,7 @@ Ball::Ball(Body* body) :
     NewtonCollision* both[] = { ballCollision, hull };
     NewtonCollision* newCollision = NewtonCreateCompoundCollision(World::instance->m_newtonWorld, sizeOfArray(both), both);
     NewtonBodySetCollision(m_body->m_newtonBody, newCollision);
-    NewtonConvexCollisionSetUserID(hull, NewtonConvexCollisionGetUserID(ballCollision));
+    NewtonConvexCollisionSetUserID(ballCollision, NewtonConvexCollisionGetUserID(ballCollision));
 
     // TODO: hmm?
     //NewtonReleaseCollision(hull);
@@ -42,9 +50,14 @@ void Ball::setPosition0()
     return m_body->setTransform(Vector(0,2,0), Vector(0,0,0));
 }
 
+void Ball::addBodyToFilter(const Body* body)
+{
+    m_filteredBodies[body] = TriggerFlags();
+}
+
 void Ball::onCollide(Body* other, const NewtonMaterial* material)
 {
-    if (!foundInSet<const Body*>(m_filteredBodies, other))
+    if (!(m_filteredBodies.find(other) != m_filteredBodies.end()))
     {
         m_referee->process(m_body, other);
     }
@@ -52,44 +65,48 @@ void Ball::onCollide(Body* other, const NewtonMaterial* material)
 
 void Ball::onCollideHull(Body* other, const NewtonMaterial* material)
 {
-    if (!foundInSet<const Body*>(m_filteredBodies, other))
+    // when trigger collides
+    if (!(m_filteredBodies.find(other) != m_filteredBodies.end()))
     {
         return;
     }
 
-    // when trigger collides
-    if (!m_hasCollidedWithBall)
+    //for bodies in filter map
+    m_hasTriggered = true;
+    TriggerFlags& triggerFlags = m_filteredBodies.find(other)->second;
+    if (!triggerFlags.m_wasTriggeredBefore)
     {
-        m_wasTriggeredBefore;
-        m_shouldRegisterCollision = true;
+        //if trigger has just collided with the opposing body
+        triggerFlags.m_shouldRegisterCollision = true;
+        triggerFlags.m_wasTriggeredBefore = true;
     }
 }
 
 void Ball::triggerBegin()
 {
-    //m_wasTriggeredBefore = false;
-    //m_hasCollidedWithBall = false;
+    m_hasTriggered = false;
 }
 
 void Ball::triggerEnd()
 {
-            // body is in m_filteredBodies set
-    //if (foundInSet<const Body*>(m_filteredBodies, other))
+    // body is in m_filteredBodies set
+    if (!m_hasTriggered)
     {
-        //if (m_shouldRegisterCollision)
+        for each_(TriggerFilterMap, m_filteredBodies, iter)
         {
-            //m_referee->process(m_body, other);
-            //m_shouldRegisterCollision = false;
-            //m_hasCollidedWithBall = true;
+            iter->second.loadDefaults();
         }
     }
-
+    else
+    {
+        for each_(TriggerFilterMap, m_filteredBodies, iter)
+        {
+            TriggerFlags& triggerFlags = iter->second;
+            if (triggerFlags.m_shouldRegisterCollision)
+            {
+                m_referee->process(m_body, iter->first);
+                triggerFlags.m_shouldRegisterCollision = false;
+            }
+        }
+    }
 }
-
-
-    //This is the main logic function of the coach
-    //Coach has 3 states to keep in mind when registering event
-    //States are needed to avoid registering ball+player event when
-    //the ball is standing on player not bouncing
-    //This is the place where TriggerBox is used
-

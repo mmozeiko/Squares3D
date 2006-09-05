@@ -21,7 +21,7 @@ void Referee::registerPlayer(const string& name, Player* player)
     m_players[player->m_body] = std::make_pair(name, player);
 }
 
-void Referee::process(Body* body1, Body* body2)
+void Referee::process(const Body* body1, const Body* body2)
 {
     if (!m_gameOver)
     {
@@ -36,7 +36,7 @@ void Referee::process(Body* body1, Body* body2)
     }
 }
 
-void Referee::registerPlayerEvent(Body* player, Body* otherBody)
+void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 {
     if (otherBody == m_ground)
     {
@@ -44,7 +44,7 @@ void Referee::registerPlayerEvent(Body* player, Body* otherBody)
     }
 }
 
-void Referee::registerBallEvent(Body* ball, Body* otherBody)
+void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 {
     if (otherBody == m_ground)
     {
@@ -56,21 +56,21 @@ void Referee::registerBallEvent(Body* ball, Body* otherBody)
     }
 }
 
-void Referee::processPlayerGround(Body* player)
+void Referee::processPlayerGround(const Body* player)
 {
     Vector playerPos = player->getPosition();
-    string currentPlayerName = m_players[player].first;
+    string currentPlayerName = m_players.find(player)->second.first;
     Player* currentPlayer = m_players[player].second;
     if (!isPointInRectangle(playerPos, currentPlayer->m_lowerLeft, currentPlayer->m_upperRight)
         && isPointInRectangle(playerPos, 
                               Vector(- FIELDLENGTH, 0 , - FIELDLENGTH),
                               Vector(FIELDLENGTH, 0 , FIELDLENGTH)))
     {
-        clog << "pleijeris " + currentPlayerName + " ir iekaapis cita pleijera laukumaa!!.." << endl;
+        //clog << "pleijeris " + currentPlayerName + " ir iekaapis cita pleijera laukumaa!!.." << endl;
     }
 }
 
-void Referee::processBallGround(Body* ball, Body* otherBody)
+void Referee::processBallGround(const Body* ball, const Body* otherBody)
 {
     Vector ballPos(ball->getPosition());
 
@@ -85,7 +85,8 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
         //and we handle score here
 
         if (m_lastTouchedObject != NULL) //if last touched was not middle line
-        {    
+        {
+            //TODO remove cast
             if (foundInMap(m_players, m_lastTouchedObject))
             {
                 clog << m_players[m_lastTouchedObject].first + " izsit bumbu laukaa" << endl;
@@ -179,7 +180,7 @@ void Referee::processBallGround(Body* ball, Body* otherBody)
     }
 }
 
-void Referee::processBallPlayer(Body* ball, Body* player)
+void Referee::processBallPlayer(const Body* ball, const Body* player)
 {
     //ball + player
 
