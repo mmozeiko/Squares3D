@@ -16,10 +16,10 @@ class Collideable
 {
 public:
     // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
-    virtual void onCollide(Body* other, const NewtonMaterial* material) {}
-    virtual void onCollideHull(Body* other, const NewtonMaterial* material) {}
-    virtual void onImpact(Body* other, const Vector& position, const float speed) {}
-    virtual void onScratch(Body* other, const Vector& position, const float speed) {}
+    virtual void onCollide(const Body* other, const NewtonMaterial* material) {}
+    virtual void onCollideHull(const Body* other, const NewtonMaterial* material) {}
+    virtual void onImpact(const Body* other, const Vector& position, const float speed) {}
+    virtual void onScratch(const Body* other, const Vector& position, const float speed) {}
 
     virtual void onSetForceAndTorque() {}
 };
@@ -36,10 +36,10 @@ public:
     Vector getRotation();
     void setCollideable(Collideable* collideable);
 
-    void onCollide(Body* other, const NewtonMaterial* material);
-    void onCollideHull(Body* other, const NewtonMaterial* material);
-    void onImpact(Body* other, const Vector& position, const float speed);
-    void onScratch(Body* other, const Vector& position, const float speed);
+    void onCollide(const Body* other, const NewtonMaterial* material);
+    void onCollideHull(const Body* other, const NewtonMaterial* material);
+    void onImpact(const Body* other, const Vector& position, const float speed);
+    void onScratch(const Body* other, const Vector& position, const float speed);
 
     string              m_id;
     NewtonBody*         m_newtonBody;        

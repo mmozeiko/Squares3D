@@ -25,8 +25,8 @@ public:
     void   setPosition0();
 
     // maybe private
-    void onCollide(Body* other, const NewtonMaterial* material);
-    void onCollideHull(Body* other, const NewtonMaterial* material);
+    void onCollide(const Body* other, const NewtonMaterial* material);
+    void onCollideHull(const Body* other, const NewtonMaterial* material);
     void triggerBegin();
     void triggerEnd();
     void addBodyToFilter(const Body* body);

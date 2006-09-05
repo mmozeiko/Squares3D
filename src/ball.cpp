@@ -33,7 +33,7 @@ Ball::Ball(Body* body) :
     NewtonCollision* both[] = { ballCollision, hull };
     NewtonCollision* newCollision = NewtonCreateCompoundCollision(World::instance->m_newtonWorld, sizeOfArray(both), both);
     NewtonBodySetCollision(m_body->m_newtonBody, newCollision);
-    NewtonConvexCollisionSetUserID(ballCollision, NewtonConvexCollisionGetUserID(ballCollision));
+    NewtonConvexCollisionSetUserID(newCollision, NewtonConvexCollisionGetUserID(ballCollision));
 
     // TODO: hmm?
     //NewtonReleaseCollision(hull);
@@ -55,18 +55,18 @@ void Ball::addBodyToFilter(const Body* body)
     m_filteredBodies[body] = TriggerFlags();
 }
 
-void Ball::onCollide(Body* other, const NewtonMaterial* material)
+void Ball::onCollide(const Body* other, const NewtonMaterial* material)
 {
-    if (!(m_filteredBodies.find(other) != m_filteredBodies.end()))
+    if (!foundInMap(m_filteredBodies, other))
     {
         m_referee->process(m_body, other);
     }
 }
 
-void Ball::onCollideHull(Body* other, const NewtonMaterial* material)
+void Ball::onCollideHull(const Body* other, const NewtonMaterial* material)
 {
     // when trigger collides
-    if (!(m_filteredBodies.find(other) != m_filteredBodies.end()))
+    if (!foundInMap(m_filteredBodies, other))
     {
         return;
     }

@@ -190,7 +190,7 @@ void Body::setCollideable(Collideable* collideable)
     m_collideable = collideable;
 }
 
-void Body::onCollide(Body* other, const NewtonMaterial* material)
+void Body::onCollide(const Body* other, const NewtonMaterial* material)
 {
     if (m_collideable != NULL)
     {
@@ -198,7 +198,7 @@ void Body::onCollide(Body* other, const NewtonMaterial* material)
     }
 }
 
-void Body::onCollideHull(Body* other, const NewtonMaterial* material)
+void Body::onCollideHull(const Body* other, const NewtonMaterial* material)
 {
     if (m_collideable != NULL)
     {
@@ -206,7 +206,7 @@ void Body::onCollideHull(Body* other, const NewtonMaterial* material)
     }
 }
 
-void Body::onImpact(Body* other, const Vector& position, const float speed)
+void Body::onImpact(const Body* other, const Vector& position, const float speed)
 {
     if (m_collideable != NULL)
     {
@@ -214,7 +214,7 @@ void Body::onImpact(Body* other, const Vector& position, const float speed)
     }
 }
 
-void Body::onScratch(Body* other, const Vector& position, const float speed)
+void Body::onScratch(const Body* other, const Vector& position, const float speed)
 {
     if (m_collideable != NULL)
     {
