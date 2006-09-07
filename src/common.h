@@ -103,7 +103,7 @@ inline bool foundInMapValues(const map<KeyType, ValueType>& Map,
 
 #define STR2(X) #X
 #define STR(X) STR2(X)
-#define Exception(msg) string(string(__FILE__"(") + STR(__LINE__) + ") : " + (msg))
+#define Exception(msg) string(string(__FILE__"(") + STR(__LINE__) + ") : " + string(__FUNCTION__) + " - " + string(msg))
 
 class NoCopy
 {

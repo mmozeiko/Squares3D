@@ -103,14 +103,14 @@ namespace File
     }
 
     Reader::Reader(const string& filename) :
-        File(reinterpret_cast<_PHYSFS_File*>(PHYSFS_openRead(filename.c_str())))
+        File(static_cast<_PHYSFS_File*>(PHYSFS_openRead(filename.c_str())))
     {
     }
 
     void Reader::open(const string& filename)
     {
         close();
-        m_handle = reinterpret_cast<_PHYSFS_File*>(PHYSFS_openRead(filename.c_str()));
+        m_handle = static_cast<_PHYSFS_File*>(PHYSFS_openRead(filename.c_str()));
     }
 
     size_t Reader::read(void* buffer, size_t size)
@@ -131,7 +131,7 @@ namespace File
     }
 
     Writer::Writer(const string& filename, bool append) :
-        File(reinterpret_cast<_PHYSFS_File*>(
+        File(static_cast<_PHYSFS_File*>(
             append ? PHYSFS_openAppend(filename.c_str()) : PHYSFS_openWrite(filename.c_str())
         ))
     {

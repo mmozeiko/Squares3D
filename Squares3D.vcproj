@@ -247,6 +247,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\geometry.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\random.cpp"
 					>
 				</File>
@@ -478,6 +482,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\messages.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\messages.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\shader.cpp"
 						>
 					</File>
@@ -519,6 +531,10 @@
 					</File>
 					<File
 						RelativePath=".\src\network.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\packet.h"
 						>
 					</File>
 				</Filter>

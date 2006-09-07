@@ -12,6 +12,7 @@ class Level;
 class Music;
 class Referee;
 class Ball;
+class Messages;
 
 class World : public System<World>, NoCopy
 {
@@ -34,6 +35,7 @@ public:
     vector<Player*>  m_localPlayers;
     Ball*            m_ball;
     Referee*         m_referee;
+    Messages*        m_messages;
 
 };
 

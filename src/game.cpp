@@ -29,6 +29,8 @@ Game::Game()
     m_world = new World();
 
     m_world->init();
+    m_network->createClient();
+    m_network->connect("localhost");
 }
 
 Game::~Game()
@@ -148,6 +150,7 @@ void Game::run()
 
         m_audio->update();
         m_input->update();
+        m_network->update();
         m_world->control();
         m_world->m_camera->update(static_cast<float>(deltaTime));
         //m_world->update(deltaTime);
@@ -184,6 +187,20 @@ void Game::run()
 
         running = glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS;
 
+    }
+
+    // disconnect network
+    if (m_network->m_needDisconnect)
+    {
+        // display some message "Closing network connection...
+        // ...
+        
+        // and disconnect
+        m_network->sendDisconnect();
+        while (! m_network->m_disconnected )
+        {
+            m_network->update();
+        }
     }
 
     clog << "Game finished... " << endl;

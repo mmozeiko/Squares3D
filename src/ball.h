@@ -12,6 +12,7 @@ struct TriggerFlags
 
     bool m_wasTriggeredBefore;
     bool m_shouldRegisterCollision;
+    bool m_hasTriggered;
 };
 
 typedef map<const Body*, TriggerFlags> TriggerFilterMap;
@@ -36,7 +37,6 @@ public:
 
 private:
     TriggerFilterMap m_filteredBodies;
-    bool m_hasTriggered;
 };
 
 #endif

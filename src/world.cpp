@@ -15,6 +15,7 @@
 #include "properties.h"
 #include "referee.h"
 #include "ball.h"
+#include "messages.h"
 
 World* System<World>::instance = NULL;
 
@@ -30,7 +31,7 @@ World::World()
     NewtonSetFrictionModel(m_newtonWorld, 1);
     
     m_music = Audio::instance->loadMusic("music.ogg");
-    m_music->play();
+    //m_music->play();
 }
 
 void World::init()
@@ -38,6 +39,7 @@ void World::init()
     m_level = new Level();
     m_level->load("level.xml");
     m_referee = new Referee();
+    m_messages = new Messages();
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
@@ -87,6 +89,7 @@ World::~World()
     delete m_level;
     delete m_referee;
     delete m_ball;
+    delete m_messages;
 
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
@@ -116,6 +119,8 @@ void World::update(float delta)
     m_ball->triggerBegin();
     NewtonUpdate(m_newtonWorld, delta);
     m_ball->triggerEnd();
+
+    m_messages->update(delta);
 }
 
 void World::prepare()
@@ -135,4 +140,6 @@ void World::render() const
     m_level->render();
 
     Video::instance->renderAxes();
+    
+    m_messages->render();
 }

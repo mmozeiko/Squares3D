@@ -117,7 +117,8 @@ void Random::init()
 
 #if WIN32
     HCRYPTPROV hProv;
-    if (CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)==TRUE)
+    if (CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)==TRUE ||
+        CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_NEWKEYSET)==TRUE)
     {
         success = (CryptGenRandom(hProv, 
                                   N*sizeof(unsigned int), 

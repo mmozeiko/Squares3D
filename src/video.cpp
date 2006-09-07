@@ -10,14 +10,14 @@
 
 static void GLFWCALL sizeCb(int width, int height)
 {
-  if (width==0 || height==0) return;
-  glViewport(0, 0, width, height);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  // TODO : fix fov
-  gluPerspective(45.0, static_cast<float>(width)/height, 0.1, 102.4);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+    if (width==0 || height==0) return;
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // TODO : fix fov
+    gluPerspective(45.0, static_cast<float>(width)/height, 0.1, 102.4);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 Video* System<Video>::instance = NULL;
@@ -38,7 +38,7 @@ Video::Video() : m_haveShaders(false)
     bool systemKeys = Config::instance->m_misc.system_keys;
 
     int     modes[]  = { mode, GLFW_WINDOW };
-    int     depths[] = { 32, 24, 16 };
+    int     depths[] = { 24, 16 };
     IntPair sizes[]  = { make_pair(width, height), make_pair(800, 600) };
 
     bool fullscr, success = false;
