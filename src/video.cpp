@@ -58,7 +58,7 @@ Video::Video() : m_haveShaders(false)
                 success = glfwOpenWindow(
                     sizes[s].first,
                     sizes[s].second,
-                    8, 8, 8, 0,
+                    0, 0, 0, 0,
                     depths[d], 0,
                     modes[m]) == GL_TRUE;
 
@@ -96,7 +96,6 @@ Video::Video() : m_haveShaders(false)
         glfwSetWindowPos((desktop.Width-width)/2, (desktop.Height-height)/2);
     }
 
-    glfwDisable(GLFW_AUTO_POLL_EVENTS);
     glfwDisable(GLFW_KEY_REPEAT);
     glfwDisable(GLFW_MOUSE_CURSOR);
 

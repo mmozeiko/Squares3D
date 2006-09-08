@@ -2,35 +2,41 @@
 #define __MESSAGES_H__
 
 #include "common.h"
-#include "video.h"
 #include "font.h"
 #include "vmath.h"
 
 struct Message
 {
-    Message(const string &message, const Vector& initialPos, const char type);
-    string m_message;
-    Vector m_position;
-    char   m_type;
+    enum MessageType
+    {
+        Type_Unknown,
+        Type_Flowing,
+        Type_Static,
+    };
+
+    Message(const string &message, const Vector& position, const Vector& color, MessageType type = Type_Unknown);
+    
+    string      m_text;
+    Vector      m_position;
+    Vector      m_color;
+    MessageType m_type;
+    float       m_timeToLive;
 };
 
-typedef std::vector<Message> MsgBuffer;
+typedef list<Message> MessageVector;
 
-class Messages
+class Messages : NoCopy
 {
 public:
     Messages();
-    void update(const float performance);
-    void add(const string &message, const Vector& initialPos, const char type);
-    void render();
-
-    const Font  m_font;
+    void update(float delta);
+    void add(const Message& message);
+    void render() const;
 
 private:
-    void applyFlowFunction(const float performance);
-    MsgBuffer   m_buffer;
+    const Font    m_font;
+    MessageVector m_buffer;
 };
 
 
 #endif
-

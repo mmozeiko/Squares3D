@@ -1,4 +1,3 @@
-#include <sstream>
 #include "world.h"
 #include "player.h"
 #include "camera.h"
@@ -24,9 +23,12 @@ World::World()
     //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
     m_camera = new Camera(Vector(0.0f, 5.0f, 8.0f), 30.0f, 0.0f);
     m_skybox = new SkyBox();
+    m_messages = new Messages();
+    m_scoreBoard = new ScoreBoard();
 
     m_newtonWorld = NewtonCreate(NULL, NULL);
-    NewtonWorldSetUserData(m_newtonWorld, static_cast<void*>(this));
+
+    // enable some Newton optimization
     NewtonSetSolverModel(m_newtonWorld, 10);
     NewtonSetFrictionModel(m_newtonWorld, 1);
     
@@ -38,18 +40,15 @@ void World::init()
 {
     m_level = new Level();
     m_level->load("level.xml");
-    m_referee = new Referee();
-    m_messages = new Messages();
-
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
-    m_ball = new Ball(m_level->getBody("football"));
-    m_referee->m_ball = m_ball->m_body;
-    m_ball->m_referee = m_referee;
+    m_referee = new Referee(m_messages, m_scoreBoard);
     m_referee->m_ground = m_level->getBody("level");
 
+    m_ball = new Ball(m_level->getBody("football"));
+    m_referee->registerBall(m_ball);
+
     Player* human = new LocalPlayer("player", Vector(-1.5f, 2.0f, -1.5f), Vector::Zero);
-    human->m_referee = m_referee;
     m_localPlayers.push_back(human);
 
     m_referee->registerPlayer("player1", human);
@@ -65,7 +64,6 @@ void World::init()
             {
                 Vector pos(x, 1.0f, z);
                 Player* ai = new AiPlayer("penguin" + cast<string>(i), pos, Vector::Zero);
-                ai ->m_referee = m_referee;
                 m_localPlayers.push_back(ai);
 
                 m_referee->registerPlayer("ai_player" + cast<string>(i), m_localPlayers.back());
@@ -86,14 +84,15 @@ World::~World()
         delete *player;
     }
 
-    delete m_level;
-    delete m_referee;
     delete m_ball;
-    delete m_messages;
+    delete m_scoreBoard;
+    delete m_referee;
+    delete m_level;
 
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
 
+    delete m_messages;
     delete m_skybox;
     delete m_camera;
 }
@@ -114,12 +113,20 @@ void World::control()
     }
 }
 
-void World::update(float delta)
+void World::updateStep(float delta)
 {
+    // updateStep is called more than one time in frame
+
     m_ball->triggerBegin();
     NewtonUpdate(m_newtonWorld, delta);
     m_ball->triggerEnd();
+}
 
+void World::update(float delta)
+{
+    // update is called one time in frame
+
+    m_camera->update(delta);
     m_messages->update(delta);
 }
 
@@ -131,15 +138,12 @@ void World::prepare()
 
 void World::render() const
 {
-    glClear(GL_DEPTH_BUFFER_BIT);
-
     m_camera->render();
-
     m_skybox->render(); // !! immediately  after camera render !!
+
+    Video::instance->renderAxes();   
 
     m_level->render();
 
-    Video::instance->renderAxes();
-    
-    m_messages->render();
+    m_messages->render(); // messages is rendered last
 }

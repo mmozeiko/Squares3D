@@ -13,6 +13,7 @@ class Music;
 class Referee;
 class Ball;
 class Messages;
+class ScoreBoard;
 
 class World : public System<World>, NoCopy
 {
@@ -23,6 +24,7 @@ public:
     void init();
     
     void control();
+    void updateStep(float delta);
     void update(float delta);
     void prepare();
     void render() const;
@@ -36,6 +38,7 @@ public:
     Ball*            m_ball;
     Referee*         m_referee;
     Messages*        m_messages;
+    ScoreBoard*      m_scoreBoard;
 
 };
 

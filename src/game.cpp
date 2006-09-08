@@ -15,6 +15,7 @@
 
 #include "vmath.h"
 
+#define FIXED_TIMESTEP
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
 #define MOVIE_HEIGHT 480
@@ -123,7 +124,7 @@ void Game::run()
 
     Timer timer;
 
-    float accum = 0.0;
+    float accum = 0.0f;
     float currentTime = timer.read();
     float startTime = currentTime;
 
@@ -152,14 +153,23 @@ void Game::run()
         m_input->update();
         m_network->update();
         m_world->control();
-        m_world->m_camera->update(static_cast<float>(deltaTime));
-        //m_world->update(deltaTime);
+
+        m_world->update(accum);
+
+#ifndef FIXED_TIMESTEP
+        m_world->updateStep(accum);
+        accum = 0.0f;
+#else
         while (accum >= DT)
         {
-            m_world->update(DT);
+            m_world->updateStep(DT);
             accum -= DT;
         }
+#endif
+
         m_world->prepare();
+
+        glClear(GL_DEPTH_BUFFER_BIT);
         m_world->render();
 
         fps.update();
@@ -172,7 +182,6 @@ void Game::run()
 #ifdef MAKE_MOVIE
         saveScreenshot(fps);
 #endif
-        glfwPollEvents();
         
         // glfw minmize/restore focus bug
         if (glfwGetWindowParam(GLFW_ACTIVE)==GL_FALSE && previous_active)

@@ -1,4 +1,6 @@
 #include "messages.h"
+#include "video.h"
+
 //#include <GLU.h>
 
     //addend = self.msgFlowFunction(fault[2], px)
@@ -21,47 +23,99 @@
   //else:
   //  self.faultMsgList = self.faultMsgList[1:]
 
-Message::Message(const string &message, const Vector& initialPos, const char type) :
-    m_message(message),
-    m_position(initialPos),
-    m_type(type)
+Message::Message(const string &message, 
+                 const Vector& position, 
+                 const Vector& color, 
+                 MessageType type) :
+    m_text(message),
+    m_position(position),
+    m_color(color),
+    m_type(type),
+    m_timeToLive(1)
 {
-}
-
-Messages::Messages() :
-    m_font("Arial_32pt_bold.bff")
-{
-    add(".", Vector(100,100,100), 1);
-}
-
-
-void Messages::applyFlowFunction(const float performance)
-{
-}
-
-void Messages::update(const float performance)
-{
-}
-
-void Messages::add(const string &message, const Vector& initialPos, const char type)
-{
-    Message msg(message, initialPos, type);
-    m_buffer.push_back(msg);
-}
-
-void Messages::render()
-{
-    for each_(MsgBuffer, m_buffer, message)
+    switch (m_type)
     {
-        Message msg = *message;
-        m_font.begin();
-        //x, y, z = gluProject(msg.m_position.x, msg.m_position.y, msg.m_position.z);
-        //glTranslatef(x, y, 0);
-        glTranslatef(55.0f, 55.0f, 0.0f);
-        Vector v(1,0,1);
-        glColor3fv(v.v);
-        m_font.render(msg.m_message);
-        m_font.end();
-
+    case Type_Flowing: m_timeToLive = 2;
+                       break;
+    //......
+    default: m_timeToLive = 3;
     }
+}
+
+Messages::Messages() : m_font("Arial_32pt_bold.bff")
+{
+    //add(Message("X", 4 * Vector::X, Vector(1, 0, 0)));
+    //add(Message("Y", 4 * Vector::Y, Vector(0, 1, 0)));
+    //add(Message("Z", 4 * Vector::Z, Vector(0, 0, 1)));
+    add(Message("PEETERIS JAU NAV ATBRAUCIS SHEIT SUNJUS POTEET..", Vector(0, 0, 0), Vector(1, 1, 1)));
+}
+
+
+void _applyFlowFunction(float delta, Message* message)
+{
+    message->m_position.y += delta;
+}
+
+void Messages::update(float delta)
+{
+    MessageVector::iterator iter = m_buffer.begin();
+
+    while (iter != m_buffer.end())
+    {
+        Message& message = *iter;
+        _applyFlowFunction(delta, &message);
+        message.m_timeToLive -= delta;
+
+        if (message.m_timeToLive <= 0.0f)
+        {
+            iter = m_buffer.erase(iter);
+        }
+        else
+        {
+            iter++;
+        }
+    }
+}
+
+void Messages::add(const Message& message)
+{
+    m_buffer.push_back(message);
+}
+
+void Messages::render() const
+{
+    Matrix modelview, projection;
+    int viewport[4];
+    
+    glGetFloatv(GL_MODELVIEW_MATRIX, modelview.m);
+    glGetFloatv(GL_PROJECTION_MATRIX, projection.m);
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    double m[16], p[16];
+    std::copy(&modelview.m[0], &modelview.m[16], m);
+    std::copy(&projection.m[0], &projection.m[16], p);
+
+    m_font.begin(Font::Align_Center);
+
+    for each_const(MessageVector, m_buffer, iter)
+    {
+        const Message& message = *iter;
+        
+        double vx, vy, vz;
+        gluProject(
+            message.m_position.x,
+            message.m_position.y,
+            message.m_position.z,
+            m, p, viewport,
+            &vx, &vy, &vz);
+
+        if (vz <= 1.0)
+        {
+            glPushMatrix();
+            glTranslated(vx, vy, 0.0);
+            glColor3fv(message.m_color.v);
+            m_font.render(message.m_text);
+            glPopMatrix();
+        }
+    }
+    m_font.end();
 }

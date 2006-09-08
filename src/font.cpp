@@ -3,6 +3,9 @@
 
 #include "font.h"
 #include "file.h"
+#include "vmath.h"
+
+static const Vector ShadowColor(0.1f, 0.1f, 0.1f);
 
 struct BFFheader
 {
@@ -40,15 +43,16 @@ Font::Font(const string& filename)
     header.base =        *reinterpret_cast<unsigned char*>(&buf[19]);
     std::copy(buf+20, buf+20+256, header.char_width);
 
-    if (header.id != 0xF2BF || (header.bpp!=8 && header.bpp!=24 && header.bpp!=32))
+    int format;
+
+    if (header.id != 0xF2BF && header.bpp!=8 && header.bpp!=24 && header.bpp!=32)
     {
         throw Exception("Invalid font file header");
     }
 
-    int format;
     switch (header.bpp)
     {
-    case 8: format = GL_LUMINANCE; break;
+    case 8: format = GL_ALPHA; break;
     case 24: format = GL_RGB; break;
     case 32: format = GL_RGBA; break;
     }
@@ -96,10 +100,10 @@ Font::Font(const string& filename)
 
             glPushMatrix();
             glBegin(GL_QUADS);
-                glTexCoord2f(u1, v1); glVertex2f(0, 0);
-                glTexCoord2f(u1, v2); glVertex2f(0, h);
-                glTexCoord2f(u2, v2); glVertex2f(w, h);
-                glTexCoord2f(u2, v1); glVertex2f(w, 0);
+                glTexCoord2f(u1, v1); glVertex2f(0, h);
+                glTexCoord2f(u1, v2); glVertex2f(0, 0);
+                glTexCoord2f(u2, v2); glVertex2f(w, 0);
+                glTexCoord2f(u2, v1); glVertex2f(w, h);
             glEnd();
             glPopMatrix();
       
@@ -123,9 +127,16 @@ Font::~Font()
     glDeleteLists(m_listbase, 256);
 }
 
-void Font::begin() const
+void Font::begin(AlignType align, bool shadowed, float shadowWidth) const
 {
-    glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
+    glPushAttrib(
+        GL_COLOR_BUFFER_BIT |
+        GL_CURRENT_BIT |
+        GL_DEPTH_BUFFER_BIT |
+        GL_ENABLE_BIT |
+        GL_LIGHTING_BIT |
+        GL_LIST_BIT |
+        GL_TRANSFORM_BIT);
 
     int viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -133,7 +144,7 @@ void Font::begin() const
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(viewport[0], viewport[2], viewport[3], viewport[1]);
+    gluOrtho2D(viewport[0], viewport[2], viewport[1], viewport[3]);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -144,25 +155,57 @@ void Font::begin() const
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
-    if (m_bpp == 8)
-    {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
-    }
-    else if (m_bpp == 32)
+
+    if (m_bpp != 24)
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
+
+    glListBase(m_listbase);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+
+    m_shadowed = shadowed;
+    m_align = align;
+    m_shadowWidth = shadowWidth;
+}
+
+void Font::renderPlain(const string& text) const
+{
+    glPushMatrix();
+    glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_BYTE, text.c_str());
+    glPopMatrix();
 }
 
 void Font::render(const string& text) const
 {
-    glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glListBase(m_listbase);
-    glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_BYTE, text.c_str());
-    glPopMatrix();
+    IntPair size = getSize(text);
+    switch (m_align)
+    {
+    case Align_Left:
+        break;
+    case Align_Center:
+        glTranslatef(static_cast<float>(-size.first/2), 0.0f, 0.0f);
+        break;
+    case Align_Right:
+        glTranslatef(static_cast<float>(-size.first), 0.0f, 0.0f);
+        break;
+    default:
+        assert(false);
+    };
+
+    if (m_shadowed)
+    {
+        glPushAttrib(GL_CURRENT_BIT);
+        glPushMatrix();
+            glColor3fv(ShadowColor.v);
+            glTranslatef(m_shadowWidth, -m_shadowWidth, 0.0f);
+            renderPlain(text);
+        glPopMatrix();
+        glPopAttrib();
+    }
+
+    renderPlain(text);
 }
 
 void Font::end() const
@@ -171,6 +214,7 @@ void Font::end() const
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
     glPopAttrib();
     glDepthMask(GL_TRUE);
 }

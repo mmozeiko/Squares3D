@@ -1,10 +1,14 @@
 #include "referee.h"
 #include "player.h"
 #include "body.h"
+#include "ball.h"
 #include "geometry.h"
+#include "messages.h"
 
-Referee::Referee(): 
-    m_gameOver(false)
+Referee::Referee(Messages* messages, ScoreBoard* scoreBoard): 
+    m_gameOver(false),
+    m_messages(messages),
+    m_scoreBoard(scoreBoard)
 {
     initEvents();
 }
@@ -16,9 +20,17 @@ void Referee::initEvents()
     m_lastTouchedPlayer = NULL;
 }
 
+void Referee::registerBall(Ball* ball)
+{
+    ball->m_referee = this;
+    m_ball = ball->m_body;
+}
+
 void Referee::registerPlayer(const string& name, Player* player)
 {
-    m_players[player->m_body] = std::make_pair(name, player);
+    m_players[player->m_body] = make_pair(name, player);
+    m_scoreBoard->registerPlayer(name);
+    player->m_referee = this;
 }
 
 void Referee::process(const Body* body1, const Body* body2)
@@ -48,11 +60,11 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 {
     if (otherBody == m_ground)
     {
-        processBallGround(ball, otherBody);
+        processBallGround();
     }
     else if (foundInMap(m_players, otherBody))
     {
-        processBallPlayer(ball, otherBody);
+        processBallPlayer(otherBody);
     }
 }
 
@@ -70,9 +82,9 @@ void Referee::processPlayerGround(const Body* player)
     }
 }
 
-void Referee::processBallGround(const Body* ball, const Body* otherBody)
+void Referee::processBallGround()
 {
-    Vector ballPos(ball->getPosition());
+    Vector ballPos(m_ball->getPosition());
 
     //out = False
 
@@ -89,7 +101,12 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
             //TODO remove cast
             if (foundInMap(m_players, m_lastTouchedObject))
             {
-                clog << m_players[m_lastTouchedObject].first + " izsit bumbu laukaa" << endl;
+                m_messages->add(Message(
+                    m_players[m_lastTouchedObject].first + " kicks the ball out (dumbass)!",
+                    m_lastTouchedObject->getPosition(),
+                    Vector(1, 0, 0),
+                    Message::Type_Flowing));
+//                clog << m_players[m_lastTouchedObject].first + " izsit bumbu laukaa" << endl;
             //player has kicked the ball out
 //          pts = self.scoreBoard.addSelfPoints(lastTouchedObject)
 //          resetCoords = self.getBallCoords(lastTouchedObject)
@@ -103,7 +120,12 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
             {
                 string owner = m_players[m_lastFieldOwner].first;
-                clog << "bumba izripo no " + owner + " laukuma!" << endl;
+                m_messages->add(Message(
+                    "Out from " + owner + " field!",
+                    m_ball->getPosition(),
+                    Vector(1, 0, 0),
+                    Message::Type_Flowing));
+                //clog << "bumba izripo no " + owner + " laukuma!" << endl;
     //          if self.events['lastTouchedPlayer']:
     //            #case when noone touched the ball after throwing minus
     //            lastPlayer = self.events['lastTouchedPlayer'].name
@@ -126,7 +148,11 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
         }
         else
         {
-            clog << "bumba izripo no vidliinijas, nuubi iet uz skolu" << endl;
+            m_messages->add(Message(
+                    "Ball out from middle line!",
+                    m_ball->getPosition(),
+                    Vector(1, 0, 0),
+                    Message::Type_Flowing));
 //        self.faultMsgList.append(['Ball out from middle line!', '', 0])
 //        resetCoords = (0, 10, 0)
         }
@@ -180,7 +206,7 @@ void Referee::processBallGround(const Body* ball, const Body* otherBody)
     }
 }
 
-void Referee::processBallPlayer(const Body* ball, const Body* player)
+void Referee::processBallPlayer(const Body* player)
 {
     //ball + player
 
@@ -205,7 +231,11 @@ void Referee::processBallPlayer(const Body* ball, const Body* player)
             {
                 //critical event. double-touched -> fault
 
-                clog << playerName + " tuu taches!!" << endl;
+                m_messages->add(Message(
+                    playerName + " touches twice!",
+                    player->getPosition(),
+                    Vector(1, 0, 0),
+                    Message::Type_Flowing));
     //          if playerName=="Player":
     //            pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
     //            #pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
@@ -240,6 +270,67 @@ void Referee::processBallPlayer(const Body* ball, const Body* player)
 //        
     m_lastTouchedObject = player;
     m_lastTouchedPlayer = player;
+}
+
+
+Account::Account() : 
+    m_total(0),
+    m_combo(0)
+{
+}
+
+ScoreBoard::ScoreBoard()
+{
+    reset();
+}
+
+void ScoreBoard::registerPlayer(const string& name)
+{
+    m_scores[name] = Account();
+}
+
+void ScoreBoard::resetCombo()
+{
+    m_joinedCombo = 0;
+    for each_(Scores, m_scores, iter)
+    {
+        Account& acc = iter->second;
+        acc.m_combo = 0;
+    }
+}
+
+void ScoreBoard::reset()
+{
+    resetCombo();
+    for each_(Scores, m_scores, iter)
+    {
+        iter->second = Account();
+    }
+}
+
+void ScoreBoard::addTotalPoints(const string& name)
+{
+    Account& acc = m_scores.find(name)->second;
+    acc.m_total += m_joinedCombo;
+}
+
+void ScoreBoard::addPoint(const string& name)
+{
+    Account& acc = m_scores.find(name)->second;
+    acc.m_total += 1;
+}
+
+void ScoreBoard::addSelfTotalPoints(const string& name)
+{
+    Account& acc = m_scores.find(name)->second;
+    acc.m_total += acc.m_combo;
+}
+
+void ScoreBoard::incrementCombo(const string& name)
+{
+    m_joinedCombo++;
+    Account& acc = m_scores.find(name)->second;
+    acc.m_combo++;
 }
 
 //class Coach:

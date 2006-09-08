@@ -4,6 +4,7 @@
 #include "fps.h"
 #include "font.h"
 #include "timer.h"
+#include "config.h"
 
 FPS::FPS(const Timer& timer, const Font& font, const Vector& color)
     : m_time(timer.read()), m_frames(0), m_totalFrames(0), m_timer(timer), m_font(font), m_fps(),
@@ -14,7 +15,7 @@ FPS::FPS(const Timer& timer, const Font& font, const Vector& color)
 void FPS::update()
 {
     m_frames++;
-    if (m_frames%128==0)
+    if (m_frames%128==0 || m_totalFrames<2)
     {
         float curTime = m_timer.read();
         float fps = m_frames/(curTime-m_time);
@@ -30,7 +31,8 @@ void FPS::update()
 void FPS::render() const
 {
     m_font.begin();
-    glTranslatef(0.0f, 0.0f, 0.0f);
+    // TODO: get window size from video
+    glTranslatef(0.0f, static_cast<float>(Config::instance->m_video.height) - m_font.getSize(m_fps).second, 0.0f);
     glColor3fv(color.v);
     m_font.render(m_fps);
     m_font.end();

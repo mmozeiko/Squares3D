@@ -5,25 +5,29 @@
 
 class Body;
 class Player;
+class Ball;
+class Messages;
+class ScoreBoard;
 
 typedef map<const Body*, std::pair<string, Player*> > BodyToPlayerDataMap;
 
-class Referee
+class Referee : NoCopy
 {
 public:
 
     BodyToPlayerDataMap      m_players;
     Body*                    m_ball;
-    Body*                    m_ground;
+    const Body*              m_ground;
     const Body*              m_lastFieldOwner;
     const Body*              m_lastTouchedObject;
     const Body*              m_lastTouchedPlayer;
     bool                     m_gameOver;
 
-    Referee();
+    Referee(Messages* messages, ScoreBoard* scoreBoard);
 
-    void processBallPlayer(const Body* ball, const Body* otherBody);
-    void processBallGround(const Body* ball, const Body* otherBody);
+    void processBallPlayer(const Body* otherBody);
+    void processBallGround();
+    void registerBall(Ball* ball);
     void registerPlayer(const string& name, Player* player);
     void process(const Body* body1, const Body* body2);
     void manageGame();
@@ -31,11 +35,37 @@ public:
     void registerBallEvent(const Body* ground, const Body* otherBody);
     void registerPlayerEvent(const Body* player, const Body* other);
     void processPlayerGround(const Body* player);
+
+private:
+    ScoreBoard* m_scoreBoard;
+    Messages*   m_messages;
 };
 
-class ScoreBoard : public std::map<std::string, std::string>
-{
 
+struct Account
+{
+    Account();
+    int m_total;
+    int m_combo;
+};
+
+typedef map<string, Account> Scores;
+
+class ScoreBoard : NoCopy
+{
+public:
+    ScoreBoard();
+    void registerPlayer(const string& name);
+    void addTotalPoints(const string& name);
+    void addPoint(const string& name);
+    void incrementCombo(const string& name);
+    void addSelfTotalPoints(const string& name);
+    void resetCombo();
+    void reset();
+
+private:
+    Scores m_scores;
+    int    m_joinedCombo;
 };
 //  def __init__(self, players):
 //    self.players = players
@@ -44,18 +74,6 @@ class ScoreBoard : public std::map<std::string, std::string>
 //  def getTotalPoints(self):
 //    return self.joinedCombo
 //
-//  def addTotalPoints(self, playerName):
-//    pts = self.getTotalPoints()
-//    self[playerName][0] += pts #update player score account
-//    self.resetJoinedCombo()
-//    return pts
-//
-//  def addSelfPoints(self, playerName):
-//    playerAccount = self[playerName]
-//    pts = playerAccount[1]
-//    playerAccount[0] += pts #update player score account by earned pts
-//    self.resetJoinedCombo()
-//    return pts
 //
 //  def incrementCombo(self, player, hitMsgList):
 //    playerName = player.name
@@ -71,18 +89,6 @@ class ScoreBoard : public std::map<std::string, std::string>
 //    self[playerName][0] += 1
 //    return 1
 //
-//  def resetJoinedCombo(self):
-//    for val in self.values(): #reset player combos
-//      val[1] = 0 #null them
-//    self.joinedCombo = 0 #reset joined as well
-//    
-//  def reset(self):
-//    for playerName in self.players.keys():
-//      # (player`s total score (minuses), current combo points
-//      self[playerName] = [0, 0]
-//    self.joinedCombo = 0
 //
-//  def resetOwnCombo(self, playerName):
-//    self[playerName][1] = 0
 
 #endif
