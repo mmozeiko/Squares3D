@@ -15,6 +15,7 @@
 #include "referee.h"
 #include "ball.h"
 #include "messages.h"
+#include "scoreboard.h"
 
 World* System<World>::instance = NULL;
 
@@ -145,5 +146,6 @@ void World::render() const
 
     m_level->render();
 
+	m_scoreBoard->render();
     m_messages->render(); // messages is rendered last
 }
