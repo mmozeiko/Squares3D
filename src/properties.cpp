@@ -179,12 +179,12 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     if (colID0 == self->properties->getInvisible())
     {
         self->body[0]->onCollideHull(self->body[1], material);
-        return 1; // TODO: really 1 not 0
+        return 0;
     }
     else if (colID1 == self->properties->getInvisible())
     {
         self->body[1]->onCollideHull(self->body[0], material);
-        return 1; // TODO: really 1 not 0
+        return 0;
     }
 
     Vector normal;
