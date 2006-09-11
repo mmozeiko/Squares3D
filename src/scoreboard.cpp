@@ -23,6 +23,12 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     m_boardPositions.push_back(make_pair(Vector(resX, 0, 0), Font::Align_Right));
     
     reset();
+
+    m_comboMessage = new ComboMessage(" Hits combo!!", 
+                                      Vector(resX / 2, resY / 6, 0),
+                                      Vector(0,0,1),
+                                      0);
+    m_messages->add2D(m_comboMessage);
 }
 
 void ScoreBoard::registerPlayer(const string& name)
@@ -62,25 +68,28 @@ void ScoreBoard::reset()
     }
 }
 
-void ScoreBoard::addTotalPoints(const string& name)
+int ScoreBoard::addTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += m_joinedCombo;
     m_scoreChanged = true;
+    return m_joinedCombo;
 }
 
-void ScoreBoard::addPoint(const string& name)
+int ScoreBoard::addPoint(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += 1;
     m_scoreChanged = true;
+    return 1;
 }
 
-void ScoreBoard::addSelfTotalPoints(const string& name)
+int ScoreBoard::addSelfTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += acc.m_combo;
     m_scoreChanged = true;
+    return acc.m_combo;
 }
 
 void ScoreBoard::incrementCombo(const string& name)
@@ -92,6 +101,7 @@ void ScoreBoard::incrementCombo(const string& name)
 
 void ScoreBoard::update()
 {
+    m_comboMessage->m_points = m_joinedCombo;
     if (m_scoreChanged)
     {
         for (size_t i = 0; i < m_playerOrder.size(); i++)

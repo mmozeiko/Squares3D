@@ -5,7 +5,9 @@
 
 class Vector;
 class ScoreMessage;
+class ComboMessage;
 class Messages;
+
 
 struct Account
 {
@@ -24,10 +26,10 @@ class ScoreBoard : NoCopy
 public:
     ScoreBoard(Messages* messages);
     void registerPlayer(const string& name);
-    void addTotalPoints(const string& name);
-    void addPoint(const string& name);
+    int addTotalPoints(const string& name);
+    int addPoint(const string& name);
     void incrementCombo(const string& name);
-    void addSelfTotalPoints(const string& name);
+    int addSelfTotalPoints(const string& name);
     void resetCombo();
     void resetOwnCombo(const string& name);
     void reset();
@@ -42,6 +44,7 @@ private:
     //TODO: make universal
     Board         m_boardPositions;
     ScoreMessages m_msgVec;
+    ComboMessage* m_comboMessage;
 };
 
 #endif

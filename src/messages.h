@@ -49,6 +49,7 @@ protected:
     float m_timeToLive;
 };
 
+
 class ScoreMessage : public Message
 {
 public:
@@ -65,6 +66,22 @@ protected:
 
     string getText() const;
 };
+
+class ComboMessage : public Message
+{
+public:
+    ComboMessage(
+        const string&         message, 
+        const Vector&         position, 
+        const Vector&         color,
+        const int             points,
+        const Font::AlignType align = Font::Align_Center);
+    
+    int m_points;
+protected:
+    string getText() const;
+};
+
 
 typedef list<Message*> MessageVector;
 

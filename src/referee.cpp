@@ -102,20 +102,24 @@ void Referee::processBallGround()
             if (foundInMap(m_players, m_lastTouchedObject))
             {
                 //player has kicked the ball out
+                int points = m_scoreBoard->addSelfTotalPoints(m_players[m_lastTouchedObject].first);
+                
                 m_messages->add3D(new FlowingMessage(
-                    m_players[m_lastTouchedObject].first + " kicks the ball out (dumbass)!",
+                    m_players[m_lastTouchedObject].first 
+                    + " kicks the ball out (dumbass)!\n+" + cast<string>(points),
                     m_lastTouchedObject->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
-                m_scoreBoard->addSelfTotalPoints(m_players[m_lastTouchedObject].first);
+                
 //              resetCoords = self.getBallCoords(lastTouchedObject)
             }
 
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
             {
                 string owner = m_players[m_lastFieldOwner].first;
+                int points = m_scoreBoard->addTotalPoints(owner);
                 m_messages->add3D(new FlowingMessage(
-                    "Out from " + owner + " field!",
+                    "Out from " + owner + " field!\n+" + cast<string>(points),
                     m_ball->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
@@ -129,7 +133,6 @@ void Referee::processBallGround()
     //              pts = self.scoreBoard.addTotalPoints(owner)
     //          else:
     //            pts = self.scoreBoard.addPoint(owner)
-                m_scoreBoard->addTotalPoints(owner);
 
 //              resetCoords = self.getBallCoords(owner)
     //          getsPoints = owner
@@ -230,13 +233,13 @@ void Referee::processBallPlayer(const Body* player)
             {
                 //critical event. double-touched -> fault
 
+                int points = m_scoreBoard->addPoint(playerName);
                 m_messages->add3D(new FlowingMessage(
-                    playerName + " touches twice!",
+                    playerName + " touches twice!\n+" + cast<string>(points),
                     player->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
 
-                m_scoreBoard->addPoint(playerName);
     //          if playerName=="Player":
     //            pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
     //            #pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]

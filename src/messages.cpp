@@ -62,6 +62,25 @@ string ScoreMessage::getText() const
     return m_text + ": " + cast<string>(m_score);
 }
 
+ComboMessage::ComboMessage(const string&         message, 
+                           const Vector&         position, 
+                           const Vector&         color,
+                           const int             points,
+                           const Font::AlignType align) : 
+    Message(message, position, color, align),
+    m_points(points)
+{
+}
+
+string ComboMessage::getText() const
+{
+    string returnText = "";
+    if (m_points > 1)
+    {
+        returnText = cast<string>(m_points) + m_text;
+    }
+    return returnText;
+}
 
 Messages::Messages() : m_font(Font::get("Arial_32pt_bold"))
 {

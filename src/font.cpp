@@ -202,33 +202,60 @@ void Font::renderPlain(const string& text) const
 
 void Font::render(const string& text, AlignType align) const
 {
-    IntPair size = getSize(text);
-    switch (align)
+    size_t begin = 0;
+    size_t pos = 0;
+    float nextLine = 0; 
+    do
     {
-    case Align_Left:
-        break;
-    case Align_Center:
-        glTranslatef(static_cast<float>(-size.first/2), 0.0f, 0.0f);
-        break;
-    case Align_Right:
-        glTranslatef(static_cast<float>(-size.first), 0.0f, 0.0f);
-        break;
-    default:
-        assert(false);
-    };
+        string line;
+        pos = text.find('\n', begin + 1);
+        if (pos != string::npos)
+        {
+            line = text.substr(begin, pos - begin);
+            begin = pos;
+        }
+        else
+        {
+            line = text.substr(begin, text.length());
+        }
 
-    if (m_shadowed)
-    {
-        glPushAttrib(GL_CURRENT_BIT);
+        IntPair size = getSize(line);
+
         glPushMatrix();
-            glColor3fv(ShadowColor.v);
-            glTranslatef(m_shadowWidth, -m_shadowWidth, 0.0f);
-            renderPlain(text);
-        glPopMatrix();
-        glPopAttrib();
-    }
 
-    renderPlain(text);
+        switch (align)
+        {
+        case Align_Left:
+            break;
+        case Align_Center:
+            glTranslatef(static_cast<float>(-size.first/2), 0.0f, 0.0f);
+            break;
+        case Align_Right:
+            glTranslatef(static_cast<float>(-size.first), 0.0f, 0.0f);
+            break;
+        default:
+            assert(false);
+        };
+
+        glTranslatef(0.0f, nextLine, 0.0f);
+
+        if (m_shadowed)
+        {
+            glPushAttrib(GL_CURRENT_BIT);
+            glPushMatrix();
+                glColor3fv(ShadowColor.v);
+                glTranslatef(m_shadowWidth, - m_shadowWidth, 0.0f);
+                renderPlain(line);
+            glPopMatrix();
+            glPopAttrib();
+        }
+
+        renderPlain(line);
+        nextLine -= static_cast<float>(size.second);
+
+        glPopMatrix();
+    }
+    while (pos != string::npos);
 }
 
 void Font::end() const
