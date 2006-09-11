@@ -1,59 +1,70 @@
 #include "messages.h"
 #include "video.h"
 
-//#include <GLU.h>
-
-    //addend = self.msgFlowFunction(fault[2], px)
-    //text = fault[0]
-    //pts = fault[1]
-    //x, y = W / 2 - self.font_aa.getSize(text)[0] * scale / 2, H - 50 * scale
-    //y = y + fault[2]
-      
-  //  glColor4f(1.0, 0.8, 0.0, addend)
-  //  self.font_aa.begin()
-  //  self.font_aa.renderShadowed(text, x, y, (0,0,0), scale)
-  //  if pts:
-  //    glColor4f(0.5, 0.8, 0.1, addend)
-  //    pts = '+' + pts
-  //    x = W / 2 - self.font_aa.getSize(pts)[0] * scale / 2
-  //    y -= self.font_aa.getSize(pts)[1] * scale
-  //    self.font_aa.renderShadowed(pts, x, y, (0,0,0), scale)
-  //  self.font_aa.end()
-  //  fault[2] += 200 * (1.2 - addend) * performance
-  //else:
-  //  self.faultMsgList = self.faultMsgList[1:]
-
-Message::Message(const string &message, 
-                 const Vector& position, 
-                 const Vector& color, 
-                 MessageType type) :
+Message::Message(const string          &message, 
+                 const Vector&         position, 
+                 const Vector&         color, 
+                 const Font::AlignType align) :
     m_text(message),
     m_position(position),
     m_color(color),
-    m_type(type),
-    m_timeToLive(1)
+    m_align(align)
 {
-    switch (m_type)
-    {
-    case Type_Flowing: m_timeToLive = 2;
-                       break;
-    //......
-    default: m_timeToLive = 3;
-    }
 }
 
-Messages::Messages() : m_font("Arial_32pt_bold.bff")
+string Message::getText() const
 {
-    //add(Message("X", 4 * Vector::X, Vector(1, 0, 0)));
-    //add(Message("Y", 4 * Vector::Y, Vector(0, 1, 0)));
-    //add(Message("Z", 4 * Vector::Z, Vector(0, 0, 1)));
-    add(Message("PEETERIS JAU NAV ATBRAUCIS SHEIT SUNJUS POTEET..", Vector(0, 0, 0), Vector(1, 1, 1)));
+    return m_text;
+}
+
+void Message::applyFlow(float delta)
+{
+}
+
+bool Message::applyDelta(float delta)
+{
+    return false;
+}
+    
+FlowingMessage::FlowingMessage(
+                    const string&         message, 
+                    const Vector&         position, 
+                    const Vector&         color, 
+                    const Font::AlignType align) : 
+    Message(message, position, color, align),
+    m_timeToLive(2)
+{
+}
+
+void FlowingMessage::applyFlow(float delta)
+{
+    m_position.y += 50.0f * delta;
+}
+
+bool FlowingMessage::applyDelta(float delta)
+{
+    m_timeToLive -= delta;
+    return m_timeToLive <= 0.0f;
+}
+
+ScoreMessage::ScoreMessage(const string&         message, 
+                           const Vector&         position, 
+                           const Vector&         color,
+                           const int             score,
+                           const Font::AlignType align) : 
+    Message(message, position, color, align),
+    m_score(score)
+{
+}
+
+string ScoreMessage::getText() const
+{
+    return m_text + ": " + cast<string>(m_score);
 }
 
 
-void _applyFlowFunction(float delta, Message* message)
+Messages::Messages() : m_font(Font::get("Arial_32pt_bold"))
 {
-    message->m_position.y += delta;
 }
 
 void Messages::update(float delta)
@@ -62,12 +73,13 @@ void Messages::update(float delta)
 
     while (iter != m_buffer.end())
     {
-        Message& message = *iter;
-        _applyFlowFunction(delta, &message);
-        message.m_timeToLive -= delta;
+        Message* message = *iter;
 
-        if (message.m_timeToLive <= 0.0f)
+        message->applyFlow(delta);
+
+        if (message->applyDelta(delta))
         {
+            delete *iter;
             iter = m_buffer.erase(iter);
         }
         else
@@ -77,12 +89,7 @@ void Messages::update(float delta)
     }
 }
 
-void Messages::add(const Message& message)
-{
-    m_buffer.push_back(message);
-}
-
-void Messages::render() const
+void Messages::add3D(Message* message)
 {
     Matrix modelview, projection;
     int viewport[4];
@@ -93,29 +100,52 @@ void Messages::render() const
     double m[16], p[16];
     std::copy(&modelview.m[0], &modelview.m[16], m);
     std::copy(&projection.m[0], &projection.m[16], p);
+ 
+    double vx, vy, vz;
+    gluProject(
+        message->m_position.x,
+        message->m_position.y,
+        message->m_position.z,
+        m, p, viewport,
+        &vx, &vy, &vz);
 
-    m_font.begin(Font::Align_Center);
+    m_buffer.push_back(message);
+    m_buffer.back()->m_position = Vector(static_cast<float>(vx),
+                                         static_cast<float>(vy),
+                                         static_cast<float>(vz));
+}
+
+void Messages::add2D(Message* message)
+{
+    m_buffer.push_back(message);
+}
+
+void Messages::render() const
+{
+    m_font->begin();
 
     for each_const(MessageVector, m_buffer, iter)
     {
-        const Message& message = *iter;
-        
-        double vx, vy, vz;
-        gluProject(
-            message.m_position.x,
-            message.m_position.y,
-            message.m_position.z,
-            m, p, viewport,
-            &vx, &vy, &vz);
-
-        if (vz <= 1.0)
+        Message* message = *iter;
+        if (message->m_position.z <= 1.0)
         {
             glPushMatrix();
-            glTranslated(vx, vy, 0.0);
-            glColor3fv(message.m_color.v);
-            m_font.render(message.m_text);
+            glTranslatef(
+                        message->m_position.x,
+                        message->m_position.y,
+                        message->m_position.z);
+            glColor3fv(message->m_color.v);
+            m_font->render(message->getText(), message->m_align);
             glPopMatrix();
         }
     }
-    m_font.end();
+    m_font->end();
+}
+
+Messages::~Messages()
+{
+    for each_const(MessageVector, m_buffer, iter)
+    {
+        delete *iter;
+    }
 }

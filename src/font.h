@@ -13,16 +13,19 @@ public:
         Align_Right,
     };
 
-    Font(const string& filename);
-    ~Font();
+    static const Font* get(const string& name);
+    static void unload();
 
     IntPair getSize(const string& text) const;
 
-    void begin(AlignType align = Align_Left, bool shadowed = true, float shadowWidth = 1.5f) const;
-    void render(const string& text) const;
+    void begin(bool shadowed = true, float shadowWidth = 1.5f) const;
+    void render(const string& text, AlignType align = Align_Left) const;
     void end() const;
 
 private:
+    Font(const string& filename);
+    ~Font();
+
     unsigned int m_texture;
     unsigned int m_listbase;
 
@@ -31,7 +34,6 @@ private:
     int  m_widths[256];
     
     mutable bool      m_shadowed;
-    mutable AlignType m_align;
     mutable float     m_shadowWidth;
     
     void renderPlain(const string& text) const;

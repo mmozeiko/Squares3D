@@ -1,7 +1,7 @@
 <xml>
-  <link file="materials.xml"/>
-  <link file="properties.xml"/>
-  <link file="collisions.xml"/>
-  <link file="bodies.xml"/>
-  <link file="joints.xml"/>
+    <link file="materials.xml"/>
+    <link file="properties.xml"/>
+    <link file="collisions.xml"/>
+    <link file="bodies.xml"/>
+    <link file="joints.xml"/>
 </xml>

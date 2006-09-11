@@ -79,17 +79,17 @@ void Player::onSetForceAndTorque()
     NewtonBodyAddTorque (m_body->m_newtonBody, torque.v);
 }
 
-void Player::onCollide(Body* other, const NewtonMaterial* material)
+void Player::onCollide(const Body* other, const NewtonMaterial* material)
 {
     m_referee->process(m_body, other);
 }
 
-void Player::onImpact(Body* other, const Vector& position, const float speed)
+void Player::onImpact(const Body* other, const Vector& position, const float speed)
 {
     m_isOnGround = (other->m_id == "level");
 }
 
-void Player::onScratch(Body* other, const Vector& position, const float speed)
+void Player::onScratch(const Body* other, const Vector& position, const float speed)
 {
     onImpact(other, position, speed);
 }

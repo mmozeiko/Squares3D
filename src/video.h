@@ -57,7 +57,10 @@ public:
 
     void enableMaterial(const Material* material) const;
     void disableMaterial(const Material* material) const;
+    IntPair getResolution() const;
+    IntPairSet getModes() const;
 
+    unsigned int newList();
     Texture* loadTexture(const string& name);
     Texture* loadCubeMap(const string& name);
     Shader*  loadShader(const string& vp, const string& fp);
@@ -93,7 +96,19 @@ public:
     static PFNGLVERTEXATTRIB2FARBPROC         glVertexAttrib2fARB;
     static PFNGLVERTEXATTRIB3FVARBPROC        glVertexAttrib3fvARB;
 
-    bool          m_haveShaders;
+    bool m_haveShaders;
+
+    static PFNGLGENFRAMEBUFFERSEXTPROC        glGenFramebuffersEXT;
+    static PFNGLBINDFRAMEBUFFEREXTPROC        glBindFramebufferEXT;
+    static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC   glFramebufferTexture2DEXT;
+    static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
+    static PFNGLDELETEFRAMEBUFFERSEXTPROC     glDeleteFramebuffersEXT;
+
+    static PFNGLGENRENDERBUFFERSEXTPROC        glGenRenderbuffersEXT;
+    static PFNGLRENDERBUFFERSTORAGEEXTPROC     glRenderbufferStorageEXT;
+    static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
+    static PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffersEXT;
+    static PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbufferEXT;
 
 private:
     template <typename T>
@@ -107,6 +122,8 @@ private:
 
     ShaderMap     m_shaders;
     TextureMap    m_textures;
+    IntPair       m_resolution;    
+    UIntSet       m_lists;
 };
 
 #endif

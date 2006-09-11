@@ -40,7 +40,7 @@ void outputNode(const XMLnode& node, std::ostream& stream, int level)
 {
     for (int i=0; i<level; i++)
     {
-        stream << "  ";
+        stream << "    ";
     }
 
     stream << '<' << node.name;
@@ -69,7 +69,7 @@ void outputNode(const XMLnode& node, std::ostream& stream, int level)
         }
         for (int i=0; i<level; i++)
         {
-            stream << "  ";
+            stream << "    ";
         }
         stream << "</" << node.name << '>';
     }

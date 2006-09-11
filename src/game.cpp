@@ -16,6 +16,7 @@
 #include "vmath.h"
 
 #define FIXED_TIMESTEP
+
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
 #define MOVIE_HEIGHT 480
@@ -36,6 +37,8 @@ Game::Game()
 
 Game::~Game()
 {
+    Font::unload();
+
     delete m_world;
     delete m_input;
     delete m_network;
@@ -96,12 +99,16 @@ void Game::run()
     PHYSFS_mkdir("movie");
 #endif
 
+    glClearDepth(1.0f);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_DEPTH_TEST);
+
     glFrontFace(GL_CW);
-    //glEnable(GL_CULL_FACE); // TODO: hack
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
     glEnable(GL_NORMALIZE);
-    glEnable(GL_DEPTH_TEST);
+
     glShadeModel(GL_SMOOTH);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
@@ -109,18 +116,6 @@ void Game::run()
 
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
-
-    GLfloat lightColor[] = { 0.8f, 0.8f, 0.8f, 1.0 };
-    GLfloat lightAmbientColor[] = { 0.5f, 0.5f, 0.5f, 1.0 };
-    GLfloat lightPosition[] = { 500.0f, 200.0f, 500.0f, 0.0 };
-    
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbientColor);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
-
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHTING);
 
     Timer timer;
 
@@ -132,7 +127,7 @@ void Game::run()
 
     bool previous_active = true;
     
-    Font font("Arial_32pt_bold.bff");
+    const Font* font = Font::get("Arial_32pt_bold");
     FPS fps(timer, font);
 
     while (running)
@@ -215,4 +210,3 @@ void Game::run()
     clog << "Game finished... " << endl;
     clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;
 }
-

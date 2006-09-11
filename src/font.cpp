@@ -7,6 +7,29 @@
 
 static const Vector ShadowColor(0.1f, 0.1f, 0.1f);
 
+typedef map<string, const Font*> FontMap;
+
+FontMap fonts;
+
+const Font* Font::get(const string& name)
+{
+    FontMap::const_iterator iter = fonts.find(name);
+    if (iter != fonts.end())
+    {
+        return iter->second;
+    }
+    return fonts.insert(make_pair(name, new Font(name))).first->second;
+}
+
+void Font::unload()
+{
+    for each_(FontMap, fonts, iter)
+    {
+        delete iter->second;
+    }
+    fonts.clear();
+}
+
 struct BFFheader
 {
     unsigned short id;
@@ -21,10 +44,10 @@ struct BFFheader
 
 Font::Font(const string& filename)
 {
-    File::Reader font("/data/font/" + filename);
+    File::Reader font("/data/font/" + filename + ".bff");
     if (!font.is_open())
     {
-        throw Exception("Font file '" + filename + "' not found");
+        throw Exception("Font file '" + filename + ".bff' not found");
     }
     char buf[20+256];
     
@@ -127,7 +150,7 @@ Font::~Font()
     glDeleteLists(m_listbase, 256);
 }
 
-void Font::begin(AlignType align, bool shadowed, float shadowWidth) const
+void Font::begin(bool shadowed, float shadowWidth) const
 {
     glPushAttrib(
         GL_COLOR_BUFFER_BIT |
@@ -136,7 +159,8 @@ void Font::begin(AlignType align, bool shadowed, float shadowWidth) const
         GL_ENABLE_BIT |
         GL_LIGHTING_BIT |
         GL_LIST_BIT |
-        GL_TRANSFORM_BIT);
+        GL_TRANSFORM_BIT |
+        GL_POLYGON_BIT);
 
     int viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -166,7 +190,6 @@ void Font::begin(AlignType align, bool shadowed, float shadowWidth) const
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
     m_shadowed = shadowed;
-    m_align = align;
     m_shadowWidth = shadowWidth;
 }
 
@@ -177,10 +200,10 @@ void Font::renderPlain(const string& text) const
     glPopMatrix();
 }
 
-void Font::render(const string& text) const
+void Font::render(const string& text, AlignType align) const
 {
     IntPair size = getSize(text);
-    switch (m_align)
+    switch (align)
     {
     case Align_Left:
         break;

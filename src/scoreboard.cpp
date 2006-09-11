@@ -1,6 +1,7 @@
 #include "referee.h"
 #include "scoreboard.h"
-
+#include "messages.h"
+#include "video.h"
 
 Account::Account() : 
     m_total(0),
@@ -8,14 +9,32 @@ Account::Account() :
 {
 }
 
-ScoreBoard::ScoreBoard()
+ScoreBoard::ScoreBoard(Messages* messages) : 
+    m_messages(messages),
+    m_scoreChanged(false)
 {
+    //TODO: make universal
+    float fontSize = 32;
+    float resX = static_cast<float>(Video::instance->getResolution().first);
+    float resY = static_cast<float>(Video::instance->getResolution().second);
+    m_boardPositions.push_back(make_pair(Vector(0, 0, 0), Font::Align_Left));
+    m_boardPositions.push_back(make_pair(Vector(0, resY - fontSize, 0), Font::Align_Left));
+    m_boardPositions.push_back(make_pair(Vector(resX, resY - fontSize, 0), Font::Align_Right));
+    m_boardPositions.push_back(make_pair(Vector(resX, 0, 0), Font::Align_Right));
+    
     reset();
 }
 
 void ScoreBoard::registerPlayer(const string& name)
 {
     m_scores[name] = Account();
+    m_playerOrder.push_back(name);
+}
+
+void ScoreBoard::resetOwnCombo(const string& name)
+{
+    Account& acc = m_scores[name];
+    acc.m_combo = 0;
 }
 
 void ScoreBoard::resetCombo()
@@ -23,17 +42,23 @@ void ScoreBoard::resetCombo()
     m_joinedCombo = 0;
     for each_(Scores, m_scores, iter)
     {
-        Account& acc = iter->second;
-        acc.m_combo = 0;
+        resetOwnCombo(iter->first);
     }
 }
 
 void ScoreBoard::reset()
 {
     resetCombo();
-    for each_(Scores, m_scores, iter)
+    for (size_t i = 0; i < m_playerOrder.size(); i++)
     {
-        iter->second = Account();
+        m_scores[m_playerOrder[i]] = Account();
+        ScoreMessage* msg = new ScoreMessage(m_playerOrder[i], 
+                                m_boardPositions[i].first, 
+                                Vector(0,1,0), 
+                                m_scores[m_playerOrder[i]].m_total, 
+                                m_boardPositions[i].second);
+        m_messages->add2D(msg);
+        m_msgVec.push_back(msg);
     }
 }
 
@@ -41,18 +66,21 @@ void ScoreBoard::addTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += m_joinedCombo;
+    m_scoreChanged = true;
 }
 
 void ScoreBoard::addPoint(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += 1;
+    m_scoreChanged = true;
 }
 
 void ScoreBoard::addSelfTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += acc.m_combo;
+    m_scoreChanged = true;
 }
 
 void ScoreBoard::incrementCombo(const string& name)
@@ -62,8 +90,14 @@ void ScoreBoard::incrementCombo(const string& name)
     acc.m_combo++;
 }
 
-void ScoreBoard::render()
+void ScoreBoard::update()
 {
-	
-
+    if (m_scoreChanged)
+    {
+        for (size_t i = 0; i < m_playerOrder.size(); i++)
+        {
+            m_msgVec[i]->m_score = m_scores[m_playerOrder[i]].m_total;
+        }
+    }
+    m_scoreChanged = false;
 }

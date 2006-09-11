@@ -1,8 +1,11 @@
 #ifndef __SCOREBOARD_H__
 #define __SCOREBOARD_H__
 
-#include "scoreboard.h"
+#include "font.h"
 
+class Vector;
+class ScoreMessage;
+class Messages;
 
 struct Account
 {
@@ -12,23 +15,33 @@ struct Account
 };
 
 typedef map<string, Account> Scores;
+typedef vector<string> Order;
+typedef vector<pair<Vector, Font::AlignType> > Board;
+typedef vector<ScoreMessage*> ScoreMessages;
 
 class ScoreBoard : NoCopy
 {
 public:
-    ScoreBoard();
+    ScoreBoard(Messages* messages);
     void registerPlayer(const string& name);
     void addTotalPoints(const string& name);
     void addPoint(const string& name);
     void incrementCombo(const string& name);
     void addSelfTotalPoints(const string& name);
     void resetCombo();
+    void resetOwnCombo(const string& name);
     void reset();
-	void ScoreBoard::render();
+    void update();
 
 private:
-    Scores    m_scores;
-    int       m_joinedCombo;
+    Scores        m_scores;
+    Order         m_playerOrder;
+    int           m_joinedCombo;
+    Messages*     m_messages;
+    bool          m_scoreChanged;
+    //TODO: make universal
+    Board         m_boardPositions;
+    ScoreMessages m_msgVec;
 };
 
 #endif

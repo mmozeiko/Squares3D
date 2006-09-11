@@ -99,33 +99,26 @@ void Referee::processBallGround()
 
         if (m_lastTouchedObject != NULL) //if last touched was not middle line
         {
-            //TODO remove cast
             if (foundInMap(m_players, m_lastTouchedObject))
             {
-                m_messages->add(Message(
+                //player has kicked the ball out
+                m_messages->add3D(new FlowingMessage(
                     m_players[m_lastTouchedObject].first + " kicks the ball out (dumbass)!",
                     m_lastTouchedObject->getPosition(),
                     Vector(1, 0, 0),
-                    Message::Type_Flowing));
-//                clog << m_players[m_lastTouchedObject].first + " izsit bumbu laukaa" << endl;
-            //player has kicked the ball out
-//          pts = self.scoreBoard.addSelfPoints(lastTouchedObject)
-//          resetCoords = self.getBallCoords(lastTouchedObject)
-//          self.faultMsgList.append(['Out from ' + lastTouchedObject + '!', str(pts), 0])
-//
-//          out = lastTouchedObject
-//          
-//          getsPoints = lastTouchedObject
+                    Font::Align_Center));
+                m_scoreBoard->addSelfTotalPoints(m_players[m_lastTouchedObject].first);
+//              resetCoords = self.getBallCoords(lastTouchedObject)
             }
 
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
             {
                 string owner = m_players[m_lastFieldOwner].first;
-                m_messages->add(Message(
+                m_messages->add3D(new FlowingMessage(
                     "Out from " + owner + " field!",
                     m_ball->getPosition(),
                     Vector(1, 0, 0),
-                    Message::Type_Flowing));
+                    Font::Align_Center));
                 //clog << "bumba izripo no " + owner + " laukuma!" << endl;
     //          if self.events['lastTouchedPlayer']:
     //            #case when noone touched the ball after throwing minus
@@ -136,11 +129,9 @@ void Referee::processBallGround()
     //              pts = self.scoreBoard.addTotalPoints(owner)
     //          else:
     //            pts = self.scoreBoard.addPoint(owner)
-    //
-    //          out = owner
-    //
-    //          self.faultMsgList.append(['Out from ' + owner + '`s field!', str(pts), 0])
-    //          resetCoords = self.getBallCoords(owner)
+                m_scoreBoard->addTotalPoints(owner);
+
+//              resetCoords = self.getBallCoords(owner)
     //          getsPoints = owner
     //        if self.scoreBoard[getsPoints][0] >= self.matchPoints:
     //          self.setGameOver()
@@ -149,11 +140,11 @@ void Referee::processBallGround()
         }
         else
         {
-            m_messages->add(Message(
+            m_messages->add3D(new FlowingMessage(
                     "Ball out from middle line!",
                     m_ball->getPosition(),
                     Vector(1, 0, 0),
-                    Message::Type_Flowing));
+                    Font::Align_Center));
 //        self.faultMsgList.append(['Ball out from middle line!', '', 0])
 //        resetCoords = (0, 10, 0)
         }
@@ -176,7 +167,7 @@ void Referee::processBallGround()
 //      self.scoreBoard.resetJoinedCombo()
   
         initEvents();
-        m_ball->setTransform(Vector(0,2,0), Vector(0,0,0));
+        m_ball->setTransform(Vector(0,3,0), Vector(0,0,0));
         NewtonBodySetVelocity(m_ball->m_newtonBody, Vector().v);
 
 //      self.resetPlayers()
@@ -212,18 +203,25 @@ void Referee::processBallPlayer(const Body* player)
     //ball + player
 
 //    sounds.playSound("BallPlayer", ball.geom.getPosition())
+
+    string playerName = m_players[player].first;
+
     if (m_lastTouchedObject == NULL)
     {
-//      self.scoreBoard.resetJoinedCombo() #clear combo
-//      self.scoreBoard.incrementCombo(player, self.hitMsgList) #(+1)
+        //TODO: is next line needed?
+        m_scoreBoard->resetCombo(); //clear combo
+
+        m_scoreBoard->incrementCombo(playerName); //(+1)
     }
     else //picked from ground or player
     {
         if (m_lastTouchedObject == m_ground) //picked from ground inside
         {
-//          self.scoreBoard.resetJoinedCombo()
-            string playerName = m_players[player].first;
-//          self.scoreBoard.incrementCombo(player, self.hitMsgList)
+            //TODO: is next line needed?
+            m_scoreBoard->resetCombo(); //clear combo
+
+            m_scoreBoard->incrementCombo(playerName); //(+1)
+
             if ((m_lastFieldOwner == player)
                 && (m_lastTouchedPlayer == player)
                 && (isPointInRectangle(m_ball->getPosition(), 
@@ -232,11 +230,13 @@ void Referee::processBallPlayer(const Body* player)
             {
                 //critical event. double-touched -> fault
 
-                m_messages->add(Message(
+                m_messages->add3D(new FlowingMessage(
                     playerName + " touches twice!",
                     player->getPosition(),
                     Vector(1, 0, 0),
-                    Message::Type_Flowing));
+                    Font::Align_Center));
+
+                m_scoreBoard->addPoint(playerName);
     //          if playerName=="Player":
     //            pl = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
     //            #pl2 = self.players[["Player_Red", "Player_Green", "Player_Yellow"][randint(0,2)]]
@@ -250,22 +250,30 @@ void Referee::processBallPlayer(const Body* player)
     //            #self.addTaunt(pl2, "No!")
     //
     //          resetCoords = self.getBallCoords(playerName)
-    //          self.scoreBoard.addSelfPoints(playerName)
+
     //          self.faultMsgList.append([playerName + ' touched twice!', '1', 0])
     //          if self.scoreBoard[playerName][0] >= self.matchPoints:
     //            self.setGameOver()
     //            return
+
                 initEvents();
+                m_ball->setTransform(Vector(0,3,0), Vector(0,0,0));
+                NewtonBodySetVelocity(m_ball->m_newtonBody, Vector().v);
+
     //          self.resetBall(resetCoords)
     //          self.resetPlayers()
+
+                //TODO: get rid of this
                 return ;
             }
         }
         else //picked from player
         {
-//        if self.events['lastTouchedPlayer'] != player: #reset own combo, when picked from other
-//          self.scoreBoard.resetOwnCombo(player.name)
-//        self.scoreBoard.incrementCombo(player, self.hitMsgList)
+            if (m_lastTouchedPlayer != player) //reset own combo, when picked from other
+            {        
+                m_scoreBoard->resetOwnCombo(playerName);
+            }
+            m_scoreBoard->incrementCombo(playerName); //(+1)
         }
     }
 //        

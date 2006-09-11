@@ -15,10 +15,10 @@ struct MaterialContact : NoCopy
 
     Body* body[2];
     const Properties* properties;
-	
+    
     Vector position;
-	float  maxNormalSpeed;
-	float  maxTangentSpeed;
+    float  maxNormalSpeed;
+    float  maxTangentSpeed;
 };
 
 Properties::Properties() : m_uniqueID(2)
@@ -72,7 +72,6 @@ int Properties::getPropertyID(const string& name)
         int result = ++m_uniqueID;
         m_propertiesID.insert(make_pair(name, result));
 
-        clog << "Material '" << name << "' is nr." << result << endl;
         return result;
     }
     else
@@ -164,8 +163,8 @@ int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* b
         return 0;
     }
 
-	self->maxNormalSpeed = 0.0f;
-	self->maxTangentSpeed = 0.0f;
+    self->maxNormalSpeed = 0.0f;
+    self->maxTangentSpeed = 0.0f;
 
     return 1;
 }
@@ -180,31 +179,31 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     if (colID0 == self->properties->getInvisible())
     {
         self->body[0]->onCollideHull(self->body[1], material);
-        return 0;
+        return 1; // TODO: really 1 not 0
     }
     else if (colID1 == self->properties->getInvisible())
     {
         self->body[1]->onCollideHull(self->body[0], material);
-        return 0;
+        return 1; // TODO: really 1 not 0
     }
 
     Vector normal;
 
-	float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
-	if (sp > self->maxNormalSpeed)
+    float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
+    if (sp > self->maxNormalSpeed)
     {
         self->maxNormalSpeed = sp;
-		NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-	}
+        NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+    }
 
     for (int i=0; i<2; i++)
     {
         float speed = NewtonMaterialGetContactTangentSpeed(material, contact, i);
         if (speed > self->maxTangentSpeed)
         {
-		    self->maxTangentSpeed = speed;
-		    NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-	    }
+            self->maxTangentSpeed = speed;
+            NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+        }
     }
        
     bool isConvex0 = self->properties->hasPropertyID(colID0);

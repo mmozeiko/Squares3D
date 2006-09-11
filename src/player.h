@@ -23,9 +23,9 @@ public:
     Vector getPosition();
 
     // maybe private
-    void onCollide(Body* other, const NewtonMaterial* material);
-    void onImpact(Body* other, const Vector& position, const float speed);
-    void onScratch(Body* other, const Vector& position, const float speed);
+    void onCollide(const Body* other, const NewtonMaterial* material);
+    void onImpact(const Body* other, const Vector& position, const float speed);
+    void onScratch(const Body* other, const Vector& position, const float speed);
     void onSetForceAndTorque();
     
     Referee*     m_referee;

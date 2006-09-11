@@ -8,37 +8,22 @@
 
 Material::Material(const XMLnode& node) :
     m_id(),
-    m_shader(NULL),
+    //m_shader(NULL),
     m_cAmbient(0.2f, 0.2f, 0.2f),
     m_cSpecular(0.0f, 0.0f, 0.0f),
     m_cEmission(0.0f, 0.0f, 0.0f),
     m_cShine(0.0f),
-    m_texture(0),
-    m_textureBump(0)
+    m_texture(0)
+    //m_textureBump(0)
 {
     m_id = getAttribute(node, "id");
 
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
-        if (node.name == "texture")
+        if (node.name == "texture2D")
         {
-            for each_const(XMLnodes, node.childs, iter)
-            {
-                const XMLnode& node = *iter;
-                if (node.name == "path")
-                {
-                    m_texture = Video::instance->loadTexture(node.value);
-                }
-                else if (node.name == "bump_path")
-                {
-                    m_textureBump = Video::instance->loadTexture(node.value);
-                }
-                else
-                {
-                    throw Exception("Invalid texture, unknown node - " + node.name);
-                }
-            }
+            m_texture = Video::instance->loadTexture(getAttribute(node, "name"));
         }
         else if (node.name == "colors")
         {
@@ -67,21 +52,21 @@ Material::Material(const XMLnode& node) :
                 }
             }
         }
-        else if (node.name == "shader")
-        {
-            std::string name = getAttribute(node, "name");
-            m_shader = Video::instance->loadShader(name + ".vp", name + ".fp");
-        }
         else
         {
             throw Exception("Invalid material, unknown node - " + node.name);
         }
     }
+        //else if (node.name == "shader")
+        //{
+        //    std::string name = getAttribute(node, "name");
+        //    m_shader = Video::instance->loadShader(name + ".vp", name + ".fp");
+        //}
 }
 
 void Material::enable() const
 {
-    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    //Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     m_texture->begin();
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
@@ -89,23 +74,27 @@ void Material::enable() const
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m_cEmission.v);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_cShine);
 
+    /*
     if (Video::instance->m_haveShaders && (m_shader != NULL))
     {
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
         m_textureBump->begin();
         Video::instance->begin(m_shader);
     }
+    */
 }
 
 void Material::disable() const
 {
+    /*
     if (Video::instance->m_haveShaders && (m_shader != NULL))
     {
         Video::instance->end(m_shader);
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
         m_textureBump->end();
     }
+    */
 
-    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    //Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     m_texture->end();
 }

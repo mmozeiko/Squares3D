@@ -1,9 +1,11 @@
+#include <GL/glfw.h>
 #include <Newton.h>
 
 #include "ball.h"
 #include "referee.h"
 #include "collision.h"
 #include "world.h"
+#include "video.h"
 
 TriggerFlags::TriggerFlags()
 {
@@ -20,28 +22,29 @@ void TriggerFlags::loadDefaults()
 Ball::Ball(Body* body) : m_body(body)
 {
     m_body->setCollideable(this);
-    m_body->setTransform(Vector(0, 2, 0), Vector::Zero);
+    setPosition0();
 
     NewtonCollision* ballCollision = (*m_body->m_collisions.begin())->m_newtonCollision;
 
     static const float t = 1.10f; // 10%
     NewtonCollision* hull = NewtonCreateConvexHullModifier(World::instance->m_newtonWorld, ballCollision);
     NewtonConvexHullModifierSetMatrix(hull, Matrix::scale(Vector(t, t, t)).m);
+    //NewtonCollision* hull = NewtonCreateSphere(World::instance->m_newtonWorld, t, t, t, NULL);
 
     // TODO: get invisible id (1) from real m_properties
     NewtonConvexCollisionSetUserID(hull, 1); // m_properties->getInvisible()
 
     NewtonCollision* both[] = { ballCollision, hull };
     NewtonCollision* newCollision = NewtonCreateCompoundCollision(World::instance->m_newtonWorld, sizeOfArray(both), both);
-    NewtonBodySetCollision(m_body->m_newtonBody, newCollision);
     NewtonConvexCollisionSetUserID(newCollision, NewtonConvexCollisionGetUserID(ballCollision));
+    NewtonBodySetCollision(m_body->m_newtonBody, newCollision);
 
     // TODO: hmm?
     //NewtonReleaseCollision(hull);
     //NewtonReleaseCollision(newCollision);
 }
 
-Vector Ball::getPosition()
+Vector Ball::getPosition() const
 {
     return m_body->getPosition();
 }
@@ -108,4 +111,45 @@ void Ball::triggerEnd()
             }
         }
     }
+}
+
+void Ball::renderShadow(const Vector& lightPosition) const
+{
+    static bool first = true;
+    static unsigned int list;
+    if (first)
+    {
+        list = Video::instance->newList();
+        glNewList(list, GL_COMPILE);
+
+        glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
+
+        glColor4f(0.25f, 0.25f, 0.25f, 0.25f);
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        float radius = 0.2f;            // TODO: take ball radius from xml file
+        for (int i=16; i>=0; i--)
+        {
+            glVertex3f(radius*cosf(i*2.0f*M_PI/16.0f), 0.0f, radius*sinf(i*2.0f*M_PI/16.0f));
+        }
+        glEnd();
+        glPopAttrib();
+        glEndList();
+        first = false;
+    }
+
+    Vector delta = lightPosition - m_body->getPosition();
+    float t = lightPosition.y / delta.y;
+
+    float x = lightPosition.x - t * delta.x;
+    float z = lightPosition.z - t * delta.z;
+
+    glPushMatrix();
+    glTranslatef(x, 0.01f, z);
+    glCallList(list);
+    glPopMatrix();
 }

@@ -30,11 +30,14 @@ using std::swap;
 using std::pair;
 using std::make_pair;
 
-typedef map<string, string>         StringMap;
-typedef set<string>                 StringSet;
-typedef map<string, int>            IntMap;
-typedef map<string, unsigned int>   UIntMap;
-typedef pair<int, int>              IntPair;
+typedef map<string, string>       StringMap;
+typedef set<string>               StringSet;
+typedef map<string, int>          IntMap;
+typedef map<string, unsigned int> UIntMap;
+typedef pair<int, int>            IntPair;
+typedef set<IntPair>              IntPairSet;
+typedef set<unsigned int>         UIntSet;
+typedef set<int>                  IntSet;
 
 template <typename To, typename From>
 inline To cast(const From& from)

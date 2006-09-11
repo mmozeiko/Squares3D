@@ -99,7 +99,7 @@ void Texture::upload(GLFWimage* image, unsigned int target) const
 Texture2D::Texture2D(const string& name) : Texture(GL_TEXTURE_2D, Trilinear, Repeat)
 {
     GLFWimage image;
-    Texture::loadImage("/data/textures/" + name, 0, &image);
+    Texture::loadImage("/data/textures/" + name + ".tga", 0, &image);
     Texture::upload(&image);
     glfwFreeImage(&image);
 }
@@ -122,6 +122,11 @@ TextureCube::TextureCube(const string& name) : Texture(GL_TEXTURE_CUBE_MAP_ARB, 
         Texture::upload(&image, faces[i].first);
         glfwFreeImage(&image);
     }
+}
+
+void TextureCube::begin() const
+{
+    Texture::begin();
 
     glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
     glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
@@ -130,11 +135,7 @@ TextureCube::TextureCube(const string& name) : Texture(GL_TEXTURE_CUBE_MAP_ARB, 
     glTexGenfv(GL_S, GL_OBJECT_PLANE, Vector::X.v);
     glTexGenfv(GL_T, GL_OBJECT_PLANE, Vector::Y.v);
     glTexGenfv(GL_R, GL_OBJECT_PLANE, Vector::Z.v);
-}
 
-void TextureCube::begin() const
-{
-    Texture::begin();
     glEnable(GL_TEXTURE_GEN_S);
     glEnable(GL_TEXTURE_GEN_T);
     glEnable(GL_TEXTURE_GEN_R);

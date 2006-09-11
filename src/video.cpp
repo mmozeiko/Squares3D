@@ -14,8 +14,7 @@ static void GLFWCALL sizeCb(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    // TODO : fix fov
-    gluPerspective(45.0, static_cast<float>(width)/height, 0.1, 102.4);
+    gluPerspective(45.0, static_cast<float>(width)/static_cast<float>(height), 0.1, 102.4);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -72,9 +71,16 @@ Video::Video() : m_haveShaders(false)
         throw Exception("glfwOpenWindow failed!");
     }
 
-    clog << " * Version  : " << glGetString(GL_VERSION) << endl
-         << " * Vendor   : " << glGetString(GL_VENDOR) << endl
-         << " * Renderer : " << glGetString(GL_RENDERER) << endl;
+    clog << " * Version     : " << glGetString(GL_VERSION) << endl
+         << " * Vendor      : " << glGetString(GL_VENDOR) << endl
+         << " * Renderer    : " << glGetString(GL_RENDERER) << endl;
+    clog << " * Video modes : ";
+    IntPairSet m = getModes();
+    for each_const(IntPairSet, m, i)
+    {
+        clog << i->first << 'x' << i->second << ' ';
+    }
+    clog << endl;
 
     glfwSetWindowSizeCallback(sizeCb);
 
@@ -106,6 +112,7 @@ Video::Video() : m_haveShaders(false)
     gluQuadricTexture(m_quadricSphere, GLU_TRUE);
     gluQuadricNormals(m_quadricSphere, GLU_TRUE);
     gluQuadricDrawStyle(m_quadricWireSphere, GLU_SILHOUETTE);
+    m_resolution = make_pair(width, height);
 }
 
 Video::~Video()
@@ -125,6 +132,10 @@ Video::~Video()
     {
         delete iter->second;
     }
+    for each_(UIntSet, m_lists, iter)
+    {
+        glDeleteLists(*iter, 1);
+    }
 
     glfwCloseWindow();
     glfwTerminate();
@@ -137,7 +148,7 @@ void Video::renderCube() const
 
     if (first)
     {
-        list = glGenLists(1);
+        list = Video::instance->newList();
         glNewList(list, GL_COMPILE);
 
         // -0.5 .. 0.5
@@ -211,9 +222,9 @@ void Video::renderFace(const Face& face) const
         glTexCoord2fv(face.uv[i].uv);
         glVertex3fv(face.vertexes[i].v);
     }
-	glEnd();
+    glEnd();
 
-/*
+/*  normal rendering:
     glDisable(GL_LIGHTING);
     glBegin(GL_LINES);
     glColor3f(1, 0, 0);
@@ -249,6 +260,7 @@ void Video::renderAxes(float size) const
         list = glGenLists(1);
         glNewList(list, GL_COMPILE);
 
+        glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
         glDisable(GL_LIGHTING);
 
         glBegin(GL_LINES);
@@ -292,6 +304,8 @@ void Video::renderAxes(float size) const
         glRotatef(180.0, 0.0, 1.0, 0.0);
         gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
         glPopMatrix();
+
+        glPopAttrib();
 
         glEndList();
         first = false;
@@ -449,6 +463,18 @@ PFNGLUNIFORMMATRIX4FVARBPROC       Video::glUniformMatrix4fvARB;
 PFNGLVERTEXATTRIB2FARBPROC         Video::glVertexAttrib2fARB;
 PFNGLVERTEXATTRIB3FVARBPROC        Video::glVertexAttrib3fvARB;
 
+PFNGLGENFRAMEBUFFERSEXTPROC        Video::glGenFramebuffersEXT;
+PFNGLBINDFRAMEBUFFEREXTPROC        Video::glBindFramebufferEXT;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC   Video::glFramebufferTexture2DEXT;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC Video::glCheckFramebufferStatusEXT;
+PFNGLDELETEFRAMEBUFFERSEXTPROC     Video::glDeleteFramebuffersEXT;
+
+PFNGLGENRENDERBUFFERSEXTPROC        Video::glGenRenderbuffersEXT;
+PFNGLRENDERBUFFERSTORAGEEXTPROC     Video::glRenderbufferStorageEXT;
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC Video::glFramebufferRenderbufferEXT;
+PFNGLDELETERENDERBUFFERSEXTPROC     Video::glDeleteRenderbuffersEXT;
+PFNGLBINDRENDERBUFFEREXTPROC        Video::glBindRenderbufferEXT;
+
 template <typename T>
 void Video::loadProcAddress(const char* name, T& proc) const
 {
@@ -496,7 +522,7 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
 */
     if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
         glfwExtensionSupported("GL_ARB_vertex_shader") &&
-        Config::instance->m_video.useShaders)
+        Config::instance->m_video.use_shaders)
     {
         m_haveShaders = true;
 
@@ -523,4 +549,68 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glVertexAttrib2fARB);
         loadProc(glVertexAttrib3fvARB);
     }
+
+    if (glfwExtensionSupported("GL_EXT_framebuffer_object"))
+    {
+        loadProc(glGenFramebuffersEXT);
+        loadProc(glBindFramebufferEXT);
+        loadProc(glFramebufferTexture2DEXT);
+        loadProc(glCheckFramebufferStatusEXT);
+        loadProc(glDeleteFramebuffersEXT);
+
+        loadProc(glGenRenderbuffersEXT);
+        loadProc(glRenderbufferStorageEXT);
+        loadProc(glFramebufferRenderbufferEXT);
+        loadProc(glDeleteRenderbuffersEXT);
+        loadProc(glBindRenderbufferEXT);
+    }
+
+    if ((!glfwExtensionSupported("GL_ARB_depth_texture") ||
+         !glfwExtensionSupported("GL_ARB_shadow") ||
+         !glfwExtensionSupported("GL_EXT_framebuffer_object")) &&
+        Config::instance->m_video.shadow_type == 1)
+    {
+        Config::instance->m_video.shadow_type = 0;
+    }
+}
+
+IntPair Video::getResolution() const
+{
+    return m_resolution;
+}
+
+unsigned int Video::newList()
+{
+    unsigned int list = glGenLists(1);
+    m_lists.insert(list);
+    return list;
+}
+
+IntPairSet Video::getModes() const
+{
+    static const int commonWidth[] = { 640, 800, 1024, 1280, 1440, 1600, 1680};
+    static const IntSet commonWidthSet(commonWidth, commonWidth + sizeOfArray(commonWidth));
+
+    static IntPairSet modes;
+    static bool first = true;
+
+    if (first)
+    {
+        GLFWvidmode list[200];
+        int count = glfwGetVideoModes(list, sizeOfArray(list));
+        for (int i=0; i<count; i++)
+        {
+            float aspect = static_cast<float>(list[i].Width) / static_cast<float>(list[i].Height);
+            if ( (aspect == 4.0f/3.0f || aspect == 16.0f/9.0f || aspect == 16.0f/10.0f) &&
+                 (list[i].BlueBits + list[i].GreenBits + list[i].RedBits >= 24) &&
+                 list[i].Height >= 480 &&
+                 foundInSet(commonWidthSet, list[i].Width))
+            {
+                modes.insert(make_pair(list[i].Width, list[i].Height));
+            }
+        }
+        first = false;
+    }
+
+    return modes;
 }

@@ -6,12 +6,14 @@
 
 struct VideoConfig
 {
-    int width;
-    int height;
+    int  width;
+    int  height;
     bool fullscreen;
     bool vsync;
-    int samples;
-    bool useShaders;
+    int  samples;
+    bool use_shaders;
+    int  shadow_type;
+    int  shadowmap_size;
 };
 
 struct AudioConfig

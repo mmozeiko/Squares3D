@@ -10,7 +10,7 @@ class Timer;
 class FPS : NoCopy
 {
 public:
-    FPS(const Timer& timer, const Font& font, const Vector& color = Vector(1.0f, 1.0f, 0.0f));
+    FPS(const Timer& timer, const Font* font, const Vector& color = Vector(1.0f, 1.0f, 0.0f));
     void update();
     void render() const;
 
@@ -21,12 +21,13 @@ public:
     Vector color;
 
 private:
-    float m_time;
+    float        m_time;
     unsigned int m_frames;
     unsigned int m_totalFrames;
     const Timer& m_timer;
-    const Font& m_font;
-    string m_fps;
+    const Font*  m_font;
+    string       m_fps;
+    IntPair      m_size;
 };
 
 #endif

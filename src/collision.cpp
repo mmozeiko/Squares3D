@@ -13,6 +13,7 @@ protected:
     CollisionConvex(const XMLnode& node, const Level* level);
 
     Material* m_material;
+
     bool      m_hasOffset; // false
     Matrix    m_matrix;
     int       m_propertyID;
@@ -44,6 +45,9 @@ public:
 
     vector<Face>      m_faces;
     vector<Material*> m_materials;
+
+    mutable bool         m_first;
+    mutable unsigned int m_list;
 };
 
 
@@ -242,7 +246,9 @@ void CollisionSphere::render() const
     glPopMatrix();
 }
 
-CollisionTree::CollisionTree(const XMLnode& node, const Level* level) : Collision(node)
+CollisionTree::CollisionTree(const XMLnode& node, const Level* level) : 
+    Collision(node), m_first(true), m_list(0)
+
 {
     vector<int> props;
 
@@ -323,26 +329,36 @@ void CollisionTree::render() const
         return;
     }
 
-    const Material* last = m_materials[0];
-    Video::instance->enableMaterial(last);
-    for (size_t i = 0; i < m_faces.size(); i++)
+    if (m_first)
     {
-        if (last != m_materials[i])
-        {
-            Video::instance->disableMaterial(last);
-            Video::instance->enableMaterial(m_materials[i]);
-            last = m_materials[i];
-        }
-        Video::instance->renderFace(m_faces[i]);
-    }
-    Video::instance->disableMaterial(last);
-/*
-    for (size_t i = 0; i < m_faces.size(); i++)
-    {
-        Video::instance->enableMaterial(m_materials[i]);
-        Video::instance->renderFace(m_faces[i]);
-        Video::instance->disableMaterial(m_materials[i]);
-    }
-*/
-}
+        m_list = Video::instance->newList();
+        glNewList(m_list, GL_COMPILE);
 
+        const Material* last = m_materials[0];
+        Video::instance->enableMaterial(last);
+        for (size_t i = 0; i < m_faces.size(); i++)
+        {
+            if (last != m_materials[i])
+            {
+                Video::instance->disableMaterial(last);
+                Video::instance->enableMaterial(m_materials[i]);
+                last = m_materials[i];
+            }
+            Video::instance->renderFace(m_faces[i]);
+        }
+        Video::instance->disableMaterial(last);
+
+        /*
+        for (size_t i = 0; i < m_faces.size(); i++)
+        {
+            Video::instance->enableMaterial(m_materials[i]);
+            Video::instance->renderFace(m_faces[i]);
+            Video::instance->disableMaterial(m_materials[i]);
+        }
+        */
+        glEndList();
+        m_first = false;
+    }
+    
+    glCallList(m_list);
+}

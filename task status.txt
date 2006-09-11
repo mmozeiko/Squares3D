@@ -1,11 +1,9 @@
 Available:
 ==========
 
-Fix ball<->player friction (currently none).
+
 Understand how NewtonReleaseCollision works and release collisions in right places.
-Do something about properties.xml file - make it simplier and more compact.
 Allow Property attributes be optional (in xml file).
-Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
 Make AI players smarter.
 Fix shader lighting position.
 Cleanup Material class, move to video.
@@ -13,7 +11,6 @@ Introduce invisible visual material.
 Implement correctly loading shaders from level.xml file.
 Fix camera movement speed.
 Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
-Implement shadows.
 Split large polygon rendering (ex. cubes) into smaller polygons. May need restructuring collision type="tree" face loading. Needed for correct lightning.
 Implement menu system.
 Network?? (vajag precîzâku tâskiòu ðeit).
@@ -40,6 +37,12 @@ Port coach class and name it "Referee".
 
 Done:
 =====
+2006-09-11 Fix ball<->player friction (currently none).
+           Do something about properties.xml file - make it simplier and more compact.
+           Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp
+           Implement shadows.
+           Implemented Referee.
+           Implemented message showing.
 2006-09-03 Added ConvexHullModifier support, ball needs it.
 2006-09-02 Implement NewtonMaterial properties in collisions between TreeCollision faces.
            Implement default Property attributes in xml file.

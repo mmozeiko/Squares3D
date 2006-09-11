@@ -156,8 +156,8 @@ void Level::prepare()
 
 void Level::render() const
 {
-    glPushAttrib(GL_LIGHTING_BIT);
-    glDisable(GL_COLOR_MATERIAL);
+    //glPushAttrib(GL_LIGHTING_BIT);
+    //glDisable(GL_COLOR_MATERIAL);
     for each_const(BodiesMap, m_bodies, iter)
     {
         if (iter->first != "invisibleWalls") // TODO: hack
@@ -165,7 +165,7 @@ void Level::render() const
             (iter->second)->render();
         }
     }    
-    glPopAttrib();
+    //glPopAttrib();
 }
 
 string getAttribute(const XMLnode& node, const string& name)

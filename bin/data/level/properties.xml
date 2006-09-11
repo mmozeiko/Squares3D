@@ -6,7 +6,7 @@
                 softnessCoeficient   = "0.05"/>
 
     <!-- player -->
-    
+
     <properties property0 = "player" 
                 property1 = "player" 
                 staticFriction       = "0.0"
@@ -36,33 +36,33 @@
                 softnessCoeficient   = "0.0"/>
 
     <!-- football -->
-    
+
     <properties property0 = "football" 
                 property1 = "player" 
                 staticFriction       = "1.0"
                 kineticFriction      = "0.5"
-                elasticityCoeficient = "0.5"
+                elasticityCoeficient = "0.9"
                 softnessCoeficient   = "0.15"/>
 
     <properties property0 = "football" 
                 property1 = "pavement" 
                 staticFriction       = "1.0"
                 kineticFriction      = "0.5"
-                elasticityCoeficient = "0.7"
-                softnessCoeficient   = "0.2"/>
+                elasticityCoeficient = "0.8"
+                softnessCoeficient   = "0.4"/>
 
     <properties property0 = "football" 
                 property1 = "grass" 
                 staticFriction       = "1.0"
                 kineticFriction      = "0.5"
-                elasticityCoeficient = "0.7"
-                softnessCoeficient   = "0.2"/>
+                elasticityCoeficient = "0.6"
+                softnessCoeficient   = "0.4"/>
 
     <properties property0 = "football" 
                 property1 = "brick" 
                 staticFriction       = "1.0"
                 kineticFriction      = "0.5"
-                elasticityCoeficient = "0.7"
-                softnessCoeficient   = "0.2"/>
-    
+                elasticityCoeficient = "0.8"
+                softnessCoeficient   = "0.4"/>
+
 </xml>

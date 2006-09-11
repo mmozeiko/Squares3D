@@ -22,7 +22,7 @@ class Ball : public Collideable
 public:
     Ball(Body* body);
 
-    Vector getPosition();
+    Vector getPosition() const;
     void   setPosition0();
 
     // maybe private
@@ -31,6 +31,8 @@ public:
     void triggerBegin();
     void triggerEnd();
     void addBodyToFilter(const Body* body);
+
+    void renderShadow(const Vector& lightPosition) const;
 
     Referee*            m_referee;
     Body*               m_body;

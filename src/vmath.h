@@ -49,12 +49,12 @@ public:
     }
 
     Vector(const float vec[]) : 
-        x(vec[0]), y(vec[1]), z(vec[2]), w(1.0f)
+        x(vec[0]), y(vec[1]), z(vec[2]), w(vec[3])
     {
     }
 
     Vector(const Vector& vec) : 
-        x(vec.x), y(vec.y), z(vec.z), w(1.0f)
+        x(vec.x), y(vec.y), z(vec.z), w(vec.w)
     {
     }
 
@@ -63,6 +63,7 @@ public:
         x = vec[0];
         y = vec[1];
         z = vec[2];
+        w = vec[3];
         return *this;
     }
 
@@ -71,6 +72,7 @@ public:
         x = other.x;
         y = other.y;
         z = other.z;
+        w = other.w;
         return *this;
     }
    
@@ -89,6 +91,7 @@ public:
         x += other.x;
         y += other.y;
         z += other.z;
+        w += other.w;
         return *this;
     }
 
@@ -97,6 +100,7 @@ public:
         x -= other.x;
         y -= other.y;
         z -= other.z;
+        w -= other.w;
         return *this;
     }
 
@@ -105,6 +109,7 @@ public:
         x *= num;
         y *= num;
         z *= num;
+        w *= num;
         return *this;
     }
 
@@ -122,8 +127,14 @@ public:
 
     Vector& operator ^= (const Vector& other)
     {
-        Vector tmp(*this);
-        return operator = (tmp^other);
+        float x = y*other.z - z*other.y;
+        float y = z*other.x - x*other.z;
+        float z = x*other.y - y*other.x;
+        this->x = x;
+        this->y = y;
+        this->z = z;
+        this->w = 1.0f;
+        return *this;
     }
   
     float operator [] (const size_t idx) const
@@ -144,8 +155,8 @@ public:
     void norm()
     {
         float L = std::sqrt(x*x + y*y + z*z);
-        if (L!=0.0f) {
-            L = 1.0f/L;
+        if (L != 0.0f) {
+            L = 1.0f / L;
             x *= L;
             y *= L;
             z *= L;
@@ -210,7 +221,7 @@ inline bool operator != (const Vector& first, const Vector& second)
 
 inline std::ostream& operator << (std::ostream& os, const Vector& vec)
 {
-    return os << "Vector(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+    return os << "Vector(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
 }
 
 class Matrix
@@ -236,11 +247,12 @@ public:
 
     Matrix(float m00, float m01, float m02, float m03,
            float m10, float m11, float m12, float m13,
-           float m20, float m21, float m22, float m23) :
+           float m20, float m21, float m22, float m23,
+           float m30, float m31, float m32, float m33) :
         m00(m00), m01(m01), m02(m02), m03(m03), 
         m10(m10), m11(m11), m12(m12), m13(m13), 
         m20(m20), m21(m21), m22(m22), m23(m23), 
-        m30(0.0f), m31(0.0f), m32(0.0f), m33(1.0f)
+        m30(m30), m31(m31), m32(m32), m33(m33)
     {
     }
 
@@ -302,8 +314,8 @@ public:
   
     void rotationX(float angle)
     {
-        float s = std::sin(angle);
-        float c = std::cos(angle);
+        float s = std::sinf(angle);
+        float c = std::cosf(angle);
         std::fill_n(m, 16, 0.0f);
         m00 = m33 = 1.0f;
         m11 = m22 = c;
@@ -320,8 +332,8 @@ public:
 
     void rotationY(float angle)
     {
-        float s = std::sin(angle);
-        float c = std::cos(angle);
+        float s = std::sinf(angle);
+        float c = std::cosf(angle);
         std::fill_n(m, 16, 0.0f);
         m11 = m33 = 1.0f;
         m00 = m22 = c;
@@ -338,8 +350,8 @@ public:
 
     void rotationZ(float angle)
     {
-        float s = std::sin(angle);
-        float c = std::cos(angle);
+        float s = std::sinf(angle);
+        float c = std::cosf(angle);
         std::fill_n(m, 16, 0.0f);
         m22 = m33 = 1.0f;
         m00 = m11 = c;
@@ -356,8 +368,8 @@ public:
 
     void rotation(float angle, const Vector& vec)
     {
-        float s = std::sin(angle);
-        float c = std::cos(angle);
+        float s = std::sinf(angle);
+        float c = std::cosf(angle);
         float c1 = 1-c;
         float x = vec.x;
         float y = vec.y;
@@ -412,9 +424,9 @@ public:
 
     Vector column(int idx) const
     {
-        if (idx>=0 && idx<=2)
+        if (idx>=0 && idx<=3)
         {
-            return Vector(m[0+idx], m[4+idx], m[8+idx]);
+            return Vector(m[0+idx], m[4+idx], m[8+idx], m[12+idx]);
         }
         return Vector();
     }
@@ -423,7 +435,7 @@ public:
     {
         if (idx>=0 && idx<=3)
         {
-            return Vector(m[idx*4+0], m[idx*4+1], m[idx*4+2]);
+            return Vector(m[idx*4+0], m[idx*4+1], m[idx*4+2], m[idx*4+3]);
         }
         return Vector();
     }
