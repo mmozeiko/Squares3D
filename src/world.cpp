@@ -309,8 +309,8 @@ void World::shadowMapPass1() const
     glColorMask(0, 0, 0, 0);
 
     // TODO: uncomment for ATI
-    //glDisable(GL_CULL_FACE);
-    glPolygonOffset(0.1f, 0.1f);
+    glDisable(GL_CULL_FACE);
+    glPolygonOffset(1.0f, -0.01f);
     glEnable(GL_POLYGON_OFFSET_FILL);
 
     //Draw the scene
