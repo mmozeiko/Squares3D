@@ -5,7 +5,6 @@ Hight priority:
 
 Look for TODOs, FIXMEs.
 Message fading out (using alpha blending).
-Implement field middle line detecting.
 Make AI players move more randomly.
 Allow players to kick ball not only forward byt to sides also and later backwards.
 Remove Combo message when game has ended (all message removing implement with alpha fading).
@@ -26,15 +25,12 @@ Misc:
 
 Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
 Split large polygon rendering (ex. cubes) into smaller polygons. May need restructuring collision type="tree" face loading. Needed for correct lightning.
-Implement menu system.
 Network?? (vajag precîzâku tâskiòu ðeit).
 Fill menu system with Options/Multiplayer/Credits/Rules and some other menus you can think of (which are reasonable).
 Build some nice scenery around game field (like houses, some roads, etc.).
 Implement model loading.
 Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
 Implement model animation.
-Implement game Scoreboard.
-Implement score counting system.
 Implement basic moves for player, kicking the ball, joggling the ball in air, hitting it with head..
 Implement basic tournament gameplay.
 Upgrade the ball control to be more submissive to player actions.
@@ -44,11 +40,14 @@ Add a referee model who whistles when a fault is detected. (optional task)
 
 Construction:
 =============
-Port coach class and name it "Referee".
-
+Implement field middle line detecting.
+Implement menu system.
 
 Done:
 =====
+2006-09-13 Port coach class and name it "Referee".
+2006-09-13 Implement game Scoreboard.
+2006-09-13 Implement score counting system.
 2006-09-11 Allow Property attributes be optional (in xml file).
 2006-09-11 Fix ball<->player friction (currently none).
            Do something about properties.xml file - make it simplier and more compact.
