@@ -121,14 +121,12 @@ Font::Font(const string& filename)
             float u2 = u1 + col_factor;
             float v2 = v1 + row_factor;
 
-            glPushMatrix();
             glBegin(GL_QUADS);
                 glTexCoord2f(u1, v1); glVertex2f(0, h);
                 glTexCoord2f(u1, v2); glVertex2f(0, 0);
                 glTexCoord2f(u2, v2); glVertex2f(w, 0);
                 glTexCoord2f(u2, v1); glVertex2f(w, h);
             glEnd();
-            glPopMatrix();
       
             glTranslatef(header.char_width[ch], 0.0, 0.0);
         }
@@ -196,30 +194,28 @@ void Font::begin(bool shadowed, float shadowWidth) const
 void Font::renderPlain(const string& text) const
 {
     glPushMatrix();
-    glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_BYTE, text.c_str());
+        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_BYTE, text.c_str());
     glPopMatrix();
 }
 
 void Font::render(const string& text, AlignType align) const
 {
-    size_t begin = 0;
-    size_t pos = 0;
-    float nextLine = 0; 
-    do
+    size_t pos, begin = 0;
+    string line;
+    float linePos = 0.0f;
+    while (begin < text.size())
     {
-        string line;
-        pos = text.find('\n', begin + 1);
-        if (pos != string::npos)
+        pos = text.find('\n', begin);
+        if (pos == string::npos)
         {
-            line = text.substr(begin, pos - begin);
-            begin = pos;
-        }
-        else
-        {
-            line = text.substr(begin, text.length());
+            pos = text.size();
         }
 
-        IntPair size = getSize(line);
+        line = text.substr(begin, pos - begin);
+
+        begin = pos + 1;
+
+        const IntPair size = getSize(line);
 
         glPushMatrix();
 
@@ -236,8 +232,7 @@ void Font::render(const string& text, AlignType align) const
         default:
             assert(false);
         };
-
-        glTranslatef(0.0f, nextLine, 0.0f);
+        glTranslatef(0.0f, linePos, 0.0f);       
 
         if (m_shadowed)
         {
@@ -251,11 +246,10 @@ void Font::render(const string& text, AlignType align) const
         }
 
         renderPlain(line);
-        nextLine -= static_cast<float>(size.second);
-
         glPopMatrix();
+        linePos += static_cast<float>(-size.second);
     }
-    while (pos != string::npos);
+
 }
 
 void Font::end() const

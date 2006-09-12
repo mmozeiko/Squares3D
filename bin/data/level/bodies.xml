@@ -91,13 +91,13 @@
         
         
         
-        <body id="some_crap">
+        <!--body id="some_crap">
             <position x="2.5" y="1.8" z="2.5" />
             <rotation x="0.0" y="0.0" z="180.0" />
             <collision>box2</collision>
             <collision>thinBox</collision>
             <collision>heavyBox</collision>
-        </body>
+        </body-->
 
         
         

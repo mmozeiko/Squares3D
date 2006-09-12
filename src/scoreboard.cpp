@@ -1,6 +1,7 @@
-#include "referee.h"
 #include "scoreboard.h"
+#include "referee.h"
 #include "messages.h"
+#include "message.h"
 #include "video.h"
 
 Account::Account() : 
@@ -25,8 +26,8 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     reset();
 
     m_comboMessage = new ComboMessage(" Hits combo!!", 
-                                      Vector(resX / 2, resY / 6, 0),
-                                      Vector(0,0,1),
+                                      Vector(resX / 2, 50.0f, 0),
+                                      Vector(1,1,0),
                                       0);
     m_messages->add2D(m_comboMessage);
 }

@@ -203,6 +203,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\message.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\message.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\messages.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\messages.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\player.cpp"
 					>
 				</File>
@@ -495,14 +511,6 @@
 					</File>
 					<File
 						RelativePath=".\src\framebuffer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\src\messages.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\src\messages.h"
 						>
 					</File>
 					<File

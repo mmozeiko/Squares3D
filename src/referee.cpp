@@ -4,6 +4,7 @@
 #include "ball.h"
 #include "geometry.h"
 #include "messages.h"
+#include "message.h"
 #include "scoreboard.h"
 
 Referee::Referee(Messages* messages, ScoreBoard* scoreBoard): 

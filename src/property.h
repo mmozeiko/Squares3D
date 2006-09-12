@@ -4,8 +4,11 @@
 #include <Newton.h>
 #include "common.h"
 
+class Properties;
+
 class Property
 {
+    friend class Properties;
 public:
     Property(float sF, float kF, float eC, float sC);
 

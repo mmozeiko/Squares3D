@@ -28,7 +28,7 @@ World::World()
     setLight(Vector(-15.0f, 40.0f, 13.0f));
 
     //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
-    m_camera = new Camera(Vector(0.0f, 5.0f, 8.0f), 30.0f, 0.0f);
+    m_camera = new Camera(Vector(0.0f, 9.0f, 14.0f), 30.0f, 0.0f);
     m_skybox = new SkyBox();
     m_messages = new Messages();
     m_scoreBoard = new ScoreBoard(m_messages);
@@ -182,7 +182,7 @@ void World::render() const
 
 void World::renderScene() const
 {
-    Video::instance->renderAxes();   
+    //Video::instance->renderAxes();   
 
     m_level->render();
 }
@@ -308,9 +308,8 @@ void World::shadowMapPass1() const
     glShadeModel(GL_FLAT);
     glColorMask(0, 0, 0, 0);
 
-    glDisable(GL_CULL_FACE);
-
-    // hmm??
+    // TODO: uncomment for ATI
+    //glDisable(GL_CULL_FACE);
     glPolygonOffset(0.1f, 0.1f);
     glEnable(GL_POLYGON_OFFSET_FILL);
 

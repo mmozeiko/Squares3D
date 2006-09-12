@@ -25,6 +25,7 @@ public:
     int  getInvisible() const;              // 1
     int  getDefault() const;                // 2
     int  getPropertyID(const string& name); // >=3
+    int  getPropertyID(const string& name) const; // >=3
     bool hasPropertyID(int id) const; // id>=3
 
 private:

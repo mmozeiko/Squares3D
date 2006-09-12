@@ -46,16 +46,8 @@ public:
     Matrix              m_matrix;
     CollisionSet        m_collisions;
 
-    // TODO: move to cpp file
-    float getMass() const
-    {
-        return m_totalMass;
-    }
-
-    const Vector& getInertia() const
-    {
-        return m_totalInertia;
-    }
+    float getMass() const;
+    const Vector& getInertia() const;
 
 protected:
 

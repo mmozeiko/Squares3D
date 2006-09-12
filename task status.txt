@@ -3,7 +3,6 @@ Available:
 
 
 Understand how NewtonReleaseCollision works and release collisions in right places.
-Allow Property attributes be optional (in xml file).
 Make AI players smarter.
 Fix shader lighting position.
 Cleanup Material class, move to video.
@@ -37,6 +36,7 @@ Port coach class and name it "Referee".
 
 Done:
 =====
+2006-09-11 Allow Property attributes be optional (in xml file).
 2006-09-11 Fix ball<->player friction (currently none).
            Do something about properties.xml file - make it simplier and more compact.
            Get rid of hacks - Invisible wall in level.cpp, cullfacing in skybox.cpp and game.cpp

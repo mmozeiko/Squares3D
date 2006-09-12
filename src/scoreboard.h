@@ -1,13 +1,13 @@
 #ifndef __SCOREBOARD_H__
 #define __SCOREBOARD_H__
 
+#include "common.h"
 #include "font.h"
 
 class Vector;
 class ScoreMessage;
 class ComboMessage;
 class Messages;
-
 
 struct Account
 {

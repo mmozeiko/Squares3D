@@ -80,6 +80,21 @@ int Properties::getPropertyID(const string& name)
     }
 }
 
+int  Properties::getPropertyID(const string& name) const
+{
+    if (name.empty())
+    {
+        return getDefault();
+    }
+
+    IntMap::const_iterator iter = m_propertiesID.find(name);
+    if (iter == m_propertiesID.end())
+    {
+        assert(false);
+    }
+    return iter->second;
+}
+
 bool Properties::hasPropertyID(int id) const
 {
     return id >= 2;
@@ -101,10 +116,12 @@ void Properties::load(const XMLnode& node)
                                            + prop1 + "' already loaded");
     }
 
-    float sF = cast<float>(getAttribute(node, "staticFriction"));
-    float kF = cast<float>(getAttribute(node, "kineticFriction"));
-    float eC = cast<float>(getAttribute(node, "elasticityCoeficient"));
-    float sC = cast<float>(getAttribute(node, "softnessCoeficient"));
+    const Property& def = m_properties.find(makepID(getDefault(), getDefault()))->second;
+
+    float sF = cast<float>(getAttribute(node, "staticFriction", cast<string>(def.staticFriction)));
+    float kF = cast<float>(getAttribute(node, "kineticFriction", cast<string>(def.kineticFriction)));
+    float eC = cast<float>(getAttribute(node, "elasticityCoefficient", cast<string>(def.elasticityCoefficient)));
+    float sC = cast<float>(getAttribute(node, "softnessCoefficient", cast<string>(def.softnessCoefficient)));
 
     m_properties.insert(make_pair(makepID(id0, id1), Property(sF, kF, eC, sC)));
 }
@@ -117,8 +134,8 @@ void Properties::loadDefault(const XMLnode& node)
 
     float sF = cast<float>(getAttribute(node, "staticFriction"));
     float kF = cast<float>(getAttribute(node, "kineticFriction"));
-    float eC = cast<float>(getAttribute(node, "elasticityCoeficient"));
-    float sC = cast<float>(getAttribute(node, "softnessCoeficient"));
+    float eC = cast<float>(getAttribute(node, "elasticityCoefficient"));
+    float sC = cast<float>(getAttribute(node, "softnessCoefficient"));
 
     m_properties.insert(make_pair(makepID(getDefault(), getDefault()), Property(sF, kF, eC, sC)));
 
@@ -175,15 +192,27 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     
     int colID0 = NewtonMaterialGetBodyCollisionID(material, self->body[0]->m_newtonBody);
     int colID1 = NewtonMaterialGetBodyCollisionID(material, self->body[1]->m_newtonBody);
-    
+    int faceAttr = NewtonMaterialGetContactFaceAttribute(material);
+
     if (colID0 == self->properties->getInvisible())
     {
         self->body[0]->onCollideHull(self->body[1], material);
+
+        const Property * prop = self->properties->get((faceAttr ? faceAttr : colID1), self->properties->getPropertyID("football"));
+        if (prop != NULL)
+        {
+            prop->apply(material);
+        }
         return 0;
     }
     else if (colID1 == self->properties->getInvisible())
     {
         self->body[1]->onCollideHull(self->body[0], material);
+        const Property * prop = self->properties->get((faceAttr ? faceAttr : colID0), self->properties->getPropertyID("football"));
+        if (prop != NULL)
+        {
+            prop->apply(material);
+        }
         return 0;
     }
 
@@ -208,7 +237,6 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
        
     bool isConvex0 = self->properties->hasPropertyID(colID0);
     bool isConvex1 = self->properties->hasPropertyID(colID1);
-    unsigned int faceAttr = NewtonMaterialGetContactFaceAttribute(material);
 
     int m0, m1;
     

@@ -93,11 +93,6 @@ Body::Body(const XMLnode& node):
     }
 
     createNewtonBody(newtonCollision, totalOrigin, position, rotation);
-
-    if (m_id == "football")
-    {
-        NewtonBodySetContinuousCollisionMode(m_newtonBody, 1);
-    }
 }
 
 void Body::setTransform(const Vector& position, const Vector& rotation)
@@ -220,4 +215,14 @@ void Body::onScratch(const Body* other, const Vector& position, const float spee
     {
         m_collideable->onScratch(other, position, speed);
     }
+}
+
+float Body::getMass() const
+{
+    return m_totalMass;
+}
+
+const Vector& Body::getInertia() const
+{
+    return m_totalInertia;
 }
