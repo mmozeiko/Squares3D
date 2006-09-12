@@ -20,6 +20,7 @@ typedef map<string, Account> Scores;
 typedef vector<string> Order;
 typedef vector<pair<Vector, Font::AlignType> > Board;
 typedef vector<ScoreMessage*> ScoreMessages;
+typedef pair<string, int> StringIntPair;
 
 class ScoreBoard : NoCopy
 {
@@ -28,12 +29,14 @@ public:
     void registerPlayer(const string& name);
     int addTotalPoints(const string& name);
     int addPoint(const string& name);
-    void incrementCombo(const string& name);
+    void incrementCombo(const string& name, const Vector& position);
     int addSelfTotalPoints(const string& name);
     void resetCombo();
     void resetOwnCombo(const string& name);
     void reset();
     void update();
+    StringIntPair getMostScoreData();
+    
 
 private:
     Scores        m_scores;

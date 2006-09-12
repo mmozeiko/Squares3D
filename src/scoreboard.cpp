@@ -38,6 +38,21 @@ void ScoreBoard::registerPlayer(const string& name)
     m_playerOrder.push_back(name);
 }
 
+StringIntPair ScoreBoard::getMostScoreData()
+{
+    int max = -1;
+    string name;
+    for each_const(Scores, m_scores, score)
+    {
+        if (score->second.m_total > max)
+        {
+            max = score->second.m_total;
+            name = score->first;
+        }
+    }
+    return make_pair(name, max);
+}
+
 void ScoreBoard::resetOwnCombo(const string& name)
 {
     Account& acc = m_scores[name];
@@ -93,8 +108,9 @@ int ScoreBoard::addSelfTotalPoints(const string& name)
     return acc.m_combo;
 }
 
-void ScoreBoard::incrementCombo(const string& name)
+void ScoreBoard::incrementCombo(const string& name, const Vector& position)
 {
+    m_messages->add3D(new FlowingMessage("+1", position, Vector(0.0f,0.8f,0.8f), Font::Align_Center, 0.5f));
     m_joinedCombo++;
     Account& acc = m_scores.find(name)->second;
     acc.m_combo++;

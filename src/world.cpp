@@ -55,7 +55,7 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"));
     m_referee->registerBall(m_ball);
 
-    Player* human = new LocalPlayer("player", Vector(-1.5f, 2.0f, -1.5f), Vector::Zero);
+    Player* human = new LocalPlayer("penguin3", Vector(-1.5f, 2.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
     m_referee->registerPlayer("player1", human);

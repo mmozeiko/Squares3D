@@ -38,7 +38,8 @@ public:
         const string&         message, 
         const Vector&         position, 
         const Vector&         color, 
-        const Font::AlignType align = Font::Align_Left);
+        const Font::AlignType align = Font::Align_Left,
+        const float              timeToLive = 2);
 
 protected:
 
@@ -81,5 +82,6 @@ public:
 protected:
     string getText() const;
 };
+
 
 #endif

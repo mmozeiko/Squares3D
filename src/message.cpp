@@ -30,9 +30,10 @@ FlowingMessage::FlowingMessage(
                     const string&         message, 
                     const Vector&         position, 
                     const Vector&         color, 
-                    const Font::AlignType align) : 
+                    const Font::AlignType align,
+                    const float              timeToLive) : 
     Message(message, position, color, align),
-    m_timeToLive(2)
+    m_timeToLive(timeToLive)
 {
 }
 
@@ -81,3 +82,4 @@ string ComboMessage::getText() const
     }
     return returnText;
 }
+

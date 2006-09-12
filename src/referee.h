@@ -21,7 +21,6 @@ public:
     const Body*              m_lastFieldOwner;
     const Body*              m_lastTouchedObject;
     const Body*              m_lastTouchedPlayer;
-    bool                     m_gameOver;
 
     Referee(Messages* messages, ScoreBoard* scoreBoard);
 
@@ -32,6 +31,8 @@ public:
     void process(const Body* body1, const Body* body2);
     void manageGame();
     void initEvents();
+    void resetBall();
+    void processCriticalEvent();
     void registerBallEvent(const Body* ground, const Body* otherBody);
     void registerPlayerEvent(const Body* player, const Body* other);
     void processPlayerGround(const Body* player);
@@ -39,6 +40,8 @@ public:
 private:
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;
+    int         m_matchPoints;
+    bool        m_gameOver;
 };
 
 #endif
