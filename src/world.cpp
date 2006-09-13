@@ -32,7 +32,7 @@ World::World()
 
     m_framebuffer = new FrameBuffer();
     setupShadowStuff();
-    setLight(Vector(-15.0f, 40.0f, 13.0f));
+    setLight(Vector(-15.0f, 30.0f, 13.0f));
 
     //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
     m_camera = new Camera(Vector(0.0f, 9.0f, 14.0f), 30.0f, 0.0f);
@@ -203,7 +203,7 @@ void World::setLight(const Vector& position)
     glPushMatrix();
     
     glLoadIdentity();
-    gluPerspective(45.0f, 1.0f, 1.0f, 52.0f);
+    gluPerspective(50.0f, 1.0f, 1.0f, 52.0f);
     glGetFloatv(GL_MODELVIEW_MATRIX, m_lightProjection.m);
 
     glLoadIdentity();
@@ -317,9 +317,17 @@ void World::shadowMapPass1() const
     glShadeModel(GL_FLAT);
     glColorMask(0, 0, 0, 0);
 
-    // TODO: uncomment for ATI
-    glDisable(GL_CULL_FACE);
-    glPolygonOffset(1.0f, -0.01f);
+    // mâjâs:
+    //glDisable(GL_CULL_FACE);
+    //glPolygonOffset(1.0f, -0.01f);
+    // vai
+    //glDisable(GL_CULL_FACE);
+    glPolygonOffset(-0.3f, -0.01f);
+    
+    // darbâ:
+    //glPolygonOffset(-0.25f, -0.01f);
+
+
     glEnable(GL_POLYGON_OFFSET_FILL);
 
     //Draw the scene

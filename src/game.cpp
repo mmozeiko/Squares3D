@@ -236,5 +236,6 @@ State* Game::switchState(const State::Type nextState) const
     //case State_Lobby: return ..;
     default:
         assert(false);
+        return NULL;
     }
 }
