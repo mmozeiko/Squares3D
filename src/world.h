@@ -5,6 +5,7 @@
 #include "common.h"
 #include "vmath.h"
 #include "system.h"
+#include "state.h"
 
 class Camera;
 class Player;
@@ -17,7 +18,7 @@ class Messages;
 class ScoreBoard;
 class FrameBuffer;
 
-class World : public System<World>, NoCopy
+class World : public State, public System<World>
 {
 public:
     World();
@@ -30,6 +31,7 @@ public:
     void update(float delta);
     void prepare();
     void render() const;
+    State::Type progress() const;
 
     Music*           m_music;
     Camera*          m_camera;

@@ -8,6 +8,40 @@
 #include "scoreboard.h"
 #include "video.h"
 
+bool isBallInField(const Vector& position, const Vector& lowerLeft, const Vector& upperRight)
+{
+    Vector _lowerLeft(lowerLeft);
+    Vector _upperRight(upperRight);
+
+    //find out which of the 4 fields we are in
+    Vector center = getSquareCenter(_lowerLeft, _upperRight);
+
+    int quadrant = getQuadrant(center);
+
+    //TODO: make universaly proportional to field size?
+    float midLineWeight = 0.2f;
+
+    //adjust the field size to take middle line into account
+    switch(quadrant)
+    {
+    case 1: _lowerLeft.x += midLineWeight;
+            _lowerLeft.z += midLineWeight;
+            break;
+    case 2: _upperRight.x -= midLineWeight;
+            _lowerLeft.z += midLineWeight;
+            break;
+    case 3: _upperRight.x -= midLineWeight;
+            _upperRight.z -= midLineWeight;
+            break;
+    case 4: _lowerLeft.x += midLineWeight;
+            _upperRight.z -= midLineWeight;
+            break;
+    }
+
+    //return the bool "if point is into adjusted field (middle line excluded)"
+    return isPointInRectangle(position, _lowerLeft, _upperRight);
+}
+
 Referee::Referee(Messages* messages, ScoreBoard* scoreBoard): 
     m_gameOver(false),
     m_messages(messages),
@@ -187,9 +221,10 @@ void Referee::processBallGround()
       //save the touched field
       for each_const(BodyToPlayerDataMap, m_players, player)
       {
-          if (isPointInRectangle(ballPos, 
-                                 player->second.second->m_lowerLeft, 
-                                 player->second.second->m_upperRight))
+          //field excluding middle line
+          if (isBallInField(ballPos, 
+                            player->second.second->m_lowerLeft, 
+                            player->second.second->m_upperRight))
           {
              m_lastFieldOwner =    player->first;
              m_lastTouchedObject = m_ground;
@@ -221,9 +256,9 @@ void Referee::processBallPlayer(const Body* player)
 
             if ((m_lastFieldOwner == player)
                 && (m_lastTouchedPlayer == player)
-                && (isPointInRectangle(m_ball->getPosition(), 
-                                       m_players[player].second->m_lowerLeft, 
-                                       m_players[player].second->m_upperRight)))
+                && (isBallInField(m_ball->getPosition(), 
+                                  m_players[player].second->m_lowerLeft, 
+                                  m_players[player].second->m_upperRight)))
             {
                 //critical event. double-touched -> fault
 

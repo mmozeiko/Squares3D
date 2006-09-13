@@ -3,6 +3,7 @@
 //    |-----|max
 //    |     |
 // min|-----|
+
 bool isPointInRectangle(const Vector& position, const Vector& lowerLeft, const Vector& upperRight)
 {
   if ((position[0] >= lowerLeft[0]) 
@@ -22,15 +23,16 @@ Vector getSquareCenter(const Vector& lowerLeft, const Vector& upperRight)
 
 unsigned int getQuadrant(const Vector& point)
 {
-    if ((point[0] <= 0) && (point[2] >= 0))
+    //TODO: switch case?
+    if ((point[0] >= 0) && (point[2] >= 0))
     {
         return 1;
     }
-    else if ((point[0] >= 0) && (point[2] >= 0))
+    else if ((point[0] <= 0) && (point[2] >= 0))
     {
         return 2;
     }
-    else if ((point[0] >= 0) && (point[2] <= 0))
+    else if ((point[0] <= 0) && (point[2] <= 0))
     {
         return 3;
     }

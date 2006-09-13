@@ -9,6 +9,7 @@
 #include "network.h"
 #include "input.h"
 #include "world.h"
+#include "menu.h"
 #include "camera.h"
 #include "font.h"
 #include "fps.h"
@@ -23,14 +24,17 @@
 
 Game::Game()
 {
+    // these and only these objects are singletons,
+    // they all have public static instance attribute
     m_config = new Config();
     m_video = new Video();
     m_audio = new Audio();
     m_network = new Network();
     m_input = new Input();
-    m_world = new World();
+    //
 
-    m_world->init();
+    m_state = new Menu(); // TODO: change to Intro class
+
     m_network->createClient();
     m_network->connect("localhost");
 }
@@ -39,7 +43,8 @@ Game::~Game()
 {
     Font::unload();
 
-    delete m_world;
+    delete m_state;
+
     delete m_input;
     delete m_network;
     delete m_audio;
@@ -147,25 +152,26 @@ void Game::run()
         m_audio->update();
         m_input->update();
         m_network->update();
-        m_world->control();
+        
+        m_state->control();
 
-        m_world->update(accum);
+        m_state->update(accum);
 
 #ifndef FIXED_TIMESTEP
-        m_world->updateStep(accum);
+        m_state->updateStep(accum);
         accum = 0.0f;
 #else
         while (accum >= DT)
         {
-            m_world->updateStep(DT);
+            m_state->updateStep(DT);
             accum -= DT;
         }
 #endif
 
-        m_world->prepare();
+        m_state->prepare();
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        m_world->render();
+        m_state->render();
 
         fps.update();
 #ifndef MAKE_MOVIE
@@ -177,6 +183,14 @@ void Game::run()
 #ifdef MAKE_MOVIE
         saveScreenshot(fps);
 #endif
+
+        State::Type newState = m_state->progress();
+        if (newState != State::Current)
+        {
+            delete m_state;
+            timer.reset();
+            m_state = switchState(newState);
+        }
         
         // glfw minmize/restore focus bug
         if (glfwGetWindowParam(GLFW_ACTIVE)==GL_FALSE && previous_active)
@@ -209,4 +223,18 @@ void Game::run()
 
     clog << "Game finished... " << endl;
     clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;
+}
+
+State* Game::switchState(const State::Type nextState) const
+{
+    switch (nextState)
+    {
+    case State::Menu: return new Menu();
+    case State::World: return new World();
+    //TODO: implement these
+    //case State_Intro: return ..;
+    //case State_Lobby: return ..;
+    default:
+        assert(false);
+    }
 }

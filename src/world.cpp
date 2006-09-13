@@ -21,8 +21,15 @@
 
 World* System<World>::instance = NULL;
 
+State::Type World::progress() const
+{
+    return State::Current;
+}
+
 World::World()
 {
+    setInstance(this); // MUST go first
+
     m_framebuffer = new FrameBuffer();
     setupShadowStuff();
     setLight(Vector(-15.0f, 40.0f, 13.0f));
@@ -41,6 +48,8 @@ World::World()
     
     m_music = Audio::instance->loadMusic("music.ogg");
     //m_music->play();
+
+    init();
 }
 
 void World::init()
@@ -55,7 +64,7 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"));
     m_referee->registerBall(m_ball);
 
-    Player* human = new LocalPlayer("penguin3", Vector(-1.5f, 2.0f, -1.5f), Vector::Zero);
+    Player* human = new LocalPlayer("penguin3", Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
     m_referee->registerPlayer("player1", human);

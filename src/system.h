@@ -20,6 +20,11 @@ public:
         assert(instance != NULL);
         instance = NULL;
     }
+
+    void setInstance(T* instance)
+    {
+        this->instance = instance;
+    }
 };
 
 #endif

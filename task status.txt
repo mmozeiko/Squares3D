@@ -6,7 +6,7 @@ Hight priority:
 Look for TODOs, FIXMEs.
 Message fading out (using alpha blending).
 Make AI players move more randomly.
-Allow players to kick ball not only forward byt to sides also and later backwards.
+Allow players to kick ball not only forward but to sides also and later backwards.
 Remove Combo message when game has ended (all message removing implement with alpha fading).
 Stop those penguins when game has ended (they are very nervous).
 Add sounds to collision events in world.
@@ -40,11 +40,11 @@ Add a referee model who whistles when a fault is detected. (optional task)
 
 Construction:
 =============
-Implement field middle line detecting.
 Implement menu system.
 
 Done:
 =====
+2006-09-13 Implement field middle line detecting.
 2006-09-13 Port coach class and name it "Referee".
 2006-09-13 Implement game Scoreboard.
 2006-09-13 Implement score counting system.

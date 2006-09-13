@@ -355,6 +355,18 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\menu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\menu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\state.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\world.cpp"
 					>
 				</File>
