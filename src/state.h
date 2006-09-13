@@ -23,8 +23,8 @@ public:
     virtual void updateStep(float delta) = 0;
     virtual void prepare() = 0;
     virtual void render() const = 0;
-    virtual Type progress() const = 0;
-    //virtual StateType getNextState() const;
+    virtual State::Type progress() const = 0;
+
 };
 
 #endif

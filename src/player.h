@@ -22,7 +22,7 @@ public:
 
     Vector getPosition();
 
-    // maybe private
+    //todo: maybe private
     void onCollide(const Body* other, const NewtonMaterial* material);
     void onImpact(const Body* other, const Vector& position, const float speed);
     void onScratch(const Body* other, const Vector& position, const float speed);

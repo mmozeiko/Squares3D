@@ -7,6 +7,9 @@
 class Camera;
 class Music;
 class Game;
+class Font;
+struct Face;
+class Texture;
 
 class Menu : public State
 {
@@ -21,12 +24,15 @@ public:
     void render() const;
     State::Type progress() const;
 
-    Music*  m_music;
-    Camera* m_camera;
-    Game*   m_game;
+    Music*      m_music;
+    Camera*     m_camera;
+    Game*       m_game;
+    const Font* m_font;
 
 private:
-    bool m_goToGame;
+    bool         m_goToGame;
+    Face*        m_backGround;
+    Texture*     m_backGroundTexture;
 
 };
 
