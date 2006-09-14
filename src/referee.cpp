@@ -244,6 +244,7 @@ void Referee::processBallPlayer(const Body* player)
 
     if (m_lastTouchedObject == NULL)
     {
+        m_scoreBoard->resetCombo();
         m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
     }
     else //picked from ground or player
