@@ -26,7 +26,7 @@ public:
     Value  m_value;
     Vector m_position;
 
-    Entry(Vector& position);
+    Entry(Vector& position, wstring& stringIn, Value& value);
     void render(const Font* font) const;
     void control();
 };
@@ -59,7 +59,7 @@ public:
     void updateStep(float delta);
     void prepare();
     void render() const;
-    void loadMenuTree();
+    void loadMenu();
     State::Type progress() const;
 
     Music*      m_music;

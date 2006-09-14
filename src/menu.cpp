@@ -7,10 +7,11 @@
 #include "video.h"
 #include "texture.h"
 
-Entry::Entry(Vector& position) :
-    m_position(position)
+Entry::Entry(Vector& position, wstring& stringIn, Value& value) :
+    m_position(position),
+    m_string(stringIn),
+    m_value(value)
 {
-    
 }
 
 void Entry::render(const Font* font) const
@@ -75,21 +76,28 @@ Menu::Menu():
 
     m_backGroundTexture = Video::instance->loadTexture("boob");
 
-    loadMenuTree();
+    loadMenu();
 }
 
-void Menu::loadMenuTree()
+void Menu::loadMenu()
 {
     Value value;
-    value.m_string = L"valueName";
+    value.m_string = L"a BOOB!!!1";
 
-    Entry* entry = new Entry(Vector(Vector::Zero));
-    entry->m_string = L"entryName";
-    entry->m_value = value;
+    wstring entryString = L"L@@k";
 
-    SubMenu* subMenu = new SubMenu(Vector(400, 400, 0));
+    int resX = Video::instance->getResolution().first;
+    int resY = Video::instance->getResolution().second;
 
-    subMenu->addEntry(entry);
+    SubMenu* subMenu = new SubMenu(Vector(static_cast<float>(resX) / 2,
+                                          static_cast<float>(resY) / 2, 0));
+
+    Vector translate(Vector::Zero);
+    for (int i = 0; i < 4; i++)
+    {
+        subMenu->addEntry(new Entry(translate, entryString, value));
+        translate -= Vector(0, static_cast<float>(m_font->getSize(entryString).second) + 2, 0);
+    }
 
     m_currentSubMenu = subMenu;
 
@@ -149,9 +157,6 @@ void Menu::render() const
     glEnable(GL_TEXTURE_2D);
 
     m_currentSubMenu->render(m_font);
-    //for each_const(SubMenus, m_subMenus, iter)
-    //{
-    //    (*iter)->render(m_font);
-    //}
+
     m_font->end();
 }
