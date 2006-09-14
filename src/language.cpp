@@ -6,11 +6,6 @@
 
 Language* System<Language>::instance = NULL;
 
-Formatter Language::get(TextType id)
-{
-    return Formatter(m_lang.find(id)->second);
-}
-
 Language::Language()
 {
 
@@ -52,7 +47,7 @@ StringVector Language::getAvailable() const
     for (char** i = files; *i != NULL; i++)
     {
         string name = *i;
-        if (name.substr(name.size()-4, 4) == ".xml")
+        if (name.size() > 4 && name.substr(name.size()-4, 4) == ".xml")
         {
             result.push_back(name.substr(0, name.size()-4));
         }
@@ -60,6 +55,39 @@ StringVector Language::getAvailable() const
     PHYSFS_freeList(files);
 
     return result;
+}
+
+Formatter Language::get(TextType id)
+{
+    return Formatter(m_lang.find(id)->second);
+}
+
+static wstring UTF8_to_UCS2(const string& str);
+
+void Language::load(const string& name)
+{
+    string filename = "/data/language/" + Config::instance->m_misc.language + ".xml";
+
+    XMLnode xml;
+    File::Reader in(filename);
+    if (!in.is_open())
+    {
+        throw Exception("Language file '" + filename + "' not found");  
+    }
+    xml.load(in);
+    in.close();
+
+    for each_const(XMLnodes, xml.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name != "item")
+        {
+            throw Exception("Invalid language file '" + filename + "'");
+        }
+        TextType type = m_texts.find(node.attributes.find("name")->second)->second;
+        string value = node.attributes.find("value")->second;
+        m_lang.insert(make_pair(type, UTF8_to_UCS2(value)));
+    }
 }
 
 /*
@@ -193,30 +221,4 @@ wstring UTF8_to_UCS2(const string& str)
         }
     }
     return result;
-}
-
-void Language::load(const string& name)
-{
-    string filename = "/data/language/" + Config::instance->m_misc.language + ".xml";
-
-    XMLnode xml;
-    File::Reader in(filename);
-    if (!in.is_open())
-    {
-        throw Exception("Language file '" + filename + "' not found");  
-    }
-    xml.load(in);
-    in.close();
-
-    for each_const(XMLnodes, xml.childs, iter)
-    {
-        const XMLnode& node = *iter;
-        if (node.name != "item")
-        {
-            throw Exception("Invalid language file '" + filename + "'");
-        }
-        TextType type = m_texts.find(node.attributes.find("name")->second)->second;
-        string value = node.attributes.find("value")->second;
-        m_lang.insert(make_pair(type, UTF8_to_UCS2(value)));
-    }
 }

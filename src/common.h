@@ -62,6 +62,7 @@ inline To wcast(const From& from)
     return to;
 }
 
+// TODO: remove this
 template <>
 inline wstring wcast(const string& from)
 {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml>
-  <item name="FPS_DISPLAY"           value="FPS: %f"/>
+  <item name="FPS_DISPLAY"           value="FPS: $1"/>
   <item name="GAME_OVER"             value="Game over!"/>
-  <item name="PLAYER_KICKS_OUT_BALL" value="%s kicks the ball out (dumbass)!&#10;+%i"/>
-  <item name="OUT_FROM_FIELD"        value="Out from %s field!&#10;+%i"/>
+  <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
+  <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
   <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
-  <item name="PLAYER_TOUCHES_TWICE"  value="%s touches twice!&#10;%i"/>
-  <item name="HITS_COMBO"            value="%i Hits combo!!"/>
-  <item name="SCORE_MESSAGE"         value="%s: %i"/>
+  <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;$2"/>
+  <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
+  <item name="SCORE_MESSAGE"         value="$1: $2"/>
 </xml>

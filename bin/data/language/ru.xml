@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml>
-  <item name="FPS_DISPLAY"           value="FPS: %f"/>
+  <item name="FPS_DISPLAY"           value="FPS: $1"/>
   <item name="GAME_OVER"             value="Спеле беигусиес!"/>
-  <item name="PLAYER_KICKS_OUT_BALL" value="%s изспер бумбу ара (стулба пакала)!&#10;+%i"/>
-  <item name="OUT_FROM_FIELD"        value="Ара но %s лаукума!&#10;+%i"/>
+  <item name="PLAYER_KICKS_OUT_BALL" value="$1 изспер бумбу ара (стулба пакала)!&#10;+$2"/>
+  <item name="OUT_FROM_FIELD"        value="Ара но $1 лаукума!&#10;+$2"/>
   <item name="OUT_FROM_MIDDLE_LINE"  value="Бумба ара но видуслинияс!"/>
-  <item name="PLAYER_TOUCHES_TWICE"  value="%s диви пиескариени!&#10;%i"/>
-  <item name="HITS_COMBO"            value="%i КОМБО!!"/>
-  <item name="SCORE_MESSAGE"         value="%s: %i"/>
+  <item name="PLAYER_TOUCHES_TWICE"  value="$1 диви пиескариени!&#10;$2"/>
+  <item name="HITS_COMBO"            value="$1 КОМБО!!"/>
+  <item name="SCORE_MESSAGE"         value="$1: $2"/>
 </xml>
