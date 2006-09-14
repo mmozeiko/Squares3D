@@ -144,6 +144,9 @@ void Menu::render() const
     m_backGroundTexture->begin();
     Video::instance->renderFace(*m_backGround);
     m_backGroundTexture->end();
+    
+    glBindTexture(GL_TEXTURE_2D, m_font->m_texture);
+    glEnable(GL_TEXTURE_2D);
 
     m_currentSubMenu->render(m_font);
     //for each_const(SubMenus, m_subMenus, iter)

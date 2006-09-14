@@ -22,11 +22,12 @@ public:
     void render(const wstring& text, AlignType align = Align_Left) const;
     void end() const;
 
+    unsigned int m_texture;
+
 private:
     Font(const string& filename);
     ~Font();
 
-    unsigned int m_texture;
     unsigned int m_listbase;
 
     int  m_count;
