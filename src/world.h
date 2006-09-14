@@ -24,8 +24,6 @@ public:
     World();
     ~World();
 
-    void init();
-    
     void control();
     void updateStep(float delta);
     void update(float delta);

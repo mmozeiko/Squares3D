@@ -455,6 +455,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\language.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\language.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\timer.cpp"
 					>
 				</File>

@@ -4,6 +4,7 @@
 #include "game.h"
 #include "timer.h"
 #include "config.h"
+#include "language.h"
 #include "video.h"
 #include "audio.h"
 #include "network.h"
@@ -27,13 +28,14 @@ Game::Game()
     // these and only these objects are singletons,
     // they all have public static instance attribute
     m_config = new Config();
+    m_language = new Language();
     m_video = new Video();
     m_audio = new Audio();
     m_network = new Network();
     m_input = new Input();
     //
 
-    m_state = new Menu(); // TODO: change to Intro class
+    m_state = new World(); // TODO: change to Intro class
 
     m_network->createClient();
     m_network->connect("localhost");
@@ -49,6 +51,7 @@ Game::~Game()
     delete m_network;
     delete m_audio;
     delete m_video;
+    delete m_language;
     delete m_config;
 }
 
@@ -189,6 +192,7 @@ void Game::run()
         {
             delete m_state;
             timer.reset();
+            currentTime = accum = 0.0f;
             m_state = switchState(newState);
         }
         

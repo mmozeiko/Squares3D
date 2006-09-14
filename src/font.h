@@ -16,10 +16,10 @@ public:
     static const Font* get(const string& name);
     static void unload();
 
-    IntPair getSize(const string& text) const;
+    IntPair getSize(const wstring& text) const;
 
     void begin(bool shadowed = true, float shadowWidth = 1.5f) const;
-    void render(const string& text, AlignType align = Align_Left) const;
+    void render(const wstring& text, AlignType align = Align_Left) const;
     void end() const;
 
 private:
@@ -29,14 +29,14 @@ private:
     unsigned int m_texture;
     unsigned int m_listbase;
 
-    int  m_bpp;
+    int  m_count;
     int  m_height;
-    int  m_widths[256];
+    int* m_widths;
     
     mutable bool      m_shadowed;
     mutable float     m_shadowWidth;
     
-    void renderPlain(const string& text) const;
+    void renderPlain(const wstring& text) const;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "message.h"
 #include "messages.h"
 
-Message::Message(const string          &message, 
+Message::Message(const wstring&        message, 
                  const Vector&         position, 
                  const Vector&         color, 
                  const Font::AlignType align) :
@@ -12,7 +12,7 @@ Message::Message(const string          &message,
 {
 }
 
-string Message::getText() const
+wstring Message::getText() const
 {
     return m_text;
 }
@@ -27,7 +27,7 @@ bool Message::applyDelta(float delta)
 }
     
 FlowingMessage::FlowingMessage(
-                    const string&         message, 
+                    const wstring&        message, 
                     const Vector&         position, 
                     const Vector&         color, 
                     const Font::AlignType align,
@@ -48,7 +48,7 @@ bool FlowingMessage::applyDelta(float delta)
     return m_timeToLive <= 0.0f;
 }
 
-ScoreMessage::ScoreMessage(const string&         message, 
+ScoreMessage::ScoreMessage(const wstring&        message, 
                            const Vector&         position, 
                            const Vector&         color,
                            const int             score,
@@ -58,12 +58,12 @@ ScoreMessage::ScoreMessage(const string&         message,
 {
 }
 
-string ScoreMessage::getText() const
+wstring ScoreMessage::getText() const
 {
-    return m_text + ": " + cast<string>(m_score);
+    return m_text + L": " + wcast<wstring>(m_score);
 }
 
-ComboMessage::ComboMessage(const string&         message, 
+ComboMessage::ComboMessage(const wstring&        message, 
                            const Vector&         position, 
                            const Vector&         color,
                            const int             points,
@@ -73,13 +73,12 @@ ComboMessage::ComboMessage(const string&         message,
 {
 }
 
-string ComboMessage::getText() const
+wstring ComboMessage::getText() const
 {
-    string returnText = "";
     if (m_points > 1)
     {
-        returnText = cast<string>(m_points) + m_text;
+        return wcast<wstring>(m_points) + m_text;
     }
-    return returnText;
+    return L"";
 }
 

@@ -3,6 +3,7 @@
 #include "messages.h"
 #include "message.h"
 #include "video.h"
+#include "language.h"
 
 Account::Account() : 
     m_total(0),
@@ -25,7 +26,7 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     
     reset();
 
-    m_comboMessage = new ComboMessage(" Hits combo!!", 
+    m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO), 
                                       Vector(resX / 2, 50.0f, 0),
                                       Vector(1,1,0),
                                       0);
@@ -74,7 +75,7 @@ void ScoreBoard::reset()
     for (size_t i = 0; i < m_playerOrder.size(); i++)
     {
         m_scores[m_playerOrder[i]] = Account();
-        ScoreMessage* msg = new ScoreMessage(m_playerOrder[i], 
+        ScoreMessage* msg = new ScoreMessage(wcast<wstring>(m_playerOrder[i]),
                                 m_boardPositions[i].first, 
                                 Vector(0,1,0), 
                                 m_scores[m_playerOrder[i]].m_total, 
@@ -110,7 +111,7 @@ int ScoreBoard::addSelfTotalPoints(const string& name)
 
 void ScoreBoard::incrementCombo(const string& name, const Vector& position)
 {
-    m_messages->add3D(new FlowingMessage("+1", position, Vector(0.0f,0.8f,0.8f), Font::Align_Center, 0.5f));
+    m_messages->add3D(new FlowingMessage(L"+1", position, Vector(0.0f,0.8f,0.8f), Font::Align_Center, 0.5f));
     m_joinedCombo++;
     Account& acc = m_scores.find(name)->second;
     acc.m_combo++;

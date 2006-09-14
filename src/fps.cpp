@@ -5,6 +5,7 @@
 #include "timer.h"
 #include "config.h"
 #include "video.h"
+#include "language.h"
 
 FPS::FPS(const Timer& timer, const Font* font, const Vector& color)
     : m_time(timer.read()), m_frames(0), m_totalFrames(0), m_timer(timer), m_font(font), m_fps(),
@@ -20,7 +21,11 @@ void FPS::update()
         float curTime = m_timer.read();
         float fps = m_frames/(curTime-m_time);
         fps = std::floor(fps*10.0f)/10.0f;
-        m_fps = "FPS: " + cast<string>(fps) + (fps-std::floor(fps)==0.0 ? ".0" : "");
+        m_fps = Language::instance->get(TEXT_FPS_DISPLAY)(fps);
+        if (fps-std::floor(fps) == 0.0f)
+        {
+            m_fps += L".0";
+        }
         m_size = m_font->getSize(m_fps);
         m_time = curTime;
         m_frames = 0;

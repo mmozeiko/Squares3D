@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+  <item name="FPS_DISPLAY"           value="FPS: %f"/>
+  <item name="GAME_OVER"             value="Game over!"/>
+  <item name="PLAYER_KICKS_OUT_BALL" value="%s kicks the ball out (dumbass)!&#10;+%i"/>
+  <item name="OUT_FROM_FIELD"        value="Out from %s field!&#10;+%i"/>
+  <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
+  <item name="PLAYER_TOUCHES_TWICE"  value="%s touches twice!&#10;%i"/>
+  <item name="HITS_COMBO"            value=" Hits combo!!"/>
+</xml>

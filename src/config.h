@@ -24,6 +24,7 @@ struct AudioConfig
 struct MiscConfig
 {
     bool system_keys;
+    string language;
 };
 
 

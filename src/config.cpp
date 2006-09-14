@@ -8,7 +8,7 @@ const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1024 };
 const AudioConfig Config::defaultAudio = { true };
-const MiscConfig Config::defaultMisc = { true };
+const MiscConfig Config::defaultMisc = { true, "en" };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
 {
@@ -108,6 +108,10 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 {
                     m_misc.system_keys = cast<int>(node.value)==1;
                 }
+                else if (node.name == "language")
+                {
+                    m_misc.language = node.value;
+                }
                 else
                 {
                     string line = cast<string>(node.line);
@@ -150,6 +154,7 @@ Config::~Config()
 
     xml.childs.push_back(XMLnode("misc"));
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("language", m_misc.language));
 
     xml.save(out);
     out.close();

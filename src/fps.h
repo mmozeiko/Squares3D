@@ -26,7 +26,7 @@ private:
     unsigned int m_totalFrames;
     const Timer& m_timer;
     const Font*  m_font;
-    string       m_fps;
+    wstring      m_fps;
     IntPair      m_size;
 };
 

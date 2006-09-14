@@ -7,6 +7,7 @@
 #include "message.h"
 #include "scoreboard.h"
 #include "video.h"
+#include "language.h"
 
 bool isBallInField(const Vector& position, const Vector& lowerLeft, const Vector& upperRight)
 {
@@ -73,7 +74,7 @@ void Referee::processCriticalEvent()
         Vector center = Vector(static_cast<float>(Video::instance->getResolution().first) / 2,
                                static_cast<float>(Video::instance->getResolution().second) / 2,
                                0.0f);
-        m_messages->add2D(new Message("Game over!", center, Vector(1,0,0), Font::Align_Center));
+        m_messages->add2D(new Message(Language::instance->get(TEXT_GAME_OVER), center, Vector(1,0,0), Font::Align_Center));
         m_gameOver = true;
     }
     else
@@ -166,8 +167,7 @@ void Referee::processBallGround()
                 int points = m_scoreBoard->addSelfTotalPoints(m_players[m_lastTouchedObject].first);
                 
                 m_messages->add3D(new FlowingMessage(
-                    m_players[m_lastTouchedObject].first 
-                    + " kicks the ball out (dumbass)!\n+" + cast<string>(points),
+                    Language::instance->get(TEXT_PLAYER_KICKS_OUT_BALL)(m_players[m_lastTouchedObject].first)(points),
                     m_lastTouchedObject->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
@@ -197,7 +197,7 @@ void Referee::processBallGround()
                 }
 
                 m_messages->add3D(new FlowingMessage(
-                    "Out from " + owner + " field!\n+" + cast<string>(points),
+                    Language::instance->get(TEXT_OUT_FROM_FIELD)(owner)(points),
                     m_ball->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
@@ -206,7 +206,7 @@ void Referee::processBallGround()
         else
         {
             m_messages->add3D(new FlowingMessage(
-                    "Ball out from middle line!",
+                    Language::instance->get(TEXT_OUT_FROM_MIDDLE_LINE),
                     m_ball->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
@@ -264,7 +264,7 @@ void Referee::processBallPlayer(const Body* player)
 
                 int points = m_scoreBoard->addPoint(playerName);
                 m_messages->add3D(new FlowingMessage(
-                    playerName + " touches twice!\n+" + cast<string>(points),
+                    Language::instance->get(TEXT_PLAYER_TOUCHES_TWICE)(playerName)(points),
                     player->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));

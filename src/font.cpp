@@ -3,6 +3,8 @@
 
 #include "font.h"
 #include "file.h"
+#include "xml.h"
+#include "video.h"
 #include "vmath.h"
 
 static const Vector ShadowColor(0.1f, 0.1f, 0.1f);
@@ -30,122 +32,158 @@ void Font::unload()
     fonts.clear();
 }
 
-struct BFFheader
+struct Char
 {
-    unsigned short id;
-    unsigned int width;
-    unsigned int height;
-    unsigned int cell_width;
-    unsigned int cell_height;
-    unsigned char bpp;
-    unsigned char base;
-    unsigned char char_width[256];
+    int id;
+    int x;
+    int y;
+    int width;
+    int height;
+    int xoffset;
+    int yoffset;
+    int xadvance;
 };
 
-Font::Font(const string& filename)
+Font::Font(const string& filename) : m_texture(0)
 {
-    File::Reader font("/data/font/" + filename + ".bff");
-    if (!font.is_open())
+    XMLnode xml;
+    File::Reader in("/data/font/" + filename + ".fnt");
+    if (!in.is_open())
     {
-        throw Exception("Font file '" + filename + ".bff' not found");
+        throw Exception("Font file '" + filename + "'.fnt not found");  
     }
-    char buf[20+256];
-    
-    if (font.read(buf, sizeof(buf)) != sizeof(buf))
+    xml.load(in);
+    in.close();
+
+    map<int, Char> chars;
+
+    int maxID = -1;
+    float texW, texH;
+    float size;
+
+    for each_const(XMLnodes, xml.childs, iter)
     {
-        throw Exception("Invalid font file");
-    }
-    
-    BFFheader header;
-    header.id =          *reinterpret_cast<unsigned short*>(&buf[0]);
-    header.width =       *reinterpret_cast<unsigned int*>(&buf[2]);
-    header.height =      *reinterpret_cast<unsigned int*>(&buf[6]);
-    header.cell_width =  *reinterpret_cast<unsigned int*>(&buf[10]);
-    header.cell_height = *reinterpret_cast<unsigned int*>(&buf[14]);
-    header.bpp =         *reinterpret_cast<unsigned char*>(&buf[18]);
-    header.base =        *reinterpret_cast<unsigned char*>(&buf[19]);
-    std::copy(buf+20, buf+20+256, header.char_width);
-
-    int format;
-
-    if (header.id != 0xF2BF && header.bpp!=8 && header.bpp!=24 && header.bpp!=32)
-    {
-        throw Exception("Invalid font file header");
-    }
-
-    switch (header.bpp)
-    {
-    case 8: format = GL_ALPHA; break;
-    case 24: format = GL_RGB; break;
-    case 32: format = GL_RGBA; break;
-    }
-
-    vector<char> data(header.width * header.height * header.bpp/8);
-    if (font.read(&data[0], data.size()) != data.size())
-    {
-        throw Exception("Invalid font file data");
-    }
-    font.close();
-
-    glGenTextures(1, &m_texture);
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, header.width, header.height, 0, format, GL_UNSIGNED_BYTE, &data[0]);
-
-    m_listbase = glGenLists(256);
-
-    unsigned int maxchar = header.base + (header.width * header.height) / (header.cell_width * header.cell_height);
-    int row_pitch = header.width / header.cell_width;
-
-    float col_factor = static_cast<float>(header.cell_width) / header.width;
-    float row_factor = static_cast<float>(header.cell_height) / header.height;
-
-    float w = static_cast<float>(header.cell_width);
-    float h = static_cast<float>(header.cell_height);
-
-    for (unsigned int ch=0; ch<256; ch++)
-    {
-        glNewList(m_listbase + ch, GL_COMPILE);
-
-        if (ch>=header.base && ch<=maxchar)
+        const XMLnode& node = *iter;
+        if (node.name == "info")
         {
-            int idx = ch-header.base;
-            int row = idx / row_pitch;
-            int col = idx - row*row_pitch;
+            size = cast<float>(node.attributes.find("size")->second);
+        } 
+        else if (node.name == "common")
+        {
+            m_height = cast<int>(node.attributes.find("lineHeight")->second);
+            texW = cast<float>(node.attributes.find("scaleW")->second);
+            texH = cast<float>(node.attributes.find("scaleH")->second);
+        }
+        else if (node.name == "page")
+        {
+            if (m_texture != 0)
+            {
+                throw Exception("Only one paged fonts supported");
+            }
 
-            float u1 = col * col_factor;
-            float v1 = row * row_factor;
-            float u2 = u1 + col_factor;
-            float v2 = v1 + row_factor;
+            File::Reader file("/data/font/" + node.attributes.find("file")->second);
+            if (!file.is_open())
+            {
+                throw Exception("Font page '" + node.attributes.find("file")->second + "' not found");
+            }
+            size_t filesize = file.size();
+            vector<char> data(filesize);
+            file.read(&data[0], filesize);
+            file.close();
+
+            glGenTextures(1, &m_texture);
+            glBindTexture(GL_TEXTURE_2D, m_texture);
+    
+            GLFWimage image;
+            glfwReadMemoryImage(&data[0], static_cast<int>(filesize), &image, GLFW_NO_RESCALE_BIT);
+            // if bpp==8
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, image.Width, image.Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, image.Data);
+            // else RGBA
+            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.Width, image.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.Data);
+
+            glfwFreeImage(&image);
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+        else if (node.name == "char")
+        {
+            Char c;
+            c.id = cast<int>(node.attributes.find("id")->second);
+            c.x = cast<int>(node.attributes.find("x")->second);
+            c.y = cast<int>(node.attributes.find("y")->second);
+            c.width = cast<int>(node.attributes.find("width")->second);
+            c.height = cast<int>(node.attributes.find("height")->second);
+            c.xoffset = cast<int>(node.attributes.find("xoffset")->second);
+            c.yoffset = cast<int>(node.attributes.find("yoffset")->second);
+            c.xadvance = cast<int>(node.attributes.find("xadvance")->second);
+            if (c.xoffset < 0) c.xoffset = 0;
+
+            if (c.id > maxID)
+            {
+                maxID = c.id;
+            }
+
+            chars[c.id] = c;
+        }
+    }
+
+    m_count = maxID;
+    m_listbase = glGenLists(m_count);
+
+    for (int ch = 0; ch < maxID; ch++)
+    {
+        const Char& c = chars[ch];
+        glNewList(m_listbase + ch-1, GL_COMPILE);
+
+        if (foundInMap(chars, c.id))
+        {
+            float u1 = c.x / texW;
+            float v1 = c.y / texH;
+            float u2 = (c.x + c.width) / texW;
+            float v2 = (c.y + c.height) / texH;
+            v1 = 1.0f-v1;
+            v2 = 1.0f-v2;
 
             glBegin(GL_QUADS);
-                glTexCoord2f(u1, v1); glVertex2f(0, h);
-                glTexCoord2f(u1, v2); glVertex2f(0, 0);
-                glTexCoord2f(u2, v2); glVertex2f(w, 0);
-                glTexCoord2f(u2, v1); glVertex2f(w, h);
+                glTexCoord2f(u1, v2);
+                glVertex2i(c.xoffset, m_height - (c.yoffset + c.height));
+               
+                glTexCoord2f(u2, v2);
+                glVertex2i(c.xoffset + c.width, m_height - (c.yoffset + c.height));
+
+                glTexCoord2f(u2, v1);
+                glVertex2i(c.xoffset + c.width, m_height - c.yoffset);
+
+                glTexCoord2f(u1, v1);
+                glVertex2i(c.xoffset, m_height - c.yoffset);
             glEnd();
       
-            glTranslatef(header.char_width[ch], 0.0, 0.0);
+            glTranslatef(static_cast<float>(c.xadvance - c.xoffset), 0.0, 0.0);
+        }
+        else
+        {
+            glTranslatef(size, 0.0, 0.0);
         }
 
         glEndList();
     }
+    
+    m_widths = new int [maxID];
 
-    m_bpp = header.bpp;
-    m_height = header.cell_height;
-    for (int i=0; i<256; i++)
+    for (int i=0; i<maxID; i++)
     {
-        m_widths[i] = header.char_width[i];
+        m_widths[i] = chars[i].width;
     }
 }
 
 Font::~Font()
 {
+    glDeleteLists(m_listbase, m_count);
     glDeleteTextures(1, &m_texture);
-    glDeleteLists(m_listbase, 256);
+    delete [] m_widths;
 }
 
 void Font::begin(bool shadowed, float shadowWidth) const
@@ -178,35 +216,32 @@ void Font::begin(bool shadowed, float shadowWidth) const
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
 
-    if (m_bpp != 24)
-    {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glListBase(m_listbase);
     glBindTexture(GL_TEXTURE_2D, m_texture);
+    glEnable(GL_TEXTURE_2D);
 
     m_shadowed = shadowed;
     m_shadowWidth = shadowWidth;
 }
 
-void Font::renderPlain(const string& text) const
+void Font::renderPlain(const wstring& text) const
 {
     glPushMatrix();
-        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_BYTE, text.c_str());
+        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
     glPopMatrix();
 }
 
-void Font::render(const string& text, AlignType align) const
+void Font::render(const wstring& text, AlignType align) const
 {
     size_t pos, begin = 0;
-    string line;
+    wstring line;
     float linePos = 0.0f;
     while (begin < text.size())
     {
-        pos = text.find('\n', begin);
-        if (pos == string::npos)
+        pos = text.find(L'\n', begin);
+        if (pos == wstring::npos)
         {
             pos = text.size();
         }
@@ -263,7 +298,7 @@ void Font::end() const
     glDepthMask(GL_TRUE);
 }
 
-IntPair Font::getSize(const string& text) const
+IntPair Font::getSize(const wstring& text) const
 {
     IntPair result(0, m_height);
     for (size_t i=0; i<text.size(); i++)

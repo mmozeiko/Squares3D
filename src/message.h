@@ -12,20 +12,20 @@ class Message
     friend class Messages;
 public:
     Message(
-        const string&         message, 
+        const wstring&        message, 
         const Vector&         position, 
         const Vector&         color, 
         const Font::AlignType align = Font::Align_Left);
     
 protected:
 
-    virtual string getText() const;
+    virtual wstring getText() const;
     
     virtual void applyFlow(float delta);
 
     virtual bool applyDelta(float delta);
 
-    string          m_text;
+    wstring         m_text;
     Vector          m_position;
     Vector          m_color;
     Font::AlignType m_align;
@@ -35,7 +35,7 @@ class FlowingMessage : public Message
 {
 public:
     FlowingMessage(
-        const string&         message, 
+        const wstring&        message, 
         const Vector&         position, 
         const Vector&         color, 
         const Font::AlignType align = Font::Align_Left,
@@ -55,7 +55,7 @@ class ScoreMessage : public Message
 {
 public:
     ScoreMessage(
-        const string&         message, 
+        const wstring&        message, 
         const Vector&         position, 
         const Vector&         color,
         const int             score,
@@ -65,23 +65,23 @@ public:
 
 protected:
 
-    string getText() const;
+    wstring getText() const;
 };
 
 class ComboMessage : public Message
 {
 public:
     ComboMessage(
-        const string&         message, 
+        const wstring&        message, 
         const Vector&         position, 
         const Vector&         color,
         const int             points,
         const Font::AlignType align = Font::Align_Center);
     
     int m_points;
-protected:
-    string getText() const;
-};
 
+protected:
+    wstring getText() const;
+};
 
 #endif

@@ -22,7 +22,9 @@ using std::list;
 using std::vector;
 
 using std::string;
+using std::wstring;
 using std::stringstream;
+using std::wstringstream;
 using std::clog;
 using std::endl;
 
@@ -32,6 +34,7 @@ using std::make_pair;
 
 typedef map<string, string>       StringMap;
 typedef set<string>               StringSet;
+typedef vector<string>            StringVector;
 typedef map<string, int>          IntMap;
 typedef map<string, unsigned int> UIntMap;
 typedef pair<int, int>            IntPair;
@@ -47,6 +50,22 @@ inline To cast(const From& from)
     ss << from;
     ss >> to;
     return to;
+}
+
+template <typename To, typename From>
+inline To wcast(const From& from)
+{
+    wstringstream ss;
+    To to;
+    ss << from;
+    ss >> to;
+    return to;
+}
+
+template <>
+inline wstring wcast(const string& from)
+{
+    return wstring(from.begin(), from.end());
 }
 
 template <typename ValueType>
@@ -116,5 +135,11 @@ private:
     NoCopy(const NoCopy&);
     NoCopy& operator = (const NoCopy&);
 };
+
+template<bool> struct CompileTimeError;
+template<> struct CompileTimeError<true> {};
+
+#define STATIC_CHECK(check, msg) \
+    { CompileTimeError<((check) != true)> ERROR_##msg; ERROR_##msg; }
 
 #endif

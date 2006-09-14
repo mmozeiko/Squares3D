@@ -49,11 +49,6 @@ World::World()
     m_music = Audio::instance->loadMusic("music.ogg");
     //m_music->play();
 
-    init();
-}
-
-void World::init()
-{
     m_level = new Level();
     m_level->load("level.xml");
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
@@ -317,18 +312,9 @@ void World::shadowMapPass1() const
     glShadeModel(GL_FLAT);
     glColorMask(0, 0, 0, 0);
 
-    // mâjâs:
     //glDisable(GL_CULL_FACE);
-    //glPolygonOffset(1.0f, -0.01f);
-    // vai
-    //glDisable(GL_CULL_FACE);
-    glPolygonOffset(-0.3f, -0.01f);
-    
-    // darbâ:
-    //glPolygonOffset(-0.25f, -0.01f);
-
-
     glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(+0.25f, -0.01f);
 
     //Draw the scene
     renderScene();
