@@ -7,6 +7,53 @@
 #include "video.h"
 #include "texture.h"
 
+Entry::Entry(Vector& position) :
+    m_position(position)
+{
+    
+}
+
+void Entry::render(const Font* font) const
+{
+    glPushMatrix();
+    glTranslatef(m_position.x, m_position.y, m_position.z);
+    glColor3fv(Vector::One.v);
+    font->render(m_string +  L" " + m_value.m_string, Font::Align_Center);
+    glPopMatrix();
+}
+
+void Entry::control()
+{
+}
+
+SubMenu::SubMenu(Vector& position) : 
+    m_position(position)
+{
+}
+
+SubMenu::~SubMenu()
+{
+    for each_const(Entries, m_entries, iter)
+    {
+        delete *iter;
+    }
+}
+
+void SubMenu::addEntry(Entry* entry)
+{
+    m_entries.push_back(entry);
+}
+
+void SubMenu::render(const Font* font) const
+{
+    glPushMatrix();
+    glTranslatef(m_position.x, m_position.y, m_position.z);
+    for each_const(Entries, m_entries, iter)
+    {
+        (*iter)->render(font);
+    }
+    glPopMatrix();
+}
 
 Menu::Menu():
     m_font(Font::get("Arial_32pt_bold")),
@@ -28,10 +75,35 @@ Menu::Menu():
 
     m_backGroundTexture = Video::instance->loadTexture("boob");
 
+    loadMenuTree();
+}
+
+void Menu::loadMenuTree()
+{
+    Value value;
+    value.m_string = L"valueName";
+
+    Entry* entry = new Entry(Vector(Vector::Zero));
+    entry->m_string = L"entryName";
+    entry->m_value = value;
+
+    SubMenu* subMenu = new SubMenu(Vector(400, 400, 0));
+
+    subMenu->addEntry(entry);
+
+    m_currentSubMenu = subMenu;
+
+    m_subMenus.push_back(subMenu);
+
 }
 
 Menu::~Menu()
 {
+    for each_const(SubMenus, m_subMenus, iter)
+    {
+        delete *iter;
+    }
+
     delete m_backGround;
 }
 
@@ -68,8 +140,15 @@ void Menu::prepare()
 void Menu::render() const
 {
     m_font->begin();
+
     m_backGroundTexture->begin();
     Video::instance->renderFace(*m_backGround);
     m_backGroundTexture->end();
+
+    m_currentSubMenu->render(m_font);
+    //for each_const(SubMenus, m_subMenus, iter)
+    //{
+    //    (*iter)->render(m_font);
+    //}
     m_font->end();
 }

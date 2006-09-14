@@ -35,7 +35,7 @@ Game::Game()
     m_input = new Input();
     //
 
-    m_state = new World(); // TODO: change to Intro class
+    m_state = new Menu(); // TODO: change to Intro class
 
     m_network->createClient();
     m_network->connect("localhost");

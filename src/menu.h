@@ -1,8 +1,10 @@
 #ifndef __MENU__H__
 #define __MENU__H__
 
+#include "common.h"
 #include "state.h"
 #include "system.h"
+#include "vmath.h"
 
 class Camera;
 class Music;
@@ -10,6 +12,41 @@ class Game;
 class Font;
 struct Face;
 class Texture;
+
+struct Value
+{
+    wstring m_value;
+    wstring m_string;
+};
+
+class Entry
+{
+public: 
+    wstring m_string;
+    Value  m_value;
+    Vector m_position;
+
+    Entry(Vector& position);
+    void render(const Font* font) const;
+    void control();
+};
+
+typedef vector<Entry*> Entries;
+
+class SubMenu
+{
+public:
+
+    Vector m_position;
+    Entries m_entries;
+
+    SubMenu(Vector& position);
+    ~SubMenu();
+    void addEntry(Entry* entry);
+    void render(const Font* font) const;
+};
+
+typedef vector<SubMenu*> SubMenus;
 
 class Menu : public State
 {
@@ -22,6 +59,7 @@ public:
     void updateStep(float delta);
     void prepare();
     void render() const;
+    void loadMenuTree();
     State::Type progress() const;
 
     Music*      m_music;
@@ -30,6 +68,8 @@ public:
     const Font* m_font;
 
 private:
+    SubMenu*     m_currentSubMenu;
+    SubMenus     m_subMenus;
     bool         m_goToGame;
     Face*        m_backGround;
     Texture*     m_backGroundTexture;
