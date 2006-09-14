@@ -8,6 +8,8 @@
 
 int main(int, char* argv[])
 {
+    STATIC_CHECK(sizeof(wchar_t)==2, SIZE_OF_WCHAR_IS_NOT_2);
+
 #ifdef NDEBUG    
     std::ofstream log("log.txt");
     clog.rdbuf(log.rdbuf());

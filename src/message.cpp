@@ -1,5 +1,6 @@
 #include "message.h"
 #include "messages.h"
+#include "formatter.h"
 
 Message::Message(const wstring&        message, 
                  const Vector&         position, 
@@ -60,7 +61,7 @@ ScoreMessage::ScoreMessage(const wstring&        message,
 
 wstring ScoreMessage::getText() const
 {
-    return m_text + L": " + wcast<wstring>(m_score);
+    return Formatter(m_text)(m_score);
 }
 
 ComboMessage::ComboMessage(const wstring&        message, 
@@ -77,7 +78,7 @@ wstring ComboMessage::getText() const
 {
     if (m_points > 1)
     {
-        return wcast<wstring>(m_points) + m_text;
+        return Formatter(m_text)(m_points);
     }
     return L"";
 }

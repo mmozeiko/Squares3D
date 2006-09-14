@@ -6,5 +6,6 @@
   <item name="OUT_FROM_FIELD"        value="Out from %s field!&#10;+%i"/>
   <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
   <item name="PLAYER_TOUCHES_TWICE"  value="%s touches twice!&#10;%i"/>
-  <item name="HITS_COMBO"            value=" Hits combo!!"/>
+  <item name="HITS_COMBO"            value="%i Hits combo!!"/>
+  <item name="SCORE_MESSAGE"         value="%s: %i"/>
 </xml>

@@ -6,41 +6,6 @@
 
 Language* System<Language>::instance = NULL;
 
-Formatter& Formatter::operator () (const string& value)
-{
-    size_t pos = m_txt.find(L"%s");
-    if (pos != wstring::npos)
-    {
-        m_txt = m_txt.substr(0, pos) + wstring(value.begin(), value.end()) + m_txt.substr(pos+2, m_txt.size());
-    }
-    return *this;
-}
-
-Formatter& Formatter::operator () (float value)
-{
-    size_t pos = m_txt.find(L"%f");
-    if (pos != wstring::npos)
-    {
-        m_txt = m_txt.substr(0, pos) + wcast<wstring>(value) + m_txt.substr(pos+2, m_txt.size());
-    }
-    return *this;
-}
-
-Formatter& Formatter::operator () (int value)
-{
-    size_t pos = m_txt.find(L"%i");
-    if (pos != wstring::npos)
-    {
-        m_txt = m_txt.substr(0, pos) + wcast<wstring>(value) + m_txt.substr(pos+2, m_txt.size());
-    }
-    return *this;
-}
-
-Formatter::operator wstring ()
-{
-    return m_txt;
-}
-
 Formatter::Formatter(const wstring& txt) : m_txt(txt)
 {
 }
@@ -62,6 +27,7 @@ Language::Language()
     REGISTER_TEXT_TYPE(OUT_FROM_MIDDLE_LINE);
     REGISTER_TEXT_TYPE(PLAYER_TOUCHES_TWICE);
     REGISTER_TEXT_TYPE(HITS_COMBO);
+    REGISTER_TEXT_TYPE(SCORE_MESSAGE);
 
 #undef REGISTER_TEXT_TYPE
     

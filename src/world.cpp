@@ -314,7 +314,7 @@ void World::shadowMapPass1() const
 
     //glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(+0.25f, -0.01f);
+    glPolygonOffset(-0.25f, -0.01f);
 
     //Draw the scene
     renderScene();

@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "system.h"
+#include "formatter.h"
 
 // remember to update in Language constructor
 enum TextType
@@ -14,25 +15,13 @@ enum TextType
     TEXT_OUT_FROM_MIDDLE_LINE,
     TEXT_PLAYER_TOUCHES_TWICE,
     TEXT_HITS_COMBO,
+    TEXT_SCORE_MESSAGE,
 
     TEXT_LAST_ONE, // THIS MUST BE TEH LAST ONE
 };
 
 typedef map<TextType, wstring> TextTypeMap;
 typedef map<string, TextType> StrToTextTypeMap;
-class Formatter
-{
-    friend class Language;
-public:
-    Formatter& operator () (const string& value);
-    Formatter& operator () (float value);
-    Formatter& operator () (int value);
-    operator wstring ();
-
-private:
-    Formatter(const wstring& txt);
-    wstring m_txt;
-};
 
 class Language : public System<Language>
 {

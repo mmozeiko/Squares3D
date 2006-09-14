@@ -267,6 +267,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\formatter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\formatter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\geometry.cpp"
 					>
 				</File>

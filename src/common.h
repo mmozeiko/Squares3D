@@ -140,6 +140,6 @@ template<bool> struct CompileTimeError;
 template<> struct CompileTimeError<true> {};
 
 #define STATIC_CHECK(check, msg) \
-    { CompileTimeError<((check) != true)> ERROR_##msg; ERROR_##msg; }
+    { CompileTimeError<(check)> ERROR_##msg; ERROR_##msg; }
 
 #endif

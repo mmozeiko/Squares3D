@@ -75,7 +75,7 @@ void ScoreBoard::reset()
     for (size_t i = 0; i < m_playerOrder.size(); i++)
     {
         m_scores[m_playerOrder[i]] = Account();
-        ScoreMessage* msg = new ScoreMessage(wcast<wstring>(m_playerOrder[i]),
+        ScoreMessage* msg = new ScoreMessage(Language::instance->get(TEXT_SCORE_MESSAGE)(m_playerOrder[i]),
                                 m_boardPositions[i].first, 
                                 Vector(0,1,0), 
                                 m_scores[m_playerOrder[i]].m_total, 
