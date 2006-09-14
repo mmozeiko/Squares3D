@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+  <item name="FPS_DISPLAY"           value="FPS: %f"/>
+  <item name="GAME_OVER"             value="Spēle beigusies!"/>
+  <item name="PLAYER_KICKS_OUT_BALL" value="%s izsper bumbu ārā (stulbā pakaļa)!&#10;+%i"/>
+  <item name="OUT_FROM_FIELD"        value="Ārā no %s laukuma!&#10;+%i"/>
+  <item name="OUT_FROM_MIDDLE_LINE"  value="Bumba ārā no viduslīnijas!"/>
+  <item name="PLAYER_TOUCHES_TWICE"  value="%s divi pieskārieni!&#10;%i"/>
+  <item name="HITS_COMBO"            value="%i Uzsitienu kombo!!"/>
+  <item name="SCORE_MESSAGE"         value="%s: %i"/>
+</xml>

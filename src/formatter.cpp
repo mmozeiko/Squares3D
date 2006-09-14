@@ -1,5 +1,9 @@
 #include "formatter.h"
 
+Formatter::Formatter(const wstring& txt) : m_txt(txt)
+{
+}
+
 Formatter& Formatter::operator () (const string& value)
 {
     size_t pos = m_txt.find(L"%s");

@@ -6,6 +6,10 @@
 #include "utilities.h"
 #include "game.h"
 
+#ifdef WIN32
+#define VC_EXTRALEAN
+#include <windows.h>
+#endif
 int main(int, char* argv[])
 {
     STATIC_CHECK(sizeof(wchar_t)==2, SIZE_OF_WCHAR_IS_NOT_2);
@@ -30,6 +34,9 @@ int main(int, char* argv[])
         {
             clog << "Exception occured :" << endl
                  << "  " << exception << endl;
+#ifdef WIN32
+            MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
+#endif
         }
         File::done();
     }
@@ -37,6 +44,9 @@ int main(int, char* argv[])
     {
         clog << "Exception occured :" << endl
              << "  " << exception << endl;
+#ifdef WIN32
+         MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
+#endif
     }
 
     clog << "Finished: " << getDateTime() << endl;

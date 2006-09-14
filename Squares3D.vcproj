@@ -639,6 +639,22 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="language"
+				>
+				<File
+					RelativePath=".\bin\data\language\en.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\language\lv.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\language\ru.xml"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Libraries"
