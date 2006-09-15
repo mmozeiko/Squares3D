@@ -15,8 +15,6 @@ typedef map<string, Material*>  MaterialMap;
 typedef map<string, Collision*> CollisionsMap;
 typedef map<string, Body*>      BodiesMap;
 
-string getAttribute(const XMLnode& node, const string& name);
-string getAttribute(const XMLnode& node, const string& name, const string& defaultValue);
 Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols);
 
 class Level : NoCopy

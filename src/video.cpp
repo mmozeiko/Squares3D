@@ -103,7 +103,7 @@ Video::Video() : m_haveShaders(false)
     }
 
     glfwDisable(GLFW_KEY_REPEAT);
-    glfwDisable(GLFW_MOUSE_CURSOR);
+    glfwEnable(GLFW_MOUSE_CURSOR);
 
     loadExtensions();
     m_quadricSphere = gluNewQuadric();
@@ -123,10 +123,7 @@ Video::~Video()
     gluDeleteQuadric(m_quadricAxes);
     gluDeleteQuadric(m_quadricWireSphere);
 
-    for each_(TextureMap, m_textures, iter)
-    {
-        delete iter->second;
-    }
+    unloadTextures();
 
     for each_(ShaderMap, m_shaders, iter)
     {
@@ -613,4 +610,13 @@ IntPairSet Video::getModes() const
     }
 
     return modes;
+}
+
+void Video::unloadTextures()
+{
+    for each_(TextureMap, m_textures, iter)
+    {
+        delete iter->second;
+    }
+    m_textures.clear();
 }

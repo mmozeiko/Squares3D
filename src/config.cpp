@@ -6,7 +6,7 @@ Config* System<Config>::instance = NULL;
 
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1024 };
+const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1024, true };
 const AudioConfig Config::defaultAudio = { true };
 const MiscConfig Config::defaultMisc = { true, "en" };
 
@@ -75,6 +75,10 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                         shadowmap_size = 1024;
                     }
                     m_video.shadowmap_size = shadowmap_size;
+                }
+                else if (node.name == "show_fps")
+                {
+                    m_video.show_fps = cast<int>(node.value)==1;
                 }
                 else
                 {
@@ -148,6 +152,7 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("use_shaders", cast<string>(m_video.use_shaders ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("shadow_type", cast<string>(m_video.shadow_type)));
     xml.childs.back().childs.push_back(XMLnode("shadowmap_size", cast<string>(m_video.shadowmap_size)));
+    xml.childs.back().childs.push_back(XMLnode("show_fps", cast<string>(m_video.show_fps ? 1 : 0)));
 
     xml.childs.push_back(XMLnode("audio"));
     xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));

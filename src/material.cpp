@@ -16,14 +16,14 @@ Material::Material(const XMLnode& node) :
     m_texture(0)
     //m_textureBump(0)
 {
-    m_id = getAttribute(node, "id");
+    m_id = node.getAttribute("id");
 
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
         if (node.name == "texture2D")
         {
-            m_texture = Video::instance->loadTexture(getAttribute(node, "name"));
+            m_texture = Video::instance->loadTexture(node.getAttribute("name"));
         }
         else if (node.name == "colors")
         {

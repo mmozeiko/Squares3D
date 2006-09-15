@@ -6,29 +6,85 @@
 #include "font.h"
 #include "video.h"
 #include "texture.h"
+#include "geometry.h"
+#include "input.h"
+#include "language.h"
 
-Entry::Entry(Vector& position, wstring& stringIn, Value& value) :
+void Value::addAnother(const wstring& string)
+{
+    m_values.push_back(string);
+}
+
+Value::Value(const wstring& string) :
+    m_current(0)
+{
+    m_values.push_back(string);
+}
+
+wstring Value::getCurrent()
+{
+    wstring returnVal;
+    if (!m_values.empty())
+    {
+        returnVal = m_values[m_current];
+    }
+    return returnVal;
+}
+
+void Value::activateNext()
+{
+    if (!m_values.empty())
+    {
+        if (m_current == (m_values.size() - 1))
+        {
+            m_current = 0;
+        }
+        else
+        {
+            m_current++;
+        }
+    }
+}
+
+Entry::Entry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) :
+    m_font(font),
     m_position(position),
     m_string(stringIn),
     m_value(value)
 {
+    m_lowerLeft = Vector(position.x - m_font->getWidth(stringIn), 0, position.y);
+    m_upperRight = Vector(position.x + m_font->getWidth(stringIn), 
+                          0,
+                          position.y + m_font->getHeight());
 }
 
-void Entry::render(const Font* font) const
+void SubMenu::control()
 {
-    glPushMatrix();
-    glTranslatef(m_position.x, m_position.y, m_position.z);
-    glColor3fv(Vector::One.v);
-    font->render(m_string +  L" " + m_value.m_string, Font::Align_Center);
-    glPopMatrix();
+    bool onAnyEntry = false;
+    for each_const(Entries, m_entries, iter)
+    {
+        const Mouse& mouse = Input::instance->mouse();
+        int videoHeight = Video::instance->getResolution().second;
+        Vector mousePos = Vector(static_cast<float>(mouse.x), 0, static_cast<float>(videoHeight - mouse.y));
+
+        if (isPointInRectangle(mousePos, (*iter)->m_lowerLeft, (*iter)->m_upperRight))
+        {
+            onAnyEntry = true;
+            m_activeEntry = (*iter);
+            if (mouse.b & 1)
+            {
+                m_activeEntry->m_value.activateNext();
+            }
+        }
+    }
+    if (!onAnyEntry)
+    {
+        m_activeEntry = NULL;
+    }
 }
 
-void Entry::control()
-{
-}
-
-SubMenu::SubMenu(Vector& position) : 
-    m_position(position)
+SubMenu::SubMenu() : 
+    m_activeEntry(NULL)
 {
 }
 
@@ -45,15 +101,24 @@ void SubMenu::addEntry(Entry* entry)
     m_entries.push_back(entry);
 }
 
-void SubMenu::render(const Font* font) const
+void SubMenu::render() const
 {
-    glPushMatrix();
-    glTranslatef(m_position.x, m_position.y, m_position.z);
     for each_const(Entries, m_entries, iter)
     {
-        (*iter)->render(font);
+        glPushMatrix();
+        glTranslatef((*iter)->m_position.x, (*iter)->m_position.y, (*iter)->m_position.z);
+        if (m_activeEntry == *iter)
+        {
+            glColor3fv(Vector::One.v);
+        }
+        else
+        {
+            glColor3fv(Vector::Zero.v);
+        }
+        (*iter)->m_font->render((*iter)->m_string +  L" " + (*iter)->m_value.getCurrent(), 
+                                Font::Align_Center);
+        glPopMatrix();   
     }
-    glPopMatrix();
 }
 
 Menu::Menu():
@@ -74,35 +139,43 @@ Menu::Menu():
     m_backGround->uv.push_back(UV(1, 1));
     m_backGround->uv.push_back(UV(0, 1));
 
-    m_backGroundTexture = Video::instance->loadTexture("boob");
+    m_backGroundTexture = Video::instance->loadTexture("pavement");
 
     loadMenu();
 }
 
 void Menu::loadMenu()
 {
-    Value value;
-    value.m_string = L"a BOOB!!!1";
+    Language* language = Language::instance;
 
-    wstring entryString = L"L@@k";
+    Value value(language->get(TEXT_TRUE));
+    value.addAnother(language->get(TEXT_FALSE));
+
+    vector<wstring> entryStrings;
+    entryStrings.push_back(language->get(TEXT_START_GAME));
+    entryStrings.push_back(language->get(TEXT_OPTIONS));
+    entryStrings.push_back(language->get(TEXT_CREDITS));
+    entryStrings.push_back(language->get(TEXT_QUIT_GAME));
 
     int resX = Video::instance->getResolution().first;
     int resY = Video::instance->getResolution().second;
 
-    SubMenu* subMenu = new SubMenu(Vector(static_cast<float>(resX) / 2,
-                                          static_cast<float>(resY) / 2, 0));
+    Vector subMenuPosition = Vector(static_cast<float>(resX) / 2,
+                                    static_cast<float>(resY) / 2, 
+                                    0);
 
-    Vector translate(Vector::Zero);
+    SubMenu* subMenu = new SubMenu();
+
     for (int i = 0; i < 4; i++)
     {
-        subMenu->addEntry(new Entry(translate, entryString, value));
-        translate -= Vector(0, static_cast<float>(m_font->getSize(entryString).second) + 2, 0);
+        subMenu->addEntry(new Entry(subMenuPosition, entryStrings[i], value, m_font));
+        subMenuPosition -= Vector(0, static_cast<float>(m_font->getHeight()) + 2, 0);
     }
 
     m_currentSubMenu = subMenu;
 
     m_subMenus.push_back(subMenu);
-
+    
 }
 
 Menu::~Menu()
@@ -127,6 +200,10 @@ State::Type Menu::progress() const
 
 void Menu::control()
 {
+    for each_const(SubMenus, m_subMenus, iter)
+    {
+        (*iter)->control();
+    }
     if (glfwGetKey(GLFW_KEY_ENTER) == GLFW_PRESS)
     {
         m_goToGame = true;
@@ -156,7 +233,7 @@ void Menu::render() const
     glBindTexture(GL_TEXTURE_2D, m_font->m_texture);
     glEnable(GL_TEXTURE_2D);
 
-    m_currentSubMenu->render(m_font);
+    m_currentSubMenu->render();
 
     m_font->end();
 }

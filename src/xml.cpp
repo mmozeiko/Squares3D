@@ -44,7 +44,7 @@ void outputNode(const XMLnode& node, std::ostream& stream, int level)
     }
 
     stream << '<' << node.name;
-    if (!node.attributes.empty())
+    if (node.attributes.empty())
     {
         for each_const(StringMap, node.attributes, iter)
         {

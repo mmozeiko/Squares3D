@@ -80,7 +80,7 @@ void Collision::create(NewtonCollision* collision, int propertyID, float mass)
 
 Collision* Collision::create(const XMLnode& node, const Level* level)
 {
-    string type = getAttribute(node, "type");
+    string type = node.getAttribute("type");
     
     if (type == "box")
     {
@@ -108,18 +108,18 @@ CollisionConvex::CollisionConvex(const XMLnode& node, const Level* level) :
     Vector offset(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
 
-    if (foundInMap(node.attributes, "property"))
+    if (node.hasAttribute("property"))
     {
-        m_propertyID = level->m_properties->getPropertyID(getAttribute(node, "property"));
+        m_propertyID = level->m_properties->getPropertyID(node.getAttribute("property"));
     }
     else
     {
         m_propertyID = level->m_properties->getDefault();
     }
 
-    if (foundInMap(node.attributes, "material"))
+    if (node.hasAttribute("material"))
     {
-        string material = getAttribute(node, "material");
+        string material = node.getAttribute("material");
         MaterialMap::const_iterator iter = level->m_materials.find(material);
         if (iter == level->m_materials.end())
         {
@@ -154,7 +154,7 @@ CollisionBox::CollisionBox(const XMLnode& node, const Level* level) :
     CollisionConvex(node, level),
     m_size(1.0f, 1.0f, 1.0f)
 {
-    float mass = cast<float>(getAttribute(node, "mass"));
+    float mass = node.getAttribute<float>("mass");
 
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -202,7 +202,7 @@ CollisionSphere::CollisionSphere(const XMLnode& node, const Level* level) :
     CollisionConvex(node, level),
     m_radius(1.0f, 1.0f, 1.0f)
 {
-    float mass = cast<float>(getAttribute(node, "mass"));
+    float mass = node.getAttribute<float>("mass");
 
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -257,7 +257,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
         const XMLnode& node = *iter;
         if (node.name == "face")
         {
-            string material = getAttribute(node, "material");
+            string material = node.getAttribute("material");
             if (material.empty())
             {
                 m_materials.push_back(NULL);
@@ -272,7 +272,7 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
                 m_materials.push_back(iter->second);
             }
             
-            string p = getAttribute(node, "property");
+            string p = node.getAttribute("property");
             props.push_back(level->m_properties->getPropertyID(p));
 
             m_faces.push_back(Face());
@@ -284,8 +284,8 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
                 {
                     face.vertexes.push_back(getAttributesInVector(node, "xyz"));
                     face.uv.push_back(UV(
-                        cast<float>(getAttribute(node, "u")),
-                        cast<float>(getAttribute(node, "v"))));
+                        node.getAttribute<float>("u"),
+                        node.getAttribute<float>("v")));
                 }
                 else
                 { 

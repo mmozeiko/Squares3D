@@ -6,6 +6,7 @@
 #include "level.h"
 #include "body.h"
 #include "collision.h"
+#include "xml.h"
 
 struct MaterialContact : NoCopy
 {
@@ -104,8 +105,8 @@ void Properties::load(const XMLnode& node)
 {
     NewtonWorld* world = World::instance->m_newtonWorld;
 
-    string prop0 = getAttribute(node, "property0");
-    string prop1 = getAttribute(node, "property1");
+    string prop0 = node.getAttribute("property0");
+    string prop1 = node.getAttribute("property1");
     
     const int id0 = getPropertyID(prop0);
     const int id1 = getPropertyID(prop1);
@@ -118,10 +119,10 @@ void Properties::load(const XMLnode& node)
 
     const Property& def = m_properties.find(makepID(getDefault(), getDefault()))->second;
 
-    float sF = cast<float>(getAttribute(node, "staticFriction", cast<string>(def.staticFriction)));
-    float kF = cast<float>(getAttribute(node, "kineticFriction", cast<string>(def.kineticFriction)));
-    float eC = cast<float>(getAttribute(node, "elasticityCoefficient", cast<string>(def.elasticityCoefficient)));
-    float sC = cast<float>(getAttribute(node, "softnessCoefficient", cast<string>(def.softnessCoefficient)));
+    float sF = node.getAttribute("staticFriction", def.staticFriction);
+    float kF = node.getAttribute("kineticFriction", def.kineticFriction);
+    float eC = node.getAttribute("elasticityCoefficient", def.elasticityCoefficient);
+    float sC = node.getAttribute("softnessCoefficient", def.softnessCoefficient);
 
     m_properties.insert(make_pair(makepID(id0, id1), Property(sF, kF, eC, sC)));
 }
@@ -132,10 +133,10 @@ void Properties::loadDefault(const XMLnode& node)
 
     int defaultID = NewtonMaterialGetDefaultGroupID(world);
 
-    float sF = cast<float>(getAttribute(node, "staticFriction"));
-    float kF = cast<float>(getAttribute(node, "kineticFriction"));
-    float eC = cast<float>(getAttribute(node, "elasticityCoefficient"));
-    float sC = cast<float>(getAttribute(node, "softnessCoefficient"));
+    float sF = node.getAttribute<float>("staticFriction");
+    float kF = node.getAttribute<float>("kineticFriction");
+    float eC = node.getAttribute<float>("elasticityCoefficient");
+    float sC = node.getAttribute<float>("softnessCoefficient");
 
     m_properties.insert(make_pair(makepID(getDefault(), getDefault()), Property(sF, kF, eC, sC)));
 

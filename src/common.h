@@ -41,6 +41,7 @@ typedef pair<int, int>            IntPair;
 typedef set<IntPair>              IntPairSet;
 typedef set<unsigned int>         UIntSet;
 typedef set<int>                  IntSet;
+typedef vector<int>               IntVector;
 
 template <typename To, typename From>
 inline To cast(const From& from)
@@ -60,13 +61,6 @@ inline To wcast(const From& from)
     ss << from;
     ss >> to;
     return to;
-}
-
-// TODO: remove this
-template <>
-inline wstring wcast(const string& from)
-{
-    return wstring(from.begin(), from.end());
 }
 
 template <typename ValueType>

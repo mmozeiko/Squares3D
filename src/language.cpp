@@ -8,6 +8,7 @@ Language* System<Language>::instance = NULL;
 
 Language::Language()
 {
+    clog << "Initializing language texts... ";
 
 #define REGISTER_TEXT_TYPE(type) m_texts.insert(make_pair(STR(type), TEXT_##type))
 
@@ -20,12 +21,21 @@ Language::Language()
     REGISTER_TEXT_TYPE(HITS_COMBO);
     REGISTER_TEXT_TYPE(SCORE_MESSAGE);
 
+    REGISTER_TEXT_TYPE(START_GAME);
+    REGISTER_TEXT_TYPE(OPTIONS);
+    REGISTER_TEXT_TYPE(CREDITS);
+    REGISTER_TEXT_TYPE(QUIT_GAME);
+    REGISTER_TEXT_TYPE(RESOLUTION);
+    REGISTER_TEXT_TYPE(FULLSCREEN);
+    REGISTER_TEXT_TYPE(TRUE);
+    REGISTER_TEXT_TYPE(FALSE);
+
 #undef REGISTER_TEXT_TYPE
     
     assert(m_texts.size() == static_cast<int>(TEXT_LAST_ONE));
 
     // load default texts
-    load("en");
+    int count = load("en");
     
     // check if language is available
     StringVector available = getAvailable();
@@ -35,8 +45,14 @@ Language::Language()
         return;
     }
 
+    clog << "loading " << Config::instance->m_misc.language << " language." << endl;
+
     // load selected language
-    load(Config::instance->m_misc.language);
+    int selCount = load(Config::instance->m_misc.language);
+    if (selCount != count)
+    {
+        clog << "Warning: expected " << count << " phrases, but found only " << selCount << "!" << endl;
+    }
 }
 
 StringVector Language::getAvailable() const
@@ -64,9 +80,11 @@ Formatter Language::get(TextType id)
 
 static wstring UTF8_to_UCS2(const string& str);
 
-void Language::load(const string& name)
+int Language::load(const string& name)
 {
-    string filename = "/data/language/" + Config::instance->m_misc.language + ".xml";
+    string filename = "/data/language/" + name + ".xml";
+
+    int count = 0;
 
     XMLnode xml;
     File::Reader in(filename);
@@ -84,10 +102,19 @@ void Language::load(const string& name)
         {
             throw Exception("Invalid language file '" + filename + "'");
         }
-        TextType type = m_texts.find(node.attributes.find("name")->second)->second;
-        string value = node.attributes.find("value")->second;
-        m_lang.insert(make_pair(type, UTF8_to_UCS2(value)));
+        StrToTextTypeMap::const_iterator txtIter = m_texts.find(node.getAttribute("name"));
+        if (txtIter == m_texts.end())
+        {
+            throw Exception("Invalid language file, unexpected '" + node.getAttribute("name") + "' item");
+        }
+
+        TextType type = txtIter->second;
+        string value = node.getAttribute("value");
+        m_lang[type] = UTF8_to_UCS2(value);
+        count++;
     }
+    
+    return count;
 }
 
 /*

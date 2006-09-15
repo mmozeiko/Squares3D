@@ -11,13 +11,14 @@
 #include "input.h"
 #include "world.h"
 #include "menu.h"
+#include "intro.h"
 #include "camera.h"
 #include "font.h"
 #include "fps.h"
 
 #include "vmath.h"
 
-#define FIXED_TIMESTEP
+//#define FIXED_TIMESTEP
 
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
@@ -35,7 +36,7 @@ Game::Game()
     m_input = new Input();
     //
 
-    m_state = new Menu(); // TODO: change to Intro class
+    m_state = new Intro(); // TODO: change to Intro class
 
     m_network->createClient();
     m_network->connect("localhost");
@@ -125,18 +126,17 @@ void Game::run()
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
+    bool running = true;
+    bool previous_active = true;
+    
+    const Font* font = Font::get("Arial_32pt_bold");
+
     Timer timer;
+    FPS fps(timer, font);
 
     float accum = 0.0f;
     float currentTime = timer.read();
     float startTime = currentTime;
-
-    bool running = true;
-
-    bool previous_active = true;
-    
-    const Font* font = Font::get("Arial_32pt_bold");
-    FPS fps(timer, font);
 
     while (running)
     {
@@ -152,9 +152,9 @@ void Game::run()
 
         accum += deltaTime;
 
-        m_audio->update();
+        //m_audio->update();
         m_input->update();
-        m_network->update();
+        //m_network->update();
         
         m_state->control();
 
@@ -177,8 +177,12 @@ void Game::run()
         m_state->render();
 
         fps.update();
+
 #ifndef MAKE_MOVIE
-        fps.render();
+        if (Config::instance->m_video.show_fps)
+        {
+            fps.render();
+        }
 #endif
 
         glfwSwapBuffers();

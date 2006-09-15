@@ -14,6 +14,7 @@ struct VideoConfig
     bool use_shaders;
     int  shadow_type;
     int  shadowmap_size;
+    bool show_fps;
 };
 
 struct AudioConfig

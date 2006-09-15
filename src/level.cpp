@@ -38,7 +38,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
         const XMLnode& node = *iter;
         if (node.name == "link")
         {
-            load(getAttribute(node, "file"), loaded);
+            load(node.getAttribute("file"), loaded);
         }
         else if (node.name == "bodies")
         {
@@ -47,7 +47,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "body")
                 {
-                    string id = getAttribute(node, "id");
+                    string id = node.getAttribute("id");
                     m_bodies[id] = new Body(node);
                 }
                 else
@@ -63,7 +63,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "material")
                 {
-                    m_materials.insert(make_pair(getAttribute(node, "id"), new Material(node)));
+                    m_materials.insert(make_pair(node.getAttribute("id"), new Material(node)));
                 }
                 else
                 {
@@ -78,7 +78,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "collision")
                 {
-                    m_collisions[getAttribute(node, "id")] = Collision::create(node, this);
+                    m_collisions[node.getAttribute("id")] = Collision::create(node, this);
                 }
                 else
                 {
@@ -168,34 +168,13 @@ void Level::render() const
     //glPopAttrib();
 }
 
-string getAttribute(const XMLnode& node, const string& name)
-{
-    StringMap::const_iterator iter = node.attributes.find(name);
-    if (iter != node.attributes.end())
-    {
-        return iter->second;
-    }
-
-    throw Exception("Missing attribute '" + name + "' in node '" + node.name + "'");
-}
-
-string getAttribute(const XMLnode& node, const string& name, const string& defaultValue)
-{
-    StringMap::const_iterator iter = node.attributes.find(name);
-    if (iter != node.attributes.end())
-    {
-        return iter->second;
-    }
-    return defaultValue;
-}
-
 Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols)
 {
     Vector vector;
     for (size_t i = 0; i < attributeSymbols.size(); i++)
     {
         string key(1, attributeSymbols[i]);
-        vector[i] = cast<float>(getAttribute(node, key));
+        vector[i] = node.getAttribute<float>(key);
     }
     return vector;
 

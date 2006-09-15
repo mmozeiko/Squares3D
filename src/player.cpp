@@ -86,7 +86,9 @@ void Player::onCollide(const Body* other, const NewtonMaterial* material)
 
 void Player::onImpact(const Body* other, const Vector& position, const float speed)
 {
-    m_isOnGround = (other->m_id == "level");
+    Vector v;
+    NewtonBodyGetVelocity(other->m_newtonBody, v.v);
+    m_isOnGround = fabs(v.y) < 0.01f; // small speed magnitude
 }
 
 void Player::onScratch(const Body* other, const Vector& position, const float speed)

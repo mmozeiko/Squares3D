@@ -14,41 +14,6 @@
             <radius x="0.2" y="0.2" z="0.2" />
         </collision>
 
-        <!-- some_crap body -->
-        <collision id="box2" type="box" mass="500.0" material="box">
-            <size x="1.5" y="1.0" z="1.5" />
-        </collision>
-
-        <collision id="thinBox" type="box" mass="50.0" material="box">
-            <size   x="0.1" y="1.0" z="0.1" />
-            <offset x="0.0" y="1.0" z="0.0" />
-        </collision>
-
-        <collision id="heavyBox" type="sphere" mass="10000.0" material="box">
-            <radius x="0.2" y="0.1"  z="0.2" />
-            <offset x="0.0" y="1.55" z="0.0" />
-        </collision>
-
-
-
-        <collision id="invisibleWall1" mass="0.0" type="box">
-            <size x="1.0" y="10.0" z="6.0"/>
-            <offset x="3.5" y="0.0" z="0.0"/>
-        </collision>
-        <collision id="invisibleWall2" mass="0.0" type="box">
-            <size x="1.0" y="10.0" z="6.0"/>
-            <offset x="-3.5" y="0.0" z="0.0"/>
-        </collision>
-        <collision id="invisibleWall3" mass="0.0" type="box">
-            <size x="6.0" y="10.0" z="1.0"/>
-            <offset x="0.0" y="0.0" z="3.5"/>
-        </collision>
-        <collision id="invisibleWall4" mass="0.0" type="box">
-            <size x="6.0" y="10.0" z="1.0"/>
-            <offset x="0.0" y="0.0" z="-3.5"/>
-        </collision>
-
-
         <collision id="level" type="tree">
             <face material="pavement" property="pavement">
                 <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />

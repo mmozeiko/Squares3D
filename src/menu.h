@@ -13,22 +13,30 @@ class Font;
 struct Face;
 class Texture;
 
-struct Value
+typedef vector<wstring> Values;
+class Value
 {
-    wstring m_value;
-    wstring m_string;
+public:
+    Values        m_values;
+    size_t        m_current;
+
+    wstring getCurrent();
+    void addAnother(const wstring& string);
+    Value(const std::wstring& string);
+    void activateNext();
 };
 
 class Entry
 {
 public: 
-    wstring m_string;
-    Value  m_value;
-    Vector m_position;
+    wstring     m_string;
+    Value       m_value;
+    Vector      m_position;
+    const Font* m_font;
+    Vector      m_lowerLeft;
+    Vector      m_upperRight;
 
-    Entry(Vector& position, wstring& stringIn, Value& value);
-    void render(const Font* font) const;
-    void control();
+    Entry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font);
 };
 
 typedef vector<Entry*> Entries;
@@ -37,13 +45,14 @@ class SubMenu
 {
 public:
 
-    Vector m_position;
     Entries m_entries;
+    Entry*  m_activeEntry;
 
-    SubMenu(Vector& position);
+    SubMenu();
     ~SubMenu();
     void addEntry(Entry* entry);
-    void render(const Font* font) const;
+    void render() const;
+    void control();
 };
 
 typedef vector<SubMenu*> SubMenus;

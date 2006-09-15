@@ -5,7 +5,19 @@
   <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
   <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
   <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
-  <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;$2"/>
+  <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
   <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
   <item name="SCORE_MESSAGE"         value="$1: $2"/>
-</xml>
+
+  <!-- Main menu -->
+  <item name="START_GAME"            value="Start Game"/>
+  <item name="OPTIONS"               value="Options"/>
+  <item name="CREDITS"               value="Credits"/>
+  <item name="QUIT_GAME"             value="Quit Game"/>
+  <!-- Options -->
+  <item name="RESOLUTION"            value="Resolution"/>
+  <item name="FULLSCREEN"            value="Fullscreen"/>
+  <item name="TRUE"                  value="Yes"/>
+  <item name="FALSE"                 value="No"/>
+  
+</xml>  

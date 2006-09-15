@@ -17,7 +17,7 @@ Body::Body(const XMLnode& node):
     m_collideable(NULL)
 {
     NewtonCollision* newtonCollision = NULL;
-    m_id = getAttribute(node, "id");
+    m_id = node.getAttribute("id");
     
     Vector position(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);

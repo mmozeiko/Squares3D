@@ -26,7 +26,7 @@ void FPS::update()
         {
             m_fps += L".0";
         }
-        m_size = m_font->getSize(m_fps);
+        m_width = m_font->getWidth(m_fps);
         m_time = curTime;
         m_frames = 0;
     }
@@ -41,8 +41,8 @@ void FPS::render() const
     IntPair res = Video::instance->getResolution();
 
     glTranslatef(
-        static_cast<float>(res.first - m_size.first)/2, 
-        static_cast<float>(res.second - m_size.second),
+        static_cast<float>(res.first - m_width)/2, 
+        static_cast<float>(res.second - m_font->getHeight()),
         0.0f);
     glColor3fv(color.v);
     m_font->render(m_fps);

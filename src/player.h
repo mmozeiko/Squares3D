@@ -37,7 +37,7 @@ public:
 protected:
     NewtonJoint* m_upVector;
 
-    bool         m_isOnGround;
+    bool         m_isOnGround; // TODO: rename, current name is incorrect
     Vector       m_direction;
     Vector       m_rotation;
 };

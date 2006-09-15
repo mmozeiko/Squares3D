@@ -8,6 +8,15 @@
 // remember to update in Language constructor
 enum TextType
 {
+    TEXT_START_GAME,
+    TEXT_OPTIONS,
+    TEXT_CREDITS,
+    TEXT_QUIT_GAME,
+    TEXT_RESOLUTION,
+    TEXT_FULLSCREEN,
+    TEXT_TRUE,
+    TEXT_FALSE,
+
     TEXT_FPS_DISPLAY,
     TEXT_GAME_OVER,
     TEXT_PLAYER_KICKS_OUT_BALL,
@@ -31,7 +40,7 @@ public:
     StringVector getAvailable() const;
 
 private:
-    void load(const string& name);
+    int load(const string& name);
     TextTypeMap      m_lang;
     StrToTextTypeMap m_texts;
     

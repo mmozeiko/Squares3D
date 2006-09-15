@@ -27,7 +27,7 @@ private:
     const Timer& m_timer;
     const Font*  m_font;
     wstring      m_fps;
-    IntPair      m_size;
+    int          m_width;
 };
 
 #endif

@@ -42,6 +42,8 @@ public:
     Video();
     ~Video();
 
+    void unloadTextures();
+
     void renderCube() const;
     void renderFace(const Face& face) const;
     void renderSphere(float radius = 1.0f) const;

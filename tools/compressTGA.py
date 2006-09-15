@@ -82,4 +82,8 @@ for root, dir, files in os.walk(DATA_PATH):
     name = os.path.join(root, file)
     if name[-4:] == ".tga":
       print name
-      process(name, name)
+      try:
+        process(name, name)
+      except:
+        pass
+        #print "Exception:", e

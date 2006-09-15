@@ -19,21 +19,19 @@ public:
     void update();
 
     bool key(int key) const;
-    const Mouse& mouse(int id = 0) const;
+    const Mouse& mouse() const;
 
-    void          startKeyBuffer();
-    const string& getKeyBuffer() const;
-    string&       getKeyBuffer();
-    void          endKeyBuffer();
+    void             startKeyBuffer();
+    const IntVector& getKeyBuffer() const;
+    void             endKeyBuffer();
+    int              popKey();
 
     // private method, don't use it
-    void    addChar(char c);
+    void          addKey(int c);
 
 private:
-    int           m_mouseCount;
-    bool          m_manymouses;
-    vector<Mouse> m_mouses;
-    string        m_keyBuffer;
+    Mouse     m_mouse;
+    IntVector m_keyBuffer;
 };
 
 #endif
