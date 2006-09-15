@@ -46,16 +46,46 @@ void Value::activateNext()
     }
 }
 
-Entry::Entry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) :
+Entry::Entry(const Vector& position, const wstring& stringIn, const Font* font) :
     m_font(font),
     m_position(position),
-    m_string(stringIn),
-    m_value(value)
+    m_string(stringIn)
 {
     m_lowerLeft = Vector(position.x - m_font->getWidth(stringIn), 0, position.y);
     m_upperRight = Vector(position.x + m_font->getWidth(stringIn), 
                           0,
                           position.y + m_font->getHeight());
+}
+
+OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) : 
+    Entry(position, stringIn, font),
+    m_value(value)
+{
+}
+
+wstring OptionEntry::getString()
+{
+    return m_string +  L": " + m_value.getCurrent();
+}
+
+void OptionEntry::click()
+{
+    m_value.activateNext();
+}
+
+MenuEntry::MenuEntry(const Vector& position, const wstring& stringIn, const Font* font) : 
+    Entry(position, stringIn, font)
+{
+}
+
+wstring MenuEntry::getString()
+{
+    return m_string;
+}    
+
+void MenuEntry::click()
+{
+    //m_value.activateNext();
 }
 
 void SubMenu::control()
@@ -73,7 +103,7 @@ void SubMenu::control()
             m_activeEntry = (*iter);
             if (mouse.b & 1)
             {
-                m_activeEntry->m_value.activateNext();
+                m_activeEntry->click();
             }
         }
     }
@@ -115,7 +145,7 @@ void SubMenu::render() const
         {
             glColor3fv(Vector::Zero.v);
         }
-        (*iter)->m_font->render((*iter)->m_string +  L" " + (*iter)->m_value.getCurrent(), 
+        (*iter)->m_font->render((*iter)->getString(), 
                                 Font::Align_Center);
         glPopMatrix();   
     }
@@ -168,7 +198,7 @@ void Menu::loadMenu()
 
     for (int i = 0; i < 4; i++)
     {
-        subMenu->addEntry(new Entry(subMenuPosition, entryStrings[i], value, m_font));
+        subMenu->addEntry(new OptionEntry(subMenuPosition, entryStrings[i], value, m_font));
         subMenuPosition -= Vector(0, static_cast<float>(m_font->getHeight()) + 2, 0);
     }
 

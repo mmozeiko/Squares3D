@@ -30,13 +30,31 @@ class Entry
 {
 public: 
     wstring     m_string;
-    Value       m_value;
     Vector      m_position;
     const Font* m_font;
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font);
+    Entry(const Vector& position, const wstring& stringIn, const Font* font);
+    virtual void click() = 0;
+    virtual wstring getString() = 0;
+};
+
+class OptionEntry : public Entry
+{
+    Value       m_value;
+public: 
+    OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font);
+    wstring getString();
+    void click();
+};
+
+class MenuEntry : public Entry
+{
+public: 
+    MenuEntry(const Vector& position, const wstring& stringIn, const Font* font);
+    wstring getString();
+    void click();
 };
 
 typedef vector<Entry*> Entries;
