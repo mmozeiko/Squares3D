@@ -18,7 +18,7 @@
 
 #include "vmath.h"
 
-//#define FIXED_TIMESTEP
+#define FIXED_TIMESTEP
 
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640

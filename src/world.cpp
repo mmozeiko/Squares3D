@@ -312,9 +312,10 @@ void World::shadowMapPass1() const
     glShadeModel(GL_FLAT);
     glColorMask(0, 0, 0, 0);
 
-    //glDisable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(-0.25f, -0.01f);
+    //glPolygonOffset(-0.25f, -0.01f); tommeer liels HAKS. TODO.
+    glPolygonOffset(1.0f, 2.0f);
 
     //Draw the scene
     renderScene();

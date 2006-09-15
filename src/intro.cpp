@@ -5,7 +5,7 @@
 #include <Newton.h>
 
 static const float FADE_IN_SECS = 3.0f;
-static const float BALL_KICK_SECS = 5.0f;
+static const float BALL_KICK_SECS = 6.0f;
 
 static const float PIECE_MASS = 1.0f;
 static const float PIECE_SIZEX = 0.3f;
@@ -78,8 +78,8 @@ void renderCube(int idx)
         x += 0.5f;
     }
 
-    float maxu = 1.0f;
-    float maxv = 768.0f/1024.0f; // depends on indago logo texture structure
+    static const float maxu = 1.0f;
+    static const float maxv = 768.0f/1024.0f; // depends on indago logo texture structure
 
     glBegin(GL_QUADS);
     for (int i = 0; i < 6; i++)
@@ -172,8 +172,6 @@ Intro::Intro() : m_timePassed(0), m_nextState(false)
 
     m_ballTex = Video::instance->loadTexture("ball");
     m_logoTex = Video::instance->loadTexture("indago_logo");
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     Input::instance->startKeyBuffer();
 }
@@ -195,7 +193,7 @@ void Intro::control()
     {
         Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 2.0f));
         NewtonBodySetMatrix(ball_body, matrix.m);
-        NewtonBodySetVelocity(ball_body, Vector(0.0f, 5.5f, -4.0f).v);
+        NewtonBodySetVelocity(ball_body, Vector(0.0f, 4.0f, -4.0f).v);
         NewtonWorldUnfreezeBody(m_newtonWorld, ball_body);
         
         m_ballKicked = true;
@@ -231,6 +229,8 @@ void Intro::render() const
     glRotatef(-180.0f, 0.0f, 1.0f, 0.0f);
     glTranslatef(0.0f, -0.85f, 2.0f);
 
+    glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
+        
     glLightfv(GL_LIGHT1, GL_POSITION, Vector(-15.0f, 3.0f, -13.0f).v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, (0.25f*Vector::One).v);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
@@ -281,11 +281,11 @@ void Intro::render() const
         float alpha = m_timePassed / FADE_IN_SECS;
         alpha = alpha*alpha;
 
-        glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
+        glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
         
         glDisable(GL_LIGHTING);
-
         glEnable(GL_BLEND);
+
         glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
         glColor4f(0.0f, 0.0f, 0.0f, alpha);
 
@@ -299,6 +299,8 @@ void Intro::render() const
         glPopAttrib();
     }
     glEnable(GL_CULL_FACE); // TODO: hack, remove it
+
+    glPopAttrib();
 }
 
 State::Type Intro::progress() const
