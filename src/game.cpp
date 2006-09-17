@@ -140,6 +140,12 @@ void Game::run()
 
     while (running)
     {
+        m_audio->update();
+        m_input->update();
+        m_network->update();
+        
+        m_state->control();
+
 #ifdef MAKE_MOVIE
         float deltaTime = 1.0f/25.0f;
 #else
@@ -152,19 +158,13 @@ void Game::run()
 
         accum += deltaTime;
 
-        //m_audio->update();
-        m_input->update();
-        //m_network->update();
-        
-        m_state->control();
-
         m_state->update(accum);
 
 #ifndef FIXED_TIMESTEP
         m_state->updateStep(accum);
         accum = 0.0f;
 #else
-        while (accum >= DT)
+       while (accum >= DT)
         {
             m_state->updateStep(DT);
             accum -= DT;
@@ -173,8 +173,8 @@ void Game::run()
 
         m_state->prepare();
 
-        glClear(GL_DEPTH_BUFFER_BIT);
-        m_state->render();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //m_state->render();
 
         fps.update();
 
@@ -192,7 +192,11 @@ void Game::run()
 #endif
 
         State::Type newState = m_state->progress();
-        if (newState != State::Current)
+        if (newState == State::Quit)
+        {
+            running = false;
+        }
+        else if (newState != State::Current)
         {
             delete m_state;
             timer.reset();
@@ -210,8 +214,6 @@ void Game::run()
             glfwRestoreWindow();
             previous_active = true;
         }
-
-        running = glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS;
 
     }
 

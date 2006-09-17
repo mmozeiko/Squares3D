@@ -2,7 +2,7 @@
 
 Input* System<Input>::instance = NULL;
 
-Input::Input() : m_mouse(), m_keyBuffer()
+Input::Input() : m_mouse(), m_keyBuffer(), m_buttonBuffer()
 {
     clog << "Initializing input... " << endl;
 
@@ -10,7 +10,6 @@ Input::Input() : m_mouse(), m_keyBuffer()
     m_mouse.x /= 2;
     m_mouse.y /= 2;
     m_mouse.z = 0;
-    m_mouse.b = 0;
 
     glfwSetMousePos(m_mouse.x, m_mouse.y);
     glfwSetMouseWheel(0);
@@ -25,14 +24,6 @@ void Input::update()
 {
     glfwGetMousePos(&m_mouse.x, &m_mouse.y);
     m_mouse.z = glfwGetMouseWheel();
-    m_mouse.b = 0;
-    for (int b=GLFW_MOUSE_BUTTON_1; b<=GLFW_MOUSE_BUTTON_LAST; b++)
-    {
-        if (glfwGetMouseButton(b) == GLFW_PRESS)
-        {
-            m_mouse.b |= 1 << (b-GLFW_MOUSE_BUTTON_1);
-        }
-    }
 }
 
 bool Input::key(int key) const
@@ -45,12 +36,19 @@ const Mouse& Input::mouse() const
     return m_mouse;
 }
 
-
 void GLFWCALL keyFunc(int key, int action)
 {
     if (action == GLFW_PRESS)
     {
         Input::instance->addKey(key);
+    }
+}
+
+void GLFWCALL buttonFunc(int button, int action)
+{
+    if (action == GLFW_PRESS)
+    {
+        Input::instance->addButton(button);
     }
 }
 
@@ -60,19 +58,14 @@ void Input::startKeyBuffer()
     glfwSetKeyCallback(keyFunc);
 }
 
-const IntVector& Input::getKeyBuffer() const
-{
-    return m_keyBuffer;
-}
-
 void Input::endKeyBuffer()
 {
-    glfwSetCharCallback(NULL);
+    glfwSetKeyCallback(NULL);
 }
 
-void Input::addKey(int c)
+void Input::addKey(int k)
 {
-    m_keyBuffer.push_back(c);
+    m_keyBuffer.push_back(k);
 }
 
 int Input::popKey()
@@ -84,4 +77,31 @@ int Input::popKey()
     int key = m_keyBuffer.front();
     m_keyBuffer.erase(m_keyBuffer.begin());
     return key;
+}
+
+void Input::startButtonBuffer()
+{
+    m_buttonBuffer.clear();
+    glfwSetMouseButtonCallback(buttonFunc);
+}
+
+void Input::endButtonBuffer()
+{
+    glfwSetMouseButtonCallback(NULL);
+}
+
+void Input::addButton(int b)
+{
+    m_buttonBuffer.push_back(b);
+}
+
+int Input::popButton()
+{
+    if (m_buttonBuffer.size() == 0)
+    {
+        return -1;
+    }
+    int b = m_buttonBuffer.front();
+    m_buttonBuffer.erase(m_buttonBuffer.begin());
+    return b;
 }

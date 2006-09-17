@@ -4,8 +4,8 @@
 #include "texture.h"
 #include <Newton.h>
 
-static const float FADE_IN_SECS = 3.0f;
-static const float BALL_KICK_SECS = 6.0f;
+static const float FADE_IN_SECS = 2.0f;
+static const float BALL_KICK_SECS = 5.0f;
 
 static const float PIECE_MASS = 1.0f;
 static const float PIECE_SIZEX = 0.3f;
@@ -174,11 +174,13 @@ Intro::Intro() : m_timePassed(0), m_nextState(false)
     m_logoTex = Video::instance->loadTexture("indago_logo");
 
     Input::instance->startKeyBuffer();
+    Input::instance->startButtonBuffer();
 }
 
 Intro::~Intro()
 {
     Input::instance->endKeyBuffer();
+    Input::instance->endButtonBuffer();
 
     Video::instance->unloadTextures();
     NewtonDestroyAllBodies(m_newtonWorld);
@@ -187,7 +189,7 @@ Intro::~Intro()
 
 void Intro::control()
 {
-    m_nextState = Input::instance->getKeyBuffer().size() != 0;
+    m_nextState = Input::instance->popKey() != -1 || Input::instance->popButton() != -1;
 
     if (m_timePassed > BALL_KICK_SECS && !m_ballKicked)
     {
@@ -231,9 +233,9 @@ void Intro::render() const
 
     glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
         
-    glLightfv(GL_LIGHT1, GL_POSITION, Vector(-15.0f, 3.0f, -13.0f).v);
+    glLightfv(GL_LIGHT1, GL_POSITION, Vector(-15.0f, 3.0f, -13.0f, 0.0f).v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, (0.25f*Vector::One).v);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, (1.0f*Vector::One).v);
     glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);

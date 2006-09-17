@@ -42,6 +42,7 @@ typedef set<IntPair>              IntPairSet;
 typedef set<unsigned int>         UIntSet;
 typedef set<int>                  IntSet;
 typedef vector<int>               IntVector;
+typedef list<int>                 IntList;
 
 template <typename To, typename From>
 inline To cast(const From& from)

@@ -4,6 +4,7 @@
 #include "video.h"
 #include "world.h"
 #include "referee.h"
+#include "input.h"
 
 Player::Player(const string& id, const Vector& position, const Vector& rotation) :
     m_body(World::instance->m_level->getBody(id)),
@@ -62,7 +63,7 @@ void Player::onSetForceAndTorque()
     Vector force = (targetVel * 5.0f - currentVel ) * timestepInv * m_body->getMass();
 
     // TODO: move to player_local, at least KEY_SPACE part
-    if (glfwGetKey(GLFW_KEY_SPACE)!=GLFW_PRESS || !m_isOnGround)
+    if (!Input::instance->key(GLFW_KEY_SPACE) || !m_isOnGround)
     {
        force.y = 0.0f;
     }

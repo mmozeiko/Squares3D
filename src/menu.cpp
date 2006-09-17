@@ -101,7 +101,7 @@ void SubMenu::control()
         {
             onAnyEntry = true;
             m_activeEntry = (*iter);
-            if (mouse.b & 1)
+            if (Input::instance->popButton() == GLFW_MOUSE_BUTTON_1)
             {
                 m_activeEntry->click();
             }
@@ -153,7 +153,8 @@ void SubMenu::render() const
 
 Menu::Menu():
     m_font(Font::get("Arial_32pt_bold")),
-    m_goToGame(false)
+    m_goToGame(false),
+    m_quitGame(false)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -172,6 +173,7 @@ Menu::Menu():
     m_backGroundTexture = Video::instance->loadTexture("pavement");
 
     loadMenu();
+    Input::instance->startButtonBuffer();
 }
 
 void Menu::loadMenu()
@@ -210,6 +212,8 @@ void Menu::loadMenu()
 
 Menu::~Menu()
 {
+    Input::instance->endButtonBuffer();
+
     for each_const(SubMenus, m_subMenus, iter)
     {
         delete *iter;
@@ -220,12 +224,16 @@ Menu::~Menu()
 
 State::Type Menu::progress() const
 {
-    State::Type stateType = State::Current;
     if (m_goToGame)
     {
-        stateType = State::World;
+        return State::World;
     }
-    return stateType;
+    if (m_quitGame)
+    {
+        return State::Quit;
+    }
+
+    return State::Current;
 }
 
 void Menu::control()
@@ -234,9 +242,13 @@ void Menu::control()
     {
         (*iter)->control();
     }
-    if (glfwGetKey(GLFW_KEY_ENTER) == GLFW_PRESS)
+    if (Input::instance->key(GLFW_KEY_ENTER))
     {
         m_goToGame = true;
+    }
+    if (Input::instance->key(GLFW_KEY_ESC))
+    {
+        m_quitGame = true;
     }
 }
 

@@ -15,6 +15,8 @@ public:
         Menu,
         Lobby,
         World,
+
+        Quit,
     };
     virtual ~State() {}
 

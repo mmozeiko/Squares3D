@@ -23,6 +23,10 @@ World* System<World>::instance = NULL;
 
 State::Type World::progress() const
 {
+    if (Input::instance->key(GLFW_KEY_ESC) == GLFW_PRESS)
+    {
+        return State::Quit;
+    }
     return State::Current;
 }
 

@@ -98,6 +98,7 @@ private:
     SubMenu*     m_currentSubMenu;
     SubMenus     m_subMenus;
     bool         m_goToGame;
+    bool         m_quitGame;
     Face*        m_backGround;
     Texture*     m_backGroundTexture;
 

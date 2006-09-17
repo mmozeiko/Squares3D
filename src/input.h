@@ -7,7 +7,7 @@
 
 struct Mouse
 {
-    int x, y, z, b;
+    int x, y, z;
 };
 
 class Input : public System<Input>, NoCopy
@@ -18,20 +18,25 @@ public:
 
     void update();
 
-    bool key(int key) const;
+    bool  key(int key) const;
     const Mouse& mouse() const;
 
-    void             startKeyBuffer();
-    const IntVector& getKeyBuffer() const;
-    void             endKeyBuffer();
-    int              popKey();
+    void startKeyBuffer();
+    void endKeyBuffer();
+    int  popKey();
 
-    // private method, don't use it
-    void          addKey(int c);
+    void startButtonBuffer();
+    void endButtonBuffer();
+    int  popButton();
+
+    // private methods, don't use it
+    void addKey(int k);
+    void addButton(int b);
 
 private:
-    Mouse     m_mouse;
-    IntVector m_keyBuffer;
+    Mouse   m_mouse;
+    IntList m_keyBuffer;
+    IntList m_buttonBuffer;
 };
 
 #endif

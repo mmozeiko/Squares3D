@@ -224,6 +224,8 @@ void Font::begin(bool shadowed, float shadowWidth) const
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
 
+    glListBase(m_listbase);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -237,7 +239,7 @@ void Font::begin(bool shadowed, float shadowWidth) const
 void Font::renderPlain(const wstring& text) const
 {
     glPushMatrix();
-        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
+    glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
     glPopMatrix();
 }
 
