@@ -36,7 +36,7 @@ Game::Game()
     m_input = new Input();
     //
 
-    m_state = new Intro(); // TODO: change to Intro class
+    m_state = new World();
 
     m_network->createClient();
     m_network->connect("localhost");
@@ -174,7 +174,7 @@ void Game::run()
         m_state->prepare();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //m_state->render();
+        m_state->render();
 
         fps.update();
 

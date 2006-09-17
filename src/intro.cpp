@@ -233,9 +233,9 @@ void Intro::render() const
 
     glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
         
-    glLightfv(GL_LIGHT1, GL_POSITION, Vector(-15.0f, 3.0f, -13.0f, 0.0f).v);
+    glLightfv(GL_LIGHT1, GL_POSITION, Vector(-15.0f, 3.0f, -13.0f).v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, (0.25f*Vector::One).v);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, (1.0f*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
     glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
@@ -278,7 +278,7 @@ void Intro::render() const
     glPopMatrix();
 
     // fade in
-    if (m_timePassed < FADE_IN_SECS)
+    /*if (m_timePassed < FADE_IN_SECS)
     {
         float alpha = m_timePassed / FADE_IN_SECS;
         alpha = alpha*alpha;
@@ -300,6 +300,7 @@ void Intro::render() const
 
         glPopAttrib();
     }
+    */
     glEnable(GL_CULL_FACE); // TODO: hack, remove it
 
     glPopAttrib();

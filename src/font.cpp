@@ -4,7 +4,6 @@
 #include "font.h"
 #include "file.h"
 #include "xml.h"
-#include "video.h"
 #include "vmath.h"
 
 static const Vector ShadowColor(0.1f, 0.1f, 0.1f);
@@ -78,7 +77,7 @@ Font::Font(const string& filename) : m_texture(0)
             if (node.getAttribute<int>("pages") != 1 ||
                 node.getAttribute<int>("packed") != 0)
             {
-                throw Exception("Invalid font file - '" + filename + "'. Font pages or packing not supported!");
+                throw Exception("Invalid font file - '" + filename + "'. Font pages or packing is not supported!");
             }
         }
         else if (node.name == "page")
@@ -120,8 +119,6 @@ Font::Font(const string& filename) : m_texture(0)
             
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
         else if (node.name == "char")
         {
@@ -148,11 +145,12 @@ Font::Font(const string& filename) : m_texture(0)
 
     for (int ch = 0; ch < m_count; ch++)
     {
-        const Char& c = chars[ch];
-        glNewList(m_listbase + ch-1, GL_COMPILE);
+        glNewList(m_listbase + ch, GL_COMPILE);
 
-        if (foundInMap(chars, c.id))
+        if (foundInMap(chars, ch))
         {
+            const Char& c = chars[ch];
+
             float u1 = c.x / texW;
             float v1 = 1.0f - c.y / texH;
             float u2 = (c.x + c.width) / texW;
@@ -170,11 +168,11 @@ Font::Font(const string& filename) : m_texture(0)
                 glTexCoord2f(u1, v1); glVertex2f(x1, y1);
             glEnd();
       
-            glTranslatef(static_cast<float>(c.xadvance - c.xoffset), 0.0, 0.0);
+            glTranslatef(static_cast<float>(c.xadvance - c.xoffset), 0.0f, 0.0f);
         }
         else
         {
-            glTranslatef(size, 0.0, 0.0);
+            glTranslatef(size, 0.0f, 0.0f);
         }
 
         glEndList();
@@ -219,7 +217,6 @@ void Font::begin(bool shadowed, float shadowWidth) const
     glLoadIdentity();
 
     glDisable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
@@ -227,7 +224,7 @@ void Font::begin(bool shadowed, float shadowWidth) const
     glListBase(m_listbase);
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); ///////// WWWWTTTTTFFFFF ??????
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
     glEnable(GL_TEXTURE_2D);
@@ -306,7 +303,6 @@ void Font::end() const
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopAttrib();
-    glDepthMask(GL_TRUE);
 }
 
 int Font::getWidth(const wstring& text) const

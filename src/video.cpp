@@ -57,7 +57,7 @@ Video::Video() : m_haveShaders(false)
                 success = glfwOpenWindow(
                     sizes[s].first,
                     sizes[s].second,
-                    0, 0, 0, 0,
+                    8, 8, 8, 8,
                     depths[d], 0,
                     modes[m]) == GL_TRUE;
 
