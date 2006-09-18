@@ -24,6 +24,8 @@
 #define MOVIE_WIDTH 640
 #define MOVIE_HEIGHT 480
 
+bool g_needsToReload = false;
+
 Game::Game()
 {
     // these and only these objects are singletons,
@@ -36,7 +38,15 @@ Game::Game()
     m_input = new Input();
     //
 
-    m_state = new Intro();
+    if (g_needsToReload)
+    {
+        m_state = new Menu();
+        g_needsToReload = false;
+    }
+    else
+    {
+        m_state = new Intro();
+    }
 
     m_network->createClient();
     m_network->connect("localhost");

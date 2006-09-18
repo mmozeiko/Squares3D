@@ -17,6 +17,7 @@ enum TextType
     TEXT_BACK,
     TEXT_TRUE,
     TEXT_FALSE,
+    TEXT_SAVE,
 
     TEXT_FPS_DISPLAY,
     TEXT_GAME_OVER,

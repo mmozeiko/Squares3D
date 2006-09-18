@@ -29,7 +29,11 @@ int main(int, char* argv[])
         File::init(argv[0]);
         try
         {
-            Game().run();
+            do
+            {
+                Game().run();
+            }
+            while (g_needsToReload);
         }
         catch (string& exception)
         {

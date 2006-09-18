@@ -15,6 +15,7 @@
   <item name="CREDITS"               value="Credits"/>
   <item name="QUIT_GAME"             value="Quit Game"/>
   <item name="BACK"                  value="Back"/>
+  <item name="SAVE"                  value="Apply Settings"/>
   <!-- Options -->
   <item name="RESOLUTION"            value="Resolution"/>
   <item name="FULLSCREEN"            value="Fullscreen"/>

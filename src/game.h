@@ -17,6 +17,8 @@ class FPS;
 
 const Vector gravityVec(0.0f, -9.81f, 0.0f);
 
+extern bool g_needsToReload;
+
 class Game : NoCopy
 {
 public:

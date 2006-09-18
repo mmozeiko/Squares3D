@@ -9,17 +9,17 @@
 #include "geometry.h"
 #include "input.h"
 #include "language.h"
+#include "config.h"
 
 void Value::addAnother(const wstring& string)
 {
     m_values.push_back(string);
 }
 
-Value::Value(const string& id, const wstring& string) :
+Value::Value(const string& id) :
     m_current(0),
     m_id(id)
 {
-    m_values.push_back(string);
 }
 
 wstring Value::getCurrent()
@@ -58,6 +58,17 @@ Entry::Entry(const Vector& position, const wstring& stringIn, const Font* font) 
                           position.y + m_font->getHeight());
 }
 
+
+string Entry::getValueID()
+{
+    return "";
+}
+
+size_t Entry::getCurrentValueIdx()
+{
+    return -1;
+}
+
 OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) : 
     Entry(position, stringIn, font),
     m_value(value)
@@ -67,6 +78,16 @@ OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const 
 wstring OptionEntry::getString()
 {
     return m_string +  L": " + m_value.getCurrent();
+}
+
+string OptionEntry::getValueID()
+{
+    return m_value.m_id;
+}
+
+size_t OptionEntry::getCurrentValueIdx()
+{
+    return m_value.m_current;
 }
 
 void OptionEntry::click()
@@ -114,6 +135,37 @@ wstring SubmenuEntry::getString()
 void SubmenuEntry::click()
 {
     m_menu->setSubmenu(m_submenuToSwitchTo);
+}
+
+ApplyOptionsEntry::ApplyOptionsEntry(const Vector&  position, 
+                                     const wstring& stringIn, 
+                                     Menu*          menu, 
+                                     const string&  submenuToSwitchTo, 
+                                     const   Font*  font) :
+    SubmenuEntry(position, stringIn, menu, submenuToSwitchTo, font)
+{
+}
+
+void ApplyOptionsEntry::click()
+{
+    //save config settings
+    for each_const(Entries, m_menu->m_currentSubmenu->m_entries, iter)
+    {
+        string id = (*iter)->getValueID();
+
+        if (id == "resolution")
+        {
+            Config::instance->m_video.width = Video::instance->getModes()[(*iter)->getCurrentValueIdx()].first;
+            Config::instance->m_video.height = Video::instance->getModes()[(*iter)->getCurrentValueIdx()].second;
+        }
+        else if (id == "fullscreen")
+        {
+            Config::instance->m_video.fullscreen = (*iter)->getCurrentValueIdx();
+        }
+    }
+    
+    m_menu->setState(State::Quit);  //setSubmenu(m_submenuToSwitchTo);
+    g_needsToReload = true;
 }
 
 void Submenu::control()
@@ -233,21 +285,30 @@ void Menu::loadMenu()
 
     submenu = new Submenu(submenuPosition);
     
-    IntPairSet resolutions = Video::instance->getModes();
-    Value valueRes("resolution", L"lolol");
-    for each_const(IntPairSet, resolutions, iter)
+    IntPairVector resolutions = Video::instance->getModes();
+    Value valueRes("resolution");
+ 
+    for (size_t i = 0; i < resolutions.size(); i++)
     {
-        valueRes.addAnother(wcast<wstring>(iter->first) + L"x" + wcast<wstring>(iter->second));
+        if (Video::instance->getResolution() == resolutions[i])
+        {
+            valueRes.m_current = i;
+        }
+        valueRes.addAnother(wcast<wstring>(resolutions[i].first) + L"x" + wcast<wstring>(resolutions[i].second));
     }
 
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_RESOLUTION), valueRes, m_font));
 
-    Value valueFS("fullscreen", language->get(TEXT_TRUE));
+    Value valueFS("fullscreen");
     valueFS.addAnother(language->get(TEXT_FALSE));
+    valueFS.addAnother(language->get(TEXT_TRUE));
+    valueFS.m_current = Config::instance->m_video.fullscreen;
 
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FULLSCREEN), valueFS, m_font));
 
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "main", m_font));
+    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "options", m_font));
+
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "main", m_font));    
 
     m_submenus["options"] = submenu;
 }

@@ -60,7 +60,7 @@ public:
     void enableMaterial(const Material* material) const;
     void disableMaterial(const Material* material) const;
     IntPair getResolution() const;
-    IntPairSet getModes() const;
+    IntPairVector getModes() const;
 
     unsigned int newList();
     Texture* loadTexture(const string& name);

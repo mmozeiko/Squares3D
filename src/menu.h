@@ -24,7 +24,7 @@ public:
 
     wstring getCurrent();
     void addAnother(const wstring& string);
-    Value(const string& id, const std::wstring& string);
+    Value(const string& id);
     void activateNext();
 };
 
@@ -40,6 +40,8 @@ public:
     Entry(const Vector& position, const wstring& stringIn, const Font* font);
     virtual void click() = 0;
     virtual wstring getString() = 0;
+    virtual string getValueID();
+    virtual size_t getCurrentValueIdx();
 };
 
 class OptionEntry : public Entry
@@ -47,6 +49,8 @@ class OptionEntry : public Entry
 public: 
     OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font);
     wstring getString();
+    string getValueID();
+    size_t getCurrentValueIdx();
     void click();
 private:
     Value m_value;
@@ -78,10 +82,21 @@ public:
                  const   Font*  font);
     wstring getString();
     void click();
-private:
+protected:
     Menu*  m_menu;
     string m_submenuToSwitchTo;
 
+};
+
+class ApplyOptionsEntry : public SubmenuEntry
+{
+public: 
+    ApplyOptionsEntry(const Vector&  position, 
+                      const wstring& stringIn, 
+                      Menu*          menu, 
+                      const string&  submenuToSwitchTo, 
+                      const   Font*  font);
+    void click();
 };
 
 
@@ -123,10 +138,10 @@ public:
     Music*      m_music;
     Camera*     m_camera;
     const Font* m_font;
+    Submenu*    m_currentSubmenu;
 
 private:
     State::Type  m_state;
-    Submenu*     m_currentSubmenu;
     Submenus     m_submenus;
     Face*        m_backGround;
     Texture*     m_backGroundTexture;

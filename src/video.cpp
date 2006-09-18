@@ -75,8 +75,8 @@ Video::Video() : m_haveShaders(false)
          << " * Vendor      : " << glGetString(GL_VENDOR) << endl
          << " * Renderer    : " << glGetString(GL_RENDERER) << endl;
     clog << " * Video modes : ";
-    IntPairSet m = getModes();
-    for each_const(IntPairSet, m, i)
+    IntPairVector m = getModes();
+    for each_const(IntPairVector, m, i)
     {
         clog << i->first << 'x' << i->second << ' ';
     }
@@ -583,12 +583,12 @@ unsigned int Video::newList()
     return list;
 }
 
-IntPairSet Video::getModes() const
+IntPairVector Video::getModes() const
 {
     static const int commonWidth[] = { 640, 800, 1024, 1280, 1440, 1600, 1680};
     static const IntSet commonWidthSet(commonWidth, commonWidth + sizeOfArray(commonWidth));
 
-    static IntPairSet modes;
+    static IntPairVector modes;
     static bool first = true;
 
     if (first)
@@ -603,7 +603,7 @@ IntPairSet Video::getModes() const
                  list[i].Height >= 480 &&
                  foundInSet(commonWidthSet, list[i].Width))
             {
-                modes.insert(make_pair(list[i].Width, list[i].Height));
+                modes.push_back(make_pair(list[i].Width, list[i].Height));
             }
         }
         first = false;

@@ -39,6 +39,7 @@ typedef map<string, int>          IntMap;
 typedef map<string, unsigned int> UIntMap;
 typedef pair<int, int>            IntPair;
 typedef set<IntPair>              IntPairSet;
+typedef vector<IntPair>           IntPairVector;
 typedef set<unsigned int>         UIntSet;
 typedef set<int>                  IntSet;
 typedef vector<int>               IntVector;
