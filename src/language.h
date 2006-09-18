@@ -14,6 +14,7 @@ enum TextType
     TEXT_QUIT_GAME,
     TEXT_RESOLUTION,
     TEXT_FULLSCREEN,
+    TEXT_BACK,
     TEXT_TRUE,
     TEXT_FALSE,
 

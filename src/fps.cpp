@@ -13,6 +13,13 @@ FPS::FPS(const Timer& timer, const Font* font, const Vector& color)
 {
 }
 
+void FPS::reset()
+{
+    m_time = m_timer.read();
+    m_frames = 0;
+    m_totalFrames = 0;
+}
+
 void FPS::update()
 {
     m_frames++;

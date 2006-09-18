@@ -36,7 +36,7 @@ Game::Game()
     m_input = new Input();
     //
 
-    m_state = new World();
+    m_state = new Intro();
 
     m_network->createClient();
     m_network->connect("localhost");
@@ -143,7 +143,7 @@ void Game::run()
         m_audio->update();
         m_input->update();
         m_network->update();
-        
+
         m_state->control();
 
 #ifdef MAKE_MOVIE
@@ -164,10 +164,24 @@ void Game::run()
         m_state->updateStep(accum);
         accum = 0.0f;
 #else
-       while (accum >= DT)
+        if (accum >= 4*DT)
         {
-            m_state->updateStep(DT);
-            accum -= DT;
+            // hmmm.. not a nice HACK.
+            while (accum >= 4*DT)
+            {
+                m_state->updateStep(4*DT);
+                accum -= 4*DT;
+            }
+            m_state->updateStep(accum);
+            accum = 0.0f;
+        }
+        else
+        {
+            while (accum >= DT)
+            {
+                m_state->updateStep(DT);
+                accum -= DT;
+            }
         }
 #endif
 
@@ -192,6 +206,7 @@ void Game::run()
 #endif
 
         State::Type newState = m_state->progress();
+
         if (newState == State::Quit)
         {
             running = false;
@@ -200,6 +215,7 @@ void Game::run()
         {
             delete m_state;
             timer.reset();
+            fps.reset();
             currentTime = accum = 0.0f;
             m_state = switchState(newState);
         }

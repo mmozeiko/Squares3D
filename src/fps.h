@@ -14,6 +14,7 @@ public:
     void update();
     void render() const;
 
+    void reset();
     unsigned int frames() const;
     float time() const;
     float fps() const;

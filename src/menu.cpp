@@ -15,8 +15,9 @@ void Value::addAnother(const wstring& string)
     m_values.push_back(string);
 }
 
-Value::Value(const wstring& string) :
-    m_current(0)
+Value::Value(const string& id, const wstring& string) :
+    m_current(0),
+    m_id(id)
 {
     m_values.push_back(string);
 }
@@ -73,25 +74,53 @@ void OptionEntry::click()
     m_value.activateNext();
 }
 
-StartGameEntry::StartGameEntry(const Vector& position, const wstring& stringIn, Menu* menu, const Font* font) : 
+GameEntry::GameEntry(const Vector& position, 
+                     const wstring& stringIn, 
+                     Menu* menu, 
+                     State::Type stateToSwitchTo, 
+                     const Font* font) : 
     Entry(position, stringIn, font),
-    m_menu(menu)
+    m_menu(menu),
+    m_stateToSwitchTo(stateToSwitchTo)
 {
 }
 
-wstring StartGameEntry::getString()
+wstring GameEntry::getString()
 {
     return m_string;
 }    
 
-void StartGameEntry::click()
+void GameEntry::click()
 {
-    m_menu->m_goToGame = true;
+    m_menu->setState(m_stateToSwitchTo);
+}
+
+SubmenuEntry::SubmenuEntry(const Vector&  position, 
+                           const wstring& stringIn, 
+                           Menu*          menu, 
+                           const string&  submenuToSwitchTo, 
+                           const   Font*  font) : 
+    Entry(position, stringIn, font),
+    m_menu(menu),
+    m_submenuToSwitchTo(submenuToSwitchTo)
+{
+}
+
+wstring SubmenuEntry::getString()
+{
+    return m_string;
+}    
+
+void SubmenuEntry::click()
+{
+    m_menu->setSubmenu(m_submenuToSwitchTo);
 }
 
 void Submenu::control()
 {
     bool onAnyEntry = false;
+    bool left_button = (Input::instance->popButton() == GLFW_MOUSE_BUTTON_LEFT);
+
     for each_const(Entries, m_entries, iter)
     {
         const Mouse& mouse = Input::instance->mouse();
@@ -102,10 +131,11 @@ void Submenu::control()
         {
             onAnyEntry = true;
             m_activeEntry = (*iter);
-            if (Input::instance->popButton() == GLFW_MOUSE_BUTTON_1)
+            if (left_button)
             {
                 m_activeEntry->click();
             }
+            break;
         }
     }
     if (!onAnyEntry)
@@ -114,8 +144,9 @@ void Submenu::control()
     }
 }
 
-Submenu::Submenu() : 
-    m_activeEntry(NULL)
+Submenu::Submenu(Vector& lastEntryPos) : 
+    m_activeEntry(NULL),
+    m_lastEntryPos(lastEntryPos)
 {
 }
 
@@ -130,6 +161,7 @@ Submenu::~Submenu()
 void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
+    m_lastEntryPos -= Vector(0, static_cast<float>(entry->m_font->getHeight()) + 2, 0);
 }
 
 void Submenu::render() const
@@ -152,10 +184,9 @@ void Submenu::render() const
     }
 }
 
-Menu::Menu():
+Menu::Menu() :
     m_font(Font::get("Arial_32pt_bold")),
-    m_goToGame(false),
-    m_quitGame(false)
+    m_state(State::Current)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -175,20 +206,12 @@ Menu::Menu():
 
     loadMenu();
     Input::instance->startButtonBuffer();
+    Input::instance->startKeyBuffer();
 }
 
 void Menu::loadMenu()
 {
     Language* language = Language::instance;
-
-    Value value(language->get(TEXT_TRUE));
-    value.addAnother(language->get(TEXT_FALSE));
-
-    vector<wstring> entryStrings;
-    entryStrings.push_back(language->get(TEXT_START_GAME));
-    entryStrings.push_back(language->get(TEXT_OPTIONS));
-    entryStrings.push_back(language->get(TEXT_CREDITS));
-    entryStrings.push_back(language->get(TEXT_QUIT_GAME));
 
     int resX = Video::instance->getResolution().first;
     int resY = Video::instance->getResolution().second;
@@ -197,34 +220,46 @@ void Menu::loadMenu()
                                     static_cast<float>(resY) / 2, 
                                     0);
 
-    Submenu* submenu = new Submenu();
+    Submenu* submenu = new Submenu(submenuPosition);
 
-    for (int i = 0; i < 4; i++)
-    {
-        if (i == 0)
-        {
-            submenu->addEntry(new StartGameEntry(submenuPosition, entryStrings[i], this, m_font));
-        }
-        else
-        {
-            submenu->addEntry(new OptionEntry(submenuPosition, entryStrings[i], value, m_font));
-        }
-        submenuPosition -= Vector(0, static_cast<float>(m_font->getHeight()) + 2, 0);
-    }
+    submenu->addEntry(new GameEntry(submenu->m_lastEntryPos, language->get(TEXT_START_GAME), this, State::World, m_font));
+    
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_OPTIONS), this, "options", m_font));
+
+    submenu->addEntry(new GameEntry(submenu->m_lastEntryPos, language->get(TEXT_QUIT_GAME), this, State::Quit, m_font));
 
     m_currentSubmenu = submenu;
+    m_submenus["main"] = submenu;
 
-    m_submenus.push_back(submenu);
+    submenu = new Submenu(submenuPosition);
     
+    IntPairSet resolutions = Video::instance->getModes();
+    Value valueRes("resolution", L"lolol");
+    for each_const(IntPairSet, resolutions, iter)
+    {
+        valueRes.addAnother(wcast<wstring>(iter->first) + L"x" + wcast<wstring>(iter->second));
+    }
+
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_RESOLUTION), valueRes, m_font));
+
+    Value valueFS("fullscreen", language->get(TEXT_TRUE));
+    valueFS.addAnother(language->get(TEXT_FALSE));
+
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FULLSCREEN), valueFS, m_font));
+
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "main", m_font));
+
+    m_submenus["options"] = submenu;
 }
 
 Menu::~Menu()
 {
+    Input::instance->endKeyBuffer();
     Input::instance->endButtonBuffer();
 
     for each_const(Submenus, m_submenus, iter)
     {
-        delete *iter;
+        delete iter->second;
     }
 
     delete m_backGround;
@@ -232,32 +267,22 @@ Menu::~Menu()
 
 State::Type Menu::progress() const
 {
-    if (m_goToGame)
-    {
-        return State::World;
-    }
-    if (m_quitGame)
-    {
-        return State::Quit;
-    }
+    return m_state;
+}
 
-    return State::Current;
+void Menu::setState(State::Type state)
+{
+     m_state = state;
+}
+
+void Menu::setSubmenu(string& submenuToSwitchTo)
+{
+    m_currentSubmenu = m_submenus.find(submenuToSwitchTo)->second;
 }
 
 void Menu::control()
 {
-    for each_const(Submenus, m_submenus, iter)
-    {
-        (*iter)->control();
-    }
-    if (Input::instance->key(GLFW_KEY_ENTER))
-    {
-        m_goToGame = true;
-    }
-    if (Input::instance->key(GLFW_KEY_ESC))
-    {
-        m_quitGame = true;
-    }
+    m_currentSubmenu->control();
 }
 
 void Menu::update(float delta)

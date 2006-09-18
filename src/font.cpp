@@ -210,7 +210,7 @@ void Font::begin(bool shadowed, float shadowWidth) const
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(viewport[0], viewport[2], viewport[1], viewport[3]);
+    glOrtho(viewport[0], viewport[2], viewport[1], viewport[3], -1.0f, 1.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
