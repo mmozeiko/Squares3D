@@ -73,22 +73,23 @@ void OptionEntry::click()
     m_value.activateNext();
 }
 
-MenuEntry::MenuEntry(const Vector& position, const wstring& stringIn, const Font* font) : 
-    Entry(position, stringIn, font)
+StartGameEntry::StartGameEntry(const Vector& position, const wstring& stringIn, Menu* menu, const Font* font) : 
+    Entry(position, stringIn, font),
+    m_menu(menu)
 {
 }
 
-wstring MenuEntry::getString()
+wstring StartGameEntry::getString()
 {
     return m_string;
 }    
 
-void MenuEntry::click()
+void StartGameEntry::click()
 {
-    //m_value.activateNext();
+    m_menu->m_goToGame = true;
 }
 
-void SubMenu::control()
+void Submenu::control()
 {
     bool onAnyEntry = false;
     for each_const(Entries, m_entries, iter)
@@ -113,12 +114,12 @@ void SubMenu::control()
     }
 }
 
-SubMenu::SubMenu() : 
+Submenu::Submenu() : 
     m_activeEntry(NULL)
 {
 }
 
-SubMenu::~SubMenu()
+Submenu::~Submenu()
 {
     for each_const(Entries, m_entries, iter)
     {
@@ -126,12 +127,12 @@ SubMenu::~SubMenu()
     }
 }
 
-void SubMenu::addEntry(Entry* entry)
+void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
 }
 
-void SubMenu::render() const
+void Submenu::render() const
 {
     for each_const(Entries, m_entries, iter)
     {
@@ -192,21 +193,28 @@ void Menu::loadMenu()
     int resX = Video::instance->getResolution().first;
     int resY = Video::instance->getResolution().second;
 
-    Vector subMenuPosition = Vector(static_cast<float>(resX) / 2,
+    Vector submenuPosition = Vector(static_cast<float>(resX) / 2,
                                     static_cast<float>(resY) / 2, 
                                     0);
 
-    SubMenu* subMenu = new SubMenu();
+    Submenu* submenu = new Submenu();
 
     for (int i = 0; i < 4; i++)
     {
-        subMenu->addEntry(new OptionEntry(subMenuPosition, entryStrings[i], value, m_font));
-        subMenuPosition -= Vector(0, static_cast<float>(m_font->getHeight()) + 2, 0);
+        if (i == 0)
+        {
+            submenu->addEntry(new StartGameEntry(submenuPosition, entryStrings[i], this, m_font));
+        }
+        else
+        {
+            submenu->addEntry(new OptionEntry(submenuPosition, entryStrings[i], value, m_font));
+        }
+        submenuPosition -= Vector(0, static_cast<float>(m_font->getHeight()) + 2, 0);
     }
 
-    m_currentSubMenu = subMenu;
+    m_currentSubmenu = submenu;
 
-    m_subMenus.push_back(subMenu);
+    m_submenus.push_back(submenu);
     
 }
 
@@ -214,7 +222,7 @@ Menu::~Menu()
 {
     Input::instance->endButtonBuffer();
 
-    for each_const(SubMenus, m_subMenus, iter)
+    for each_const(Submenus, m_submenus, iter)
     {
         delete *iter;
     }
@@ -238,7 +246,7 @@ State::Type Menu::progress() const
 
 void Menu::control()
 {
-    for each_const(SubMenus, m_subMenus, iter)
+    for each_const(Submenus, m_submenus, iter)
     {
         (*iter)->control();
     }
@@ -275,7 +283,7 @@ void Menu::render() const
     glBindTexture(GL_TEXTURE_2D, m_font->m_texture);
     glEnable(GL_TEXTURE_2D);
 
-    m_currentSubMenu->render();
+    m_currentSubmenu->render();
 
     m_font->end();
 }

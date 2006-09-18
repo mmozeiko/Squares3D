@@ -12,6 +12,7 @@ class Game;
 class Font;
 struct Face;
 class Texture;
+class Menu;
 
 typedef vector<wstring> Values;
 class Value
@@ -49,31 +50,43 @@ public:
     void click();
 };
 
-class MenuEntry : public Entry
+class StartGameEntry : public Entry
 {
 public: 
-    MenuEntry(const Vector& position, const wstring& stringIn, const Font* font);
+    StartGameEntry(const Vector& position, const wstring& stringIn, Menu* menu, const Font* font);
     wstring getString();
     void click();
+
+    Menu* m_menu;
 };
+
+//class MenuEntry : public Entry
+//{
+//public: 
+//    MenuEntry(const Vector& position, const wstring& stringIn, Submenu* submenu, const Font* font);
+//    wstring getString();
+//    void click();
+//
+//    Menu* m_menu;
+//};
 
 typedef vector<Entry*> Entries;
 
-class SubMenu
+class Submenu
 {
 public:
 
     Entries m_entries;
     Entry*  m_activeEntry;
 
-    SubMenu();
-    ~SubMenu();
+    Submenu();
+    ~Submenu();
     void addEntry(Entry* entry);
     void render() const;
     void control();
 };
 
-typedef vector<SubMenu*> SubMenus;
+typedef vector<Submenu*> Submenus;
 
 class Menu : public State
 {
@@ -89,15 +102,14 @@ public:
     void loadMenu();
     State::Type progress() const;
 
+    bool        m_goToGame;
     Music*      m_music;
     Camera*     m_camera;
-    Game*       m_game;
     const Font* m_font;
 
 private:
-    SubMenu*     m_currentSubMenu;
-    SubMenus     m_subMenus;
-    bool         m_goToGame;
+    Submenu*     m_currentSubmenu;
+    Submenus     m_submenus;
     bool         m_quitGame;
     Face*        m_backGround;
     Texture*     m_backGroundTexture;
