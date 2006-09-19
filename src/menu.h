@@ -22,10 +22,17 @@ public:
     size_t m_current;
     string m_id;
 
+    Value(const string& id);
     wstring getCurrent();
     void addAnother(const wstring& string);
-    Value(const string& id);
     void activateNext();
+};
+
+class BoolValue : public Value
+{
+public:
+    BoolValue(const string& id); 
+    void addAnother(const wstring& string);
 };
 
 class Entry
@@ -41,7 +48,9 @@ public:
     virtual void click() = 0;
     virtual wstring getString() = 0;
     virtual string getValueID();
+    virtual wstring getValue();
     virtual size_t getCurrentValueIdx();
+    virtual void reset() {}
 };
 
 class OptionEntry : public Entry
@@ -51,7 +60,9 @@ public:
     wstring getString();
     string getValueID();
     size_t getCurrentValueIdx();
+    wstring getValue();
     void click();
+    void reset();
 private:
     Value m_value;
 };
@@ -132,7 +143,7 @@ public:
     void render() const;
     void loadMenu();
     void setState(State::Type state);
-    void setSubmenu(string& submenuToSwitchTo);
+    void setSubmenu(const string& submenuToSwitchTo);
     State::Type progress() const;
 
     Music*      m_music;
@@ -140,9 +151,9 @@ public:
     const Font* m_font;
     Submenu*    m_currentSubmenu;
 
+    Submenus     m_submenus;
 private:
     State::Type  m_state;
-    Submenus     m_submenus;
     Face*        m_backGround;
     Texture*     m_backGroundTexture;
 

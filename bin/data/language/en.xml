@@ -17,9 +17,17 @@
   <item name="BACK"                  value="Back"/>
   <item name="SAVE"                  value="Apply Settings"/>
   <!-- Options -->
-  <item name="RESOLUTION"            value="Resolution"/>
-  <item name="FULLSCREEN"            value="Fullscreen"/>
   <item name="TRUE"                  value="Yes"/>
   <item name="FALSE"                 value="No"/>
-  
+  <item name="RESOLUTION"            value="Resolution"/>
+  <item name="FULLSCREEN"            value="Fullscreen"/>
+  <item name="VSYNC"                 value="Vertical Sync"/>
+  <item name="FSAA"                  value="Antialiasing"/>
+  <item name="SHADERS"               value="Use Shaders"/>
+  <item name="SHADOWTYPE"            value="Use Shadows"/>
+  <item name="SHADOWMAPSIZE"         value="Shadowmap Size"/>
+  <item name="SHOWFPS"               value="Show FPS"/>
+  <item name="AUDIO"                 value="Audio On"/>
+  <item name="LANGUAGE"              value="Language"/>
+
 </xml>  

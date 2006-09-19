@@ -8,16 +8,16 @@ static const float BALL_KICK_SECS = 5.0f;
 static const float FADE_OUT_SECS = 16.0f;
 static const float MENU_SHOW_SECS = 18.0f;
 
-static const float PIECE_MASS = 1.0f;
+static const float PIECE_MASS = 0.5f;
 static const float PIECE_SIZEX = 0.3f;
 static const float PIECE_SIZEY = 0.3f;
-static const float PIECE_SIZEZ = 0.03f;
+static const float PIECE_SIZEZ = 0.05f;
 
-static const int PIECE_XCOUNT = 10;
+static const int PIECE_XCOUNT = 11;
 static const int PIECE_YCOUNT = 6;
 
 static const float BALL_MASS = 5000.0f;
-static const float BALL_R = 0.1f;
+static const float BALL_R = 0.5f;
 
 static void OnForce(const NewtonBody* body)
 {
@@ -45,7 +45,7 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_fon
         {
             NewtonBody* body = NewtonCreateBody(m_newtonWorld, collision);
             Matrix matrix = Matrix::translate(
-                Vector(-PIECE_XCOUNT*PIECE_SIZEX/2+PIECE_SIZEX/2 + x*PIECE_SIZEX + (y%2 ? PIECE_SIZEX/2.0f : 0), 
+                Vector(-PIECE_XCOUNT*PIECE_SIZEX/2 + x*PIECE_SIZEX + (y%2 ? PIECE_SIZEX/2.0f : 0), 
                        PIECE_SIZEY/2.0f + y * PIECE_SIZEY,
                        0.0f)
             );
@@ -78,9 +78,9 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_fon
             for (int k=0; k<4; k++)
             {
                 float tmpX = static_cast<float>(x);
-                if ((y&1)==1)
+                if ((y&1)==0)
                 {
-                    tmpX += 0.5f;
+                    tmpX -= 0.5f;
                 }
                 float u = 1.0f-(tmpX+uv[k][0])/PIECE_XCOUNT;
                 float v = (y+uv[k][1])*maxv/PIECE_YCOUNT;
@@ -94,7 +94,7 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_fon
     collision = NewtonCreateSphere(m_newtonWorld, BALL_R, BALL_R, BALL_R, NULL);
     m_ball_body = NewtonCreateBody(m_newtonWorld, collision);
 
-    Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 2.0f));
+    Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 3.0f));
     NewtonBodySetMatrix(m_ball_body, matrix.m);
 
     float inertia[3];
@@ -188,9 +188,7 @@ Intro::~Intro()
 
 void Intro::control()
 {
-    m_nextState = Input::instance->popButton() != -1;
-
-    if (Input::instance->popKey() != -1 && m_timePassed < FADE_OUT_SECS)
+    if ((Input::instance->popKey() != -1 || Input::instance->popButton() != -1) && m_timePassed < FADE_OUT_SECS)
     {
         if (m_timePassed > FADE_IN_SECS)
         {
@@ -204,9 +202,9 @@ void Intro::control()
     }
     if (m_timePassed > BALL_KICK_SECS && !m_ballKicked)
     {
-        Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 2.0f));
+        Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 3.0f));
         NewtonBodySetMatrix(m_ball_body, matrix.m);
-        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 5.5f, -3.5f).v);
+        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -2.5f).v);
         NewtonWorldUnfreezeBody(m_newtonWorld, m_ball_body);
         
         m_ballKicked = true;
@@ -286,12 +284,16 @@ void Intro::render() const
     
     // ball
 
+    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE); 
     glPushMatrix();
     glMultMatrixf(m_ball_matrix.m);
     m_ballTex->begin();
     Video::instance->renderSphere(BALL_R);
     m_ballTex->end();
     glPopMatrix();
+    glDisable(GL_CULL_FACE); 
+    glFrontFace(GL_CW);
 
     // fade in
     if (m_timePassed < FADE_IN_SECS)

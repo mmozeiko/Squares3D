@@ -47,6 +47,19 @@ void Value::activateNext()
     }
 }
 
+BoolValue::BoolValue(const string& id) :
+    Value(id)
+{
+    m_values.push_back(Language::instance->get(TEXT_FALSE));
+    m_values.push_back(Language::instance->get(TEXT_TRUE));
+}
+
+void BoolValue::addAnother(const wstring& string)
+{
+    assert(false);
+}
+
+
 Entry::Entry(const Vector& position, const wstring& stringIn, const Font* font) :
     m_font(font),
     m_position(position),
@@ -69,6 +82,11 @@ size_t Entry::getCurrentValueIdx()
     return -1;
 }
 
+wstring Entry::getValue()
+{
+    return L"";
+}
+
 OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) : 
     Entry(position, stringIn, font),
     m_value(value)
@@ -78,6 +96,11 @@ OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const 
 wstring OptionEntry::getString()
 {
     return m_string +  L": " + m_value.getCurrent();
+}
+
+wstring OptionEntry::getValue()
+{
+    return m_value.getCurrent();
 }
 
 string OptionEntry::getValueID()
@@ -93,6 +116,68 @@ size_t OptionEntry::getCurrentValueIdx()
 void OptionEntry::click()
 {
     m_value.activateNext();
+}
+
+void OptionEntry::reset()
+{
+    // Sync option values to values in Config object
+
+    if (m_value.m_id == "resolution")
+    {
+        const IntPairVector resolutions = Video::instance->getModes();
+        for (size_t i = 0; i < resolutions.size(); i++)
+        {
+            if (Video::instance->getResolution() == resolutions[i])
+            {
+                m_value.m_current = i;
+                break;
+            }
+        }
+    }
+    else if (m_value.m_id == "fullscreen")
+    {
+        m_value.m_current = Config::instance->m_video.fullscreen ? 1 : 0;
+    }
+    else if (m_value.m_id == "vsync")
+    {
+        m_value.m_current = Config::instance->m_video.vsync ? 1 : 0;
+    }
+    else if (m_value.m_id == "fsaa_samples")
+    {
+        m_value.m_current = Config::instance->m_video.samples / 2;
+    }
+    else if (m_value.m_id == "use_shaders")
+    {
+        m_value.m_current = Config::instance->m_video.use_shaders ? 1 : 0;
+    }
+    else if (m_value.m_id == "shadow_type")
+    {
+        m_value.m_current = Config::instance->m_video.shadow_type ? 1 : 0;
+    }
+    else if (m_value.m_id == "shadowmap_size")
+    {
+        m_value.m_current = Config::instance->m_video.shadowmap_size / 1024;
+    }
+    else if (m_value.m_id == "show_fps")
+    {
+        m_value.m_current = Config::instance->m_video.show_fps ? 1 : 0;
+    }
+    else if (m_value.m_id == "audio")
+    {
+        m_value.m_current = Config::instance->m_audio.enabled ? 1 : 0;
+    }
+    else if (m_value.m_id == "language")
+    {
+        StringVector languages = Language::instance->getAvailable();
+        for (size_t i = 0; i < languages.size(); i++)
+        {
+            if (languages[i] == Config::instance->m_misc.language)
+            {
+                m_value.m_current = i;
+            }
+        }
+    }
+
 }
 
 GameEntry::GameEntry(const Vector& position, 
@@ -135,6 +220,15 @@ wstring SubmenuEntry::getString()
 void SubmenuEntry::click()
 {
     m_menu->setSubmenu(m_submenuToSwitchTo);
+
+    if (m_submenuToSwitchTo == "options")
+    {
+        Entries& entries = m_menu->m_submenus["options"]->m_entries;
+        for each_(Entries, entries, iter)
+        {
+            (*iter)->reset();
+        }
+    }
 }
 
 ApplyOptionsEntry::ApplyOptionsEntry(const Vector&  position, 
@@ -155,16 +249,52 @@ void ApplyOptionsEntry::click()
 
         if (id == "resolution")
         {
-            Config::instance->m_video.width = Video::instance->getModes()[(*iter)->getCurrentValueIdx()].first;
-            Config::instance->m_video.height = Video::instance->getModes()[(*iter)->getCurrentValueIdx()].second;
+            const IntPair mode = Video::instance->getModes()[(*iter)->getCurrentValueIdx()];
+            Config::instance->m_video.width = mode.first;
+            Config::instance->m_video.height = mode.second;
         }
         else if (id == "fullscreen")
         {
-            Config::instance->m_video.fullscreen = (*iter)->getCurrentValueIdx();
+            Config::instance->m_video.fullscreen = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "vsync")
+        {
+            Config::instance->m_video.vsync = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "fsaa_samples")
+        {
+            size_t idx = (*iter)->getCurrentValueIdx();
+            Config::instance->m_video.samples = 2 * static_cast<int>(idx);
+        }
+        else if (id == "use_shaders")
+        {
+            Config::instance->m_video.use_shaders = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "shadow_type")
+        {
+            Config::instance->m_video.shadow_type = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "shadowmap_size")
+        {
+            size_t idx = (*iter)->getCurrentValueIdx();
+            Config::instance->m_video.shadowmap_size = 512 << idx;
+        }
+        else if (id == "show_fps")
+        {
+            Config::instance->m_video.show_fps = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "audio")
+        {
+            Config::instance->m_audio.enabled = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "language")
+        {
+            StringVector languages = Language::instance->getAvailable();
+            Config::instance->m_misc.language = languages[(*iter)->getCurrentValueIdx()];
         }
     }
     
-    m_menu->setState(State::Quit);  //setSubmenu(m_submenuToSwitchTo);
+    m_menu->setState(State::Quit);
     g_needsToReload = true;
 }
 
@@ -230,8 +360,7 @@ void Submenu::render() const
         {
             glColor3fv(Vector::Zero.v);
         }
-        (*iter)->m_font->render((*iter)->getString(), 
-                                Font::Align_Center);
+        (*iter)->m_font->render((*iter)->getString(), Font::Align_Center);
         glPopMatrix();   
     }
 }
@@ -272,6 +401,8 @@ void Menu::loadMenu()
                                     static_cast<float>(resY) / 2, 
                                     0);
 
+    // Main Submenu
+
     Submenu* submenu = new Submenu(submenuPosition);
 
     submenu->addEntry(new GameEntry(submenu->m_lastEntryPos, language->get(TEXT_START_GAME), this, State::World, m_font));
@@ -283,6 +414,8 @@ void Menu::loadMenu()
     m_currentSubmenu = submenu;
     m_submenus["main"] = submenu;
 
+    // Options Submenu
+
     submenu = new Submenu(submenuPosition);
     
     IntPairVector resolutions = Video::instance->getModes();
@@ -290,21 +423,47 @@ void Menu::loadMenu()
  
     for (size_t i = 0; i < resolutions.size(); i++)
     {
-        if (Video::instance->getResolution() == resolutions[i])
-        {
-            valueRes.m_current = i;
-        }
         valueRes.addAnother(wcast<wstring>(resolutions[i].first) + L"x" + wcast<wstring>(resolutions[i].second));
     }
 
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_RESOLUTION), valueRes, m_font));
 
-    Value valueFS("fullscreen");
-    valueFS.addAnother(language->get(TEXT_FALSE));
-    valueFS.addAnother(language->get(TEXT_TRUE));
-    valueFS.m_current = Config::instance->m_video.fullscreen;
+    BoolValue valFS("fullscreen");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FULLSCREEN), valFS, m_font));
 
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FULLSCREEN), valueFS, m_font));
+    BoolValue valVS("vsync");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_VSYNC), valVS, m_font));
+
+    Value valFSAA("fsaa_samples");
+    valFSAA.addAnother(L"0");
+    valFSAA.addAnother(L"2");
+    valFSAA.addAnother(L"4");
+    valFSAA.addAnother(L"6");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FSAA), valFSAA, m_font));
+
+    BoolValue valSh("use_shaders");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHADERS), valSh, m_font));
+
+    BoolValue valShad("shadow_type");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHADOWTYPE), valShad, m_font));
+
+    Value valShadS("shadowmap_size");
+    valShadS.addAnother(L"512");
+    valShadS.addAnother(L"1024");
+    valShadS.addAnother(L"2048");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHADOWMAPSIZE), valShadS, m_font));
+
+    BoolValue valFPS("show_fps");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHOWFPS), valFPS, m_font));
+
+    BoolValue valAud("audio");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_AUDIO), valAud, m_font));
+
+    Value valLang("language");
+    valLang.addAnother(L"EN");
+    valLang.addAnother(L"LAT");
+    valLang.addAnother(L"RUS");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_LANGUAGE), valLang, m_font));
 
     submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "options", m_font));
 
@@ -336,7 +495,7 @@ void Menu::setState(State::Type state)
      m_state = state;
 }
 
-void Menu::setSubmenu(string& submenuToSwitchTo)
+void Menu::setSubmenu(const string& submenuToSwitchTo)
 {
     m_currentSubmenu = m_submenus.find(submenuToSwitchTo)->second;
 }

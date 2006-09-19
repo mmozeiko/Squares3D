@@ -44,6 +44,8 @@ Implement menu system.
 
 Done:
 =====
+2006-09-18 Intro screen with fading in/out.
+           Localization texts in xml files, unicode font rendering.
 2006-09-13 Implement field middle line detecting.
 2006-09-13 Port coach class and name it "Referee".
 2006-09-13 Implement game Scoreboard.

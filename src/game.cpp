@@ -40,8 +40,11 @@ Game::Game()
 
     if (g_needsToReload)
     {
-        m_state = new Menu();
         g_needsToReload = false;
+
+        Menu* menu = new Menu();
+        menu->setSubmenu("options");
+        m_state = menu;
     }
     else
     {

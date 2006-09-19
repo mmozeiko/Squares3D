@@ -598,7 +598,7 @@ IntPairVector Video::getModes() const
         for (int i=0; i<count; i++)
         {
             float aspect = static_cast<float>(list[i].Width) / static_cast<float>(list[i].Height);
-            if ( (aspect == 4.0f/3.0f || aspect == 16.0f/9.0f || aspect == 16.0f/10.0f) &&
+            if ( (aspect == 4.0f/3.0f || aspect == 5.0f/4.0f || aspect == 16.0f/9.0f || aspect == 16.0f/10.0f) &&
                  (list[i].BlueBits + list[i].GreenBits + list[i].RedBits >= 24) &&
                  list[i].Height >= 480 &&
                  foundInSet(commonWidthSet, list[i].Width))
