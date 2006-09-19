@@ -11,7 +11,7 @@ static const float MENU_SHOW_SECS = 18.0f;
 static const float PIECE_MASS = 0.5f;
 static const float PIECE_SIZEX = 0.3f;
 static const float PIECE_SIZEY = 0.3f;
-static const float PIECE_SIZEZ = 0.05f;
+static const float PIECE_SIZEZ = 0.08f;
 
 static const int PIECE_XCOUNT = 11;
 static const int PIECE_YCOUNT = 6;

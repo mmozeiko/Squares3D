@@ -220,15 +220,6 @@ wstring SubmenuEntry::getString()
 void SubmenuEntry::click()
 {
     m_menu->setSubmenu(m_submenuToSwitchTo);
-
-    if (m_submenuToSwitchTo == "options")
-    {
-        Entries& entries = m_menu->m_submenus["options"]->m_entries;
-        for each_(Entries, entries, iter)
-        {
-            (*iter)->reset();
-        }
-    }
 }
 
 ApplyOptionsEntry::ApplyOptionsEntry(const Vector&  position, 
@@ -398,7 +389,7 @@ void Menu::loadMenu()
     int resY = Video::instance->getResolution().second;
 
     Vector submenuPosition = Vector(static_cast<float>(resX) / 2,
-                                    static_cast<float>(resY) / 2, 
+                                    static_cast<float>(resY) / 4 * 3, 
                                     0);
 
     // Main Submenu
@@ -498,11 +489,26 @@ void Menu::setState(State::Type state)
 void Menu::setSubmenu(const string& submenuToSwitchTo)
 {
     m_currentSubmenu = m_submenus.find(submenuToSwitchTo)->second;
+    if (submenuToSwitchTo == "options")
+    {
+        Entries& entries = m_submenus["options"]->m_entries;
+        for each_(Entries, entries, iter)
+        {
+            (*iter)->reset();
+        }
+    }
 }
 
 void Menu::control()
 {
     m_currentSubmenu->control();
+
+    //todo remove later
+    if (Input::instance->key(GLFW_KEY_ESC))
+    {
+        m_state = State::Quit;
+    }
+
 }
 
 void Menu::update(float delta)
