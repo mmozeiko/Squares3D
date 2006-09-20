@@ -23,6 +23,7 @@ Ball::Ball(Body* body) : m_body(body)
 {
     m_body->setCollideable(this);
     setPosition0();
+    //NewtonBodySetOmega(m_body->m_newtonBody, Vector(-10, 0, 0).v);
 
     NewtonCollision* ballCollision = (*m_body->m_collisions.begin())->m_newtonCollision;
 

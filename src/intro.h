@@ -8,7 +8,6 @@
 #include "video.h"
 #include <Newton.h>
 
-class Font;
 class Texture;
 
 class Intro : public State
@@ -28,8 +27,6 @@ private:
     float m_timePassed;
     bool  m_nextState;
     bool  m_ballKicked;
-
-    const Font* m_font;
 
     NewtonWorld* m_newtonWorld;
 

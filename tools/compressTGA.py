@@ -3,19 +3,25 @@ import os
 DATA_PATH = os.path.join("..", "bin", "data")
 
 def process(infile, outfile):
-  f = open(infile, "rb")
+  f = file(infile, "rb")
   data = f.read()
   f.close()
   if ord(data[2]) == 10: return
-  if ord(data[2]) != 2: raise "Unsupported TGA format!"
+  if ord(data[2]) != 2: 
+    print "Unsupported TGA format!"
+    return
   for offset in [1,3,4,5,6,7,8,9,10,11]:
     if ord(data[offset]) != 0:
-      raise "Unsupported TGA format!"
+      print "Unsupported TGA format!"
+      return
   
   X = ord(data[12]) + ord(data[13])*256
   Y = ord(data[14]) + ord(data[15])*256
   bpp = ord(data[16])
-  if (bpp != 24 and bpp != 32): raise "Unsupported TGA format!"
+  if (bpp != 24 and bpp != 32): 
+    print "Unsupported TGA format!"
+    return
+
   bpp /= 8
   
   newdata = [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, ord(data[12]), ord(data[13]), ord(data[14]), ord(data[15]), ord(data[16]), ord(data[17])]
@@ -72,18 +78,17 @@ def process(infile, outfile):
             
   if len(newdata)<len(data):
     newdata = [chr(c) for c in newdata]
-    f = open(outfile, "wb")
+    f = file(outfile, "wb")
     for c in newdata:
       f.write(c)
     f.close()
 
 for root, dir, files in os.walk(DATA_PATH):
-  for file in files:
-    name = os.path.join(root, file)
+  for f in files:
+    name = os.path.join(root, f)
     if name[-4:] == ".tga":
       print name
       try:
         process(name, name)
       except:
-        pass
-        #print "Exception:", e
+        print "Exception!"

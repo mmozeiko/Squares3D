@@ -21,7 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
 
 Video* System<Video>::instance = NULL;
 
-Video::Video() : m_haveShaders(false)
+Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false)
 {
     clog << "Initializing video." << endl;
 
@@ -101,6 +101,8 @@ Video::Video() : m_haveShaders(false)
         glfwGetDesktopMode(&desktop);
         glfwSetWindowPos((desktop.Width-width)/2, (desktop.Height-height)/2);
     }
+
+    Config::instance->m_video.samples = glfwGetWindowParam(GLFW_FSAA_SAMPLES);
 
     glfwDisable(GLFW_KEY_REPEAT);
     glfwEnable(GLFW_MOUSE_CURSOR);
@@ -518,8 +520,7 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
     }
 */
     if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
-        glfwExtensionSupported("GL_ARB_vertex_shader") &&
-        Config::instance->m_video.use_shaders)
+        glfwExtensionSupported("GL_ARB_vertex_shader"))
     {
         m_haveShaders = true;
 
@@ -562,10 +563,26 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glBindRenderbufferEXT);
     }
 
-    if ((!glfwExtensionSupported("GL_ARB_depth_texture") ||
-         !glfwExtensionSupported("GL_ARB_shadow") ||
-         !glfwExtensionSupported("GL_EXT_framebuffer_object")) &&
-        Config::instance->m_video.shadow_type == 1)
+    if (glfwExtensionSupported("GL_ARB_depth_texture") &&
+        glfwExtensionSupported("GL_ARB_shadow"))
+    {
+        m_haveShadows = true;
+        if (glfwExtensionSupported("GL_EXT_framebuffer_object"))
+        {
+            m_haveShadowsFB = true;
+        }
+        else
+        {
+            Config::instance->m_video.shadowmap_size = 512;
+        }
+    }
+
+     if (!m_haveShaders)
+    {
+        Config::instance->m_video.use_shaders = 0;
+    }
+
+    if (!m_haveShadows)
     {
         Config::instance->m_video.shadow_type = 0;
     }

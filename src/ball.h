@@ -1,6 +1,7 @@
 #ifndef __BALL_H__
 #define __BALL_H__
 
+#include "common.h"
 #include "body.h"
 
 class Referee;

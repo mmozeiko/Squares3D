@@ -1,7 +1,6 @@
 #include "intro.h"
 #include "input.h"
 #include "texture.h"
-#include "font.h"
 
 static const float FADE_IN_SECS = 2.0f;
 static const float BALL_KICK_SECS = 5.0f;
@@ -28,7 +27,7 @@ static void OnForce(const NewtonBody* body)
     NewtonBodyAddForce(body, gravity.v);
 }
 
-Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_font(Font::get("Arial_32pt_bold"))
+Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
 {
     m_newtonWorld = NewtonCreate(NULL, NULL);
     NewtonSetSolverModel(m_newtonWorld, 10);
@@ -162,7 +161,14 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_fon
             glNormal3fv(normals[i]);
             for (int k = 0; k < 4; k++)
             {
-                glTexCoord2fv(piece_uv[4*c+k].uv);
+                if (i==2)
+                {
+                    glTexCoord2fv(piece_uv[4*c+k].uv);
+                }
+                else
+                {
+                    glTexCoord2fv(Vector::Zero.v);
+                }
                 glVertex3fv(vertices[faces[i][k]]);
             }
         }
@@ -172,6 +178,7 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_fon
 
     Input::instance->startKeyBuffer();
     Input::instance->startButtonBuffer();
+
 }
 
 Intro::~Intro()
@@ -245,7 +252,8 @@ void Intro::render() const
     glRotatef(-180.0f, 0.0f, 1.0f, 0.0f);
     glTranslatef(0.0f, -0.85f, 2.0f);
 
-    glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
+    glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_POLYGON_BIT);
+    glFrontFace(GL_CCW);
         
     glLightfv(GL_LIGHT1, GL_POSITION, Vector(-15.0f, 3.0f, -13.0f).v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, (0.25f*Vector::One).v);
@@ -256,7 +264,6 @@ void Intro::render() const
 
     // cubes
 
-    glDisable(GL_CULL_FACE); // TODO: hack, remove it
     m_logoTex->begin();
     int i = 0;
     for each_const(vector<Matrix>, m_piece_matrix, iter)
@@ -269,31 +276,14 @@ void Intro::render() const
     }
     m_logoTex->end();
 
-    // floor
-
-/*    static const float gray[] = { 0.2f, 0.2f, 0.2f };
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, gray);
-
-    glBegin(GL_QUADS);
-    glVertex3f(-10.0f, -0.01f, -10.0f);
-    glVertex3f(-10.0f, -0.01f,  10.0f);
-    glVertex3f( 10.0f, -0.01f,  10.0f);
-    glVertex3f( 10.0f, -0.01f, -10.0f);
-    glEnd();
-*/
-    
     // ball
 
-    glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE); 
     glPushMatrix();
     glMultMatrixf(m_ball_matrix.m);
     m_ballTex->begin();
     Video::instance->renderSphere(BALL_R);
     m_ballTex->end();
     glPopMatrix();
-    glDisable(GL_CULL_FACE); 
-    glFrontFace(GL_CW);
 
     // fade in
     if (m_timePassed < FADE_IN_SECS)
@@ -311,9 +301,9 @@ void Intro::render() const
 
         glBegin(GL_QUADS);
         glVertex3f(5.0f, -1.0f, -1.8f);
-        glVertex3f(5.0f, 5.0f, -1.8f);
-        glVertex3f(-5.0f, 5.0f, -1.8f);
         glVertex3f(-5.0f, -1.0f, -1.8f);
+        glVertex3f(-5.0f, 5.0f, -1.8f);
+        glVertex3f(5.0f, 5.0f, -1.8f);
         glEnd();
 
         glPopAttrib();
@@ -348,15 +338,13 @@ void Intro::render() const
 
         glBegin(GL_QUADS);
         glVertex3f(5.0f, -1.0f, -1.8f);
-        glVertex3f(5.0f, 5.0f, -1.8f);
-        glVertex3f(-5.0f, 5.0f, -1.8f);
         glVertex3f(-5.0f, -1.0f, -1.8f);
+        glVertex3f(-5.0f, 5.0f, -1.8f);
+        glVertex3f(5.0f, 5.0f, -1.8f);
         glEnd();
 
         glPopAttrib();
     }
-
-    glEnable(GL_CULL_FACE); // TODO: hack, remove it
 
     glPopAttrib();
 }

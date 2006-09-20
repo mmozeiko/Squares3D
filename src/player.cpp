@@ -62,6 +62,7 @@ void Player::onSetForceAndTorque()
 
     Vector force = (targetVel * 5.0f - currentVel ) * timestepInv * m_body->getMass();
 
+    m_isOnGround = fabs(currentVel.y) < 0.01f; // small speed magnitude
     // TODO: move to player_local, at least KEY_SPACE part
     if (!Input::instance->key(GLFW_KEY_SPACE) || !m_isOnGround)
     {
@@ -89,7 +90,6 @@ void Player::onImpact(const Body* other, const Vector& position, const float spe
 {
     Vector v;
     NewtonBodyGetVelocity(other->m_newtonBody, v.v);
-    m_isOnGround = fabs(v.y) < 0.01f; // small speed magnitude
 }
 
 void Player::onScratch(const Body* other, const Vector& position, const float speed)

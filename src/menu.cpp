@@ -22,7 +22,7 @@ Value::Value(const string& id) :
 {
 }
 
-wstring Value::getCurrent()
+wstring Value::getCurrent() const
 {
     wstring returnVal;
     if (!m_values.empty())
@@ -72,50 +72,81 @@ Entry::Entry(const Vector& position, const wstring& stringIn, const Font* font) 
 }
 
 
-string Entry::getValueID()
+string Entry::getValueID() const
 {
     return "";
 }
 
-size_t Entry::getCurrentValueIdx()
+size_t Entry::getCurrentValueIdx() const
 {
     return -1;
 }
 
-wstring Entry::getValue()
+wstring Entry::getValue() const
 {
     return L"";
 }
 
+bool Entry::isEnabled() const
+{
+    return true;
+}
+
+bool Entry::isMouseOver(const Vector& mousePos) const
+{
+    return isPointInRectangle(mousePos, m_lowerLeft, m_upperRight);
+}
+
 OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) : 
     Entry(position, stringIn, font),
-    m_value(value)
+    m_value(value),
+    m_enabled(true)
 {
 }
 
-wstring OptionEntry::getString()
+bool OptionEntry::isEnabled() const
+{
+    return m_enabled;
+}
+
+wstring OptionEntry::getString() const
 {
     return m_string +  L": " + m_value.getCurrent();
 }
 
-wstring OptionEntry::getValue()
+wstring OptionEntry::getValue() const
 {
     return m_value.getCurrent();
 }
 
-string OptionEntry::getValueID()
+bool OptionEntry::isMouseOver(const Vector& mousePos) const
+{
+    if (m_enabled)
+    {
+        return Entry::isMouseOver(mousePos);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+string OptionEntry::getValueID() const
 {
     return m_value.m_id;
 }
 
-size_t OptionEntry::getCurrentValueIdx()
+size_t OptionEntry::getCurrentValueIdx() const
 {
     return m_value.m_current;
 }
 
 void OptionEntry::click()
 {
-    m_value.activateNext();
+    if (m_enabled)
+    {
+        m_value.activateNext();
+    }
 }
 
 void OptionEntry::reset()
@@ -148,14 +179,26 @@ void OptionEntry::reset()
     }
     else if (m_value.m_id == "use_shaders")
     {
+        if (!Video::instance->m_haveShaders)
+        {
+            m_enabled = false;
+        }
         m_value.m_current = Config::instance->m_video.use_shaders ? 1 : 0;
     }
     else if (m_value.m_id == "shadow_type")
     {
+        if (!Video::instance->m_haveShadows)
+        {
+            m_enabled = false;
+        }
         m_value.m_current = Config::instance->m_video.shadow_type ? 1 : 0;
     }
     else if (m_value.m_id == "shadowmap_size")
     {
+        if (!Video::instance->m_haveShadows)
+        {
+            m_enabled = false;
+        }
         m_value.m_current = Config::instance->m_video.shadowmap_size / 1024;
     }
     else if (m_value.m_id == "show_fps")
@@ -174,6 +217,7 @@ void OptionEntry::reset()
             if (languages[i] == Config::instance->m_misc.language)
             {
                 m_value.m_current = i;
+                break;
             }
         }
     }
@@ -191,7 +235,7 @@ GameEntry::GameEntry(const Vector& position,
 {
 }
 
-wstring GameEntry::getString()
+wstring GameEntry::getString() const
 {
     return m_string;
 }    
@@ -212,7 +256,7 @@ SubmenuEntry::SubmenuEntry(const Vector&  position,
 {
 }
 
-wstring SubmenuEntry::getString()
+wstring SubmenuEntry::getString() const
 {
     return m_string;
 }    
@@ -291,35 +335,57 @@ void ApplyOptionsEntry::click()
 
 void Submenu::control()
 {
-    bool onAnyEntry = false;
     bool left_button = (Input::instance->popButton() == GLFW_MOUSE_BUTTON_LEFT);
-
-    for each_const(Entries, m_entries, iter)
+    
+    int key = Input::instance->popKey();
+    if (key != -1)
     {
-        const Mouse& mouse = Input::instance->mouse();
-        int videoHeight = Video::instance->getResolution().second;
-        Vector mousePos = Vector(static_cast<float>(mouse.x), 0, static_cast<float>(videoHeight - mouse.y));
+        key = key;
+    }
+    bool enter_key = (key == GLFW_KEY_ENTER);
+    bool down_key = (key == GLFW_KEY_DOWN);
+    bool up_key = (key == GLFW_KEY_UP);
 
-        if (isPointInRectangle(mousePos, (*iter)->m_lowerLeft, (*iter)->m_upperRight))
+
+    //get mouse position
+    const Mouse& mouse = Input::instance->mouse();
+    int videoHeight = Video::instance->getResolution().second;
+    Vector mousePos = Vector(static_cast<float>(mouse.x), 0, static_cast<float>(videoHeight - mouse.y));
+
+    //adjust active entry depending on up/down keys
+    if (down_key || up_key)
+    {
+        activateNextEntry(down_key);
+    }
+
+    //adjust active entry depending on mouse position
+    for (size_t i = 0; i < m_entries.size(); i++)
+    {
+        Entry* currentEntry = m_entries[i];
+        if (currentEntry->isEnabled() 
+            && (m_previousMousePos != mousePos)
+            && currentEntry->isMouseOver(mousePos))
         {
-            onAnyEntry = true;
-            m_activeEntry = (*iter);
-            if (left_button)
-            {
-                m_activeEntry->click();
-            }
+            m_activeEntry = i;
             break;
         }
     }
-    if (!onAnyEntry)
+
+    Entry* currentEntry = m_entries[m_activeEntry];
+
+    if (enter_key || (left_button && currentEntry->isMouseOver(mousePos)))
     {
-        m_activeEntry = NULL;
+        currentEntry->click();
     }
+
+    m_previousMousePos = mousePos;
 }
 
 Submenu::Submenu(Vector& lastEntryPos) : 
-    m_activeEntry(NULL),
-    m_lastEntryPos(lastEntryPos)
+    m_activeEntry(0),
+    m_lastEntryPos(lastEntryPos),
+    m_title(L""),
+    m_titleFont(NULL)
 {
 }
 
@@ -337,21 +403,70 @@ void Submenu::addEntry(Entry* entry)
     m_lastEntryPos -= Vector(0, static_cast<float>(entry->m_font->getHeight()) + 2, 0);
 }
 
+void Submenu::setTitle(const wstring& title, const Vector& position, const Font* font)
+{
+    m_title = title;
+    m_titlePos = position;
+    m_titleFont = font;
+}
+
+void Submenu::activateNextEntry(bool moveDown)
+{
+    //should be used just for key input (up/down used)
+    if (!m_entries.empty())
+    {
+        if (moveDown && (m_activeEntry == (m_entries.size() - 1)))
+        {
+            m_activeEntry = 0;
+        }
+        else if (!moveDown && (m_activeEntry == 0))
+        {
+            m_activeEntry = m_entries.size() - 1;
+        }
+        else
+        {
+            moveDown ? m_activeEntry++ : m_activeEntry--;
+        }
+        if (!m_entries[m_activeEntry]->isEnabled())
+        {
+            activateNextEntry(moveDown);
+        }
+    }
+}
+
 void Submenu::render() const
 {
-    for each_const(Entries, m_entries, iter)
+    if (m_title != L"")
     {
         glPushMatrix();
-        glTranslatef((*iter)->m_position.x, (*iter)->m_position.y, (*iter)->m_position.z);
-        if (m_activeEntry == *iter)
+        glTranslatef(m_titlePos.x, m_titlePos.y, 0);
+        glScalef(2.5f, 2.5f, 2.5f);
+        glColor3fv(Vector(0, 0.7f, 0).v);
+        m_titleFont->render(m_title, Font::Align_Center);
+        glPopMatrix();
+    }
+    for (size_t i = 0; i < m_entries.size(); i++)
+    {
+        Entry* currentEntry = m_entries[i];
+
+        glPushMatrix();
+        glTranslatef(currentEntry->m_position.x, currentEntry->m_position.y, currentEntry->m_position.z);
+        if (m_activeEntry == i)
         {
             glColor3fv(Vector::One.v);
         }
         else
         {
-            glColor3fv(Vector::Zero.v);
+            if (currentEntry->isEnabled())
+            {
+                glColor3fv(Vector::Zero.v);
+            }
+            else
+            {
+                glColor3fv(Vector(0.5f, 0.5f, 0.5f).v);
+            }
         }
-        (*iter)->m_font->render((*iter)->getString(), Font::Align_Center);
+        currentEntry->m_font->render(currentEntry->getString(), Font::Align_Center);
         glPopMatrix();   
     }
 }
@@ -370,11 +485,11 @@ Menu::Menu() :
     m_backGround->vertexes.push_back(Vector(resX, 0, 0));
 
     m_backGround->uv.push_back(UV(0, 0));
-    m_backGround->uv.push_back(UV(1, 0));
-    m_backGround->uv.push_back(UV(1, 1));
     m_backGround->uv.push_back(UV(0, 1));
+    m_backGround->uv.push_back(UV(1, 1));
+    m_backGround->uv.push_back(UV(1, 0));
 
-    m_backGroundTexture = Video::instance->loadTexture("pavement");
+    m_backGroundTexture = Video::instance->loadTexture("paradise");
 
     loadMenu();
     Input::instance->startButtonBuffer();
@@ -406,17 +521,40 @@ void Menu::loadMenu()
     m_submenus["main"] = submenu;
 
     // Options Submenu
-
     submenu = new Submenu(submenuPosition);
     
+    Vector titlePos = Vector(static_cast<float>(resX) / 2,
+                             resY - static_cast<float>(resY) / 6, 
+                             0);
+    submenu->setTitle(language->get(TEXT_OPTIONS), titlePos, m_font);
+
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_VIDEO_OPTIONS), this, "videoOptions", m_font));
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_AUDIO_OPTIONS), this, "audioOptions", m_font));
+
+    Value valLang("language");
+    valLang.addAnother(L"ENG");
+    valLang.addAnother(L"LAT");
+    valLang.addAnother(L"RUS");
+    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_LANGUAGE), valLang, m_font));
+
+    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "options", m_font));
+
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "main", m_font));    
+
+    m_submenus["options"] = submenu;
+
+
+    // VIDEO Options Submenu
+    submenu = new Submenu(submenuPosition);
+    
+    submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS), titlePos, m_font);
+
     IntPairVector resolutions = Video::instance->getModes();
     Value valueRes("resolution");
- 
     for (size_t i = 0; i < resolutions.size(); i++)
     {
         valueRes.addAnother(wcast<wstring>(resolutions[i].first) + L"x" + wcast<wstring>(resolutions[i].second));
     }
-
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_RESOLUTION), valueRes, m_font));
 
     BoolValue valFS("fullscreen");
@@ -430,6 +568,7 @@ void Menu::loadMenu()
     valFSAA.addAnother(L"2");
     valFSAA.addAnother(L"4");
     valFSAA.addAnother(L"6");
+    valFSAA.addAnother(L"8");
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FSAA), valFSAA, m_font));
 
     BoolValue valSh("use_shaders");
@@ -447,20 +586,27 @@ void Menu::loadMenu()
     BoolValue valFPS("show_fps");
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHOWFPS), valFPS, m_font));
 
+    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "videoOptions", m_font));
+
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "options", m_font));    
+
+    m_submenus["videoOptions"] = submenu;
+
+
+    // AUDIO Options Submenu
+    submenu = new Submenu(submenuPosition);
+    
+    submenu->setTitle(language->get(TEXT_AUDIO_OPTIONS), titlePos, m_font);
+
     BoolValue valAud("audio");
     submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_AUDIO), valAud, m_font));
 
-    Value valLang("language");
-    valLang.addAnother(L"EN");
-    valLang.addAnother(L"LAT");
-    valLang.addAnother(L"RUS");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_LANGUAGE), valLang, m_font));
+    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "audioOptions", m_font));
 
-    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "options", m_font));
+    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "options", m_font));    
 
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "main", m_font));    
+    m_submenus["audioOptions"] = submenu;
 
-    m_submenus["options"] = submenu;
 }
 
 Menu::~Menu()
@@ -489,9 +635,11 @@ void Menu::setState(State::Type state)
 void Menu::setSubmenu(const string& submenuToSwitchTo)
 {
     m_currentSubmenu = m_submenus.find(submenuToSwitchTo)->second;
-    if (submenuToSwitchTo == "options")
+    if (submenuToSwitchTo == "options"
+        || submenuToSwitchTo == "audioOptions"
+        || submenuToSwitchTo == "videoOptions")
     {
-        Entries& entries = m_submenus["options"]->m_entries;
+        Entries& entries = m_submenus[submenuToSwitchTo]->m_entries;
         for each_(Entries, entries, iter)
         {
             (*iter)->reset();

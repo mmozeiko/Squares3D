@@ -811,6 +811,13 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
         count++;
     }
 
+    if( stereo )
+    {
+        attrib[count*2] = WGL_STEREO_ARB;
+        attrib[count*2+1] = GL_TRUE;
+        count++;
+    }
+
     if( samples > 0 )
     {
         multisample_idx = count+1; // WGL_SAMPLES_ARB index;
@@ -820,12 +827,7 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
         attrib[(count+1)*2+1] = samples;
         count += 2;
     }
-    if( stereo )
-    {
-        attrib[count*2] = WGL_STEREO_ARB;
-        attrib[count*2+1] = GL_TRUE;
-        count++;
-    }
+
 
     if( !_glfwWin.wglChoosePixelFormat )
     {
@@ -937,6 +939,7 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
         _glfwPlatformCloseWindow();
         return GL_FALSE;
     }
+    ShowWindow( _glfwWin.Wnd, SW_HIDE );
 
     // Get a device context
     _glfwWin.DC = GetDC( _glfwWin.Wnd );
@@ -1052,6 +1055,7 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
                 SetWindowPos( _glfwWin.Wnd, HWND_TOPMOST, 0,0,0,0,
                               SWP_NOMOVE | SWP_NOSIZE );
             }
+            ShowWindow( _glfwWin.Wnd, SW_SHOW );
             _glfwSetForegroundWindow( _glfwWin.Wnd );
             SetFocus( _glfwWin.Wnd );
         
@@ -1100,6 +1104,10 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
             if( multisample_idx != -1 && attrib[2*multisample_idx+1] > 0 )
             {
                 attrib[2*multisample_idx+1]--;
+                if( attrib[2*multisample_idx+1] == 0 )
+                {
+                    attrib[2*(multisample_idx-1)] = attrib[2*(multisample_idx-1)+1] = 0;
+                }
             }
             else
             {
@@ -1147,6 +1155,7 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
         SetWindowPos( _glfwWin.Wnd, HWND_TOPMOST, 0,0,0,0,
                       SWP_NOMOVE | SWP_NOSIZE );
     }
+    ShowWindow( _glfwWin.Wnd, SW_SHOW );
     _glfwSetForegroundWindow( _glfwWin.Wnd );
     SetFocus( _glfwWin.Wnd );
 

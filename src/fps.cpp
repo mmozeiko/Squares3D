@@ -9,13 +9,14 @@
 
 FPS::FPS(const Timer& timer, const Font* font, const Vector& color)
     : m_time(timer.read()), m_frames(0), m_totalFrames(0), m_timer(timer), m_font(font), m_fps(),
-    color(color)
+    color(color), m_nextTime(m_time + 1.0f)
 {
 }
 
 void FPS::reset()
 {
     m_time = m_timer.read();
+    m_nextTime = m_time + 1.0f;
     m_frames = 0;
     m_totalFrames = 0;
 }
@@ -23,10 +24,11 @@ void FPS::reset()
 void FPS::update()
 {
     m_frames++;
-    if (m_frames%128==0 || m_totalFrames<2)
+    float curTime = m_timer.read();
+    if (curTime > m_nextTime)
     {
-        float curTime = m_timer.read();
-        float fps = m_frames/(curTime-m_time);
+        float delta = curTime - m_time;
+        float fps = m_frames / delta;
         fps = std::floor(fps*10.0f)/10.0f;
         m_fps = Language::instance->get(TEXT_FPS_DISPLAY)(fps);
         if (fps-std::floor(fps) == 0.0f)
@@ -36,6 +38,7 @@ void FPS::update()
         m_width = m_font->getWidth(m_fps);
         m_time = curTime;
         m_frames = 0;
+        m_nextTime = curTime + 1.0f;
     }
     m_totalFrames++;
 }

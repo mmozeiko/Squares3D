@@ -12,6 +12,8 @@
   <!-- Main menu -->
   <item name="START_GAME"            value="Start Game"/>
   <item name="OPTIONS"               value="Options"/>
+  <item name="AUDIO_OPTIONS"         value="Audio Options"/>
+  <item name="VIDEO_OPTIONS"         value="Video Options"/>
   <item name="CREDITS"               value="Credits"/>
   <item name="QUIT_GAME"             value="Quit Game"/>
   <item name="BACK"                  value="Back"/>

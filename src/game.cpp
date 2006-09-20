@@ -150,7 +150,7 @@ void Game::run()
     float accum = 0.0f;
     float currentTime = timer.read();
     float startTime = currentTime;
-
+    
     while (running)
     {
         m_audio->update();
@@ -244,6 +244,11 @@ void Game::run()
             previous_active = true;
         }
 
+        if (glfwGetWindowParam(GLFW_OPENED)==GL_FALSE)
+        {
+            running = false;
+        }
+
     }
 
     // disconnect network
@@ -268,10 +273,10 @@ State* Game::switchState(const State::Type nextState) const
 {
     switch (nextState)
     {
+    case State::Intro: return new Intro();
     case State::Menu: return new Menu();
     case State::World: return new World();
     //TODO: implement these
-    //case State_Intro: return ..;
     //case State_Lobby: return ..;
     default:
         assert(false);

@@ -3,7 +3,6 @@
 
 #include "font.h"
 #include "file.h"
-#include "xml.h"
 #include "vmath.h"
 
 static const Vector ShadowColor(0.1f, 0.1f, 0.1f);
@@ -31,158 +30,133 @@ void Font::unload()
     fonts.clear();
 }
 
+#pragma pack ( push )
+#pragma pack ( 1 )
+
+struct Head
+{
+    char fnt[4];
+    short size;
+    short texW;
+    short texH;
+    short height;
+    short count;
+    short maxid;
+};
+
 struct Char
 {
-    int id;
-    int x;
-    int y;
-    int width;
-    int height;
-    int xoffset;
-    int yoffset;
-    int xadvance;
+    short id;
+    short x;
+    short y;
+    char width;
+    char height;
+    char xoffset;
+    char yoffset;
+    char xadvance;
 };
+#pragma pack ( pop )
 
 Font::Font(const string& filename) : m_texture(0)
 {
     clog << "Loading font '" << filename << "'..." << endl;
 
-    XMLnode xml;
-    File::Reader in("/data/font/" + filename + ".fnt");
+    // loading font description
+    File::Reader in("/data/font/" + filename + ".font");
     if (!in.is_open())
     {
-        throw Exception("Font file '" + filename + "'.fnt not found");  
+        throw Exception("Font file not found");  
     }
-    xml.load(in);
+    
+    Head head;
+    in.read(&head, sizeof(Head));
+    if (string(head.fnt+0, head.fnt+4) != "FONT")
+    {
+        throw Exception("Invalid font file");
+    }
+    m_count = head.maxid;
+    m_height = head.height;
+
+    int x = sizeof(Char);
+    vector<Char> chars(head.count);
+    in.read(&chars[0], sizeof(Char)*head.count);
     in.close();
 
-    map<int, Char> chars;
-
-    m_count = -1;
-    float texW, texH;
-    float size;
-
-    for each_const(XMLnodes, xml.childs, iter)
+    // loading texture
+    File::Reader file("/data/font/" + filename + "_00.tga");
+    if (!file.is_open())
     {
-        const XMLnode& node = *iter;
-        if (node.name == "info")
-        {
-            size = node.getAttribute<float>("size");
-        } 
-        else if (node.name == "common")
-        {
-            m_height = node.getAttribute<int>("lineHeight");
-            texW = node.getAttribute<float>("scaleW");
-            texH = node.getAttribute<float>("scaleH");
-            if (node.getAttribute<int>("pages") != 1 ||
-                node.getAttribute<int>("packed") != 0)
-            {
-                throw Exception("Invalid font file - '" + filename + "'. Font pages or packing is not supported!");
-            }
-        }
-        else if (node.name == "page")
-        {
-            if (m_texture != 0)
-            {
-                throw Exception("Only one paged fonts supported");
-            }
+        throw Exception("Font texture '" + filename + "_00.tga' not found");
+    }
+    size_t filesize = file.size();
+    vector<char> data(filesize);
+    file.read(&data[0], filesize);
+    file.close();
 
-            File::Reader file("/data/font/" + node.getAttribute("file"));
-            if (!file.is_open())
-            {
-                throw Exception("Font page '" + node.getAttribute("file") + "' not found");
-            }
-            size_t filesize = file.size();
-            vector<char> data(filesize);
-            file.read(&data[0], filesize);
-            file.close();
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
 
-            glGenTextures(1, &m_texture);
-            glBindTexture(GL_TEXTURE_2D, m_texture);
-    
-            GLFWimage image;
-            glfwReadMemoryImage(&data[0], static_cast<int>(filesize), &image, GLFW_NO_RESCALE_BIT);
-            if (image.BytesPerPixel == 1)
-            {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, image.Width, image.Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, image.Data);
-            }
-            else if (image.BytesPerPixel == 4)
-            {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.Width, image.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.Data);
-            }
-            else
-            {
-                assert(false);
-            }
-
-            glfwFreeImage(&image);
-            
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-        else if (node.name == "char")
-        {
-            Char c;
-            c.id = node.getAttribute<int>("id");
-            c.x = node.getAttribute<int>("x");
-            c.y = node.getAttribute<int>("y");
-            c.width = node.getAttribute<int>("width");
-            c.height = node.getAttribute<int>("height");
-            c.xoffset = node.getAttribute<int>("xoffset");
-            c.yoffset = node.getAttribute<int>("yoffset");
-            c.xadvance = node.getAttribute<int>("xadvance");
-
-            if (c.id > m_count)
-            {
-                m_count = c.id;
-            }
-
-            chars[c.id] = c;
-        }
+    GLFWimage image;
+    glfwReadMemoryImage(&data[0], static_cast<int>(filesize), &image, GLFW_NO_RESCALE_BIT);
+    if (image.BytesPerPixel == 1)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, image.Width, image.Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, image.Data);
+    }
+    else if (image.BytesPerPixel == 4)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.Width, image.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.Data);
+    }
+    else
+    {
+        assert(false);
     }
 
+    glfwFreeImage(&image);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    
+    
     m_listbase = glGenLists(m_count);
-
-    for (int ch = 0; ch < m_count; ch++)
-    {
-        glNewList(m_listbase + ch, GL_COMPILE);
-
-        if (foundInMap(chars, ch))
-        {
-            const Char& c = chars[ch];
-
-            float u1 = c.x / texW;
-            float v1 = 1.0f - c.y / texH;
-            float u2 = (c.x + c.width) / texW;
-            float v2 = 1.0f - (c.y + c.height) / texH;
-
-            float x1 = static_cast<float>(c.xoffset);
-            float y1 = static_cast<float>(m_height - c.yoffset);
-            float x2 = static_cast<float>(c.xoffset + c.width);
-            float y2 = static_cast<float>(m_height - (c.yoffset + c.height));
-            
-            glBegin(GL_QUADS);
-                glTexCoord2f(u1, v2); glVertex2f(x1, y2);
-                glTexCoord2f(u2, v2); glVertex2f(x2, y2);
-                glTexCoord2f(u2, v1); glVertex2f(x2, y1);
-                glTexCoord2f(u1, v1); glVertex2f(x1, y1);
-            glEnd();
-      
-            glTranslatef(static_cast<float>(c.xadvance - c.xoffset), 0.0f, 0.0f);
-        }
-        else
-        {
-            glTranslatef(size, 0.0f, 0.0f);
-        }
-
-        glEndList();
-    }
-    
     m_widths.resize(m_count);
 
-    for (int i=0; i<m_count; i++)
+    int idx = 0;
+    int pos = 0;
+    while (idx < m_count)
     {
-        m_widths[i] = chars[i].width;
+        while (idx != chars[pos].id)
+        {
+            m_widths[idx] = head.size;
+            glNewList(m_listbase + idx++, GL_COMPILE);
+            glTranslatef(head.size, 0.0f, 0.0f);
+            glEndList();
+        }
+        
+        const Char& c = chars[pos++];
+        m_widths[idx] = c.xadvance;
+        glNewList(m_listbase + idx++, GL_COMPILE);
+
+        float u1 = static_cast<float>(c.x) / static_cast<float>(head.texW);
+        float v1 = 1.0f - static_cast<float>(c.y) / head.texH;
+        float u2 = static_cast<float>(c.x + c.width) / static_cast<float>(head.texW);
+        float v2 = 1.0f - static_cast<float>(c.y + c.height) / head.texH;
+
+        float x1 = static_cast<float>(c.xoffset);
+        float y1 = static_cast<float>(m_height - c.yoffset);
+        float x2 = static_cast<float>(c.xoffset + c.width);
+        float y2 = static_cast<float>(m_height - (c.yoffset + c.height));
+        
+        glBegin(GL_QUADS);
+            glTexCoord2f(u1, v2); glVertex2f(x1, y2);
+            glTexCoord2f(u2, v2); glVertex2f(x2, y2);
+            glTexCoord2f(u2, v1); glVertex2f(x2, y1);
+            glTexCoord2f(u1, v1); glVertex2f(x1, y1);
+        glEnd();
+  
+        glTranslatef(static_cast<float>(c.xadvance - c.xoffset), 0.0f, 0.0f);
+
+        glEndList();
     }
 }
 

@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "state.h"
-#include "system.h"
 #include "vmath.h"
 
 class Camera;
@@ -23,7 +22,7 @@ public:
     string m_id;
 
     Value(const string& id);
-    wstring getCurrent();
+    wstring getCurrent() const;
     void addAnother(const wstring& string);
     void activateNext();
 };
@@ -45,11 +44,14 @@ public:
     Vector      m_upperRight;
 
     Entry(const Vector& position, const wstring& stringIn, const Font* font);
+    virtual ~Entry() {}
     virtual void click() = 0;
-    virtual wstring getString() = 0;
-    virtual string getValueID();
-    virtual wstring getValue();
-    virtual size_t getCurrentValueIdx();
+    virtual wstring getString() const = 0;
+    virtual string getValueID() const;
+    virtual wstring getValue() const;
+    virtual size_t getCurrentValueIdx() const;
+    virtual bool isEnabled() const;
+    bool isMouseOver(const Vector& mousePos) const;
     virtual void reset() {}
 };
 
@@ -57,14 +59,17 @@ class OptionEntry : public Entry
 {
 public: 
     OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font);
-    wstring getString();
-    string getValueID();
-    size_t getCurrentValueIdx();
-    wstring getValue();
+    wstring getString() const;
+    string getValueID() const;
+    size_t getCurrentValueIdx() const;
+    wstring getValue() const;
+    bool isEnabled() const;
+    bool isMouseOver(const Vector& mousePos) const;
     void click();
     void reset();
 private:
     Value m_value;
+    bool m_enabled;
 };
 
 class GameEntry : public Entry
@@ -75,7 +80,7 @@ public:
               Menu* menu, 
               State::Type stateToSwitchTo, 
               const Font* font);
-    wstring getString();
+    wstring getString() const;
     void click();
 private:
     Menu* m_menu;
@@ -91,12 +96,11 @@ public:
                  Menu*          menu, 
                  const string&  submenuToSwitchTo, 
                  const   Font*  font);
-    wstring getString();
+    wstring getString() const;
     void click();
 protected:
     Menu*  m_menu;
     string m_submenuToSwitchTo;
-
 };
 
 class ApplyOptionsEntry : public SubmenuEntry
@@ -118,7 +122,7 @@ class Submenu
 public:
 
     Entries m_entries;
-    Entry*  m_activeEntry;
+    size_t  m_activeEntry;
     Vector  m_lastEntryPos;
 
     Submenu(Vector& lastEntryPos);
@@ -126,6 +130,15 @@ public:
     void addEntry(Entry* entry);
     void render() const;
     void control();
+    void setTitle(const wstring& title, const Vector& position, const Font* font);
+    void activateNextEntry(bool moveDown);
+
+private:
+    wstring m_title;
+    Vector m_titlePos;
+    const Font* m_titleFont;
+
+    Vector m_previousMousePos;
 };
 
 typedef map<string, Submenu*> Submenus;

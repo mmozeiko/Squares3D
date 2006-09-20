@@ -19,10 +19,13 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     float fontSize = 32;
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
-    m_boardPositions.push_back(make_pair(Vector(0, 0, 0), Font::Align_Left));
-    m_boardPositions.push_back(make_pair(Vector(0, resY - fontSize, 0), Font::Align_Left));
-    m_boardPositions.push_back(make_pair(Vector(resX, resY - fontSize, 0), Font::Align_Right));
-    m_boardPositions.push_back(make_pair(Vector(resX, 0, 0), Font::Align_Right));
+    float tabX = resX / 70;
+    float tabY = resY / 100;
+
+    m_boardPositions.push_back(make_pair(Vector(tabX, tabY, 0), Font::Align_Left));
+    m_boardPositions.push_back(make_pair(Vector(tabX, resY - fontSize - tabY, 0), Font::Align_Left));
+    m_boardPositions.push_back(make_pair(Vector(resX - tabX, resY - fontSize - tabY, 0), Font::Align_Right));
+    m_boardPositions.push_back(make_pair(Vector(resX - tabX, tabY, 0), Font::Align_Right));
     
     reset();
 

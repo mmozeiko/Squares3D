@@ -98,8 +98,6 @@ public:
     static PFNGLVERTEXATTRIB2FARBPROC         glVertexAttrib2fARB;
     static PFNGLVERTEXATTRIB3FVARBPROC        glVertexAttrib3fvARB;
 
-    bool m_haveShaders;
-
     static PFNGLGENFRAMEBUFFERSEXTPROC        glGenFramebuffersEXT;
     static PFNGLBINDFRAMEBUFFEREXTPROC        glBindFramebufferEXT;
     static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC   glFramebufferTexture2DEXT;
@@ -111,6 +109,10 @@ public:
     static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
     static PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffersEXT;
     static PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbufferEXT;
+
+    bool m_haveShaders;
+    bool m_haveShadows;
+    bool m_haveShadowsFB;
 
 private:
     template <typename T>

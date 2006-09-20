@@ -159,8 +159,12 @@ namespace File
             throw Exception(PHYSFS_getLastError());
         }
 
-        if (PHYSFS_mount("data.zip", "/data", 1) == 0 ||
-            PHYSFS_mount(PHYSFS_getBaseDir(), "/", 1) == 0)
+        if (PHYSFS_mount("data.zip", "/data", 1) == 0)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        if (PHYSFS_mount(PHYSFS_getBaseDir(), "/", 0) == 0)
         {
             throw Exception(PHYSFS_getLastError());
         }

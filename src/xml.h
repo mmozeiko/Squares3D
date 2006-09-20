@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "file.h"
-#
+
 class XMLnode;
 
 typedef vector<XMLnode> XMLnodes;

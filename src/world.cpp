@@ -47,8 +47,7 @@ World::World()
     m_newtonWorld = NewtonCreate(NULL, NULL);
 
     // enable some Newton optimization
-    NewtonSetSolverModel(m_newtonWorld, 10);
-    NewtonSetFrictionModel(m_newtonWorld, 1);
+    NewtonSetSolverModel(m_newtonWorld, 1);
     
     m_music = Audio::instance->loadMusic("music.ogg");
     //m_music->play();
@@ -233,19 +232,22 @@ void World::setupShadowStuff()
     m_shadowSize = Config::instance->m_video.shadowmap_size;
 
     bool valid = false;
-    while (!valid)
+    if (Video::instance->m_haveShadowsFB)
     {
-        m_framebuffer->create(m_shadowSize);
-        m_framebuffer->attachColorTex();
-        m_shadowTex = m_framebuffer->attachDepthTex();
-        valid = m_framebuffer->isValid();
-        if (!valid && m_shadowSize > 512)
+        while (!valid)
         {
-            m_shadowSize <<= 1;
-        }
-        else
-        {
-            break;
+            m_framebuffer->create(m_shadowSize);
+            m_framebuffer->attachColorTex();
+            m_shadowTex = m_framebuffer->attachDepthTex();
+            valid = m_framebuffer->isValid();
+            if (!valid && m_shadowSize > 512)
+            {
+                m_shadowSize <<= 1;
+            }
+            else
+            {
+                break;
+            }
         }
     }
     
@@ -259,6 +261,10 @@ void World::setupShadowStuff()
     {
         m_withFBO = false;
         m_shadowSize = Config::instance->m_video.shadowmap_size = 512;
+        if (Video::instance->getResolution().second < 512)
+        {
+            m_shadowSize = 256;
+        }
 
         glGenTextures(1, &m_shadowTex);
         glBindTexture(GL_TEXTURE_2D, m_shadowTex);
@@ -268,8 +274,10 @@ void World::setupShadowStuff()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-        m_framebuffer->destroy();
-        //Config::instance->m_video.shadow_type = 0;
+        if (Video::instance->m_haveShadowsFB)
+        {
+            m_framebuffer->destroy();
+        }
     }
 
     // assume depth texture is currently bound

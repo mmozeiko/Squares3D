@@ -51,6 +51,10 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 else if (node.name == "fsaa_samples")
                 {
                     m_video.samples = cast<int>(node.value);
+                    if (m_video.samples < 0 || m_video.samples > 8 || (m_video.samples&1) == 1)
+                    {
+                        m_video.samples = 0;
+                    }
                 }
                 else if (node.name == "use_shaders")
                 {

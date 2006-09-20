@@ -23,6 +23,7 @@ public:
 
 private:
     float        m_time;
+    float        m_nextTime;
     unsigned int m_frames;
     unsigned int m_totalFrames;
     const Timer& m_timer;
