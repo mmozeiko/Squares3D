@@ -362,7 +362,7 @@ void Video::disableMaterial(const Material* material) const
     }
 }
 
-Texture* Video::loadTexture(const string& name)
+Texture* Video::loadTexture(const string& name, bool mipmap)
 {
     TextureMap::iterator iter = m_textures.find(name);
     if (iter != m_textures.end())
@@ -370,19 +370,7 @@ Texture* Video::loadTexture(const string& name)
         return iter->second;
     }
     
-    Texture* texture = new Texture2D(name);
-    return m_textures.insert(make_pair(name, texture)).first->second;
-}
-
-Texture* Video::loadCubeMap(const string& name)
-{
-    TextureMap::iterator iter = m_textures.find(name);
-    if (iter != m_textures.end())
-    {
-        return iter->second;
-    }
-    
-    Texture* texture = new TextureCube(name);
+    Texture* texture = new Texture(name, mipmap);
     return m_textures.insert(make_pair(name, texture)).first->second;
 }
 
@@ -494,7 +482,6 @@ void Video::loadExtensions()
     {
         static const char* needed[] = {
             "GL_ARB_multitexture",
-            "GL_ARB_texture_cube_map",
         };
         for (size_t i=0; i<sizeOfArray(needed); i++)
         {
