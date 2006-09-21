@@ -63,7 +63,8 @@ public:
     IntPairVector getModes() const;
 
     unsigned int newList();
-    Texture* loadTexture(const string& name, bool mipmap = true);
+    Texture* loadTexture(const string& name);
+    Texture* loadCubeMap(const string& name);
     Shader*  loadShader(const string& vp, const string& fp);
 
     static PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;

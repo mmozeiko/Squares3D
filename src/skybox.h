@@ -13,7 +13,7 @@ public:
     void render() const;
 
 private:
-    Texture* m_texture[6];
+    Texture* m_texture;
 };
 
 #endif

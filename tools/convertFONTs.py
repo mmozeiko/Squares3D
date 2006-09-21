@@ -16,7 +16,7 @@ def process(input, output):
     print "Unsupported font format!"
     return
 
-  tmp = info.attrib["size"], common.attrib["scaleW"], common.attrib["scaleH"], common.attrib["lineHeight"], len(childs), int(childs[-1].attrib["id"])+1
+  tmp = info.attrib["size"], common.attrib["scaleW"], common.attrib["scaleH"], common.attrib["lineHeight"], len(childs), childs[-1].attrib["id"]
 
   out = file(output, "wb")
 
@@ -35,7 +35,7 @@ for root, dir, files in os.walk(DATA_PATH):
     name = os.path.join(root, f)
     if name[-4:] == ".fnt":
       print name
-      #try:
-      process(name, name[:-4] + ".font")
-      #except:
-      #  print "Exception!"
+      try:
+        process(name, name[:-4] + ".font")
+      except:
+        print "Exception!"

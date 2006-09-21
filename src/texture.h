@@ -16,21 +16,37 @@ public:
     enum FilterType { None, Bilinear, Trilinear };
     enum WrapType { Repeat, Clamp, ClampToEdge };
 
-    Texture(const string& name, bool mipmaps = false);
-    ~Texture();
+    Texture(unsigned int type, const FilterType filter, const WrapType wrap);
+    virtual ~Texture();
 
-    void setFilter(const FilterType filter);
-    void setWrap(const WrapType wrap);
-
-    void begin() const;
-    void end() const;
+    virtual void begin() const;
+    virtual void end() const;
 
 protected:
     void loadImage(const string& filename, int flags, GLFWimage* image) const;
-    void upload(GLFWimage* image, bool mipmaps) const;
+    void upload(GLFWimage* image, unsigned int target = GL_TEXTURE_2D) const;
 
 private:
+    unsigned int m_type;
     unsigned int m_handle;
+
+    void setFilter(const FilterType filter);
+    void setWrap(const WrapType wrap);
+};
+
+class Texture2D : public Texture
+{
+public:
+    Texture2D(const string& name);
+};
+
+class TextureCube : public Texture
+{
+public:
+    TextureCube(const string& name);
+
+    void begin() const;
+    void end() const;
 };
 
 #endif

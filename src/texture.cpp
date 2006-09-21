@@ -5,18 +5,13 @@
 #include "file.h"
 #include "vmath.h"
 
-Texture::Texture(const string& name, bool mipmaps)
+Texture::Texture(unsigned int type, const FilterType filter, const WrapType wrap) : m_type(type)
 {
     glGenTextures(1, &m_handle);
-    glBindTexture(GL_TEXTURE_2D, m_handle);
+    glBindTexture(m_type, m_handle);
 
-    GLFWimage image;
-    loadImage("/data/textures/" + name + ".tga", 0, &image);
-    upload(&image, mipmaps);
-    glfwFreeImage(&image);
-
-    setFilter(Trilinear);
-    setWrap(Repeat);
+    setFilter(filter);
+    setWrap(wrap);
 }
 
 Texture::~Texture()
@@ -29,16 +24,16 @@ void Texture::setFilter(const FilterType filter)
     switch (filter)
     {
     case None:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         break;
     case Bilinear:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         break;
     case Trilinear:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         break;
     }
 }
@@ -48,29 +43,29 @@ void Texture::setWrap(const WrapType wrap)
     switch (wrap)
     {
     case Repeat:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_REPEAT);
         break;
     case Clamp:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP);
         break;
     case ClampToEdge:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         break;
     }
 }
 
 void Texture::begin() const
 {
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, m_handle);
+    glEnable(m_type);
+    glBindTexture(m_type, m_handle);
 }
 
 void Texture::end() const
 {
-    glDisable(GL_TEXTURE_2D);
+    glDisable(m_type);
 }
 
 void Texture::loadImage(const string& filename, int flags, GLFWimage* image) const
@@ -89,12 +84,26 @@ void Texture::loadImage(const string& filename, int flags, GLFWimage* image) con
     glfwReadMemoryImage(&data[0], static_cast<int>(filesize), image, flags);
 }
 
-void Texture::upload(GLFWimage* image, bool mipmaps) const
+void Texture::upload(GLFWimage* image, unsigned int target) const
 {
-    glfwLoadTextureImage2D(image, (mipmaps ? GLFW_BUILD_MIPMAPS_BIT : 0));
+    if (target == GL_TEXTURE_2D)
+    {
+        glfwLoadTextureImage2D(image, GLFW_BUILD_MIPMAPS_BIT);
+    }
+    else
+    {
+        glTexImage2D(target, 0, image->Format, image->Width, image->Height, 0, image->Format, GL_UNSIGNED_BYTE, image->Data);
+    }
 }
 
-/*
+Texture2D::Texture2D(const string& name) : Texture(GL_TEXTURE_2D, Trilinear, Repeat)
+{
+    GLFWimage image;
+    Texture::loadImage("/data/textures/" + name + ".tga", 0, &image);
+    Texture::upload(&image);
+    glfwFreeImage(&image);
+}
+
 TextureCube::TextureCube(const string& name) : Texture(GL_TEXTURE_CUBE_MAP_ARB, Bilinear, ClampToEdge)
 {
     static const pair<int, string> faces[] = {
@@ -114,4 +123,30 @@ TextureCube::TextureCube(const string& name) : Texture(GL_TEXTURE_CUBE_MAP_ARB, 
         glfwFreeImage(&image);
     }
 }
-*/
+
+void TextureCube::begin() const
+{
+    Texture::begin();
+
+    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+
+    glTexGenfv(GL_S, GL_OBJECT_PLANE, Vector::X.v);
+    glTexGenfv(GL_T, GL_OBJECT_PLANE, Vector::Y.v);
+    glTexGenfv(GL_R, GL_OBJECT_PLANE, Vector::Z.v);
+
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+    glEnable(GL_TEXTURE_GEN_R);
+    glDisable(GL_LIGHTING);
+}
+
+void TextureCube::end() const
+{
+    glEnable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+    glDisable(GL_TEXTURE_GEN_R);
+    Texture::end();
+}
