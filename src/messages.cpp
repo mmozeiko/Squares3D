@@ -28,6 +28,24 @@ void Messages::update(float delta)
     }
 }
 
+void Messages::remove(Message* message)
+{
+    MessageVector::iterator iter = m_buffer.begin();
+
+    while (iter != m_buffer.end())
+    {
+        if (*iter == message)
+        {
+            delete *iter;
+            iter = m_buffer.erase(iter);
+        }
+        else
+        {
+            iter++;
+        }
+    }
+}
+
 void Messages::add3D(Message* message)
 {
     Matrix modelview, projection;

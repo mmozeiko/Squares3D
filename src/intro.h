@@ -21,7 +21,7 @@ public:
     void updateStep(float delta);
     void prepare();
     void render() const;
-    State::Type progress() const;
+    State::Type progress();
 
 private:
     float m_timePassed;

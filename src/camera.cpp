@@ -133,15 +133,6 @@ void Camera::control()
     if (Input::instance->key(GLFW_KEY_DEL))  m_targetRotation.y = -1.0f;
     if (Input::instance->key(GLFW_KEY_PAGEDOWN)) m_targetRotation.y = +1.0f;
 
-    if (Input::instance->key(GLFW_KEY_ENTER))
-    {
-        userControlled = true;
-    }
-    else
-    {
-        userControlled = false;
-    }
-
     m_targetDirection.norm();
 }
 

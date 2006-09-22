@@ -345,7 +345,7 @@ void Intro::render() const
     glPopAttrib();
 }
 
-State::Type Intro::progress() const
+State::Type Intro::progress()
 {
     if (m_nextState)
     {

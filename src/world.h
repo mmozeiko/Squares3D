@@ -15,6 +15,7 @@ class Music;
 class Referee;
 class Ball;
 class Messages;
+class Message;
 class ScoreBoard;
 class FrameBuffer;
 
@@ -29,7 +30,7 @@ public:
     void update(float delta);
     void prepare();
     void render() const;
-    State::Type progress() const;
+    State::Type progress();
 
     Music*           m_music;
     Camera*          m_camera;
@@ -43,6 +44,9 @@ public:
     ScoreBoard*      m_scoreBoard;
 
 private:
+    bool     m_freeze;
+    Message* escMessage;
+
     void renderScene() const;
 
     // all below is shadow stuff

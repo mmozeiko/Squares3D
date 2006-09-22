@@ -18,6 +18,7 @@ public:
     void update(float delta);
     void add2D(Message* message);
     void add3D(Message* message);
+    void remove(Message* message);
     void render() const;
 
 private:

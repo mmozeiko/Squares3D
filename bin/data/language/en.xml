@@ -8,6 +8,7 @@
   <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
   <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
   <item name="SCORE_MESSAGE"         value="$1: $2"/>
+  <item name="ESC_MESSAGE"           value="Press ENTER to continue&#10;&#10;Press ESCAPE to quit to main menu.."/>
 
   <!-- Main menu -->
   <item name="START_GAME"            value="Start Game"/>

@@ -333,12 +333,10 @@ void ApplyOptionsEntry::click()
     g_needsToReload = true;
 }
 
-void Submenu::control()
+void Submenu::control(const int key)
 {
     bool left_button = (Input::instance->popButton() == GLFW_MOUSE_BUTTON_LEFT);
     
-    int key = Input::instance->popKey();
-
     bool enter_key = (key == GLFW_KEY_ENTER);
     bool down_key = (key == GLFW_KEY_DOWN);
     bool up_key = (key == GLFW_KEY_UP);
@@ -643,7 +641,7 @@ Menu::~Menu()
     delete m_backGround;
 }
 
-State::Type Menu::progress() const
+State::Type Menu::progress()
 {
     return m_state;
 }
@@ -670,14 +668,13 @@ void Menu::setSubmenu(const string& submenuToSwitchTo)
 
 void Menu::control()
 {
-    m_currentSubmenu->control();
-
     //todo remove later
-    if (Input::instance->key(GLFW_KEY_ESC))
+    int key = Input::instance->popKey();
+    if (key == GLFW_KEY_ESC)
     {
         m_state = State::Quit;
     }
-
+    m_currentSubmenu->control(key);
 }
 
 void Menu::update(float delta)

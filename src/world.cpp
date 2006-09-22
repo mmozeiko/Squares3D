@@ -15,22 +15,46 @@
 #include "referee.h"
 #include "ball.h"
 #include "messages.h"
+#include "message.h"
+#include "language.h"
 #include "scoreboard.h"
 #include "config.h"
 #include "framebuffer.h"
 
 World* System<World>::instance = NULL;
 
-State::Type World::progress() const
+State::Type World::progress()
 {
-    if (Input::instance->key(GLFW_KEY_ESC) == GLFW_PRESS)
+    int key = Input::instance->popKey();
+    if (key == GLFW_KEY_ESC)
     {
-        return State::Quit;
+        if (m_freeze)
+        {
+            return State::Menu;
+        }
+        else
+        {
+            m_freeze = true;
+            escMessage = new Message(Language::instance->get(TEXT_ESC_MESSAGE), 
+                                     Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
+                                            static_cast<float>(Video::instance->getResolution().second / 2), 
+                                            0), 
+                                     Vector(1, 0, 0),
+                                     Font::Align_Center);
+            m_messages->add2D(escMessage);
+        }
+    }
+    if ((key == GLFW_KEY_ENTER) && m_freeze) 
+    {
+        m_freeze = false;
+        m_messages->remove(escMessage);
     }
     return State::Current;
 }
 
-World::World()
+World::World() : 
+    m_freeze(false),
+    escMessage(NULL)
 {
     setInstance(this); // MUST go first
 
@@ -87,6 +111,7 @@ World::World()
         }
     }
     m_scoreBoard->reset();
+    Input::instance->startKeyBuffer();
 }
 
 World::~World()
@@ -113,6 +138,7 @@ World::~World()
     delete m_messages;
     delete m_skybox;
     delete m_camera;
+    Input::instance->endKeyBuffer();
 }
 
 void World::control()
@@ -135,9 +161,12 @@ void World::updateStep(float delta)
 {
     // updateStep is called more than one time in frame
 
-    m_ball->triggerBegin();
-    NewtonUpdate(m_newtonWorld, delta);
-    m_ball->triggerEnd();
+    if (!m_freeze)
+    {
+        m_ball->triggerBegin();
+        NewtonUpdate(m_newtonWorld, delta);
+        m_ball->triggerEnd();
+    }
 }
 
 void World::update(float delta)

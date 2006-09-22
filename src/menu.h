@@ -128,7 +128,7 @@ public:
     void addEntry(Entry* entry);
     void center(const Vector& centerPos);
     void render() const;
-    void control();
+    void control(const int key);
     void setTitle(const wstring& title, const Vector& position, const Font* font);
     void activateNextEntry(bool moveDown);
 
@@ -156,7 +156,7 @@ public:
     void loadMenu();
     void setState(State::Type state);
     void setSubmenu(const string& submenuToSwitchTo);
-    State::Type progress() const;
+    State::Type progress();
 
     Music*      m_music;
     Camera*     m_camera;
