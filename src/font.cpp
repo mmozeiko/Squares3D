@@ -147,11 +147,11 @@ Font::Font(const string& filename) : m_texture(0)
         float x2 = static_cast<float>(c.xoffset + c.width);
         float y2 = static_cast<float>(m_height - (c.yoffset + c.height));
         
-        glBegin(GL_QUADS);
-            glTexCoord2f(u1, v2); glVertex2f(x1, y2);
-            glTexCoord2f(u2, v2); glVertex2f(x2, y2);
-            glTexCoord2f(u2, v1); glVertex2f(x2, y1);
+        glBegin(GL_TRIANGLE_STRIP);
             glTexCoord2f(u1, v1); glVertex2f(x1, y1);
+            glTexCoord2f(u1, v2); glVertex2f(x1, y2);
+            glTexCoord2f(u2, v1); glVertex2f(x2, y1);
+            glTexCoord2f(u2, v2); glVertex2f(x2, y2);
         glEnd();
   
         glTranslatef(static_cast<float>(c.xadvance - c.xoffset), 0.0f, 0.0f);
@@ -201,7 +201,6 @@ void Font::begin(bool shadowed, float shadowWidth) const
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    glEnable(GL_TEXTURE_2D);
 
     m_shadowed = shadowed;
     m_shadowWidth = shadowWidth;

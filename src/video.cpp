@@ -21,7 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
 
 Video* System<Video>::instance = NULL;
 
-Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false)
+Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false) //, m_haveVBO(false)
 {
     clog << "Initializing video." << endl;
 
@@ -164,12 +164,12 @@ void Video::renderCube() const
         };
 
         static const int faces[][4] = {
-            { 0, 1, 2, 3 }, // bottom
-            { 4, 7, 6, 5 }, // up
-            { 4, 5, 1, 0 }, // front
-            { 6, 7, 3, 2 }, // back
-            { 7, 4, 0, 3 }, // left
-            { 5, 6, 2, 1 }, // right
+            { 0, 1, 3, 2 }, // bottom
+            { 4, 7, 5, 6 }, // up
+            { 4, 5, 0, 1 }, // front
+            { 6, 7, 2, 3 }, // back
+            { 7, 4, 3, 0 }, // left
+            { 5, 6, 1, 2 }, // right
         };
         
         static const Vector normals[] = {
@@ -184,22 +184,22 @@ void Video::renderCube() const
         static const UV uv[] = {
             UV(1.0, 0.0),
             UV(0.0, 0.0),
-            UV(0.0, 1.0),
             UV(1.0, 1.0),
+            UV(0.0, 1.0),
         };
 
         Face f;
-        f.vertexes.resize(4);
         f.uv.resize(4);
-
+        f.vertexes.resize(4);
+        f.normal.resize(4);
 
         for (size_t i = 0; i < sizeOfArray(faces); i++)
         {
-            f.normal = normals[i];
             for (int k=0; k<4; k++)
             {
-                f.vertexes[k] = vertices[faces[i][k]];
                 f.uv[k] = uv[k];
+                f.vertexes[k] = vertices[faces[i][k]];
+                f.normal[k] = normals[i];
             }
             renderFace(f);
         }
@@ -214,7 +214,15 @@ void Video::renderCube() const
 
 void Video::renderFace(const Face& face) const
 {
-    glBegin(GL_POLYGON);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(UV), &face.uv[0]);
+    glVertexPointer(3, GL_FLOAT, sizeof(Vector), &face.vertexes[0]);
+    if (face.normal.size() > 0)
+    {
+        glNormalPointer(GL_FLOAT, sizeof(Vector), &face.normal[0]);
+    }
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(face.uv.size()));
+
+/*    glBegin(GL_TRIANGLE_STRIP);
     glNormal3fv(face.normal.v);
     for (size_t i = 0; i < face.vertexes.size(); i++)
     {
@@ -222,6 +230,7 @@ void Video::renderFace(const Face& face) const
         glVertex3fv(face.vertexes[i].v);
     }
     glEnd();
+*/
 
 /*  normal rendering:
     glDisable(GL_LIGHTING);
@@ -362,7 +371,7 @@ void Video::disableMaterial(const Material* material) const
     }
 }
 
-Texture* Video::loadTexture(const string& name)
+Texture* Video::loadTexture(const string& name, bool mipmap)
 {
     TextureMap::iterator iter = m_textures.find(name);
     if (iter != m_textures.end())
@@ -370,19 +379,7 @@ Texture* Video::loadTexture(const string& name)
         return iter->second;
     }
     
-    Texture* texture = new Texture2D(name);
-    return m_textures.insert(make_pair(name, texture)).first->second;
-}
-
-Texture* Video::loadCubeMap(const string& name)
-{
-    TextureMap::iterator iter = m_textures.find(name);
-    if (iter != m_textures.end())
-    {
-        return iter->second;
-    }
-    
-    Texture* texture = new TextureCube(name);
+    Texture* texture = new Texture(name, mipmap);
     return m_textures.insert(make_pair(name, texture)).first->second;
 }
 
@@ -430,7 +427,7 @@ Shader* Video::loadShader(const string& vp, const string& fp)
     //throw Exception("Shaders not supported, GENA HAUZE!");
 }
 
-PFNGLACTIVETEXTUREARBPROC   Video::glActiveTextureARB = NULL;
+PFNGLACTIVETEXTUREARBPROC           Video::glActiveTextureARB = NULL;
 
 /*
 PFNGLGENPROGRAMSARBPROC     Video::glGenProgramsARB = NULL;
@@ -440,39 +437,46 @@ PFNGLDELETEPROGRAMPROC      Video::glDeleteProgramsARB = NULL;
 PFNGLBINDPROGRAMARBPROC     Video::glBindProgramARB = NULL;
 */
 
-PFNGLCREATESHADEROBJECTARBPROC     Video::glCreateShaderObjectARB;
-PFNGLSHADERSOURCEARBPROC           Video::glShaderSourceARB;
-PFNGLCOMPILESHADERARBPROC          Video::glCompileShaderARB;
+PFNGLCREATESHADEROBJECTARBPROC      Video::glCreateShaderObjectARB = NULL;
+PFNGLSHADERSOURCEARBPROC            Video::glShaderSourceARB = NULL;
+PFNGLCOMPILESHADERARBPROC           Video::glCompileShaderARB = NULL;
 
-PFNGLCREATEPROGRAMOBJECTARBPROC    Video::glCreateProgramObjectARB;
-PFNGLATTACHOBJECTARBPROC           Video::glAttachObjectARB;
-PFNGLLINKPROGRAMARBPROC            Video::glLinkProgramARB;
-PFNGLUSEPROGRAMOBJECTARBPROC       Video::glUseProgramObjectARB;
+PFNGLCREATEPROGRAMOBJECTARBPROC     Video::glCreateProgramObjectARB = NULL;
+PFNGLATTACHOBJECTARBPROC            Video::glAttachObjectARB = NULL;
+PFNGLLINKPROGRAMARBPROC             Video::glLinkProgramARB = NULL;
+PFNGLUSEPROGRAMOBJECTARBPROC        Video::glUseProgramObjectARB = NULL;
 
-PFNGLGETOBJECTPARAMETERIVARBPROC   Video::glGetObjectParameterivARB;
-PFNGLGETINFOLOGARBPROC             Video::glGetInfoLogARB;
+PFNGLGETOBJECTPARAMETERIVARBPROC    Video::glGetObjectParameterivARB = NULL;
+PFNGLGETINFOLOGARBPROC              Video::glGetInfoLogARB = NULL;
 
-PFNGLDETACHOBJECTARBPROC           Video::glDetachObjectARB;
-PFNGLDELETEOBJECTARBPROC           Video::glDeleteObjectARB;
+PFNGLDETACHOBJECTARBPROC            Video::glDetachObjectARB = NULL;
+PFNGLDELETEOBJECTARBPROC            Video::glDeleteObjectARB = NULL;
 
-PFNGLGETUNIFORMLOCATIONARBPROC     Video::glGetUniformLocationARB;
-PFNGLUNIFORM1IARBPROC              Video::glUniform1iARB;
-PFNGLUNIFORM3FARBPROC              Video::glUniform3fARB;
-PFNGLUNIFORMMATRIX4FVARBPROC       Video::glUniformMatrix4fvARB;
-PFNGLVERTEXATTRIB2FARBPROC         Video::glVertexAttrib2fARB;
-PFNGLVERTEXATTRIB3FVARBPROC        Video::glVertexAttrib3fvARB;
+PFNGLGETUNIFORMLOCATIONARBPROC      Video::glGetUniformLocationARB = NULL;
+PFNGLUNIFORM1IARBPROC               Video::glUniform1iARB = NULL;
+PFNGLUNIFORM3FARBPROC               Video::glUniform3fARB = NULL;
+PFNGLUNIFORMMATRIX4FVARBPROC        Video::glUniformMatrix4fvARB = NULL;
+PFNGLVERTEXATTRIB2FARBPROC          Video::glVertexAttrib2fARB = NULL;
+PFNGLVERTEXATTRIB3FVARBPROC         Video::glVertexAttrib3fvARB = NULL;
 
-PFNGLGENFRAMEBUFFERSEXTPROC        Video::glGenFramebuffersEXT;
-PFNGLBINDFRAMEBUFFEREXTPROC        Video::glBindFramebufferEXT;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC   Video::glFramebufferTexture2DEXT;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC Video::glCheckFramebufferStatusEXT;
-PFNGLDELETEFRAMEBUFFERSEXTPROC     Video::glDeleteFramebuffersEXT;
+PFNGLGENFRAMEBUFFERSEXTPROC         Video::glGenFramebuffersEXT = NULL;
+PFNGLBINDFRAMEBUFFEREXTPROC         Video::glBindFramebufferEXT = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    Video::glFramebufferTexture2DEXT = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  Video::glCheckFramebufferStatusEXT = NULL;
+PFNGLDELETEFRAMEBUFFERSEXTPROC      Video::glDeleteFramebuffersEXT = NULL;
 
-PFNGLGENRENDERBUFFERSEXTPROC        Video::glGenRenderbuffersEXT;
-PFNGLRENDERBUFFERSTORAGEEXTPROC     Video::glRenderbufferStorageEXT;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC Video::glFramebufferRenderbufferEXT;
-PFNGLDELETERENDERBUFFERSEXTPROC     Video::glDeleteRenderbuffersEXT;
-PFNGLBINDRENDERBUFFEREXTPROC        Video::glBindRenderbufferEXT;
+PFNGLGENRENDERBUFFERSEXTPROC        Video::glGenRenderbuffersEXT = NULL;
+PFNGLRENDERBUFFERSTORAGEEXTPROC     Video::glRenderbufferStorageEXT = NULL;
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC Video::glFramebufferRenderbufferEXT = NULL;
+PFNGLDELETERENDERBUFFERSEXTPROC     Video::glDeleteRenderbuffersEXT = NULL;
+PFNGLBINDRENDERBUFFEREXTPROC        Video::glBindRenderbufferEXT = NULL;
+
+/*
+PFNGLGENBUFFERSARBPROC              Video::glGenBuffersARB = NULL;
+PFNGLBINDBUFFERARBPROC              Video::glBindBufferARB = NULL;
+PFNGLBUFFERDATAARBPROC              Video::glBufferDataARB = NULL;
+PFNGLDELETEBUFFERSARBPROC           Video::glDeleteBuffersARB = NULL;
+*/
 
 template <typename T>
 void Video::loadProcAddress(const char* name, T& proc) const
@@ -494,7 +498,6 @@ void Video::loadExtensions()
     {
         static const char* needed[] = {
             "GL_ARB_multitexture",
-            "GL_ARB_texture_cube_map",
         };
         for (size_t i=0; i<sizeOfArray(needed); i++)
         {
@@ -562,6 +565,18 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glDeleteRenderbuffersEXT);
         loadProc(glBindRenderbufferEXT);
     }
+
+    /*
+    if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
+    {
+        m_haveVBO = true;
+
+        loadProc(glGenBuffersARB);
+        loadProc(glBindBufferARB);
+        loadProc(glBufferDataARB);
+        loadProc(glDeleteBuffersARB);
+    }
+    */
 
     if (glfwExtensionSupported("GL_ARB_depth_texture") &&
         glfwExtensionSupported("GL_ARB_shadow"))

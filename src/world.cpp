@@ -331,7 +331,9 @@ void World::shadowMapPass1() const
     //glPolygonOffset(1.0f, 2.0f);
 
     //Draw the scene
+    glDisable(GL_TEXTURE_2D);
     renderScene();
+    glEnable(GL_TEXTURE_2D);
    
     if (!m_withFBO)
     {

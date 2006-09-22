@@ -9,7 +9,7 @@
 
 FPS::FPS(const Timer& timer, const Font* font, const Vector& color)
     : m_time(timer.read()), m_frames(0), m_totalFrames(0), m_timer(timer), m_font(font), m_fps(),
-    color(color), m_nextTime(m_time + 1.0f)
+    m_color(color), m_nextTime(m_time + 1.0f)
 {
 }
 
@@ -54,7 +54,7 @@ void FPS::render() const
         static_cast<float>(res.first - m_width)/2, 
         static_cast<float>(res.second - m_font->getHeight()),
         0.0f);
-    glColor3fv(color.v);
+    glColor3fv(m_color.v);
     m_font->render(m_fps);
     m_font->end();
 }

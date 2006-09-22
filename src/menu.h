@@ -38,12 +38,12 @@ class Entry
 {
 public: 
     wstring     m_string;
-    Vector      m_position;
     const Font* m_font;
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(const Vector& position, const wstring& stringIn, const Font* font);
+    Entry(const wstring& stringIn, const Font* font);
+    void calculateBounds(const Vector& position);
     virtual ~Entry() {}
     virtual void click() = 0;
     virtual wstring getString() const = 0;
@@ -58,7 +58,7 @@ public:
 class OptionEntry : public Entry
 {
 public: 
-    OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font);
+    OptionEntry(const wstring& stringIn, const Value& value, const Font* font);
     wstring getString() const;
     string getValueID() const;
     size_t getCurrentValueIdx() const;
@@ -75,8 +75,7 @@ private:
 class GameEntry : public Entry
 {
 public: 
-    GameEntry(const Vector& position, 
-              const wstring& stringIn, 
+    GameEntry(const wstring& stringIn, 
               Menu* menu, 
               State::Type stateToSwitchTo, 
               const Font* font);
@@ -91,8 +90,7 @@ private:
 class SubmenuEntry : public Entry
 {
 public: 
-    SubmenuEntry(const Vector&  position, 
-                 const wstring& stringIn, 
+    SubmenuEntry(const wstring& stringIn, 
                  Menu*          menu, 
                  const string&  submenuToSwitchTo, 
                  const   Font*  font);
@@ -106,8 +104,7 @@ protected:
 class ApplyOptionsEntry : public SubmenuEntry
 {
 public: 
-    ApplyOptionsEntry(const Vector&  position, 
-                      const wstring& stringIn, 
+    ApplyOptionsEntry(const wstring& stringIn, 
                       Menu*          menu, 
                       const string&  submenuToSwitchTo, 
                       const   Font*  font);
@@ -123,11 +120,13 @@ public:
 
     Entries m_entries;
     size_t  m_activeEntry;
-    Vector  m_lastEntryPos;
+    float   m_height;
+    Vector  m_centerPos;
 
-    Submenu(Vector& lastEntryPos);
+    Submenu();
     ~Submenu();
     void addEntry(Entry* entry);
+    void center(const Vector& centerPos);
     void render() const;
     void control();
     void setTitle(const wstring& title, const Vector& position, const Font* font);

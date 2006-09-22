@@ -156,16 +156,10 @@ void Level::prepare()
 
 void Level::render() const
 {
-    //glPushAttrib(GL_LIGHTING_BIT);
-    //glDisable(GL_COLOR_MATERIAL);
     for each_const(BodiesMap, m_bodies, iter)
     {
-        if (iter->first != "invisibleWalls") // TODO: hack
-        {
-            (iter->second)->render();
-        }
+        (iter->second)->render();
     }    
-    //glPopAttrib();
 }
 
 Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols)
@@ -177,5 +171,4 @@ Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols
         vector[i] = node.getAttribute<float>(key);
     }
     return vector;
-
 }

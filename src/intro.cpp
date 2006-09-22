@@ -70,8 +70,8 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
             static const float uv[][2] = {
                 { 0.0f, 1.0f },
                 { 1.0f, 1.0f },
-                { 1.0f, 0.0f },
                 { 0.0f, 0.0f },
+                { 1.0f, 0.0f },
             };
 
             for (int k=0; k<4; k++)
@@ -135,12 +135,12 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     };
 
     static const int faces[][4] = {
-        { 0, 1, 2, 3 }, // bottom
-        { 4, 7, 6, 5 }, // up
-        { 4, 5, 1, 0 }, // front
-        { 6, 7, 3, 2 }, // back
-        { 7, 4, 0, 3 }, // left
-        { 5, 6, 2, 1 }, // right
+        { 0, 1, 3, 2 }, // bottom
+        { 4, 7, 5, 6 }, // up
+        { 4, 5, 0, 1 }, // front
+        { 6, 7, 2, 3 }, // back
+        { 7, 4, 3, 0 }, // left
+        { 5, 6, 1, 2 }, // right
     };
     
     static const float normals[][3] = {
@@ -155,7 +155,7 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     for (int c = 0; c < PIECE_XCOUNT * PIECE_YCOUNT; c++)
     {
         glNewList(m_cubeListBase + c, GL_COMPILE);
-        glBegin(GL_QUADS);
+        glBegin(GL_TRIANGLE_STRIP);
         for (int i = 0; i < 6; i++)
         {
             glNormal3fv(normals[i]);
@@ -163,7 +163,7 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
             {
                 if (i==2)
                 {
-                    glTexCoord2fv(piece_uv[4*c+k].uv);
+                    glTexCoord2f(piece_uv[4*c+k].u, piece_uv[4*c+k].v);
                 }
                 else
                 {
@@ -264,7 +264,7 @@ void Intro::render() const
 
     // cubes
 
-    m_logoTex->begin();
+    m_logoTex->bind();
     int i = 0;
     for each_const(vector<Matrix>, m_piece_matrix, iter)
     {
@@ -274,15 +274,13 @@ void Intro::render() const
         glCallList(m_cubeListBase + i++);
         glPopMatrix();
     }
-    m_logoTex->end();
 
     // ball
 
     glPushMatrix();
     glMultMatrixf(m_ball_matrix.m);
-    m_ballTex->begin();
+    m_ballTex->bind();
     Video::instance->renderSphere(BALL_R);
-    m_ballTex->end();
     glPopMatrix();
 
     // fade in
@@ -311,16 +309,14 @@ void Intro::render() const
 
     if (m_timePassed > BALL_KICK_SECS)
     {
-        m_bigLogoTex->begin();
+        m_bigLogoTex->bind();
 
-        glBegin(GL_QUADS);
+        glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0.0f, 0.0f); glVertex3f(5.0f, -1.0f, 7.0f);
         glTexCoord2f(1.0f, 0.0f); glVertex3f(-5.0f, -1.0f, 7.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-5.0f, 5.0f, 7.0f);
         glTexCoord2f(0.0f, 1.0f); glVertex3f(5.0f, 5.0f, 7.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(-5.0f, 5.0f, 7.0f);
         glEnd();
-
-        m_bigLogoTex->end();
     }
 
     if (m_timePassed > FADE_OUT_SECS)
@@ -336,11 +332,11 @@ void Intro::render() const
         glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
         glColor4f(0.0f, 0.0f, 0.0f, alpha);
 
-        glBegin(GL_QUADS);
+        glBegin(GL_TRIANGLE_STRIP);
         glVertex3f(5.0f, -1.0f, -1.8f);
         glVertex3f(-5.0f, -1.0f, -1.8f);
-        glVertex3f(-5.0f, 5.0f, -1.8f);
         glVertex3f(5.0f, 5.0f, -1.8f);
+        glVertex3f(-5.0f, 5.0f, -1.8f);
         glEnd();
 
         glPopAttrib();

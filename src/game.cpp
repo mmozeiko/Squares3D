@@ -48,7 +48,7 @@ Game::Game()
     }
     else
     {
-        m_state = new Intro();
+        m_state = new Intro(); // must be INTRO
     }
 
     m_network->createClient();
@@ -138,6 +138,11 @@ void Game::run()
 
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY); 
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY); 
+    glEnableClientState(GL_NORMAL_ARRAY); 
 
     bool running = true;
     bool previous_active = true;

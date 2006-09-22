@@ -2,6 +2,7 @@
 #define __SKYBOX_H__
 
 #include "common.h"
+#include "video.h"
 
 class Texture;
 
@@ -13,7 +14,8 @@ public:
     void render() const;
 
 private:
-    Texture* m_texture;
+    Texture* m_texture[6];
+    Face     m_faces[6];
 };
 
 #endif

@@ -19,8 +19,6 @@ public:
     float time() const;
     float fps() const;
 
-    Vector color;
-
 private:
     float        m_time;
     float        m_nextTime;
@@ -30,6 +28,8 @@ private:
     const Font*  m_font;
     wstring      m_fps;
     int          m_width;
+    
+    Vector       m_color;
 };
 
 #endif

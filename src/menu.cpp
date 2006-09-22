@@ -60,13 +60,16 @@ void BoolValue::addAnother(const wstring& string)
 }
 
 
-Entry::Entry(const Vector& position, const wstring& stringIn, const Font* font) :
+Entry::Entry(const wstring& stringIn, const Font* font) :
     m_font(font),
-    m_position(position),
     m_string(stringIn)
 {
-    m_lowerLeft = Vector(position.x - m_font->getWidth(stringIn), 0, position.y);
-    m_upperRight = Vector(position.x + m_font->getWidth(stringIn), 
+}
+
+void Entry::calculateBounds(const Vector& position)
+{
+    m_lowerLeft = Vector(position.x - m_font->getWidth(getString()), 0, position.y);
+    m_upperRight = Vector(position.x + m_font->getWidth(getString()), 
                           0,
                           position.y + m_font->getHeight());
 }
@@ -97,8 +100,8 @@ bool Entry::isMouseOver(const Vector& mousePos) const
     return isPointInRectangle(mousePos, m_lowerLeft, m_upperRight);
 }
 
-OptionEntry::OptionEntry(const Vector& position, const wstring& stringIn, const Value& value, const Font* font) : 
-    Entry(position, stringIn, font),
+OptionEntry::OptionEntry(const wstring& stringIn, const Value& value, const Font* font) : 
+    Entry(stringIn, font),
     m_value(value),
     m_enabled(true)
 {
@@ -224,12 +227,11 @@ void OptionEntry::reset()
 
 }
 
-GameEntry::GameEntry(const Vector& position, 
-                     const wstring& stringIn, 
+GameEntry::GameEntry(const wstring& stringIn, 
                      Menu* menu, 
                      State::Type stateToSwitchTo, 
                      const Font* font) : 
-    Entry(position, stringIn, font),
+    Entry(stringIn, font),
     m_menu(menu),
     m_stateToSwitchTo(stateToSwitchTo)
 {
@@ -245,12 +247,11 @@ void GameEntry::click()
     m_menu->setState(m_stateToSwitchTo);
 }
 
-SubmenuEntry::SubmenuEntry(const Vector&  position, 
-                           const wstring& stringIn, 
+SubmenuEntry::SubmenuEntry(const wstring& stringIn, 
                            Menu*          menu, 
                            const string&  submenuToSwitchTo, 
                            const   Font*  font) : 
-    Entry(position, stringIn, font),
+    Entry(stringIn, font),
     m_menu(menu),
     m_submenuToSwitchTo(submenuToSwitchTo)
 {
@@ -266,12 +267,11 @@ void SubmenuEntry::click()
     m_menu->setSubmenu(m_submenuToSwitchTo);
 }
 
-ApplyOptionsEntry::ApplyOptionsEntry(const Vector&  position, 
-                                     const wstring& stringIn, 
+ApplyOptionsEntry::ApplyOptionsEntry(const wstring& stringIn, 
                                      Menu*          menu, 
                                      const string&  submenuToSwitchTo, 
                                      const   Font*  font) :
-    SubmenuEntry(position, stringIn, menu, submenuToSwitchTo, font)
+    SubmenuEntry(stringIn, menu, submenuToSwitchTo, font)
 {
 }
 
@@ -338,10 +338,7 @@ void Submenu::control()
     bool left_button = (Input::instance->popButton() == GLFW_MOUSE_BUTTON_LEFT);
     
     int key = Input::instance->popKey();
-    if (key != -1)
-    {
-        key = key;
-    }
+
     bool enter_key = (key == GLFW_KEY_ENTER);
     bool down_key = (key == GLFW_KEY_DOWN);
     bool up_key = (key == GLFW_KEY_UP);
@@ -381,11 +378,11 @@ void Submenu::control()
     m_previousMousePos = mousePos;
 }
 
-Submenu::Submenu(Vector& lastEntryPos) : 
+Submenu::Submenu() : 
     m_activeEntry(0),
-    m_lastEntryPos(lastEntryPos),
     m_title(L""),
-    m_titleFont(NULL)
+    m_titleFont(NULL),
+    m_height(0)
 {
 }
 
@@ -400,7 +397,22 @@ Submenu::~Submenu()
 void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
-    m_lastEntryPos -= Vector(0, static_cast<float>(entry->m_font->getHeight()) + 2, 0);
+    m_height += entry->m_font->getHeight() + 2;
+
+}
+
+void Submenu::center(const Vector& centerPos)
+{
+    m_centerPos = centerPos;
+    Vector upperPos = centerPos;
+    upperPos.y += m_height / 2 - m_entries[0]->m_font->getHeight() / 2;
+    for (size_t i = 0; i < m_entries.size(); i++)
+    {
+        
+        Entry* currentEntry = m_entries[i];
+        currentEntry->calculateBounds(upperPos);
+        upperPos.y -= m_entries[i]->m_font->getHeight() - 2;
+    }
 }
 
 void Submenu::setTitle(const wstring& title, const Vector& position, const Font* font)
@@ -436,7 +448,7 @@ void Submenu::activateNextEntry(bool moveDown)
 
 void Submenu::render() const
 {
-    if (m_title != L"")
+    if (!m_title.empty())
     {
         glPushMatrix();
         glTranslatef(m_titlePos.x, m_titlePos.y, 0);
@@ -445,12 +457,16 @@ void Submenu::render() const
         m_titleFont->render(m_title, Font::Align_Center);
         glPopMatrix();
     }
+
+    Vector upperPos = m_centerPos;
+    upperPos.y += m_height / 2 - m_entries[0]->m_font->getHeight() / 2;
+
     for (size_t i = 0; i < m_entries.size(); i++)
     {
         Entry* currentEntry = m_entries[i];
 
         glPushMatrix();
-        glTranslatef(currentEntry->m_position.x, currentEntry->m_position.y, currentEntry->m_position.z);
+        glTranslatef(upperPos.x, upperPos.y, upperPos.z);
         if (m_activeEntry == i)
         {
             glColor3fv(Vector::One.v);
@@ -468,6 +484,7 @@ void Submenu::render() const
         }
         currentEntry->m_font->render(currentEntry->getString(), Font::Align_Center);
         glPopMatrix();   
+        upperPos.y -= m_entries[i]->m_font->getHeight() - 2;
     }
 }
 
@@ -481,13 +498,13 @@ Menu::Menu() :
     m_backGround = new Face();
     m_backGround->vertexes.push_back(Vector::Zero);
     m_backGround->vertexes.push_back(Vector(0, resY, 0));
-    m_backGround->vertexes.push_back(Vector(resX, resY, 0));
     m_backGround->vertexes.push_back(Vector(resX, 0, 0));
+    m_backGround->vertexes.push_back(Vector(resX, resY, 0));
 
     m_backGround->uv.push_back(UV(0, 0));
     m_backGround->uv.push_back(UV(0, 1));
-    m_backGround->uv.push_back(UV(1, 1));
     m_backGround->uv.push_back(UV(1, 0));
+    m_backGround->uv.push_back(UV(1, 1));
 
     m_backGroundTexture = Video::instance->loadTexture("paradise");
 
@@ -504,48 +521,50 @@ void Menu::loadMenu()
     int resY = Video::instance->getResolution().second;
 
     Vector submenuPosition = Vector(static_cast<float>(resX) / 2,
-                                    static_cast<float>(resY) / 4 * 3, 
+                                    static_cast<float>(resY) / 4 * 3 / 2, 
                                     0);
 
     // Main Submenu
 
-    Submenu* submenu = new Submenu(submenuPosition);
+    Submenu* submenu = new Submenu();
 
-    submenu->addEntry(new GameEntry(submenu->m_lastEntryPos, language->get(TEXT_START_GAME), this, State::World, m_font));
+    submenu->addEntry(new GameEntry(language->get(TEXT_START_GAME), this, State::World, m_font));
     
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_OPTIONS), this, "options", m_font));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_OPTIONS), this, "options", m_font));
 
-    submenu->addEntry(new GameEntry(submenu->m_lastEntryPos, language->get(TEXT_QUIT_GAME), this, State::Quit, m_font));
+    submenu->addEntry(new GameEntry(language->get(TEXT_QUIT_GAME), this, State::Quit, m_font));
 
     m_currentSubmenu = submenu;
+    submenu->center(submenuPosition);
     m_submenus["main"] = submenu;
 
     // Options Submenu
-    submenu = new Submenu(submenuPosition);
+    submenu = new Submenu();
     
     Vector titlePos = Vector(static_cast<float>(resX) / 2,
                              resY - static_cast<float>(resY) / 6, 
                              0);
     submenu->setTitle(language->get(TEXT_OPTIONS), titlePos, m_font);
 
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_VIDEO_OPTIONS), this, "videoOptions", m_font));
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_AUDIO_OPTIONS), this, "audioOptions", m_font));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptions", m_font));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_AUDIO_OPTIONS), this, "audioOptions", m_font));
 
     Value valLang("language");
     valLang.addAnother(L"ENG");
     valLang.addAnother(L"LAT");
     valLang.addAnother(L"RUS");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_LANGUAGE), valLang, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_LANGUAGE), valLang, m_font));
 
-    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "options", m_font));
+    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "options", m_font));
 
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "main", m_font));    
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main", m_font));    
 
+    submenu->center(submenuPosition);
     m_submenus["options"] = submenu;
 
 
     // VIDEO Options Submenu
-    submenu = new Submenu(submenuPosition);
+    submenu = new Submenu();
     
     submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS), titlePos, m_font);
 
@@ -555,13 +574,13 @@ void Menu::loadMenu()
     {
         valueRes.addAnother(wcast<wstring>(resolutions[i].first) + L"x" + wcast<wstring>(resolutions[i].second));
     }
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_RESOLUTION), valueRes, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_RESOLUTION), valueRes, m_font));
 
     BoolValue valFS("fullscreen");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FULLSCREEN), valFS, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_FULLSCREEN), valFS, m_font));
 
     BoolValue valVS("vsync");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_VSYNC), valVS, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_VSYNC), valVS, m_font));
 
     Value valFSAA("fsaa_samples");
     valFSAA.addAnother(L"0");
@@ -569,42 +588,44 @@ void Menu::loadMenu()
     valFSAA.addAnother(L"4");
     valFSAA.addAnother(L"6");
     valFSAA.addAnother(L"8");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_FSAA), valFSAA, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_FSAA), valFSAA, m_font));
 
     BoolValue valSh("use_shaders");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHADERS), valSh, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADERS), valSh, m_font));
 
     BoolValue valShad("shadow_type");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHADOWTYPE), valShad, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWTYPE), valShad, m_font));
 
     Value valShadS("shadowmap_size");
     valShadS.addAnother(L"512");
     valShadS.addAnother(L"1024");
     valShadS.addAnother(L"2048");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHADOWMAPSIZE), valShadS, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWMAPSIZE), valShadS, m_font));
 
     BoolValue valFPS("show_fps");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_SHOWFPS), valFPS, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHOWFPS), valFPS, m_font));
 
-    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "videoOptions", m_font));
+    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptions", m_font));
 
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "options", m_font));    
-
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options", m_font));    
+    
+    submenu->center(submenuPosition);
     m_submenus["videoOptions"] = submenu;
 
 
     // AUDIO Options Submenu
-    submenu = new Submenu(submenuPosition);
+    submenu = new Submenu();
     
     submenu->setTitle(language->get(TEXT_AUDIO_OPTIONS), titlePos, m_font);
 
     BoolValue valAud("audio");
-    submenu->addEntry(new OptionEntry(submenu->m_lastEntryPos, language->get(TEXT_AUDIO), valAud, m_font));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_AUDIO), valAud, m_font));
 
-    submenu->addEntry(new ApplyOptionsEntry(submenu->m_lastEntryPos, language->get(TEXT_SAVE), this, "audioOptions", m_font));
+    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "audioOptions", m_font));
 
-    submenu->addEntry(new SubmenuEntry(submenu->m_lastEntryPos, language->get(TEXT_BACK), this, "options", m_font));    
-
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options", m_font));    
+    
+    submenu->center(submenuPosition);
     m_submenus["audioOptions"] = submenu;
 
 }
@@ -675,12 +696,13 @@ void Menu::render() const
 {
     m_font->begin();
 
-    m_backGroundTexture->begin();
+    m_backGroundTexture->bind();
+    
+    glDisableClientState(GL_NORMAL_ARRAY);
     Video::instance->renderFace(*m_backGround);
-    m_backGroundTexture->end();
+    glEnableClientState(GL_NORMAL_ARRAY);
     
     glBindTexture(GL_TEXTURE_2D, m_font->m_texture);
-    glEnable(GL_TEXTURE_2D);
 
     m_currentSubmenu->render();
 

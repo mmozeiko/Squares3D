@@ -41,15 +41,15 @@ class CollisionTree : public Collision
 {
 public:
     CollisionTree(const XMLnode& node, const Level* level);
+    ~CollisionTree();
     void render() const;
 
-    vector<Face>      m_faces;
-    vector<Material*> m_materials;
+    vector<Face>         m_faces;
+    vector<Material*>    m_materials;
 
     mutable bool         m_first;
     mutable unsigned int m_list;
 };
-
 
 
 Collision::Collision(const XMLnode& node) : m_inertia(), m_mass(0.0f), m_origin()
@@ -277,27 +277,33 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
 
             m_faces.push_back(Face());
             Face& face = m_faces.back();
+
             for each_const(XMLnodes, node.childs, iter)
             {
                 const XMLnode& node = *iter;
                 if (node.name == "vertex")
                 {
                     face.vertexes.push_back(getAttributesInVector(node, "xyz"));
-                    face.uv.push_back(UV(
-                        node.getAttribute<float>("u"),
-                        node.getAttribute<float>("v")));
+                    face.uv.push_back(UV(node.getAttribute<float>("u"), node.getAttribute<float>("v")));
                 }
                 else
                 { 
                     throw Exception("Invalid face, unknown node - " + node.name);
                 }
             }
-            Vector v0 = m_faces.back().vertexes[0];
-            Vector v1 = m_faces.back().vertexes[1];
-            Vector v2 = m_faces.back().vertexes[2];
+            if (face.uv.size() != 4 && face.uv.size() != 3)
+            {
+                throw Exception("Face must have 3 or 4 vertexes");
+            }
+
+            Vector v0 = face.vertexes[0];
+            Vector v1 = face.vertexes[1];
+            Vector v2 = face.vertexes[2];
             
-            face.normal = (v1-v0) ^ (v2-v0);
-            face.normal.norm();
+            Vector normal = (v1-v0) ^ (v2-v0);
+            normal.norm();
+
+            face.normal.resize(face.vertexes.size(), normal);
         }
         else
         {
@@ -314,12 +320,26 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
         NewtonTreeCollisionAddFace(
             collision, 
             static_cast<int>(face.vertexes.size()), 
-            face.vertexes[0].v, 
-            sizeof(Vector), prop);
+            face.vertexes[0].v,
+            sizeof(Vector),
+            prop);
+        
+        std::swap(face.uv[2], face.uv[3]);
+        std::swap(face.vertexes[2], face.vertexes[3]);
     }
     NewtonTreeCollisionEndBuild(collision, 0);
     
     create(collision);
+
+    /*
+    m_buffers.resize(m_faces.size());
+    Video::glGenBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
+    for (size_t i=0; i<m_faces.size(); i++)
+    {
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
+        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(FaceBuf), &m_faces[i], GL_STATIC_DRAW_ARB);
+    }
+    */
 }
 
 void CollisionTree::render() const
@@ -331,34 +351,37 @@ void CollisionTree::render() const
 
     if (m_first)
     {
+        m_first = false;
         m_list = Video::instance->newList();
         glNewList(m_list, GL_COMPILE);
 
-        const Material* last = m_materials[0];
+        const Material* last = m_materials.front();
         Video::instance->enableMaterial(last);
         for (size_t i = 0; i < m_faces.size(); i++)
         {
-            if (last != m_materials[i])
+            if (last != m_materials[i] || i==m_faces.size()-1)
             {
                 Video::instance->disableMaterial(last);
-                Video::instance->enableMaterial(m_materials[i]);
-                last = m_materials[i];
+                if (i!=m_faces.size()-1)
+                {
+                    Video::instance->enableMaterial(m_materials[i]);
+                    last = m_materials[i];
+                }
             }
+            //Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
+            //glInterleavedArrays(GL_T2F_N3F_V3F, 0, NULL);
+            //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); 
             Video::instance->renderFace(m_faces[i]);
         }
         Video::instance->disableMaterial(last);
 
-        /*
-        for (size_t i = 0; i < m_faces.size(); i++)
-        {
-            Video::instance->enableMaterial(m_materials[i]);
-            Video::instance->renderFace(m_faces[i]);
-            Video::instance->disableMaterial(m_materials[i]);
-        }
-        */
         glEndList();
-        m_first = false;
     }
     
     glCallList(m_list);
+}
+
+CollisionTree::~CollisionTree()
+{
+//    Video::glDeleteBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
 }

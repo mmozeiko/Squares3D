@@ -67,12 +67,12 @@ Material::Material(const XMLnode& node) :
 void Material::enable() const
 {
     //Video::glActiveTextureARB(GL_TEXTURE0_ARB);
-    m_texture->begin();
+    m_texture->bind();
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_cSpecular.v);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m_cEmission.v);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_cShine);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, m_cSpecular.v);
+    glMaterialfv(GL_FRONT, GL_EMISSION, m_cEmission.v);
+    glMaterialf(GL_FRONT, GL_SHININESS, m_cShine);
 
     /*
     if (Video::instance->m_haveShaders && (m_shader != NULL))
@@ -96,5 +96,4 @@ void Material::disable() const
     */
 
     //Video::glActiveTextureARB(GL_TEXTURE0_ARB);
-    m_texture->end();
 }
