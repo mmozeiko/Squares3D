@@ -565,7 +565,8 @@ void Menu::loadMenu()
     Value valueRes("resolution");
     for (size_t i = 0; i < resolutions.size(); i++)
     {
-        valueRes.addAnother(wcast<wstring>(resolutions[i].first) + L"x" + wcast<wstring>(resolutions[i].second));
+        valueRes.addAnother(wcast<wstring>(resolutions[i].first) 
+                            + L"x" + wcast<wstring>(resolutions[i].second));
     }
     submenu->addEntry(new OptionEntry(language->get(TEXT_RESOLUTION), valueRes));
 

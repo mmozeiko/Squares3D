@@ -30,7 +30,9 @@ State::Type World::progress()
     {
         if (m_freeze)
         {
-            return State::Menu;
+            m_freeze = false;
+            m_messages->remove(escMessage);
+            return State::Current;
         }
         else
         {
@@ -46,8 +48,7 @@ State::Type World::progress()
     }
     if ((key == GLFW_KEY_ENTER) && m_freeze) 
     {
-        m_freeze = false;
-        m_messages->remove(escMessage);
+        return State::Menu;
     }
     return State::Current;
 }

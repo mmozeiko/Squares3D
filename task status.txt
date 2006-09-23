@@ -4,7 +4,6 @@ Available:
 Hight priority:
 
 Look for TODOs, FIXMEs.
-Message fading out (using alpha blending).
 Make AI players move more randomly.
 Allow players to kick ball not only forward but to sides also and later backwards.
 Remove Combo message when game has ended (all message removing implement with alpha fading).
@@ -40,10 +39,12 @@ Add a referee model who whistles when a fault is detected. (optional task)
 
 Construction:
 =============
-Implement menu system.
+
 
 Done:
 =====
+2006-09-23 Message fading out (using alpha blending).
+           Implement menu system.
 2006-09-18 Intro screen with fading in/out.
            Localization texts in xml files, unicode font rendering.
 2006-09-13 Implement field middle line detecting.

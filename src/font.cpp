@@ -5,8 +5,6 @@
 #include "file.h"
 #include "vmath.h"
 
-static const Vector ShadowColor(0.1f, 0.1f, 0.1f);
-
 typedef map<string, const Font*> FontMap;
 
 FontMap fonts;
@@ -252,9 +250,16 @@ void Font::render(const wstring& text, AlignType align) const
 
         if (m_shadowed)
         {
+            //fade
+            Vector shadowColor(0.1f, 0.1f, 0.1f);
+            Vector forAlpha;
+            glGetFloatv(GL_CURRENT_COLOR, forAlpha.v);
+            shadowColor.w = forAlpha.w;
+            //
+
             glPushAttrib(GL_CURRENT_BIT);
             glPushMatrix();
-                glColor3fv(ShadowColor.v);
+                glColor4fv(shadowColor.v);
                 glTranslatef(m_shadowWidth, - m_shadowWidth, 0.0f);
                 renderPlain(line);
             glPopMatrix();

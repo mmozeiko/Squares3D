@@ -39,7 +39,7 @@ public:
         const Vector&         position, 
         const Vector&         color, 
         const Font::AlignType align = Font::Align_Left,
-        const float              timeToLive = 2);
+        const float              timeToLive = 3);
 
 protected:
 

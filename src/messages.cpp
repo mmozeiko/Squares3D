@@ -91,7 +91,8 @@ void Messages::render() const
                         message->m_position.x,
                         message->m_position.y,
                         message->m_position.z);
-            glColor3fv(message->m_color.v);
+            
+            glColor4fv(message->m_color.v);
             m_font->render(message->getText(), message->m_align);
             glPopMatrix();
         }

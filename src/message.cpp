@@ -32,7 +32,7 @@ FlowingMessage::FlowingMessage(
                     const Vector&         position, 
                     const Vector&         color, 
                     const Font::AlignType align,
-                    const float              timeToLive) : 
+                    const float           timeToLive) : 
     Message(message, position, color, align),
     m_timeToLive(timeToLive)
 {
@@ -46,6 +46,13 @@ void FlowingMessage::applyFlow(float delta)
 bool FlowingMessage::applyDelta(float delta)
 {
     m_timeToLive -= delta;
+
+    //message fading
+    if (m_timeToLive < 1)\
+    {
+        m_color.w = m_timeToLive;
+    }
+
     return m_timeToLive <= 0.0f;
 }
 
