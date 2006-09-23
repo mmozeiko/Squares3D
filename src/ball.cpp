@@ -43,6 +43,27 @@ Ball::Ball(Body* body) : m_body(body)
     // TODO: hmm?
     //NewtonReleaseCollision(hull);
     //NewtonReleaseCollision(newCollision);
+
+    m_shadowList = Video::instance->newList();
+    glNewList(m_shadowList, GL_COMPILE);
+
+    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
+
+    glColor4f(0.3f, 0.3f, 0.3f, 0.3f);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    float radius = 0.2f;            // TODO: take ball radius from xml file
+    for (int i=16; i>=0; i--)
+    {
+        glVertex3f(radius*cosf(i*2.0f*M_PI/16.0f), 0.0f, radius*sinf(i*2.0f*M_PI/16.0f));
+    }
+    glEnd();
+    glPopAttrib();
+    glEndList();
 }
 
 Vector Ball::getPosition() const
@@ -116,33 +137,6 @@ void Ball::triggerEnd()
 
 void Ball::renderShadow(const Vector& lightPosition) const
 {
-    static bool first = true;
-    static unsigned int list;
-    if (first)
-    {
-        list = Video::instance->newList();
-        glNewList(list, GL_COMPILE);
-
-        glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
-
-        glColor4f(0.2f, 0.2f, 0.2f, 0.2f);
-        glDisable(GL_LIGHTING);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_SRC_ALPHA);
-
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        float radius = 0.2f;            // TODO: take ball radius from xml file
-        for (int i=16; i>=0; i--)
-        {
-            glVertex3f(radius*cosf(i*2.0f*M_PI/16.0f), 0.0f, radius*sinf(i*2.0f*M_PI/16.0f));
-        }
-        glEnd();
-        glPopAttrib();
-        glEndList();
-        first = false;
-    }
-
     Vector delta = lightPosition - m_body->getPosition();
     float t = lightPosition.y / delta.y;
 
@@ -151,6 +145,6 @@ void Ball::renderShadow(const Vector& lightPosition) const
 
     glPushMatrix();
     glTranslatef(x, 0.01f, z);
-    glCallList(list);
+    glCallList(m_shadowList);
     glPopMatrix();
 }

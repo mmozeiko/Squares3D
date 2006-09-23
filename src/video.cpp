@@ -23,6 +23,8 @@ Video* System<Video>::instance = NULL;
 
 Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false) //, m_haveVBO(false)
 {
+    setInstance(this);
+
     clog << "Initializing video." << endl;
 
     if (glfwInit() != GL_TRUE)
@@ -131,85 +133,102 @@ Video::~Video()
     {
         delete iter->second;
     }
+    m_shaders.clear();
+
     for each_(UIntSet, m_lists, iter)
     {
         glDeleteLists(*iter, 1);
     }
+    m_lists.clear();
 
     glfwCloseWindow();
     glfwTerminate();
 }
 
-void Video::renderCube() const
+void Video::init()
 {
-    static bool first = true;
-    static unsigned int list;
+    glClearDepth(1.0f);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_DEPTH_TEST);
 
-    if (first)
+    glFrontFace(GL_CW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    glEnable(GL_NORMALIZE);
+
+    glShadeModel(GL_SMOOTH);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY); 
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY); 
+    glEnableClientState(GL_NORMAL_ARRAY); 
+
+    // -0.5 .. 0.5
+    static const float vertices[][3] = {
+        /* 0 */ { -0.5, -0.5, -0.5 },
+        /* 1 */ {  0.5, -0.5, -0.5 },
+        /* 2 */ {  0.5, -0.5,  0.5 },
+        /* 3 */ { -0.5, -0.5,  0.5 },
+
+        /* 4 */ { -0.5,  0.5, -0.5 },
+        /* 5 */ {  0.5,  0.5, -0.5 },
+        /* 6 */ {  0.5,  0.5,  0.5 },
+        /* 7 */ { -0.5,  0.5,  0.5 },
+    };
+
+    static const int faces[][4] = {
+        { 0, 1, 3, 2 }, // bottom
+        { 4, 7, 5, 6 }, // up
+        { 4, 5, 0, 1 }, // front
+        { 6, 7, 2, 3 }, // back
+        { 7, 4, 3, 0 }, // left
+        { 5, 6, 1, 2 }, // right
+    };
+    
+    static const float normals[][3] = {
+        {  0.0, -1.0,  0.0 }, // bottom
+        {  0.0,  1.0,  0.0 }, // up
+        {  0.0,  0.0, -1.0 }, // front
+        {  0.0,  0.0,  1.0 }, // back
+        { -1.0,  0.0,  0.0 }, // left
+        {  1.0,  0.0,  0.0 }, // right
+    };
+
+    static const float uv[][2] = {
+        { 1.0, 0.0 },
+        { 0.0, 0.0 },
+        { 1.0, 1.0 },
+        { 0.0, 1.0 },
+    };
+
+    m_cubeList = Video::instance->newList();
+    glNewList(m_cubeList, GL_COMPILE);
+
+    for (size_t i = 0; i < sizeOfArray(faces); i++)
     {
-        list = Video::instance->newList();
-        glNewList(list, GL_COMPILE);
-
-        // -0.5 .. 0.5
-        static const Vector vertices[] = {
-            /* 0 */ Vector(-0.5, -0.5, -0.5),
-            /* 1 */ Vector( 0.5, -0.5, -0.5),
-            /* 2 */ Vector( 0.5, -0.5,  0.5),
-            /* 3 */ Vector(-0.5, -0.5,  0.5),
-
-            /* 4 */ Vector(-0.5, 0.5, -0.5),
-            /* 5 */ Vector( 0.5, 0.5, -0.5),
-            /* 6 */ Vector( 0.5, 0.5,  0.5),
-            /* 7 */ Vector(-0.5, 0.5,  0.5),
-        };
-
-        static const int faces[][4] = {
-            { 0, 1, 3, 2 }, // bottom
-            { 4, 7, 5, 6 }, // up
-            { 4, 5, 0, 1 }, // front
-            { 6, 7, 2, 3 }, // back
-            { 7, 4, 3, 0 }, // left
-            { 5, 6, 1, 2 }, // right
-        };
-        
-        static const Vector normals[] = {
-            Vector(0.0, -1.0, 0.0), // bottom
-            Vector(0.0,  1.0, 0.0), // up
-            Vector(0.0, 0.0, -1.0), // front
-            Vector(0.0, 0.0,  1.0), // back
-            Vector(-1.0, 0.0, 0.0), // left
-            Vector( 1.0, 0.0, 0.0), // right
-        };
-
-        static const UV uv[] = {
-            UV(1.0, 0.0),
-            UV(0.0, 0.0),
-            UV(1.0, 1.0),
-            UV(0.0, 1.0),
-        };
-
-        Face f;
-        f.uv.resize(4);
-        f.vertexes.resize(4);
-        f.normal.resize(4);
-
-        for (size_t i = 0; i < sizeOfArray(faces); i++)
+        glBegin(GL_TRIANGLE_STRIP);
+        for (int k=0; k<4; k++)
         {
-            for (int k=0; k<4; k++)
-            {
-                f.uv[k] = uv[k];
-                f.vertexes[k] = vertices[faces[i][k]];
-                f.normal[k] = normals[i];
-            }
-            renderFace(f);
+            glTexCoord2fv(uv[k]);
+            glNormal3fv(normals[i]);
+            glVertex3fv(vertices[faces[i][k]]);
         }
-
-        glEndList();
-
-        first = false;
+        glEnd();
     }
 
-    glCallList(list);
+    glEndList();
+}
+
+void Video::renderCube() const
+{
+    glCallList(m_cubeList);
 }
 
 void Video::renderFace(const Face& face) const
@@ -260,66 +279,52 @@ void Video::renderAxes(float size) const
     static const float green[] = {0.0, 1.0, 0.0};
     static const float blue[] = {0.0, 0.0, 1.0};
 
-    static bool first = true;
-    static unsigned int list;
-    
-    if (first)
-    {
-        list = glGenLists(1);
-        glNewList(list, GL_COMPILE);
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+    glDisable(GL_LIGHTING);
 
-        glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
-        glDisable(GL_LIGHTING);
+    glBegin(GL_LINES);
+    glColor3fv(red);
+    glVertex3f(-size, 0.0, 0.0);
+    glVertex3f(size, 0.0, 0.0);
 
-        glBegin(GL_LINES);
-        glColor3fv(red);
-        glVertex3f(-size, 0.0, 0.0);
-        glVertex3f(size, 0.0, 0.0);
+    glColor3fv(green);
+    glVertex3f(0.0, -size, 0.0);
+    glVertex3f(0.0, size, 0.0);
 
-        glColor3fv(green);
-        glVertex3f(0.0, -size, 0.0);
-        glVertex3f(0.0, size, 0.0);
+    glColor3fv(blue);
+    glVertex3f(0.0, 0.0, -size);
+    glVertex3f(0.0, 0.0, size);
+    glEnd();
 
-        glColor3fv(blue);
-        glVertex3f(0.0, 0.0, -size);
-        glVertex3f(0.0, 0.0, size);
-        glEnd();
+    glEnable(GL_LIGHTING);
 
-        glEnable(GL_LIGHTING);
+    glPushMatrix();
+    glColor3fv(red);
+    glTranslatef(size, 0.0, 0.0);
+    glRotatef(90.0, 0.0, 1.0, 0.0);
+    gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+    glRotatef(180.0, 0.0, 1.0, 0.0);
+    gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+    glPopMatrix();
 
-        glPushMatrix();
-        glColor3fv(red);
-        glTranslatef(size, 0.0, 0.0);
-        glRotatef(90.0, 0.0, 1.0, 0.0);
-        gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
-        glRotatef(180.0, 0.0, 1.0, 0.0);
-        gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
-        glPopMatrix();
+    glPushMatrix();
+    glColor3fv(green);
+    glTranslatef(0.0, size, 0.0);
+    glRotatef(-90.0, 1.0, 0.0, 0.0);
+    gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+    glRotatef(180.0, 0.0, 1.0, 0.0);
+    gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+    glPopMatrix();
 
-        glPushMatrix();
-        glColor3fv(green);
-        glTranslatef(0.0, size, 0.0);
-        glRotatef(-90.0, 1.0, 0.0, 0.0);
-        gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
-        glRotatef(180.0, 0.0, 1.0, 0.0);
-        gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
-        glPopMatrix();
+    glPushMatrix();
+    glColor3fv(blue);
+    glTranslatef(0.0, 0.0, size);
+    gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+    glRotatef(180.0, 0.0, 1.0, 0.0);
+    gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+    glPopMatrix();
 
-        glPushMatrix();
-        glColor3fv(blue);
-        glTranslatef(0.0, 0.0, size);
-        gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
-        glRotatef(180.0, 0.0, 1.0, 0.0);
-        gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
-        glPopMatrix();
-
-        glPopAttrib();
-
-        glEndList();
-        first = false;
-    }
-
-    glCallList(list);
+    glPopAttrib();
 }
 
 void Video::begin() const
@@ -646,7 +651,7 @@ IntPairVector Video::getModes() const
 
 void Video::unloadTextures()
 {
-    for each_(TextureMap, m_textures, iter)
+    for each_const(TextureMap, m_textures, iter)
     {
         delete iter->second;
     }

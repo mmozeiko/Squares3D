@@ -24,7 +24,8 @@
 #define MOVIE_WIDTH 640
 #define MOVIE_HEIGHT 480
 
-bool g_needsToReload = false;
+bool   g_needsToReload = false;
+string g_optionsEntry;
 
 Game::Game()
 {
@@ -43,12 +44,12 @@ Game::Game()
         g_needsToReload = false;
 
         Menu* menu = new Menu();
-        menu->setSubmenu("options");
+        menu->setSubmenu(g_optionsEntry);
         m_state = menu;
     }
     else
     {
-        m_state = new Menu(); // must be INTRO
+        m_state = new Intro();
     }
     m_state->init();
 
@@ -122,28 +123,7 @@ void Game::run()
     PHYSFS_mkdir("movie");
 #endif
 
-    glClearDepth(1.0f);
-    glDepthFunc(GL_LEQUAL);
-    glEnable(GL_DEPTH_TEST);
-
-    glFrontFace(GL_CW);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    glEnable(GL_NORMALIZE);
-
-    glShadeModel(GL_SMOOTH);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
-
-    glEnable(GL_TEXTURE_2D);
-    glEnableClientState(GL_VERTEX_ARRAY); 
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY); 
-    glEnableClientState(GL_NORMAL_ARRAY); 
+    m_video->init();
 
     bool running = true;
     bool previous_active = true;

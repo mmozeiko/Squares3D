@@ -12,24 +12,57 @@
 #include "config.h"
 
 typedef vector<wstring> Values;
+
 class Value
 {
+    friend class OptionEntry;
 public:
+    Value(const string& id) : m_current(0), m_id(id) {}
+    void add(const wstring& string)                  { m_values.push_back(string); }
+    
+    wstring getCurrent() const
+    {
+        if (m_values.empty())
+        {
+            return L"";
+        }
+        return m_values[m_current];
+    }
+
+    void activateNext()
+    {
+        if (!m_values.empty())
+        {
+            if (m_current == (m_values.size() - 1))
+            {
+                m_current = 0;
+            }
+            else
+            {
+                m_current++;
+            }
+        }
+    }
+
+
+protected:
     Values m_values;
     size_t m_current;
     string m_id;
-
-    Value(const string& id);
-    wstring getCurrent() const;
-    void addAnother(const wstring& string);
-    void activateNext();
 };
+
 
 class BoolValue : public Value
 {
 public:
-    BoolValue(const string& id); 
-    void addAnother(const wstring& string);
+    BoolValue(const string& id) : Value(id)
+    {
+        Value::add(Language::instance->get(TEXT_FALSE));
+        Value::add(Language::instance->get(TEXT_TRUE));
+    }
+
+private:
+    void add(const wstring& string);
 };
 
 class Entry
@@ -39,44 +72,64 @@ public:
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(const wstring& stringIn);
-    void calculateBounds(const Vector& position, const Font* font);
+    Entry(const wstring& stringIn) : m_string(stringIn) {}
     virtual ~Entry() {}
+
     virtual void click() = 0;
-    virtual wstring getString() const = 0;
-    virtual string getValueID() const;
-    virtual wstring getValue() const;
-    virtual size_t getCurrentValueIdx() const;
-    virtual bool isEnabled() const;
-    bool isMouseOver(const Vector& mousePos) const;
-    virtual void reset() {}
+    virtual wstring getString() const                    { return m_string; }
+    virtual string getValueID() const                    { return "";       }
+    virtual wstring getValue() const                     { return L"";      }
+    virtual size_t getCurrentValueIdx() const            { return -1;       }
+    virtual bool isEnabled() const                       { return true;     }
+    virtual void reset()                                 {}
+
+    bool isMouseOver(const Vector& mousePos) const       { return isPointInRectangle(mousePos, m_lowerLeft, m_upperRight); }
+
+    void calculateBounds(const Vector& position, const Font* font)
+    {
+        m_lowerLeft = Vector(position.x - font->getWidth(getString()), 0, position.y);
+        m_upperRight = Vector(position.x + font->getWidth(getString()), 0, position.y + font->getHeight());
+    }
+
+    // ?? todo, varbût vajag izòemt
+    virtual void render(const Font* font) const          { font->render(getString(), Font::Align_Center); }
+    virtual float getStringW(const Font* font) const     { return 0; }
 };
+
 
 class OptionEntry : public Entry
 {
 public: 
-    OptionEntry(const wstring& stringIn, const Value& value);
-    wstring getString() const;
-    string getValueID() const;
-    size_t getCurrentValueIdx() const;
-    wstring getValue() const;
-    bool isEnabled() const;
-    bool isMouseOver(const Vector& mousePos) const;
-    void click();
+    OptionEntry(const wstring& stringIn, const Value& value) :
+        Entry(stringIn), m_value(value), m_enabled(true) {}
+
+    void click()                                   { if (m_enabled) m_value.activateNext(); }
+    wstring getString() const                      { return m_string +  L": " + m_value.getCurrent(); }
+    string getValueID() const                      { return m_value.m_id; }
+    wstring getValue() const                       { return m_value.getCurrent(); }
+    size_t getCurrentValueIdx() const              { return m_value.m_current; }
+    bool isEnabled() const                         { return m_enabled; }
     void reset();
+    
+    bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
+    
+    void render(const Font* font) const;
+    float getStringW(const Font* font) const       { return static_cast<float>(font->getWidth(getString())); }
+
 private:
     Value m_value;
     bool m_enabled;
 };
 
+
 class GameEntry : public Entry
 {
 public: 
-    GameEntry(const wstring& stringIn, 
-              Menu* menu, 
-              State::Type stateToSwitchTo);
-    wstring getString() const;
-    void click();
+    GameEntry(const wstring& stringIn, Menu* menu, State::Type stateToSwitchTo) :
+      Entry(stringIn), m_menu(menu), m_stateToSwitchTo(stateToSwitchTo) {}
+    
+    void click() { m_menu->setState(m_stateToSwitchTo); }
+
 private:
     Menu* m_menu;
     State::Type m_stateToSwitchTo;
@@ -86,23 +139,32 @@ private:
 class SubmenuEntry : public Entry
 {
 public: 
-    SubmenuEntry(const wstring& stringIn, 
-                 Menu*          menu, 
-                 const string&  submenuToSwitchTo);
-    wstring getString() const;
-    void click();
+    SubmenuEntry(const wstring& stringIn, Menu* menu, const string&  submenuToSwitchTo) :
+      Entry(stringIn), m_menu(menu), m_submenuToSwitchTo(submenuToSwitchTo) {}
+
+      void click() { m_menu->setSubmenu(m_submenuToSwitchTo); }
+
 protected:
     Menu*  m_menu;
     string m_submenuToSwitchTo;
 };
 
+
 class ApplyOptionsEntry : public SubmenuEntry
 {
 public: 
-    ApplyOptionsEntry(const wstring& stringIn, 
-                      Menu*          menu, 
-                      const string&  submenuToSwitchTo);
+    ApplyOptionsEntry(const wstring& stringIn, Menu* menu, const string&  submenuToSwitchTo) :
+      SubmenuEntry(stringIn, menu, submenuToSwitchTo) {}
     void click();
+};
+
+class SpacerEntry : public Entry
+{
+public: 
+    SpacerEntry() : Entry(L"") {}
+    void click()               {}
+    wstring getString() const  { return L""; }
+    bool isEnabled() const     { return false; }
 };
 
 
@@ -117,8 +179,9 @@ public:
     float   m_height;
     Vector  m_centerPos;
 
-    Submenu(const Font* font);
+    Submenu(const Font* font) : m_activeEntry(0), m_title(L""), m_font(font), m_height(0) {}
     ~Submenu();
+
     void addEntry(Entry* entry);
     void center(const Vector& centerPos);
     void render() const;
@@ -135,141 +198,6 @@ private:
 };
 
 
-void Value::addAnother(const wstring& string)
-{
-    m_values.push_back(string);
-}
-
-Value::Value(const string& id) : m_current(0), m_id(id)
-{
-}
-
-wstring Value::getCurrent() const
-{
-    wstring returnVal;
-    if (!m_values.empty())
-    {
-        returnVal = m_values[m_current];
-    }
-    return returnVal;
-}
-
-void Value::activateNext()
-{
-    if (!m_values.empty())
-    {
-        if (m_current == (m_values.size() - 1))
-        {
-            m_current = 0;
-        }
-        else
-        {
-            m_current++;
-        }
-    }
-}
-
-BoolValue::BoolValue(const string& id) : Value(id)
-{
-    m_values.push_back(Language::instance->get(TEXT_FALSE));
-    m_values.push_back(Language::instance->get(TEXT_TRUE));
-}
-
-void BoolValue::addAnother(const wstring& string)
-{
-    assert(false);
-}
-
-
-Entry::Entry(const wstring& stringIn) : m_string(stringIn)
-{
-}
-
-void Entry::calculateBounds(const Vector& position, const Font* font)
-{
-    m_lowerLeft = Vector(position.x - font->getWidth(getString()), 0, position.y);
-    m_upperRight = Vector(position.x + font->getWidth(getString()), 
-                          0,
-                          position.y + font->getHeight());
-}
-
-
-string Entry::getValueID() const
-{
-    return "";
-}
-
-size_t Entry::getCurrentValueIdx() const
-{
-    return -1;
-}
-
-wstring Entry::getValue() const
-{
-    return L"";
-}
-
-bool Entry::isEnabled() const
-{
-    return true;
-}
-
-bool Entry::isMouseOver(const Vector& mousePos) const
-{
-    return isPointInRectangle(mousePos, m_lowerLeft, m_upperRight);
-}
-
-OptionEntry::OptionEntry(const wstring& stringIn, const Value& value) : 
-    Entry(stringIn),
-    m_value(value),
-    m_enabled(true)
-{
-}
-
-bool OptionEntry::isEnabled() const
-{
-    return m_enabled;
-}
-
-wstring OptionEntry::getString() const
-{
-    return m_string +  L": " + m_value.getCurrent();
-}
-
-wstring OptionEntry::getValue() const
-{
-    return m_value.getCurrent();
-}
-
-bool OptionEntry::isMouseOver(const Vector& mousePos) const
-{
-    if (m_enabled)
-    {
-        return Entry::isMouseOver(mousePos);
-    }
-    else
-    {
-        return false;
-    }
-}
-
-string OptionEntry::getValueID() const
-{
-    return m_value.m_id;
-}
-
-size_t OptionEntry::getCurrentValueIdx() const
-{
-    return m_value.m_current;
-}
-
-void OptionEntry::click()
-{
-    if (m_enabled)
-    {
-        m_value.activateNext();
-    }
-}
 
 void OptionEntry::reset()
 {
@@ -343,52 +271,18 @@ void OptionEntry::reset()
             }
         }
     }
-
 }
 
-GameEntry::GameEntry(const wstring& stringIn, 
-                     Menu* menu, 
-                     State::Type stateToSwitchTo) : 
-    Entry(stringIn),
-    m_menu(menu),
-    m_stateToSwitchTo(stateToSwitchTo)
+void OptionEntry::render(const Font* font) const
 {
-}
+    glPushMatrix();
+    font->render(m_string + L":", Font::Align_Right);
+    glPopMatrix();
 
-wstring GameEntry::getString() const
-{
-    return m_string;
-}    
-
-void GameEntry::click()
-{
-    m_menu->setState(m_stateToSwitchTo);
-}
-
-SubmenuEntry::SubmenuEntry(const wstring& stringIn, 
-                           Menu*          menu, 
-                           const string&  submenuToSwitchTo) : 
-    Entry(stringIn),
-    m_menu(menu),
-    m_submenuToSwitchTo(submenuToSwitchTo)
-{
-}
-
-wstring SubmenuEntry::getString() const
-{
-    return m_string;
-}    
-
-void SubmenuEntry::click()
-{
-    m_menu->setSubmenu(m_submenuToSwitchTo);
-}
-
-ApplyOptionsEntry::ApplyOptionsEntry(const wstring& stringIn, 
-                                     Menu*          menu, 
-                                     const string&  submenuToSwitchTo) :
-    SubmenuEntry(stringIn, menu, submenuToSwitchTo)
-{
+    glPushMatrix();
+    glTranslatef(static_cast<float>(font->getWidth(L"  ")), 0.0f, 0.0f);
+    font->render(getValue(), Font::Align_Left);
+    glPopMatrix();
 }
 
 void ApplyOptionsEntry::click()
@@ -447,6 +341,7 @@ void ApplyOptionsEntry::click()
     
     m_menu->setState(State::Quit);
     g_needsToReload = true;
+    g_optionsEntry = m_submenuToSwitchTo;
 }
 
 void Submenu::control(int key)
@@ -502,14 +397,6 @@ void Submenu::control(int key)
     m_previousMousePos = mousePos;
 }
 
-Submenu::Submenu(const Font* font) : 
-    m_activeEntry(0),
-    m_title(L""),
-    m_font(font),
-    m_height(0)
-{
-}
-
 Submenu::~Submenu()
 {
     for each_const(Entries, m_entries, iter)
@@ -522,7 +409,6 @@ void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
     m_height += m_font->getHeight() + 2;
-
 }
 
 void Submenu::center(const Vector& centerPos)
@@ -530,11 +416,21 @@ void Submenu::center(const Vector& centerPos)
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
     upperPos.y += m_height / 2 - m_font->getHeight() / 2;
-    for (size_t i = 0; i < m_entries.size(); i++)
+
+    float maxStringW = 0.0f;
+    for each_const(Entries, m_entries, iter)
     {
+        float w = (*iter)->getStringW(m_font);
+        if (w > maxStringW)
+        {
+            maxStringW = w;
+        }
+    }
         
-        Entry* currentEntry = m_entries[i];
-        currentEntry->calculateBounds(upperPos, m_font);
+    for (size_t i = 0; i < m_entries.size(); i++)
+    {      
+        Entry* entry = m_entries[i];
+        entry->calculateBounds(upperPos, m_font);
         upperPos.y -= m_font->getHeight() - 2;
     }
 }
@@ -586,7 +482,7 @@ void Submenu::render() const
 
     for (size_t i = 0; i < m_entries.size(); i++)
     {
-        Entry* currentEntry = m_entries[i];
+        Entry* entry = m_entries[i];
 
         glPushMatrix();
         glTranslatef(upperPos.x, upperPos.y, upperPos.z);
@@ -596,7 +492,7 @@ void Submenu::render() const
         }
         else
         {
-            if (currentEntry->isEnabled())
+            if (entry->isEnabled())
             {
                 glColor3fv(Vector::Zero.v);
             }
@@ -605,15 +501,13 @@ void Submenu::render() const
                 glColor3fv(Vector(0.5f, 0.5f, 0.5f).v);
             }
         }
-        m_font->render(currentEntry->getString(), Font::Align_Center);
-        glPopMatrix();   
+        entry->render(m_font);
+        glPopMatrix();
         upperPos.y -= m_font->getHeight() - 2;
     }
 }
 
-Menu::Menu() :
-    m_font(Font::get("Arial_32pt_bold")),
-    m_state(State::Current)
+Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_state(State::Current)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -661,6 +555,7 @@ void Menu::loadMenu()
     submenu->center(submenuPosition);
     m_submenus["main"] = submenu;
 
+
     // Options Submenu
     submenu = new Submenu(m_font);
     
@@ -671,15 +566,9 @@ void Menu::loadMenu()
 
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptions"));
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_AUDIO_OPTIONS), this, "audioOptions"));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_OTHER_OPTIONS), this, "otherOptions"));
 
-    Value valLang("language");
-    valLang.addAnother(L"ENG");
-    valLang.addAnother(L"LAT");
-    valLang.addAnother(L"RUS");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_LANGUAGE), valLang));
-
-    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "options"));
-
+    submenu->addEntry(new SpacerEntry());
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));    
 
     submenu->center(submenuPosition);
@@ -695,7 +584,7 @@ void Menu::loadMenu()
     Value valueRes("resolution");
     for (size_t i = 0; i < resolutions.size(); i++)
     {
-        valueRes.addAnother(wcast<wstring>(resolutions[i].first) 
+        valueRes.add(wcast<wstring>(resolutions[i].first) 
                             + L"x" + wcast<wstring>(resolutions[i].second));
     }
     submenu->addEntry(new OptionEntry(language->get(TEXT_RESOLUTION), valueRes));
@@ -707,11 +596,11 @@ void Menu::loadMenu()
     submenu->addEntry(new OptionEntry(language->get(TEXT_VSYNC), valVS));
 
     Value valFSAA("fsaa_samples");
-    valFSAA.addAnother(L"0");
-    valFSAA.addAnother(L"2");
-    valFSAA.addAnother(L"4");
-    valFSAA.addAnother(L"6");
-    valFSAA.addAnother(L"8");
+    valFSAA.add(L"0");
+    valFSAA.add(L"2");
+    valFSAA.add(L"4");
+    valFSAA.add(L"6");
+    valFSAA.add(L"8");
     submenu->addEntry(new OptionEntry(language->get(TEXT_FSAA), valFSAA));
 
     BoolValue valSh("use_shaders");
@@ -721,16 +610,16 @@ void Menu::loadMenu()
     submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWTYPE), valShad));
 
     Value valShadS("shadowmap_size");
-    valShadS.addAnother(L"512");
-    valShadS.addAnother(L"1024");
-    valShadS.addAnother(L"2048");
+    valShadS.add(L"512");
+    valShadS.add(L"1024");
+    valShadS.add(L"2048");
     submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWMAPSIZE), valShadS));
 
     BoolValue valFPS("show_fps");
     submenu->addEntry(new OptionEntry(language->get(TEXT_SHOWFPS), valFPS));
 
+    submenu->addEntry(new SpacerEntry());
     submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptions"));
-
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
     
     submenu->center(submenuPosition);
@@ -745,12 +634,33 @@ void Menu::loadMenu()
     BoolValue valAud("audio");
     submenu->addEntry(new OptionEntry(language->get(TEXT_AUDIO), valAud));
 
+    submenu->addEntry(new SpacerEntry());
     submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "audioOptions"));
-
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
     
     submenu->center(submenuPosition);
     m_submenus["audioOptions"] = submenu;
+
+    
+    
+    // OTHER Options Submenu
+    submenu = new Submenu(m_font);
+    
+    submenu->setTitle(language->get(TEXT_OTHER_OPTIONS), titlePos);
+
+    Value valLang("language");
+    valLang.add(L"ENG");
+    valLang.add(L"LAT");
+    valLang.add(L"RUS");
+    submenu->addEntry(new OptionEntry(language->get(TEXT_LANGUAGE), valLang));
+
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "otherOptions"));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
+
+    submenu->center(submenuPosition);
+    m_submenus["otherOptions"] = submenu;
+
 
 }
 
@@ -800,23 +710,19 @@ void Menu::control()
         key = Input::instance->popKey();
         if (key == GLFW_KEY_ESC)
         {
-            m_state = State::Quit;
+            if (m_currentSubmenu == m_submenus["main"])
+            {
+                m_state = State::Quit;
+            }
+            else
+            {
+                // assume back is last entry
+                m_currentSubmenu->m_entries.back()->click();
+            }
         }
         m_currentSubmenu->control(key);       
     }
     while (key != -1);
-}
-
-void Menu::update(float delta)
-{
-}
-
-void Menu::updateStep(float delta)
-{
-}
-
-void Menu::prepare()
-{
 }
 
 void Menu::render() const

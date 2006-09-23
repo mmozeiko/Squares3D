@@ -3,16 +3,10 @@
 #include "skybox.h"
 #include "texture.h"
 
+static const string facesTex[] = { "_posx", "_negx", "_posy", "_negy", "_posz", "_negz" };
+
 SkyBox::SkyBox()
 {
-    static const string facesTex[] = {
-        "_posx",
-        "_negx",
-        "_posy",
-        "_negy",
-        "_posz",
-        "_negz",
-    };
     for (int i=0; i<6; i++)
     {
         m_texture[i] = Video::instance->loadTexture("cubemap/skybox_1" + facesTex[i], false);

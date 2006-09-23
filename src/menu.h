@@ -22,9 +22,9 @@ public:
     ~Menu();
 
     void control();
-    void update(float delta);
-    void updateStep(float delta);
-    void prepare();
+    void update(float delta) {} 
+    void updateStep(float delta) {} 
+    void prepare() {}
     void render() const;
     void loadMenu();
     void setState(State::Type state);

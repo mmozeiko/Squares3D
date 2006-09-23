@@ -26,6 +26,7 @@ Language::Language()
     REGISTER_TEXT_TYPE(OPTIONS);
     REGISTER_TEXT_TYPE(AUDIO_OPTIONS);
     REGISTER_TEXT_TYPE(VIDEO_OPTIONS);
+    REGISTER_TEXT_TYPE(OTHER_OPTIONS);
     REGISTER_TEXT_TYPE(CREDITS);
     REGISTER_TEXT_TYPE(BACK);
     REGISTER_TEXT_TYPE(QUIT_GAME);
@@ -122,7 +123,7 @@ int Language::load(const string& name)
         }
 
         TextType type = txtIter->second;
-        string value = node.getAttribute("value");
+        string value = (node.hasAttribute("value") ? node.getAttribute("value") : node.value);
         m_lang[type] = UTF8_to_UCS2(value);
         count++;
     }

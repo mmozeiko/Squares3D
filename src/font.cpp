@@ -132,7 +132,7 @@ Font::Font(const string& filename) : m_texture(0)
         }
         
         const Char& c = chars[pos++];
-        m_widths[idx] = c.xadvance;
+        m_widths[idx] = c.xadvance - c.xoffset;
         glNewList(m_listbase + idx++, GL_COMPILE);
 
         float u1 = static_cast<float>(c.x) / static_cast<float>(head.texW);

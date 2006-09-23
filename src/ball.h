@@ -40,6 +40,8 @@ public:
 
 private:
     TriggerFilterMap m_filteredBodies;
+    
+    unsigned int     m_shadowList;
 };
 
 #endif

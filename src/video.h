@@ -35,6 +35,7 @@ public:
     Video();
     ~Video();
 
+    void init();
     void unloadTextures();
 
     void renderCube() const;
@@ -129,6 +130,8 @@ private:
     TextureMap    m_textures;
     IntPair       m_resolution;    
     UIntSet       m_lists;
+
+    unsigned int  m_cubeList;
 };
 
 #endif

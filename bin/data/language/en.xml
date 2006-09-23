@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml>
-  <item name="FPS_DISPLAY"           value="FPS: $1"/>
-  <item name="GAME_OVER"             value="Game over!"/>
-  <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
-  <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
-  <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
-  <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
-  <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
-  <item name="SCORE_MESSAGE"         value="$1: $2"/>
-  <item name="ESC_MESSAGE"           value="Press ESCAPE to continue&#10;&#10;Press ENTER to quit to main menu.."/>
+    <item name="FPS_DISPLAY"           value="FPS: $1"/>
+    <item name="GAME_OVER"             value="Game over!"/>
+    <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
+    <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
+    <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
+    <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
+    <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
+    <item name="SCORE_MESSAGE"         value="$1: $2"/>
 
-  <!-- Main menu -->
-  <item name="START_GAME"            value="Start Game"/>
-  <item name="OPTIONS"               value="Options"/>
-  <item name="AUDIO_OPTIONS"         value="Audio Options"/>
-  <item name="VIDEO_OPTIONS"         value="Video Options"/>
-  <item name="CREDITS"               value="Credits"/>
-  <item name="QUIT_GAME"             value="Quit Game"/>
-  <item name="BACK"                  value="Back"/>
-  <item name="SAVE"                  value="Apply Settings"/>
-  <!-- Options -->
-  <item name="TRUE"                  value="Yes"/>
-  <item name="FALSE"                 value="No"/>
-  <item name="RESOLUTION"            value="Resolution"/>
-  <item name="FULLSCREEN"            value="Fullscreen"/>
-  <item name="VSYNC"                 value="Vertical Sync"/>
-  <item name="FSAA"                  value="Antialiasing"/>
-  <item name="SHADERS"               value="Use Shaders"/>
-  <item name="SHADOWTYPE"            value="Use Shadows"/>
-  <item name="SHADOWMAPSIZE"         value="Shadowmap Size"/>
-  <item name="SHOWFPS"               value="Show FPS"/>
-  <item name="AUDIO"                 value="Audio On"/>
-  <item name="LANGUAGE"              value="Language"/>
+    <item name="ESC_MESSAGE">
+Press ESCAPE to continue
+        
+Press ENTER to quit to main menu..
+    </item>
 
-</xml>  
+    <!-- Main menu -->
+    <item name="START_GAME"            value="Start Game"/>
+    <item name="OPTIONS"               value="Options"/>
+    <item name="AUDIO_OPTIONS"         value="Audio Options"/>
+    <item name="VIDEO_OPTIONS"         value="Video Options"/>
+    <item name="OTHER_OPTIONS"         value="Other Options"/>
+    <item name="CREDITS"               value="Credits"/>
+    <item name="QUIT_GAME"             value="Quit Game"/>
+    <item name="BACK"                  value="Back"/>
+    <item name="SAVE"                  value="Apply Settings"/>
+    
+    <!-- Options -->
+    <item name="TRUE"                  value="Yes"/>
+    <item name="FALSE"                 value="No"/>
+    <item name="RESOLUTION"            value="Resolution"/>
+    <item name="FULLSCREEN"            value="Fullscreen"/>
+    <item name="VSYNC"                 value="Vertical Sync"/>
+    <item name="FSAA"                  value="Antialiasing"/>
+    <item name="SHADERS"               value="Use Shaders"/>
+    <item name="SHADOWTYPE"            value="Use Shadows"/>
+    <item name="SHADOWMAPSIZE"         value="Shadowmap Size"/>
+    <item name="SHOWFPS"               value="Show FPS"/>
+    <item name="AUDIO"                 value="Audio On"/>
+    <item name="LANGUAGE"              value="Language"/>
+
+</xml>
