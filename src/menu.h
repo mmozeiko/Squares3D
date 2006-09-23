@@ -38,12 +38,11 @@ class Entry
 {
 public: 
     wstring     m_string;
-    const Font* m_font;
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(const wstring& stringIn, const Font* font);
-    void calculateBounds(const Vector& position);
+    Entry(const wstring& stringIn);
+    void calculateBounds(const Vector& position, const Font* font);
     virtual ~Entry() {}
     virtual void click() = 0;
     virtual wstring getString() const = 0;
@@ -58,7 +57,7 @@ public:
 class OptionEntry : public Entry
 {
 public: 
-    OptionEntry(const wstring& stringIn, const Value& value, const Font* font);
+    OptionEntry(const wstring& stringIn, const Value& value);
     wstring getString() const;
     string getValueID() const;
     size_t getCurrentValueIdx() const;
@@ -77,8 +76,7 @@ class GameEntry : public Entry
 public: 
     GameEntry(const wstring& stringIn, 
               Menu* menu, 
-              State::Type stateToSwitchTo, 
-              const Font* font);
+              State::Type stateToSwitchTo);
     wstring getString() const;
     void click();
 private:
@@ -92,8 +90,7 @@ class SubmenuEntry : public Entry
 public: 
     SubmenuEntry(const wstring& stringIn, 
                  Menu*          menu, 
-                 const string&  submenuToSwitchTo, 
-                 const   Font*  font);
+                 const string&  submenuToSwitchTo);
     wstring getString() const;
     void click();
 protected:
@@ -106,8 +103,7 @@ class ApplyOptionsEntry : public SubmenuEntry
 public: 
     ApplyOptionsEntry(const wstring& stringIn, 
                       Menu*          menu, 
-                      const string&  submenuToSwitchTo, 
-                      const   Font*  font);
+                      const string&  submenuToSwitchTo);
     void click();
 };
 
@@ -123,19 +119,19 @@ public:
     float   m_height;
     Vector  m_centerPos;
 
-    Submenu();
+    Submenu(const Font* font);
     ~Submenu();
     void addEntry(Entry* entry);
     void center(const Vector& centerPos);
     void render() const;
     void control(const int key);
-    void setTitle(const wstring& title, const Vector& position, const Font* font);
+    void setTitle(const wstring& title, const Vector& position);
     void activateNextEntry(bool moveDown);
 
 private:
     wstring m_title;
     Vector m_titlePos;
-    const Font* m_titleFont;
+    const Font* m_font;
 
     Vector m_previousMousePos;
 };
