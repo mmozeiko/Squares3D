@@ -11,14 +11,136 @@
 #include "language.h"
 #include "config.h"
 
+typedef vector<wstring> Values;
+class Value
+{
+public:
+    Values m_values;
+    size_t m_current;
+    string m_id;
+
+    Value(const string& id);
+    wstring getCurrent() const;
+    void addAnother(const wstring& string);
+    void activateNext();
+};
+
+class BoolValue : public Value
+{
+public:
+    BoolValue(const string& id); 
+    void addAnother(const wstring& string);
+};
+
+class Entry
+{
+public: 
+    wstring     m_string;
+    Vector      m_lowerLeft;
+    Vector      m_upperRight;
+
+    Entry(const wstring& stringIn);
+    void calculateBounds(const Vector& position, const Font* font);
+    virtual ~Entry() {}
+    virtual void click() = 0;
+    virtual wstring getString() const = 0;
+    virtual string getValueID() const;
+    virtual wstring getValue() const;
+    virtual size_t getCurrentValueIdx() const;
+    virtual bool isEnabled() const;
+    bool isMouseOver(const Vector& mousePos) const;
+    virtual void reset() {}
+};
+
+class OptionEntry : public Entry
+{
+public: 
+    OptionEntry(const wstring& stringIn, const Value& value);
+    wstring getString() const;
+    string getValueID() const;
+    size_t getCurrentValueIdx() const;
+    wstring getValue() const;
+    bool isEnabled() const;
+    bool isMouseOver(const Vector& mousePos) const;
+    void click();
+    void reset();
+private:
+    Value m_value;
+    bool m_enabled;
+};
+
+class GameEntry : public Entry
+{
+public: 
+    GameEntry(const wstring& stringIn, 
+              Menu* menu, 
+              State::Type stateToSwitchTo);
+    wstring getString() const;
+    void click();
+private:
+    Menu* m_menu;
+    State::Type m_stateToSwitchTo;
+
+};
+
+class SubmenuEntry : public Entry
+{
+public: 
+    SubmenuEntry(const wstring& stringIn, 
+                 Menu*          menu, 
+                 const string&  submenuToSwitchTo);
+    wstring getString() const;
+    void click();
+protected:
+    Menu*  m_menu;
+    string m_submenuToSwitchTo;
+};
+
+class ApplyOptionsEntry : public SubmenuEntry
+{
+public: 
+    ApplyOptionsEntry(const wstring& stringIn, 
+                      Menu*          menu, 
+                      const string&  submenuToSwitchTo);
+    void click();
+};
+
+
+typedef vector<Entry*> Entries;
+
+class Submenu
+{
+public:
+
+    Entries m_entries;
+    size_t  m_activeEntry;
+    float   m_height;
+    Vector  m_centerPos;
+
+    Submenu(const Font* font);
+    ~Submenu();
+    void addEntry(Entry* entry);
+    void center(const Vector& centerPos);
+    void render() const;
+    void control(int key);
+    void setTitle(const wstring& title, const Vector& position);
+    void activateNextEntry(bool moveDown);
+
+private:
+    wstring m_title;
+    Vector m_titlePos;
+    const Font* m_font;
+
+    Vector m_previousMousePos;
+};
+
+
 void Value::addAnother(const wstring& string)
 {
     m_values.push_back(string);
 }
 
-Value::Value(const string& id) :
-    m_current(0),
-    m_id(id)
+Value::Value(const string& id) : m_current(0), m_id(id)
 {
 }
 
@@ -47,8 +169,7 @@ void Value::activateNext()
     }
 }
 
-BoolValue::BoolValue(const string& id) :
-    Value(id)
+BoolValue::BoolValue(const string& id) : Value(id)
 {
     m_values.push_back(Language::instance->get(TEXT_FALSE));
     m_values.push_back(Language::instance->get(TEXT_TRUE));
@@ -60,8 +181,7 @@ void BoolValue::addAnother(const wstring& string)
 }
 
 
-Entry::Entry(const wstring& stringIn) :
-    m_string(stringIn)
+Entry::Entry(const wstring& stringIn) : m_string(stringIn)
 {
 }
 
@@ -329,11 +449,21 @@ void ApplyOptionsEntry::click()
     g_needsToReload = true;
 }
 
-void Submenu::control(const int key)
+void Submenu::control(int key)
 {
-    bool left_button = (Input::instance->popButton() == GLFW_MOUSE_BUTTON_LEFT);
+    bool left_button = false;
+    int b;
+    do
+    {
+        b = Input::instance->popButton();
+        if (b == GLFW_MOUSE_BUTTON_LEFT)
+        {
+            left_button = true;
+        }
+    }
+    while (b != -1);
     
-    bool enter_key = (key == GLFW_KEY_ENTER);
+    bool enter_key = (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER);
     bool down_key = (key == GLFW_KEY_DOWN);
     bool up_key = (key == GLFW_KEY_UP);
 
@@ -664,13 +794,17 @@ void Menu::setSubmenu(const string& submenuToSwitchTo)
 
 void Menu::control()
 {
-    //todo remove later
-    int key = Input::instance->popKey();
-    if (key == GLFW_KEY_ESC)
+    int key;
+    do
     {
-        m_state = State::Quit;
+        key = Input::instance->popKey();
+        if (key == GLFW_KEY_ESC)
+        {
+            m_state = State::Quit;
+        }
+        m_currentSubmenu->control(key);       
     }
-    m_currentSubmenu->control(key);
+    while (key != -1);
 }
 
 void Menu::update(float delta)

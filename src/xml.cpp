@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <expat.h>
+
 #include "xml.h"
 #include "utilities.h"
 
@@ -88,552 +90,100 @@ void XMLnode::save(File::Writer& writer)
 
 class XMLreader
 {
-public:
-    XMLreader(File::Reader& reader) : 
-        reader(reader), charBuf(0), curLine(1)
+private:
+    File::Reader&  m_reader;
+    XML_Parser     m_parser;
+
+    bool           m_root;
+    list<XMLnode*> m_elements;
+
+    static const size_t BUFSIZE = 4096;
+
+    static void XMLCALL StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
     {
+        XMLreader* self = static_cast<XMLreader*>(userData);
+        XMLnode* parent = self->m_elements.back();
+        XMLnode* node;
+        if (self->m_root)
+        {
+            self->m_root = false;
+            node = parent;
+            node->name = name;
+        }
+        else
+        {
+            parent->childs.push_back(XMLnode(name));
+            node = & parent->childs.back();
+        }
+
+        while (*atts != NULL)
+        {
+            const XML_Char* name = *atts;
+            atts++;
+            const XML_Char* value = *atts;
+            atts++;
+
+            node->attributes.insert(make_pair(name, value));
+        }
+        node->line = XML_GetCurrentLineNumber(self->m_parser);
+        self->m_elements.push_back(node);
+    }
+
+    static void XMLCALL EndElementHandler(void *userData, const XML_Char *name)
+    {
+        XMLreader* self = static_cast<XMLreader*>(userData);
+        self->m_elements.back()->value = trim(self->m_elements.back()->value);
+        self->m_elements.pop_back();
+    }
+
+    static void XMLCALL CharacterDataHandler(void *userData, const XML_Char *s, int len)
+    {
+        XMLreader* self = static_cast<XMLreader*>(userData);
+        self->m_elements.back()->value += string(s, s+len);
+    }
+
+public:
+    XMLreader(File::Reader& reader) : m_reader(reader), m_root(true)
+    {
+        m_parser = XML_ParserCreate(NULL);
+        if (m_parser == NULL)
+        {
+            throw Exception("Error creating XML parser");
+        }
+
+        XML_SetUserData(m_parser, static_cast<void*>(this));
+        XML_SetStartElementHandler(m_parser, StartElementHandler);
+        XML_SetEndElementHandler(m_parser, EndElementHandler);
+        XML_SetCharacterDataHandler(m_parser, CharacterDataHandler);
+    }
+
+    ~XMLreader()
+    {
+        XML_ParserFree(m_parser);
     }
 
     void parse(XMLnode& xml)
     {
-        xml.name = xml.value = "";
-        xml.attributes.clear();
-        xml.childs.clear();
-    
-        char ch;
-        bool done = false;
-        while (!done)
+        m_elements.push_back(&xml);
+        while (! m_reader.eof())
         {
-            ch = scanWhite();
-
-            if (ch != '<')
+            void* buffer = XML_GetBuffer(m_parser, BUFSIZE);
+            if (buffer == NULL)
             {
-                throw Exception(makeError("Expected <"));
+                throw Exception("Error alocating buffer for xml parsing");
             }
 
-            ch = readChar();
-
-            if (ch=='!' || ch=='?')
+            size_t read = m_reader.read(buffer, BUFSIZE);
+         
+            if (XML_ParseBuffer(m_parser, static_cast<int>(read), m_reader.eof() ? 1 : 0) == XML_STATUS_ERROR)
             {
-                skipSpecialTag(0);
-            }
-            else
-            {
-                unreadChar(ch);
-                scanElement(xml);
-                done = true;
+                size_t c = XML_GetErrorColumnNumber(m_parser);
+                size_t l = XML_GetErrorLineNumber(m_parser);
+                const XML_LChar* err = XML_ErrorString(XML_GetErrorCode(m_parser));
+                throw Exception("XML parser error (" + cast<string>(l) + ", " + cast<string>(c) + "): " + string(err));
             }
         }
     }
-
-private:
-    File::Reader& reader;
-    char charBuf;
-    int curLine;
-
-    string makeError(const string& errorMsg)
-    {
-        return errorMsg + " at line " + cast<string>(curLine) + "!";
-    }
-
-    char readChar()
-    {
-        char ch;
-        if (charBuf != 0)
-        {
-            ch = charBuf;
-            charBuf = 0;
-        }
-        else
-        {
-            if (reader.read(&ch, 1) != 1)
-            {
-                throw Exception(makeError("Failed to read stream"));
-            }
-            else if (ch=='\n')
-            {
-                curLine++;
-            }
-        }
-        return ch;
-    }
-
-    void unreadChar(char ch)
-    {
-        charBuf = ch;
-    }
-
-    char scanWhite()
-    {
-        char ch;
-        while (true)
-        {
-            ch = readChar();
-            if (ch!=' ' && ch!='\t' && ch!='\n' && ch!='\r')
-            {
-                break;
-            }
-        }
-        return ch;
-    }
-
-    char scanWhite(string& result)
-    {
-        char ch;
-        while (true)
-        {
-            ch = readChar();
-            if (ch==' ' || ch=='\t' || ch=='\n')
-            {
-                result.push_back(ch);
-            }
-            else if (ch!='\r')
-            {
-                break;
-            }
-        }
-        return ch;
-    }
-
-    char decodeEntity()
-    {
-        char ch;
-        string entity;
-        while (true)
-        {
-            ch = readChar();
-            if (ch==';')
-            {
-                break;
-            }
-            entity.push_back(ch);
-        }
-
-        if (entity[0]=='#')
-        {
-            stringstream ss;
-            if (entity[1]=='x')
-            {
-                ss << std::hex << entity.substr(2);
-            }
-            else
-            {
-                ss << std::dec << entity.substr(1);
-            }
-            int i;
-            ss >> i;
-            if (static_cast<size_t>(ss.tellg()) != ss.str().size())
-            {
-                throw Exception(makeError("Unknown entity " + entity));
-            }
-            ch = static_cast<char>(i);
-            return ch;
-        }
-        if (entity=="lt")
-        {
-            return '<';
-        }
-        else if (entity=="gt")
-        {
-            return '>';
-        }
-        else if (entity=="quot")
-        {
-            return '"';
-        }
-        else if (entity=="apos")
-        {
-            return '\''; 
-        }
-        else if (entity=="amp")
-        {
-            return '&';
-        }
-        throw Exception(makeError("Unknown entity " + entity));
-    }
-
-    string scanIdentifier()
-    {
-        string result;
-        char ch;
-        while (true)
-        {
-            ch = readChar();
-            if (   ((ch<'A') || (ch>'Z')) 
-                && ((ch<'a') || (ch>'z'))
-                && ((ch<'0') || (ch>'9')) 
-                && (ch!='_') && (ch != '.') && (ch!=':') && (ch!='-') && (ch<127))
-            {
-                unreadChar(ch);
-                break;
-            }
-            result.push_back(ch);
-        }
-        return result;
-    }
-
-    string scanString()
-    {
-        string result;
-        char delim = readChar();
-        if ((delim!='\'' && delim!='"'))
-        {
-            return Exception(makeError("Expected ' or \""));
-        }
-
-        char ch;
-        while (true)
-        {
-            ch = readChar();
-            if (ch==delim)
-            {
-                break;
-            }
-
-            if (ch=='&')
-            {
-                ch = decodeEntity();
-            }
-            result.push_back(ch);
-        }
-        return result;
-    }
-
-    bool checkLiteral(const std::string& literal)
-    {
-        char ch;
-        for (size_t i=0, len=literal.size(); i<len; ++i)
-        {
-            ch = readChar();
-            if (ch!=literal[i])
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool checkCDATA(std::string& data)
-    {
-        char ch = readChar();
-        if (ch!='[')
-        {
-            unreadChar(ch);
-            skipSpecialTag(0);
-            return false;
-        }
-
-        if (!checkLiteral("CDATA["))
-        {
-            skipSpecialTag(1); // one [ has already been read
-            return false;
-        }
-
-        int delimiterCharsSkipped = 0;
-        while (delimiterCharsSkipped < 3)
-        {
-            ch = readChar();
-            switch (ch)
-            {
-                case ']':
-                    if (delimiterCharsSkipped < 2)
-                    {
-                        delimiterCharsSkipped += 1;
-                    }
-                    else
-                    {
-                        data += "]]";
-                        delimiterCharsSkipped = 0;
-                    }
-                    break;
-                case '>':
-                    if (delimiterCharsSkipped < 2)
-                    {
-                        for (int i=0; i<delimiterCharsSkipped; ++i)
-                        {
-                            data.push_back(']');
-                        }
-                        delimiterCharsSkipped = 0;
-                        data.push_back('>');
-                    }
-                    else
-                    {
-                        delimiterCharsSkipped = 3;
-                    }
-                    break;
-                default:
-                    for (int i=0; i<delimiterCharsSkipped; ++i)
-                    {
-                        data.push_back(']');
-                    }
-                    data.push_back(ch);
-                    delimiterCharsSkipped = 0;
-            }
-        }
-        return true;
-    }
-
-    void scanPCData(string& data)
-    {
-        char ch;
-        while (true)
-        {
-            ch = readChar();
-            if (ch=='<')
-            {
-                ch = readChar();
-                if (ch=='!')
-                {
-                    checkCDATA(data);
-                }
-                else
-                {
-                    unreadChar(ch);
-                    break;
-                }
-            }
-            else if (ch=='&')
-            {
-                ch = decodeEntity();
-            }
-            data.push_back(ch);
-        }
-    }
-
-    void skipComment()
-    {
-        int dashesToRead = 2;
-        char ch;
-        while (dashesToRead > 0)
-        {
-            ch = readChar();
-            if (ch=='-')
-            {
-                dashesToRead--;
-            }
-            else
-            {
-                dashesToRead = 2;
-            }
-        }
-        ch = readChar();
-        if (ch!='>')
-        {
-            throw Exception(makeError("Expected >"));
-        }
-    }
-
-    void skipSpecialTag(int bracketLevel)
-    {
-        int tagLevel = 1; // <
-        char stringDelimiter = 0;
-        char ch;
-        if (bracketLevel == 0)
-        {
-            ch = readChar();
-            if (ch=='[')
-            {
-                bracketLevel++;
-            }
-            else if (ch=='-')
-            {
-                ch = readChar();
-                if (ch=='[')
-                {
-                    bracketLevel++;
-                }
-                else if (ch==']')
-                {
-                    bracketLevel--;
-                }
-                else if (ch=='-')
-                {
-                    skipComment();
-                    return;
-                }
-            }
-        }
-
-        while (tagLevel > 0)
-        {
-            ch = readChar();
-            if (stringDelimiter==0)
-            {
-                if (ch=='"' || ch=='\'')
-                {
-                    stringDelimiter = ch;
-                }
-                else if (bracketLevel <= 0)
-                {
-                    if (ch=='<')
-                    {
-                        tagLevel++;
-                    }
-                    else if (ch=='>')
-                    {
-                        tagLevel--;
-                    }
-                }
-
-                if (ch=='[')
-                {
-                    bracketLevel++;
-                }
-                else if (ch == ']')
-                {
-                    bracketLevel--;
-                }
-            }
-            else
-            {
-                if (ch==stringDelimiter)
-                {
-                    stringDelimiter = 0;
-                }
-            }
-        }
-    }
-
-    void scanElement(XMLnode& xml)
-    {
-        xml.name = scanIdentifier();
-        char ch = scanWhite();
-        while (ch!='>' && ch!='/')
-        {
-            unreadChar(ch);
-            string key = scanIdentifier();
-            ch = scanWhite();
-            if (ch!='=')
-            {
-                throw Exception(makeError("Expected ="));
-            }
-            ch = scanWhite();
-            unreadChar(ch);
-            string value = scanString();
-            xml.attributes.insert(make_pair(key, value));
-            ch = scanWhite();
-        }
-
-        if (ch=='/')
-        {
-            ch = readChar();
-            if (ch!='>') 
-            {
-                throw Exception(makeError("Expected >"));
-            }
-            return;
-        }
-
-        string buf;
-        ch = scanWhite(buf);
-        if (ch!='<')
-        {
-            unreadChar(ch);
-            scanPCData(buf);
-        }
-        else
-        {
-            while (true)
-            {
-                ch = readChar();
-                if (ch=='!')
-                {
-                    if (checkCDATA(buf))
-                    {
-                        scanPCData(buf);
-                        break;
-                    }
-                    else
-                    {
-                        ch = scanWhite(buf);
-                        if (ch!='<')
-                        {
-                            unreadChar(ch);
-                            scanPCData(buf);
-                        }
-                        break;
-                    }
-                }
-                else
-                { 
-                    //if (ch!='/' || ignoreWhitespace)
-                    //{
-                        buf = "";
-                    //}
-                    //if (ch=='/')
-                    //{
-                        //unreadChar(ch);
-                    //}
-                    break;
-                }
-            }
-        }
-
-        if (buf.empty())
-        {
-            while (ch!='/')
-            {
-                if (ch=='!')
-                {
-                    ch = readChar();
-                    if (ch!='-')
-                    {
-                        throw Exception(makeError("Expected Comment or Element"));
-                    }
-                    ch = readChar();
-                    if (ch!='-')
-                    {
-                        throw Exception(makeError("Expected Comment or Element"));
-                    }
-                    skipComment();
-                }
-                else
-                {
-                    unreadChar(ch);
-                    xml.childs.push_back(XMLnode());
-                    xml.childs.back().line = curLine;
-                    scanElement(xml.childs.back());
-                }
-
-                ch = scanWhite();
-                if (ch!='<')
-                {
-                    throw Exception(makeError("Expected <"));
-                }
-                ch = readChar();
-            }
-            unreadChar(ch);
-        }
-        else
-        {
-            //if (ignoreWhitespace)
-            //{
-                xml.value = trim(buf);
-            //}
-            //else
-            //{
-            //    xml.value = buf;
-            //}
-        }
-
-        ch = readChar();
-        if (ch!='/')
-        {
-            throw Exception(makeError("Expected /"));
-        }
-        ch = scanWhite();
-        unreadChar(ch);
-        if (!checkLiteral(xml.name))
-        {
-            throw Exception(makeError("Expected " + xml.name));
-        }
-        ch = scanWhite();
-        if (ch!='>')
-        {
-            throw Exception(makeError("Expected >"));
-        }
-    }
-
 };
 
 void XMLnode::load(File::Reader& reader)

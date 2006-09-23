@@ -48,8 +48,9 @@ Game::Game()
     }
     else
     {
-        m_state = new Intro(); // must be INTRO
+        m_state = new Menu(); // must be INTRO
     }
+    m_state->init();
 
     m_network->createClient();
     m_network->connect("localhost");
@@ -58,7 +59,7 @@ Game::Game()
 Game::~Game()
 {
     Font::unload();
-
+    
     delete m_state;
 
     delete m_input;
@@ -236,6 +237,7 @@ void Game::run()
             fps.reset();
             currentTime = accum = 0.0f;
             m_state = switchState(newState);
+            m_state->init();
         }
         
         // glfw minmize/restore focus bug

@@ -25,37 +25,55 @@ World* System<World>::instance = NULL;
 
 State::Type World::progress()
 {
-    int key = Input::instance->popKey();
-    if (key == GLFW_KEY_ESC)
+    int key;
+    do
     {
-        if (m_freeze)
+        key = Input::instance->popKey();
+        if (key == GLFW_KEY_ESC)
         {
-            m_freeze = false;
-            m_messages->remove(escMessage);
-            return State::Current;
+            if (m_freeze)
+            {
+                m_freeze = false;
+                m_messages->remove(escMessage);
+                return State::Current;
+            }
+            else
+            {
+                m_freeze = true;
+                escMessage = new Message(Language::instance->get(TEXT_ESC_MESSAGE), 
+                                         Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
+                                                static_cast<float>(Video::instance->getResolution().second / 2), 
+                                                0), 
+                                         Vector(1, 0, 0),
+                                         Font::Align_Center);
+                m_messages->add2D(escMessage);
+            }
         }
-        else
+
+        if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && m_freeze) 
         {
-            m_freeze = true;
-            escMessage = new Message(Language::instance->get(TEXT_ESC_MESSAGE), 
-                                     Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
-                                            static_cast<float>(Video::instance->getResolution().second / 2), 
-                                            0), 
-                                     Vector(1, 0, 0),
-                                     Font::Align_Center);
-            m_messages->add2D(escMessage);
+            Input::instance->endKeyBuffer();
+            return State::Menu;
         }
     }
-    if ((key == GLFW_KEY_ENTER) && m_freeze) 
-    {
-        return State::Menu;
-    }
+    while (key != -1);
+
     return State::Current;
 }
 
 World::World() : 
     m_freeze(false),
-    escMessage(NULL)
+    escMessage(NULL),
+    m_music(NULL),
+    m_camera(NULL),
+    m_skybox(NULL),
+    m_newtonWorld(NULL),
+    m_level(NULL),
+    m_ball(NULL),
+    m_referee(NULL),
+    m_messages(NULL),
+    m_scoreBoard(NULL),
+    m_framebuffer(NULL)
 {
     setInstance(this); // MUST go first
 
@@ -78,7 +96,12 @@ World::World() :
     //m_music->play();
 
     m_level = new Level();
+}
+
+void World::init()
+{
     m_level->load("level.xml");
+
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
     m_referee = new Referee(m_messages, m_scoreBoard);
@@ -117,6 +140,8 @@ World::World() :
 
 World::~World()
 {
+    Input::instance->endKeyBuffer();
+
     killShadowStuff();
     delete m_framebuffer;
 
@@ -139,7 +164,6 @@ World::~World()
     delete m_messages;
     delete m_skybox;
     delete m_camera;
-    Input::instance->endKeyBuffer();
 }
 
 void World::control()

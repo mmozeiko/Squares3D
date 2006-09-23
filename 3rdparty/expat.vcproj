@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="vorbis"
-	ProjectGUID="{47D22ABF-1581-43BB-9043-D8D7C6E331A8}"
-	RootNamespace="vorbis"
+	Name="expat"
+	ProjectGUID="{299C1AED-4171-493B-8AF2-AF7331E9B07B}"
+	RootNamespace="expat"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -41,10 +41,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;COMPILED_FROM_DSP"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				RuntimeTypeInfo="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -105,13 +106,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
-				ExceptionHandling="0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;COMPILED_FROM_DSP"
 				RuntimeLibrary="0"
-				EnableEnhancedInstructionSet="0"
+				BufferSecurityCheck="false"
+				RuntimeTypeInfo="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -152,159 +154,67 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\src\vorbis\analysis.c"
+			RelativePath=".\src\expat\ascii.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\backends.h"
+			RelativePath=".\src\expat\asciitab.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\bitrate.c"
+			RelativePath=".\include\expat.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\bitrate.h"
+			RelativePath=".\include\expat_external.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\block.c"
+			RelativePath=".\src\expat\iasciitab.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\codebook.c"
+			RelativePath=".\src\expat\internal.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\codebook.h"
+			RelativePath=".\src\expat\latin1tab.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\codec_internal.h"
+			RelativePath=".\src\expat\nametab.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\envelope.c"
+			RelativePath=".\src\expat\utf8tab.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\envelope.h"
+			RelativePath=".\src\expat\winconfig.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\floor0.c"
+			RelativePath=".\src\expat\xmlparse.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\floor1.c"
+			RelativePath=".\src\expat\xmlrole.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\highlevel.h"
+			RelativePath=".\src\expat\xmlrole.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\info.c"
+			RelativePath=".\src\expat\xmltok.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\lookup.c"
+			RelativePath=".\src\expat\xmltok.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\vorbis\lookup.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\lookup_data.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\lpc.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\lpc.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\lsp.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\lsp.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\mapping0.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\masking.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\mdct.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\mdct.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\misc.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\os.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\psy.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\psy.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\registry.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\registry.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\res0.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\scales.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\sharedbook.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\smallft.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\smallft.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\synthesis.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\window.c"
-			>
-		</File>
-		<File
-			RelativePath=".\src\vorbis\window.h"
+			RelativePath=".\src\expat\xmltok_impl.h"
 			>
 		</File>
 	</Files>

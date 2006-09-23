@@ -18,8 +18,7 @@ class XMLnode
     friend class XMLwriter;
 public:
     XMLnode() {};
-    XMLnode(const string& name, const string& value = "")
-        : name(name), value(value), line(0) {}
+    XMLnode(const string& name, const string& value = "") : name(name), value(value), line(0) {}
 
     void load(File::Reader& reader);
     void save(File::Writer& writer);
@@ -66,7 +65,7 @@ T XMLnode::getAttribute(const string& name) const
         return cast<T>(iter->second);
     }
 
-    throw Exception("Missing attribute '" + name + "' in node '" + name + "'");
+    throw Exception("Missing attribute '" + name + "' in node '" + name + "' at line " + cast<string>(line));
 }
 
 string XMLnode::getAttribute(const string& name) const
@@ -77,7 +76,7 @@ string XMLnode::getAttribute(const string& name) const
         return iter->second;
     }
 
-    throw Exception("Missing attribute '" + name + "' in node '" + name + "'");
+    throw Exception("Missing attribute '" + name + "' in node '" + name + "' at line " + cast<string>(line));
 }
 
 template <typename T>

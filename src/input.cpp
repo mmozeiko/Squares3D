@@ -75,7 +75,7 @@ int Input::popKey()
         return -1;
     }
     int key = m_keyBuffer.front();
-    m_keyBuffer.erase(m_keyBuffer.begin());
+    m_keyBuffer.pop_front();
     return key;
 }
 
@@ -102,6 +102,6 @@ int Input::popButton()
         return -1;
     }
     int b = m_buttonBuffer.front();
-    m_buttonBuffer.erase(m_buttonBuffer.begin());
+    m_buttonBuffer.pop_front();
     return b;
 }

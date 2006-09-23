@@ -20,6 +20,7 @@ public:
     };
     virtual ~State() {}
 
+    virtual void init() {}
     virtual void control() = 0;
     virtual void update(float delta) = 0;
     virtual void updateStep(float delta) = 0;

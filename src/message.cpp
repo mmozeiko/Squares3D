@@ -48,9 +48,9 @@ bool FlowingMessage::applyDelta(float delta)
     m_timeToLive -= delta;
 
     //message fading
-    if (m_timeToLive < 1)\
+    if (m_timeToLive < 0.5f)
     {
-        m_color.w = m_timeToLive;
+        m_color.w = 2.0f*m_timeToLive;
     }
 
     return m_timeToLive <= 0.0f;

@@ -18,6 +18,11 @@ string getDateTime()
 
 string trim(const string& str)
 {
+    if (str.empty())
+    {
+        return str;
+    }
+
     size_t i = 0;
     size_t j = str.size()-1;
     while (i<str.size() && std::isspace(str[i]))
