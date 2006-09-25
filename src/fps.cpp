@@ -19,6 +19,7 @@ void FPS::reset()
     m_nextTime = m_time + 1.0f;
     m_frames = 0;
     m_totalFrames = 0;
+    m_width = 0;
 }
 
 void FPS::update()
@@ -56,6 +57,7 @@ void FPS::render() const
         0.0f);
     glColor3fv(m_color.v);
     m_font->render(m_fps);
+
     m_font->end();
 }
 

@@ -66,10 +66,29 @@ void Messages::add3D(Message* message)
         m, p, viewport,
         &vx, &vy, &vz);
 
+    //correct positions to fit on screen
+    if (vx < m_font->getWidth(message->getText()) / 2)
+    {
+        vx = m_font->getWidth(message->getText()) / 2;
+    }
+    else if (vx > Video::instance->getResolution().first - m_font->getWidth(message->getText()) / 2)
+    {
+        vx = Video::instance->getResolution().first - m_font->getWidth(message->getText()) / 2;
+    }
+
+    if (vy < 0)
+    {
+        vy = 0;
+    }
+    else if (vy > Video::instance->getResolution().second - m_font->getHeight() * 5)
+    {
+        vy = Video::instance->getResolution().second - m_font->getHeight() * 5;
+    }
+
+    message->m_position = Vector(static_cast<float>(vx),
+                                 static_cast<float>(vy),
+                                 static_cast<float>(vz));
     m_buffer.push_back(message);
-    m_buffer.back()->m_position = Vector(static_cast<float>(vx),
-                                         static_cast<float>(vy),
-                                         static_cast<float>(vz));
 }
 
 void Messages::add2D(Message* message)

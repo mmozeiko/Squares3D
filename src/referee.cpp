@@ -9,8 +9,14 @@
 #include "video.h"
 #include "language.h"
 
-bool isBallInField(const Vector& position, const Vector& lowerLeft, const Vector& upperRight)
+bool isBallInField(const Vector& position, 
+                   const Vector& lowerLeft, 
+                   const Vector& upperRight,
+                   const bool    useMiddleLines = true,
+                   const bool    useOutterLines = false)
 {
+    //just for the real field - excluding middle line
+
     Vector _lowerLeft(lowerLeft);
     Vector _upperRight(upperRight);
 
@@ -20,22 +26,54 @@ bool isBallInField(const Vector& position, const Vector& lowerLeft, const Vector
     int quadrant = getQuadrant(center);
 
     //TODO: make universaly proportional to field size?
-    float midLineWeight = 0.2f;
+    float lineWeight = 0.2f;
 
     //adjust the field size to take middle line into account
     switch(quadrant)
     {
-    case 1: _lowerLeft.x += midLineWeight;
-            _lowerLeft.z += midLineWeight;
+    case 1: if (useMiddleLines)
+            {
+                _lowerLeft.x += lineWeight;
+                _lowerLeft.z += lineWeight;
+            }
+            if (useOutterLines)
+            {
+                _upperRight.x -= lineWeight;
+                _upperRight.z -= lineWeight;
+            }
             break;
-    case 2: _upperRight.x -= midLineWeight;
-            _lowerLeft.z += midLineWeight;
+    case 2: if (useMiddleLines)
+            {
+                _upperRight.x -= lineWeight;
+                _lowerLeft.z += lineWeight;
+            }
+            if (useOutterLines)
+            {
+                _lowerLeft.x += lineWeight;
+                _upperRight.z -= lineWeight;
+            }
             break;
-    case 3: _upperRight.x -= midLineWeight;
-            _upperRight.z -= midLineWeight;
+    case 3: if (useMiddleLines)
+            {
+                _upperRight.x -= lineWeight;
+                _upperRight.z -= lineWeight;
+            }
+            if (useOutterLines)
+            {
+                _lowerLeft.x += lineWeight;
+                _lowerLeft.z += lineWeight;
+            }
             break;
-    case 4: _lowerLeft.x += midLineWeight;
-            _upperRight.z -= midLineWeight;
+    case 4: if (useMiddleLines)
+            {
+                _lowerLeft.x += lineWeight;
+                _upperRight.z -= lineWeight;
+            }
+            if (useOutterLines)
+            {
+                _lowerLeft.z += lineWeight;
+                _upperRight.x -= lineWeight;
+            }
             break;
     }
 
@@ -259,7 +297,9 @@ void Referee::processBallPlayer(const Body* player)
                 && (m_lastTouchedPlayer == player)
                 && (isBallInField(m_ball->getPosition(), 
                                   m_players[player].second->m_lowerLeft, 
-                                  m_players[player].second->m_upperRight)))
+                                  m_players[player].second->m_upperRight,
+                                  true,
+                                  true)))
             {
                 //critical event. double-touched -> fault
 

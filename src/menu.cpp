@@ -87,13 +87,11 @@ public:
 
     void calculateBounds(const Vector& position, const Font* font)
     {
-        m_lowerLeft = Vector(position.x - font->getWidth(getString()), 0, position.y);
-        m_upperRight = Vector(position.x + font->getWidth(getString()), 0, position.y + font->getHeight());
+        m_lowerLeft = Vector(position.x - font->getWidth(getString())/2.0f, 0, position.y);
+        m_upperRight = Vector(position.x + font->getWidth(getString())/2.0f, 0, position.y + font->getHeight());
     }
 
-    // ?? todo, varbût vajag izòemt
     virtual void render(const Font* font) const          { font->render(getString(), Font::Align_Center); }
-    virtual float getStringW(const Font* font) const     { return 0; }
 };
 
 
@@ -114,7 +112,6 @@ public:
     bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
     
     void render(const Font* font) const;
-    float getStringW(const Font* font) const       { return static_cast<float>(font->getWidth(getString())); }
 
 private:
     Value m_value;
@@ -416,16 +413,6 @@ void Submenu::center(const Vector& centerPos)
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
     upperPos.y += m_height / 2 - m_font->getHeight() / 2;
-
-    float maxStringW = 0.0f;
-    for each_const(Entries, m_entries, iter)
-    {
-        float w = (*iter)->getStringW(m_font);
-        if (w > maxStringW)
-        {
-            maxStringW = w;
-        }
-    }
         
     for (size_t i = 0; i < m_entries.size(); i++)
     {      
@@ -690,15 +677,11 @@ void Menu::setState(State::Type state)
 void Menu::setSubmenu(const string& submenuToSwitchTo)
 {
     m_currentSubmenu = m_submenus.find(submenuToSwitchTo)->second;
-    if (submenuToSwitchTo == "options"
-        || submenuToSwitchTo == "audioOptions"
-        || submenuToSwitchTo == "videoOptions")
+
+    Entries& entries = m_submenus[submenuToSwitchTo]->m_entries;
+    for each_(Entries, entries, iter)
     {
-        Entries& entries = m_submenus[submenuToSwitchTo]->m_entries;
-        for each_(Entries, entries, iter)
-        {
-            (*iter)->reset();
-        }
+        (*iter)->reset();
     }
 }
 
