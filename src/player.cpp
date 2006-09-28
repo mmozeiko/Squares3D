@@ -36,9 +36,15 @@ Player::~Player()
     NewtonDestroyJoint(World::instance->m_newtonWorld, m_upVector);
 }
 
-Vector Player::getPosition()
+Vector Player::getPosition() const
 {
     return m_body->getPosition();
+}
+
+Vector Player::getFieldCenter() const
+{
+    Vector sum = m_lowerLeft + m_upperRight;
+    return Vector(sum.x / 2, 0, sum.z / 2);
 }
 
 void Player::setDirection(const Vector& direction)

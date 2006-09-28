@@ -9,6 +9,10 @@
 
     <properties property0 = "player" 
                 property1 = "player" 
+                staticFriction       = "0.0"
+                kineticFriction      = "0.0"
+                elasticityCoefficient = "0.0"
+                softnessCoefficient   = "0.0"/>
     />
 
     <properties property0 = "player" 

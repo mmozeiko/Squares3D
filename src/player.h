@@ -20,7 +20,8 @@ public:
 
     virtual void control() = 0;
 
-    Vector getPosition();
+    Vector getPosition() const;
+    Vector getFieldCenter() const;
 
     //todo: maybe private
     void onCollide(const Body* other, const NewtonMaterial* material);

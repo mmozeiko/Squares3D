@@ -70,8 +70,8 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
             static const float uv[][2] = {
                 { 0.0f, 1.0f },
                 { 1.0f, 1.0f },
-                { 0.0f, 0.0f },
                 { 1.0f, 0.0f },
+                { 0.0f, 0.0f },
             };
 
             for (int k=0; k<4; k++)
@@ -135,12 +135,12 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     };
 
     static const int faces[][4] = {
-        { 0, 1, 3, 2 }, // bottom
-        { 4, 7, 5, 6 }, // up
-        { 4, 5, 0, 1 }, // front
-        { 6, 7, 2, 3 }, // back
-        { 7, 4, 3, 0 }, // left
-        { 5, 6, 1, 2 }, // right
+        { 0, 1, 2, 3 }, // bottom
+        { 4, 7, 6, 5 }, // up
+        { 4, 5, 1, 0 }, // front
+        { 6, 7, 3, 2 }, // back
+        { 7, 4, 0, 3 }, // left
+        { 5, 6, 2, 1 }, // right
     };
     
     static const float normals[][3] = {
@@ -155,7 +155,7 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     for (int c = 0; c < PIECE_XCOUNT * PIECE_YCOUNT; c++)
     {
         glNewList(m_cubeListBase + c, GL_COMPILE);
-        glBegin(GL_TRIANGLE_STRIP);
+        glBegin(GL_QUADS);
         for (int i = 0; i < 6; i++)
         {
             glNormal3fv(normals[i]);

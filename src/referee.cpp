@@ -92,8 +92,51 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard):
 
 void Referee::resetBall()
 {
-    m_ball->setTransform(Vector(0,3,0), Vector(0,0,0));
-    NewtonBodySetVelocity(m_ball->m_newtonBody, Vector().v);
+    Vector resetPosition = Vector(0, 1.5f, 0);
+    Vector velocity = Vector::Zero;
+
+    if ((m_lastTouchedObject != NULL) 
+     || (m_lastTouchedPlayer != NULL)
+     || (m_lastFieldOwner != NULL))
+    {
+        //the game was in progress
+        if (m_lastTouchedObject == NULL)
+        {
+            //middle line -> reset coords in center
+            resetPosition = Vector(0, resetPosition.y * 3, 0);
+        }
+        else if (m_lastTouchedObject == m_ground)
+        {
+            //ball has left game field from middle line one of players fields
+            //reset from last owner (m_lastFieldOwner)
+            Vector center = m_players.find(m_lastFieldOwner)->second.second->getFieldCenter();
+            //set the reset position to center of players field
+            resetPosition = Vector(center.x, resetPosition.y, center.z);
+            velocity = (Vector::Zero - resetPosition) * 2;
+        }
+        else
+        {
+            //ball has left game field from one of the players
+            //reset from m_lastTouchedPlayer
+            Vector center = m_players.find(m_lastTouchedPlayer)->second.second->getFieldCenter();
+            //set the reset position to center of players field
+            resetPosition = Vector(center.x, resetPosition.y, center.z);
+            velocity = (Vector::Zero - resetPosition) * 2;
+        }
+    }
+    else
+    {
+        //the game has just begun
+        //reset coords in center and ball must hit the ground 3 times (TODO)
+        //before it can be touched by players
+        resetPosition = Vector(0, resetPosition.y * 3, 0);
+    }
+
+
+    //m_ball->set
+    m_ball->setTransform(resetPosition, Vector::Zero);
+    NewtonBodySetOmega(m_ball->m_newtonBody, Vector::Zero.v);
+    NewtonBodySetVelocity(m_ball->m_newtonBody, velocity.v);
 }
 
 void Referee::initEvents()
@@ -117,8 +160,8 @@ void Referee::processCriticalEvent()
     }
     else
     {
-        initEvents();
         resetBall();
+        initEvents();
     }
 
 }
@@ -127,6 +170,7 @@ void Referee::registerBall(Ball* ball)
 {
     ball->m_referee = this;
     m_ball = ball->m_body;
+    resetBall();
 }
 
 void Referee::registerPlayer(const string& name, Player* player)
@@ -255,22 +299,22 @@ void Referee::processBallGround()
     }
     else
     {
-      //BALL HAS HIT THE FIELD INSIDE
-      //save the touched field
-      for each_const(BodyToPlayerDataMap, m_players, player)
-      {
-          //field excluding middle line
-          if (isBallInField(ballPos, 
-                            player->second.second->m_lowerLeft, 
-                            player->second.second->m_upperRight))
-          {
-             m_lastFieldOwner =    player->first;
-             m_lastTouchedObject = m_ground;
-             break;
-          }
-          m_lastTouchedObject = NULL; //if has hit the middle line
-      }
-        
+        //non critical event - update events status
+        //BALL HAS HIT THE FIELD INSIDE
+        //save the touched field
+        for each_const(BodyToPlayerDataMap, m_players, player)
+        {
+            //field excluding middle line
+            if (isBallInField(ballPos, 
+                              player->second.second->m_lowerLeft, 
+                              player->second.second->m_upperRight))
+            {
+               m_lastFieldOwner =    player->first;
+               m_lastTouchedObject = m_ground;
+               break;
+            }
+            m_lastTouchedObject = NULL; //if has hit the middle line
+        }
     }
 }
 

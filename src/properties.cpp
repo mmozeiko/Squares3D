@@ -71,6 +71,7 @@ int Properties::getPropertyID(const string& name)
     if (iter == m_propertiesID.end())
     {
         int result = ++m_uniqueID;
+        clog << "Property " << name << " id = " << result << endl;
         m_propertiesID.insert(make_pair(name, result));
 
         return result;
@@ -271,6 +272,12 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     {
         prop = self->properties->get(self->properties->getDefault(), 
                                      self->properties->getDefault());
+    }
+    int playerID = self->properties->getPropertyID("player");
+    if (m0==playerID && m1==playerID)
+    {
+        // TODO: this is hack, to bounce players off each other
+        NewtonMaterialSetContactNormalAcceleration(material, 50.0f);
     }
 
     prop->apply(material);

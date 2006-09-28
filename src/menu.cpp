@@ -501,16 +501,17 @@ Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_state(State::Current)
 
     m_backGround = new Face();
     m_backGround->vertexes.push_back(Vector::Zero);
-    m_backGround->vertexes.push_back(Vector(0, resY, 0));
-    m_backGround->vertexes.push_back(Vector(resX, 0, 0));
-    m_backGround->vertexes.push_back(Vector(resX, resY, 0));
+    m_backGround->vertexes.push_back(Vector(0.0f, resY, 0.0f));
+    m_backGround->vertexes.push_back(Vector(resX, 0.0f, 0.0f));
+    m_backGround->vertexes.push_back(Vector(resX, resY, 0.0f));
 
-    m_backGround->uv.push_back(UV(0, 0));
-    m_backGround->uv.push_back(UV(0, 1));
-    m_backGround->uv.push_back(UV(1, 0));
-    m_backGround->uv.push_back(UV(1, 1));
+    m_backGround->uv.push_back(UV(0.0f, 0.0f));
+    m_backGround->uv.push_back(UV(0.0f, 1.0f));
+    m_backGround->uv.push_back(UV(1.0f, 0.0f));
+    m_backGround->uv.push_back(UV(1.0f, 1.0f));
 
-    m_backGroundTexture = Video::instance->loadTexture("paradise");
+    m_backGroundTexture = Video::instance->loadTexture("paradise", false);
+    m_backGroundTexture->setFilter(Texture::Bilinear);
 
     loadMenu();
     Input::instance->startButtonBuffer();
@@ -713,14 +714,11 @@ void Menu::render() const
     m_font->begin();
 
     m_backGroundTexture->bind();
-    
     glDisableClientState(GL_NORMAL_ARRAY);
     Video::instance->renderFace(*m_backGround);
     glEnableClientState(GL_NORMAL_ARRAY);
-    
+
     glBindTexture(GL_TEXTURE_2D, m_font->m_texture);
-
     m_currentSubmenu->render();
-
     m_font->end();
 }
