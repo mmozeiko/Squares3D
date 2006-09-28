@@ -939,7 +939,10 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
         _glfwPlatformCloseWindow();
         return GL_FALSE;
     }
-    ShowWindow( _glfwWin.Wnd, SW_HIDE );
+    if( !_glfwWin.Fullscreen )
+    {
+        ShowWindow( _glfwWin.Wnd, SW_HIDE );
+    }
 
     // Get a device context
     _glfwWin.DC = GetDC( _glfwWin.Wnd );
@@ -1055,7 +1058,10 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
                 SetWindowPos( _glfwWin.Wnd, HWND_TOPMOST, 0,0,0,0,
                               SWP_NOMOVE | SWP_NOSIZE );
             }
-            ShowWindow( _glfwWin.Wnd, SW_SHOW );
+            else
+            {
+                ShowWindow( _glfwWin.Wnd, SW_SHOW );
+            }
             _glfwSetForegroundWindow( _glfwWin.Wnd );
             SetFocus( _glfwWin.Wnd );
         
@@ -1155,7 +1161,10 @@ int _glfwPlatformOpenWindow( int width, int height, int redbits,
         SetWindowPos( _glfwWin.Wnd, HWND_TOPMOST, 0,0,0,0,
                       SWP_NOMOVE | SWP_NOSIZE );
     }
-    ShowWindow( _glfwWin.Wnd, SW_SHOW );
+    else
+    {
+        ShowWindow( _glfwWin.Wnd, SW_SHOW );
+    }
     _glfwSetForegroundWindow( _glfwWin.Wnd );
     SetFocus( _glfwWin.Wnd );
 
