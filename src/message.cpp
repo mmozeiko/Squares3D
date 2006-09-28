@@ -1,6 +1,8 @@
 #include "message.h"
 #include "messages.h"
 #include "formatter.h"
+#include "font.h"
+#include "video.h"
 
 Message::Message(const wstring&        message, 
                  const Vector&         position, 
@@ -26,7 +28,61 @@ bool Message::applyDelta(float delta)
 {
     return false;
 }
-    
+
+void Message::render(const Font* font) const
+{
+    if (m_position.z <= 1.0)
+    {
+        glPushMatrix();
+        glTranslatef(m_position.x, m_position.y, m_position.z);
+        glColor4fv(m_color.v);
+        font->render(getText(), m_align);
+        glPopMatrix();
+    }
+}
+
+BlinkingMessage::BlinkingMessage(
+                const wstring&        message, 
+                const Vector&         position, 
+                const Vector&         color, 
+                const Font::AlignType align,
+                const float           blinkIntensity) :
+    Message(message, position, color, align),
+    m_visible(true),
+    m_blinkCurrent(blinkIntensity),
+    m_blinkIntensity(blinkIntensity)
+{
+}
+
+void BlinkingMessage::render(const Font* font) const
+{
+    if (m_visible)   
+    {
+        Message::render(font);
+    }
+}
+
+bool BlinkingMessage::applyDelta(float delta)
+{
+    if (m_visible)
+    {
+        m_blinkCurrent -= delta;
+        if (m_blinkCurrent < 0.0f)
+        {
+            m_visible = false;
+        }
+    }
+    else
+    {
+        m_blinkCurrent += delta;
+        if (m_blinkCurrent > m_blinkIntensity)
+        {
+            m_visible = true;
+        }
+    }
+    return false;
+}
+
 FlowingMessage::FlowingMessage(
                     const wstring&        message, 
                     const Vector&         position, 

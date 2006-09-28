@@ -65,7 +65,7 @@
         <body id="penguin3">
             <position x="-8.0" y="5.5" z="4.0" />
             <rotation x="0.0" y="0.0" z="0.0" />
-            <collision>player_small</collision>
+            <collision>Dmitry</collision>
         </body>
 
 

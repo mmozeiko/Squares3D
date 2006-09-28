@@ -6,6 +6,7 @@
 #include "vmath.h"
 
 class Messages;
+class Font;
 
 class Message
 {
@@ -25,10 +26,30 @@ protected:
 
     virtual bool applyDelta(float delta);
 
+    virtual void Message::render(const Font* font) const;
+
     wstring         m_text;
     Vector          m_position;
     Vector          m_color;
     Font::AlignType m_align;
+};
+
+class BlinkingMessage : public Message
+{
+public:
+    BlinkingMessage(
+        const wstring&        message, 
+        const Vector&         position, 
+        const Vector&         color, 
+        const Font::AlignType align = Font::Align_Left,
+        const float           blinkIntensity = 0.2f);
+
+protected:
+    bool  m_visible;
+    float m_blinkCurrent;
+    float m_blinkIntensity;
+    bool applyDelta(float delta);
+    void render(const Font* font) const;
 };
 
 class FlowingMessage : public Message

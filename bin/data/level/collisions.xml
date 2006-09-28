@@ -5,6 +5,11 @@
             <rotation x="-90.0" y="0.0"  z="0.0" />
         </collision>
 
+        <collision id="Dmitry" type="sphere" mass="20.0" material="penguin" property="player">
+            <radius   x="0.35"  y="0.35" z="0.5" />
+            <rotation x="-90.0" y="0.0"  z="0.0" />
+        </collision>
+        
         <collision id="player_biggy" type="box" mass="30.0" property="player">
             <size     x="0.9"  y="0.9" z="0.9" />
             <rotation x="-90.0" y="0.0"  z="0.0" />

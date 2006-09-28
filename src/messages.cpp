@@ -103,18 +103,7 @@ void Messages::render() const
     for each_const(MessageVector, m_buffer, iter)
     {
         Message* message = *iter;
-        if (message->m_position.z <= 1.0)
-        {
-            glPushMatrix();
-            glTranslatef(
-                        message->m_position.x,
-                        message->m_position.y,
-                        message->m_position.z);
-            
-            glColor4fv(message->m_color.v);
-            m_font->render(message->getText(), message->m_align);
-            glPopMatrix();
-        }
+        message->render(m_font);
     }
     m_font->end();
 }

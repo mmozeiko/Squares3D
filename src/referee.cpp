@@ -155,7 +155,11 @@ void Referee::processCriticalEvent()
         Vector center = Vector(static_cast<float>(Video::instance->getResolution().first) / 2,
                                static_cast<float>(Video::instance->getResolution().second) / 2,
                                0.0f);
-        m_messages->add2D(new Message(Language::instance->get(TEXT_GAME_OVER), center, Vector(1,0,0), Font::Align_Center));
+        m_messages->add2D(new BlinkingMessage(Language::instance->get(TEXT_GAME_OVER), 
+                                              center, 
+                                              Vector(1,0,0), 
+                                              Font::Align_Center,
+                                              0.8f));
         m_gameOver = true;
     }
     else

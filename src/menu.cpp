@@ -29,18 +29,33 @@ public:
         return m_values[m_current];
     }
 
-    void activateNext()
+    void activateNext(bool forward)
     {
         if (!m_values.empty())
         {
-            if (m_current == (m_values.size() - 1))
+            if (forward)
             {
-                m_current = 0;
+                if (m_current == (m_values.size() - 1))
+                {
+                    m_current = 0;
+                }
+                else
+                {
+                    m_current++;
+                }
             }
             else
             {
-                m_current++;
+                if (m_current == 0)
+                {
+                    m_current = m_values.size() - 1;
+                }
+                else
+                {
+                    m_current--;
+                }
             }
+
         }
     }
 
@@ -75,7 +90,7 @@ public:
     Entry(const wstring& stringIn) : m_string(stringIn) {}
     virtual ~Entry() {}
 
-    virtual void click() = 0;
+    virtual void click(int button) = 0;
     virtual wstring getString() const                    { return m_string; }
     virtual string getValueID() const                    { return "";       }
     virtual wstring getValue() const                     { return L"";      }
@@ -101,7 +116,7 @@ public:
     OptionEntry(const wstring& stringIn, const Value& value) :
         Entry(stringIn), m_value(value), m_enabled(true) {}
 
-    void click()                                   { if (m_enabled) m_value.activateNext(); }
+    void click(int button);
     wstring getString() const                      { return m_string +  L": " + m_value.getCurrent(); }
     string getValueID() const                      { return m_value.m_id; }
     wstring getValue() const                       { return m_value.getCurrent(); }
@@ -118,6 +133,19 @@ private:
     bool m_enabled;
 };
 
+void OptionEntry::click(int button)
+{
+    if ((button == GLFW_MOUSE_BUTTON_LEFT)
+        || (button == GLFW_MOUSE_BUTTON_RIGHT)
+        || (button == GLFW_KEY_LEFT)
+        || (button == GLFW_KEY_RIGHT))
+    {
+        if (m_enabled)
+        {
+            m_value.activateNext((button == GLFW_MOUSE_BUTTON_RIGHT) || (button == GLFW_KEY_RIGHT));
+        }
+    }
+}
 
 class GameEntry : public Entry
 {
@@ -125,7 +153,7 @@ public:
     GameEntry(const wstring& stringIn, Menu* menu, State::Type stateToSwitchTo) :
       Entry(stringIn), m_menu(menu), m_stateToSwitchTo(stateToSwitchTo) {}
     
-    void click() { m_menu->setState(m_stateToSwitchTo); }
+    void click(int button);
 
 private:
     Menu* m_menu;
@@ -133,33 +161,48 @@ private:
 
 };
 
+void GameEntry::click(int button) 
+{ 
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER))
+    {
+        m_menu->setState(m_stateToSwitchTo);
+    }
+}
+
 class SubmenuEntry : public Entry
 {
 public: 
     SubmenuEntry(const wstring& stringIn, Menu* menu, const string&  submenuToSwitchTo) :
-      Entry(stringIn), m_menu(menu), m_submenuToSwitchTo(submenuToSwitchTo) {}
+        Entry(stringIn), m_menu(menu), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
-      void click() { m_menu->setSubmenu(m_submenuToSwitchTo); }
+    void click(int button); 
 
 protected:
     Menu*  m_menu;
     string m_submenuToSwitchTo;
 };
 
+void SubmenuEntry::click(int button) 
+{ 
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER))
+    {
+        m_menu->setSubmenu(m_submenuToSwitchTo); 
+    }
+}
 
 class ApplyOptionsEntry : public SubmenuEntry
 {
 public: 
     ApplyOptionsEntry(const wstring& stringIn, Menu* menu, const string&  submenuToSwitchTo) :
       SubmenuEntry(stringIn, menu, submenuToSwitchTo) {}
-    void click();
+    void click(int button);
 };
 
 class SpacerEntry : public Entry
 {
 public: 
     SpacerEntry() : Entry(L"") {}
-    void click()               {}
+    void click(int button)    {}
     wstring getString() const  { return L""; }
     bool isEnabled() const     { return false; }
 };
@@ -282,8 +325,13 @@ void OptionEntry::render(const Font* font) const
     glPopMatrix();
 }
 
-void ApplyOptionsEntry::click()
+void ApplyOptionsEntry::click(int button)
 {
+    if ((button != GLFW_MOUSE_BUTTON_LEFT) && (button != GLFW_KEY_ENTER))
+    {
+        return;
+    }
+
     //save config settings
     for each_const(Entries, m_menu->m_currentSubmenu->m_entries, iter)
     {
@@ -343,32 +391,22 @@ void ApplyOptionsEntry::click()
 
 void Submenu::control(int key)
 {
-    bool left_button = false;
     int b;
     do
     {
         b = Input::instance->popButton();
-        if (b == GLFW_MOUSE_BUTTON_LEFT)
-        {
-            left_button = true;
-        }
     }
-    while (b != -1);
+    while (Input::instance->popButton() != -1);
     
-    bool enter_key = (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER);
-    bool down_key = (key == GLFW_KEY_DOWN);
-    bool up_key = (key == GLFW_KEY_UP);
-
-
     //get mouse position
     const Mouse& mouse = Input::instance->mouse();
     int videoHeight = Video::instance->getResolution().second;
     Vector mousePos = Vector(static_cast<float>(mouse.x), 0, static_cast<float>(videoHeight - mouse.y));
 
     //adjust active entry depending on up/down keys
-    if (down_key || up_key)
+    if ((key == GLFW_KEY_DOWN) || (key == GLFW_KEY_UP))
     {
-        activateNextEntry(down_key);
+        activateNextEntry(key == GLFW_KEY_DOWN);
     }
 
     //adjust active entry depending on mouse position
@@ -386,9 +424,13 @@ void Submenu::control(int key)
 
     Entry* currentEntry = m_entries[m_activeEntry];
 
-    if (enter_key || (left_button && currentEntry->isMouseOver(mousePos)))
+    if (b != -1)
     {
-        currentEntry->click();
+        currentEntry->click(b);
+    }
+    else if (key != -1)
+    {
+        currentEntry->click(key);
     }
 
     m_previousMousePos = mousePos;
@@ -701,12 +743,12 @@ void Menu::control()
             else
             {
                 // assume back is last entry
-                m_currentSubmenu->m_entries.back()->click();
+                m_currentSubmenu->m_entries.back()->click(GLFW_KEY_ENTER);
             }
         }
-        m_currentSubmenu->control(key);       
+        m_currentSubmenu->control(key);
     }
-    while (key != -1);
+    while (Input::instance->popKey() != -1);
 }
 
 void Menu::render() const

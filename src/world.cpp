@@ -40,12 +40,14 @@ State::Type World::progress()
             else
             {
                 m_freeze = true;
-                escMessage = new Message(Language::instance->get(TEXT_ESC_MESSAGE), 
-                                         Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
-                                                static_cast<float>(Video::instance->getResolution().second / 2), 
-                                                0), 
-                                         Vector(1, 0, 0),
-                                         Font::Align_Center);
+                float resY = Video::instance->getResolution().second;
+                escMessage = new Message(
+                                Language::instance->get(TEXT_ESC_MESSAGE), 
+                                Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
+                                       static_cast<float>(resY / 2) + resY / 4, 
+                                       0.0f), 
+                                Vector(0.0f, 0.0f, 1.0f),
+                                Font::Align_Center);
                 m_messages->add2D(escMessage);
             }
         }
