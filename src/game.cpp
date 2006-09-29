@@ -18,8 +18,6 @@
 
 #include "vmath.h"
 
-#define FIXED_TIMESTEP
-
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
 #define MOVIE_HEIGHT 480
@@ -27,7 +25,7 @@
 bool   g_needsToReload = false;
 string g_optionsEntry;
 
-Game::Game()
+Game::Game() : m_fixedTimestep(true)
 {
     // these and only these objects are singletons,
     // they all have public static instance attribute
@@ -50,6 +48,7 @@ Game::Game()
     else
     {
         m_state = new Intro();
+        m_fixedTimestep = false;
     }
     m_state->init();
 
@@ -136,7 +135,7 @@ void Game::run()
     float accum = 0.0f;
     float currentTime = timer.read();
     float startTime = currentTime;
-    
+
     while (running)
     {
         m_audio->update();
@@ -155,40 +154,28 @@ void Game::run()
         
         //if (deltaTime > 0.01f) deltaTime = 0.01f; // TODO: REMOVE!!!!!
 
-        accum += deltaTime;
-
-        m_state->update(accum);
-
-#ifndef FIXED_TIMESTEP
-        m_state->updateStep(accum);
-        accum = 0.0f;
-#else
-        if (accum >= 4*DT)
+        if (m_fixedTimestep)
         {
-            // hmmm.. not a nice HACK.
-            while (accum >= 4*DT)
-            {
-                m_state->updateStep(4*DT);
-                accum -= 4*DT;
-            }
-            m_state->updateStep(accum);
-            accum = 0.0f;
-        }
-        else
-        {
+            accum += deltaTime;
+
+            m_state->update(accum - fmodf(accum, DT));
+
             while (accum >= DT)
             {
                 m_state->updateStep(DT);
                 accum -= DT;
             }
         }
-#endif
+        else
+        {
+            m_state->update(deltaTime);
+            m_state->updateStep(deltaTime);
+        }
 
         m_state->prepare();
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         m_state->render();
-
+        
         fps.update();
 
 #ifndef MAKE_MOVIE
@@ -197,7 +184,6 @@ void Game::run()
             fps.render();
         }
 #endif
-
         glfwSwapBuffers();
 
 #ifdef MAKE_MOVIE
@@ -256,11 +242,14 @@ void Game::run()
     clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;
 }
 
-State* Game::switchState(const State::Type nextState) const
+State* Game::switchState(const State::Type nextState)
 {
+    m_fixedTimestep = true;
     switch (nextState)
     {
-    case State::Intro: return new Intro();
+    case State::Intro:
+        m_fixedTimestep = false;
+        return new Intro();
     case State::Menu: return new Menu();
     case State::World: return new World();
     //TODO: implement these

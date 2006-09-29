@@ -657,3 +657,26 @@ void Video::unloadTextures()
     }
     m_textures.clear();
 }
+
+void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) const
+{
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+    glBegin(GL_POLYGON);
+        for (int i=0; i<9; i++)
+        {
+            glVertex2f(lower.x - r*std::sinf(i*M_PI_2/8), lower.y - r*std::cosf(i*M_PI_2/8));
+        }
+        for (int i=0; i<9; i++)
+        {
+            glVertex2f(lower.x - r*std::sinf((8-i)*M_PI_2/8), upper.y + r*std::cosf((8-i)*M_PI_2/8));
+        }
+        for (int i=0; i<9; i++)
+        {
+            glVertex2f(upper.x + r*std::sinf(i*M_PI_2/8), upper.y + r*std::cosf(i*M_PI_2/8));
+        }
+        for (int i=0; i<9; i++)
+        {
+            glVertex2f(upper.x + r*std::sinf((8-i)*M_PI_2/8), lower.y - r*std::cosf((8-i)*M_PI_2/8));
+        }
+    glEnd();
+}

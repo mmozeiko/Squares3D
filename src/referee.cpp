@@ -85,9 +85,30 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard):
     m_gameOver(false),
     m_messages(messages),
     m_scoreBoard(scoreBoard),
-    m_matchPoints(21)
+    m_matchPoints(21),
+    m_faultTime(0),
+    m_mustResetBall(false),
+    m_timer()
 {
     initEvents();
+}
+
+void Referee::registerFaultTime()
+{
+    m_faultTime = m_timer.read();
+    m_mustResetBall = false;
+}
+
+void Referee::update()
+{
+    if (m_mustResetBall && !m_gameOver)
+    {
+        if (m_timer.read() - m_faultTime > 1.0f)
+        {
+            resetBall();
+            m_mustResetBall = false;
+        }
+    }
 }
 
 void Referee::resetBall()
@@ -108,6 +129,7 @@ void Referee::resetBall()
         else if (m_lastTouchedObject == m_ground)
         {
             //ball has left game field from middle line one of players fields
+            //also happens when player touches twice
             //reset from last owner (m_lastFieldOwner)
             Vector center = m_players.find(m_lastFieldOwner)->second.second->getFieldCenter();
             //set the reset position to center of players field
@@ -132,11 +154,11 @@ void Referee::resetBall()
         resetPosition = Vector(0, resetPosition.y * 3, 0);
     }
 
-
     //m_ball->set
     m_ball->setTransform(resetPosition, Vector::Zero);
     NewtonBodySetOmega(m_ball->m_newtonBody, Vector::Zero.v);
     NewtonBodySetVelocity(m_ball->m_newtonBody, velocity.v);
+    initEvents();
 }
 
 void Referee::initEvents()
@@ -164,8 +186,8 @@ void Referee::processCriticalEvent()
     }
     else
     {
-        resetBall();
-        initEvents();
+        registerFaultTime();
+        m_mustResetBall = true;
     }
 
 }
@@ -186,7 +208,7 @@ void Referee::registerPlayer(const string& name, Player* player)
 
 void Referee::process(const Body* body1, const Body* body2)
 {
-    if (!m_gameOver)
+    if (!(m_gameOver || m_mustResetBall))
     {
         if (body1 == m_ball)
         {

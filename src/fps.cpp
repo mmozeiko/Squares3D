@@ -19,14 +19,13 @@ void FPS::reset()
     m_nextTime = m_time + 1.0f;
     m_frames = 0;
     m_totalFrames = 0;
-    m_width = 0;
 }
 
 void FPS::update()
 {
     m_frames++;
     float curTime = m_timer.read();
-    if (curTime > m_nextTime)
+    if (curTime >= m_nextTime)
     {
         float delta = curTime - m_time;
         float fps = m_frames / delta;
@@ -47,9 +46,9 @@ void FPS::update()
 
 void FPS::render() const
 {
-    m_font->begin();
+    const IntPair res = Video::instance->getResolution();
 
-    IntPair res = Video::instance->getResolution();
+    m_font->begin();
 
     glTranslatef(
         static_cast<float>(res.first - m_width)/2, 

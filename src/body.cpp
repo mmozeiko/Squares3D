@@ -155,7 +155,7 @@ Vector Body::getRotation()
 void Body::onSetForceAndTorque()
 {
     Vector force = gravityVec * m_totalMass;
-    NewtonBodyAddForce(m_newtonBody, force.v);
+    NewtonBodySetForce(m_newtonBody, force.v);
     if (m_collideable != NULL)
     {
         m_collideable->onSetForceAndTorque();

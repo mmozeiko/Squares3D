@@ -5,7 +5,7 @@
 #include "vmath.h"
 #include "state.h"
 
-#define DT 0.01f
+const float DT = 0.01f;
 
 class Config;
 class Language;
@@ -28,7 +28,6 @@ public:
     
     void run();
     void saveScreenshot(const FPS& fps) const;
-    State* switchState(const State::Type newState) const;
 
     // Singletons
     Config*   m_config;
@@ -38,8 +37,12 @@ public:
     Network*  m_network;
     Input*    m_input;
 
-    // Normal
-    State*   m_state;
+
+private:
+    State*    m_state;
+
+    bool      m_fixedTimestep;
+    State* switchState(const State::Type newState);
 };
 
 #endif

@@ -21,8 +21,8 @@ public:
     void remove(Message* message);
     void render() const;
 
-private:
     const Font*   m_font;
+private:
     MessageVector m_buffer;
 };
 

@@ -3,9 +3,9 @@
 #include "texture.h"
 
 static const float FADE_IN_SECS = 2.0f;
-static const float BALL_KICK_SECS = 5.0f;
-static const float FADE_OUT_SECS = 16.0f;
-static const float MENU_SHOW_SECS = 18.0f;
+static const float BALL_KICK_SECS = 3.0f;
+static const float FADE_OUT_SECS = 11.0f;
+static const float MENU_SHOW_SECS = 13.0f;
 
 static const float PIECE_MASS = 0.5f;
 static const float PIECE_SIZEX = 0.3f;
@@ -16,7 +16,7 @@ static const int PIECE_XCOUNT = 11;
 static const int PIECE_YCOUNT = 6;
 
 static const float BALL_MASS = 5000.0f;
-static const float BALL_R = 0.5f;
+static const float BALL_R = 0.6f;
 
 static void OnForce(const NewtonBody* body)
 {
@@ -244,7 +244,7 @@ void Intro::prepare()
 
 void Intro::render() const
 {
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // camera
 

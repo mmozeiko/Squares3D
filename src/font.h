@@ -2,6 +2,7 @@
 #define __FONT_H__
 
 #include "common.h"
+#include "vmath.h"
 
 class Font : NoCopy
 {
@@ -19,7 +20,7 @@ public:
     int getWidth(const wstring& text) const;
     int getHeight() const;
 
-    void begin(bool shadowed = true, float shadowWidth = 1.5f) const;
+    void begin(bool shadowed = true, const Vector& shadow = Vector(0.1f, 0.1f, 0.1f), float shadowWidth = 1.5f) const;
     void render(const wstring& text, AlignType align = Align_Left) const;
     void end() const;
 
@@ -35,6 +36,7 @@ private:
     int       m_height;
     IntVector m_widths;
     
+    mutable Vector    m_shadow;
     mutable bool      m_shadowed;
     mutable float     m_shadowWidth;
     

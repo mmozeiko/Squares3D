@@ -43,6 +43,7 @@ public:
     void renderSphere(float radius = 1.0f) const;
     void renderWireSphere(float radius = 1.0f) const;
     void renderAxes(float size = 5.0f) const;
+    void renderRoundRect(const Vector& lower, const Vector& upper, float r) const;
 
     void begin() const;
     void begin(const Matrix& matrix) const;

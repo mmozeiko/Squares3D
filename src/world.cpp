@@ -40,11 +40,11 @@ State::Type World::progress()
             else
             {
                 m_freeze = true;
-                float resY = Video::instance->getResolution().second;
+                float resY = static_cast<float>(Video::instance->getResolution().second);
                 escMessage = new Message(
                                 Language::instance->get(TEXT_ESC_MESSAGE), 
                                 Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
-                                       static_cast<float>(resY / 2) + resY / 4, 
+                                       resY / 2 + resY / 4, 
                                        0.0f), 
                                 Vector(0.0f, 0.0f, 1.0f),
                                 Font::Align_Center);
@@ -203,6 +203,7 @@ void World::update(float delta)
     m_camera->update(delta);
     m_scoreBoard->update();
     m_messages->update(delta);
+    m_referee->update();
 }
 
 void World::prepare()
@@ -240,6 +241,26 @@ void World::render() const
     }
 
     // text messages are last
+    if (m_freeze)
+    {
+        m_messages->m_font->begin();
+        const Vector& pos = escMessage->getPosition();
+        int w = m_messages->m_font->getWidth(escMessage->getText());
+        int h = m_messages->m_font->getHeight();
+        
+        Vector lower = pos;
+        lower.x -= w/2;
+        lower.y -= 2*h;
+
+        Vector upper = pos;
+        upper.x += w/2;
+        upper.y += h;
+
+        glDisable(GL_TEXTURE_2D);
+        Video::instance->renderRoundRect(lower, upper, static_cast<float>(h/2));
+        glEnable(GL_TEXTURE_2D);
+        m_messages->m_font->end();
+    }
     m_messages->render();
 }
 

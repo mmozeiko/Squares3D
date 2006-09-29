@@ -59,6 +59,20 @@ public:
         }
     }
 
+    int getMaxWidth(const Font* font) const
+    {
+        int maxW = 0;
+        for each_const(Values, m_values, value)
+        {
+            int w = font->getWidth(*value);
+            if (w > maxW)
+            {
+                maxW = w;
+            }
+        }
+        return maxW;
+    }
+
 
 protected:
     Values m_values;
@@ -105,8 +119,24 @@ public:
         m_lowerLeft = Vector(position.x - font->getWidth(getString())/2.0f, 0, position.y);
         m_upperRight = Vector(position.x + font->getWidth(getString())/2.0f, 0, position.y + font->getHeight());
     }
+    void setXBound(float minX, float maxX)
+    {
+        m_lowerLeft.x = minX;
+        m_upperRight.x = maxX;
+    }
 
     virtual void render(const Font* font) const          { font->render(getString(), Font::Align_Center); }
+
+    virtual int getMaxLeftWidth(const Font* font) const
+    {
+        return font->getWidth(m_string)/2;
+    }
+
+    virtual int getMaxRightWidth(const Font* font) const
+    {
+        return font->getWidth(m_string)/2;
+    }
+
 };
 
 
@@ -117,7 +147,7 @@ public:
         Entry(stringIn), m_value(value), m_enabled(true) {}
 
     void click(int button);
-    wstring getString() const                      { return m_string +  L": " + m_value.getCurrent(); }
+    wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
     string getValueID() const                      { return m_value.m_id; }
     wstring getValue() const                       { return m_value.getCurrent(); }
     size_t getCurrentValueIdx() const              { return m_value.m_current; }
@@ -127,6 +157,16 @@ public:
     bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
     
     void render(const Font* font) const;
+    
+    virtual int getMaxLeftWidth(const Font* font) const
+    {
+        return font->getWidth(m_string) + font->getWidth(L":");
+    }
+
+    virtual int getMaxRightWidth(const Font* font) const
+    {
+        return  font->getWidth(L"  ") +  m_value.getMaxWidth(font);
+    }
 
 private:
     Value m_value;
@@ -142,7 +182,7 @@ void OptionEntry::click(int button)
     {
         if (m_enabled)
         {
-            m_value.activateNext((button == GLFW_MOUSE_BUTTON_RIGHT) || (button == GLFW_KEY_RIGHT));
+            m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_RIGHT));
         }
     }
 }
@@ -163,7 +203,7 @@ private:
 
 void GameEntry::click(int button) 
 { 
-    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER))
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         m_menu->setState(m_stateToSwitchTo);
     }
@@ -184,7 +224,7 @@ protected:
 
 void SubmenuEntry::click(int button) 
 { 
-    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER))
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         m_menu->setSubmenu(m_submenuToSwitchTo); 
     }
@@ -202,7 +242,7 @@ class SpacerEntry : public Entry
 {
 public: 
     SpacerEntry() : Entry(L"") {}
-    void click(int button)    {}
+    void click(int button)     {}
     wstring getString() const  { return L""; }
     bool isEnabled() const     { return false; }
 };
@@ -235,6 +275,9 @@ private:
     const Font* m_font;
 
     Vector m_previousMousePos;
+
+    Vector m_upper;
+    Vector m_lower;
 };
 
 
@@ -327,7 +370,7 @@ void OptionEntry::render(const Font* font) const
 
 void ApplyOptionsEntry::click(int button)
 {
-    if ((button != GLFW_MOUSE_BUTTON_LEFT) && (button != GLFW_KEY_ENTER))
+    if ((button != GLFW_MOUSE_BUTTON_LEFT) && (button != GLFW_KEY_ENTER) && (button != GLFW_KEY_KP_ENTER))
     {
         return;
     }
@@ -454,14 +497,39 @@ void Submenu::center(const Vector& centerPos)
 {
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
+
     upperPos.y += m_height / 2 - m_font->getHeight() / 2;
+
+    m_upper.y = upperPos.y + m_font->getHeight();
+
+    int maxX = 0;
         
     for (size_t i = 0; i < m_entries.size(); i++)
     {      
         Entry* entry = m_entries[i];
         entry->calculateBounds(upperPos, m_font);
         upperPos.y -= m_font->getHeight() - 2;
+        
+        int l = entry->getMaxLeftWidth(m_font);
+        int r = entry->getMaxRightWidth(m_font);
+        if (l > maxX)
+        {
+            maxX = l;
+        }
+        if (r > maxX)
+        {
+            maxX = r;
+        }
     }
+
+    for (size_t i=0; i<m_entries.size(); i++)
+    {
+        m_entries[i]->setXBound(centerPos.x - maxX, centerPos.x + maxX);
+    }
+
+    m_upper.x = centerPos.x + maxX; //std::max(maxR, maxL);
+    m_lower.x = centerPos.x - maxX; //std::max(maxR, maxL);
+    m_lower.y = upperPos.y + m_font->getHeight() - 2;
 }
 
 void Submenu::setTitle(const wstring& title, const Vector& position)
@@ -496,15 +564,9 @@ void Submenu::activateNextEntry(bool moveDown)
 
 void Submenu::render() const
 {
-    if (!m_title.empty())
-    {
-        glPushMatrix();
-        glTranslatef(m_titlePos.x, m_titlePos.y, 0);
-        glScalef(2.5f, 2.5f, 2.5f);
-        glColor3fv(Vector(0, 0.7f, 0).v);
-        m_font->render(m_title, Font::Align_Center);
-        glPopMatrix();
-    }
+    glDisable(GL_TEXTURE_2D);
+    Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_font->getHeight()/2));
+    glEnable(GL_TEXTURE_2D);
 
     Vector upperPos = m_centerPos;
     upperPos.y += m_height / 2 - m_font->getHeight() / 2;
@@ -517,22 +579,36 @@ void Submenu::render() const
         glTranslatef(upperPos.x, upperPos.y, upperPos.z);
         if (m_activeEntry == i)
         {
-            glColor3fv(Vector::One.v);
+            glColor3fv(Vector(1, 1, 0).v);              // active entry
         }
         else
         {
             if (entry->isEnabled())
             {
-                glColor3fv(Vector::Zero.v);
+                glColor3fv(Vector::One.v);              // normal entry
             }
             else
             {
-                glColor3fv(Vector(0.5f, 0.5f, 0.5f).v);
+                glColor3fv(Vector(0.5f, 0.5f, 0.5f).v); // disabled entry
             }
         }
         entry->render(m_font);
         glPopMatrix();
         upperPos.y -= m_font->getHeight() - 2;
+    }
+
+    if (!m_title.empty())
+    {
+        // TODO: move somewhere else
+        const Font* f  = Font::get("Arial_72pt_bold");
+        f->begin();
+        glPushMatrix();
+        glTranslatef(m_titlePos.x, 500 /*m_titlePos.y*/, 0);
+        //glScalef(2.5f, 2.5f, 2.5f);
+        glColor3fv(Vector(0, 0.7f, 0).v);
+        f->render(m_title, Font::Align_Center);
+        glPopMatrix();
+        f->end();
     }
 }
 

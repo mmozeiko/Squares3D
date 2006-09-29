@@ -684,7 +684,7 @@ void _glfwPlatformSleep( double time )
 {
     DWORD t;
 
-    if( time < 1.0 )
+    if( time < 0.0 )
     {
         t = 1;
     }

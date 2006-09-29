@@ -2,6 +2,8 @@
 #define __REFEREE_H__
 
 #include "common.h"
+#include "timer.h"
+#include "vmath.h"
 
 class Body;
 class Player;
@@ -31,13 +33,20 @@ public:
     void process(const Body* body1, const Body* body2);
     void manageGame();
     void initEvents();
+    void update();
     void resetBall();
+    void registerFaultTime();
     void processCriticalEvent();
     void registerBallEvent(const Body* ground, const Body* otherBody);
     void registerPlayerEvent(const Body* player, const Body* other);
     void processPlayerGround(const Body* player);
 
 private:
+    Vector      m_ballResetPosition; 
+    Vector      m_ballResetVelocity;
+    bool        m_mustResetBall;
+    float       m_faultTime;
+    Timer       m_timer;
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;
     int         m_matchPoints;

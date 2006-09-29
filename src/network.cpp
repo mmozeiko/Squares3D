@@ -103,7 +103,7 @@ void Network::update()
 
     ENetEvent event;
 
-    while (enet_host_service(m_host, &event, 5) > 0)
+    while (enet_host_service(m_host, &event, 0) > 0)
     {
         string type;
         switch (event.type)

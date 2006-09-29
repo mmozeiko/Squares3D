@@ -17,11 +17,13 @@ public:
         const Vector&         position, 
         const Vector&         color, 
         const Font::AlignType align = Font::Align_Left);
-    
-protected:
+
+    const Vector& getPosition() const { return m_position; }
 
     virtual wstring getText() const;
     
+protected:
+   
     virtual void applyFlow(float delta);
 
     virtual bool applyDelta(float delta);

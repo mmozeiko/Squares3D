@@ -164,7 +164,7 @@ Font::~Font()
     glDeleteTextures(1, &m_texture);
 }
 
-void Font::begin(bool shadowed, float shadowWidth) const
+void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
 {
     glPushAttrib(
         GL_COLOR_BUFFER_BIT |
@@ -200,6 +200,7 @@ void Font::begin(bool shadowed, float shadowWidth) const
 
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
+    m_shadow = shadow;
     m_shadowed = shadowed;
     m_shadowWidth = shadowWidth;
 }
@@ -213,6 +214,13 @@ void Font::renderPlain(const wstring& text) const
 
 void Font::render(const wstring& text, AlignType align) const
 {
+    Vector shadowColor(m_shadow);
+    //clog << shadowColor << endl;
+    Vector forAlpha;
+    glGetFloatv(GL_CURRENT_COLOR, forAlpha.v);
+    shadowColor.w = forAlpha.w;
+    //
+
     size_t pos, begin = 0;
     wstring line;
     float linePos = 0.0f;
@@ -250,13 +258,6 @@ void Font::render(const wstring& text, AlignType align) const
 
         if (m_shadowed)
         {
-            //fade
-            Vector shadowColor(0.1f, 0.1f, 0.1f);
-            Vector forAlpha;
-            glGetFloatv(GL_CURRENT_COLOR, forAlpha.v);
-            shadowColor.w = forAlpha.w;
-            //
-
             glPushAttrib(GL_CURRENT_BIT);
             glPushMatrix();
                 glColor4fv(shadowColor.v);
@@ -285,15 +286,28 @@ void Font::end() const
 
 int Font::getWidth(const wstring& text) const
 {
-    int result = 0;
+    int maxWidth = 0;
+    int width = 0;
     for (size_t i=0; i<text.size(); i++)
     {
         if (text[i] < m_widths.size())
         {
-            result += m_widths[text[i]];
+            if (text[i] == L'\n')
+            {
+                if (width > maxWidth)
+                {
+                    maxWidth = width;
+                }
+                width = 0;
+            }
+            width += m_widths[text[i]];
         }
     }
-    return result;
+    if (width > maxWidth)
+    {
+        maxWidth = width;
+    }
+    return maxWidth;
 }
 
 int Font::getHeight() const
