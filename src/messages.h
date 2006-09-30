@@ -9,6 +9,8 @@ class Messages;
 class Message;
 
 typedef list<Message*> MessageVector;
+typedef map<int, MessageVector> MessageVectorsByHeight;
+typedef map<int, const Font*> Fonts;
 
 class Messages : NoCopy
 {
@@ -21,9 +23,9 @@ public:
     void remove(Message* message);
     void render() const;
 
-    const Font*   m_font;
+    Fonts m_fonts;
 private:
-    MessageVector m_buffer;
+    MessageVectorsByHeight m_buffer;
 };
 
 

@@ -7,11 +7,13 @@
 Message::Message(const wstring&        message, 
                  const Vector&         position, 
                  const Vector&         color, 
-                 const Font::AlignType align) :
+                 const Font::AlignType align,
+                 const int             fontSize) :
     m_text(message),
     m_position(position),
     m_color(color),
-    m_align(align)
+    m_align(align),
+    m_fontSize(fontSize)
 {
 }
 
@@ -46,8 +48,9 @@ BlinkingMessage::BlinkingMessage(
                 const Vector&         position, 
                 const Vector&         color, 
                 const Font::AlignType align,
+                const int             fontSize,
                 const float           blinkIntensity) :
-    Message(message, position, color, align),
+    Message(message, position, color, align, fontSize),
     m_visible(true),
     m_blinkCurrent(blinkIntensity),
     m_blinkIntensity(blinkIntensity)

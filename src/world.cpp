@@ -243,10 +243,11 @@ void World::render() const
     // text messages are last
     if (m_freeze)
     {
-        m_messages->m_font->begin();
+        const Font* font = m_messages->m_fonts.find(escMessage->getFontSize())->second;
+        font->begin();
         const Vector& pos = escMessage->getPosition();
-        int w = m_messages->m_font->getWidth(escMessage->getText());
-        int h = m_messages->m_font->getHeight();
+        int w = font->getWidth(escMessage->getText());
+        int h = font->getHeight();
         
         Vector lower = pos;
         lower.x -= w/2;
@@ -259,7 +260,7 @@ void World::render() const
         glDisable(GL_TEXTURE_2D);
         Video::instance->renderRoundRect(lower, upper, static_cast<float>(h/2));
         glEnable(GL_TEXTURE_2D);
-        m_messages->m_font->end();
+        font->end();
     }
     m_messages->render();
 }

@@ -16,11 +16,13 @@ public:
         const wstring&        message, 
         const Vector&         position, 
         const Vector&         color, 
-        const Font::AlignType align = Font::Align_Left);
+        const Font::AlignType align = Font::Align_Left,
+        const int             fontSize = 32);
 
-    const Vector& getPosition() const { return m_position; }
+    const Vector&   getPosition() const { return m_position; }
 
     virtual wstring getText() const;
+    virtual int     getFontSize() const { return m_fontSize; }
     
 protected:
    
@@ -34,6 +36,7 @@ protected:
     Vector          m_position;
     Vector          m_color;
     Font::AlignType m_align;
+    int             m_fontSize;
 };
 
 class BlinkingMessage : public Message
@@ -44,6 +47,7 @@ public:
         const Vector&         position, 
         const Vector&         color, 
         const Font::AlignType align = Font::Align_Left,
+        const int             fontSize = 32,
         const float           blinkIntensity = 0.2f);
 
 protected:

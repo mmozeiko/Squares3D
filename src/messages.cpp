@@ -2,42 +2,49 @@
 #include "video.h"
 #include "message.h"
 
-Messages::Messages() : m_font(Font::get("Arial_32pt_bold"))
+Messages::Messages()
 {
+    m_fonts[32] = Font::get("Arial_32pt_bold");
+    m_fonts[72] = Font::get("Arial_72pt_bold");
 }
 
 void Messages::update(float delta)
 {
-    MessageVector::iterator iter = m_buffer.begin();
-
-    while (iter != m_buffer.end())
+    for each_(MessageVectorsByHeight, m_buffer, iter)
     {
-        Message* message = *iter;
+        MessageVector* currentHeightbuffer = &iter->second;
+        MessageVector::iterator iter2 = currentHeightbuffer->begin();
 
-        message->applyFlow(delta);
+        while (iter2 != currentHeightbuffer->end())
+        {
+            Message* message = *iter2;
 
-        if (message->applyDelta(delta))
-        {
-            delete *iter;
-            iter = m_buffer.erase(iter);
-        }
-        else
-        {
-            iter++;
+            message->applyFlow(delta);
+
+            if (message->applyDelta(delta))
+            {
+                delete message;
+                iter2 = currentHeightbuffer->erase(iter2);
+            }
+            else
+            {
+                iter2++;
+            }
         }
     }
 }
 
 void Messages::remove(Message* message)
 {
-    MessageVector::iterator iter = m_buffer.begin();
+    MessageVector currentHeightbuffer = m_buffer.find(message->m_fontSize)->second;
+    MessageVector::iterator iter = currentHeightbuffer.begin();
 
-    while (iter != m_buffer.end())
+    while (iter != currentHeightbuffer.end())
     {
         if (*iter == message)
         {
             delete *iter;
-            iter = m_buffer.erase(iter);
+            iter = currentHeightbuffer.erase(iter);
         }
         else
         {
@@ -48,6 +55,8 @@ void Messages::remove(Message* message)
 
 void Messages::add3D(Message* message)
 {
+    const Font* font = m_fonts.find(message->m_fontSize)->second;
+
     Matrix modelview, projection;
     int viewport[4];
     
@@ -67,51 +76,59 @@ void Messages::add3D(Message* message)
         &vx, &vy, &vz);
 
     //correct positions to fit on screen
-    if (vx < m_font->getWidth(message->getText()) / 2)
+    if (vx < font->getWidth(message->getText()) / 2)
     {
-        vx = m_font->getWidth(message->getText()) / 2;
+        vx = font->getWidth(message->getText()) / 2;
     }
-    else if (vx > Video::instance->getResolution().first - m_font->getWidth(message->getText()) / 2)
+    else if (vx > Video::instance->getResolution().first - font->getWidth(message->getText()) / 2)
     {
-        vx = Video::instance->getResolution().first - m_font->getWidth(message->getText()) / 2;
+        vx = Video::instance->getResolution().first - font->getWidth(message->getText()) / 2;
     }
 
     if (vy < 0)
     {
         vy = 0;
     }
-    else if (vy > Video::instance->getResolution().second - m_font->getHeight() * 5)
+    else if (vy > Video::instance->getResolution().second - font->getHeight() * 5)
     {
-        vy = Video::instance->getResolution().second - m_font->getHeight() * 5;
+        vy = Video::instance->getResolution().second - font->getHeight() * 5;
     }
 
     message->m_position = Vector(static_cast<float>(vx),
                                  static_cast<float>(vy),
                                  static_cast<float>(vz));
-    m_buffer.push_back(message);
+
+    m_buffer[message->getFontSize()].push_back(message);
 }
 
 void Messages::add2D(Message* message)
 {
-    m_buffer.push_back(message);
+    m_buffer[message->getFontSize()].push_back(message);
 }
 
 void Messages::render() const
 {
-    m_font->begin();
-
-    for each_const(MessageVector, m_buffer, iter)
+    for each_const(MessageVectorsByHeight, m_buffer, iter)
     {
-        Message* message = *iter;
-        message->render(m_font);
+        const Font* font = m_fonts.find(iter->first)->second;
+        font->begin();
+        for each_const(MessageVector, iter->second, iter2)
+        {
+            Message* message = *iter2;
+            message->render(font);
+        }
+        font->end();
     }
-    m_font->end();
 }
 
 Messages::~Messages()
 {
-    for each_const(MessageVector, m_buffer, iter)
+    for each_const(MessageVectorsByHeight, m_buffer, iter)
     {
-        delete *iter;
+        MessageVector currentHeightbuffer = iter->second;
+        for each_const(MessageVector, currentHeightbuffer, iter2)
+        {
+            delete *iter2;    
+        }
     }
 }

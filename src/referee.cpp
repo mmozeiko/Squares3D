@@ -85,7 +85,7 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard):
     m_gameOver(false),
     m_messages(messages),
     m_scoreBoard(scoreBoard),
-    m_matchPoints(21),
+    m_matchPoints(1),
     m_faultTime(0),
     m_mustResetBall(false),
     m_timer()
@@ -181,6 +181,7 @@ void Referee::processCriticalEvent()
                                               center, 
                                               Vector(1,0,0), 
                                               Font::Align_Center,
+                                              72,
                                               0.8f));
         m_gameOver = true;
     }

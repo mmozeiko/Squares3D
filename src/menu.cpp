@@ -818,7 +818,7 @@ void Menu::control()
             }
             else
             {
-                // assume back is last entry
+                // assume "back" is last entry
                 m_currentSubmenu->m_entries.back()->click(GLFW_KEY_ENTER);
             }
         }
