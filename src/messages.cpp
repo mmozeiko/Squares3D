@@ -36,15 +36,15 @@ void Messages::update(float delta)
 
 void Messages::remove(Message* message)
 {
-    MessageVector currentHeightbuffer = m_buffer.find(message->m_fontSize)->second;
-    MessageVector::iterator iter = currentHeightbuffer.begin();
+    MessageVector* currentHeightbuffer = &m_buffer.find(message->m_fontSize)->second;
+    MessageVector::iterator iter = currentHeightbuffer->begin();
 
-    while (iter != currentHeightbuffer.end())
+    while (iter != currentHeightbuffer->end())
     {
         if (*iter == message)
         {
             delete *iter;
-            iter = currentHeightbuffer.erase(iter);
+            iter = currentHeightbuffer->erase(iter);
         }
         else
         {

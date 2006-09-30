@@ -202,8 +202,8 @@ void World::update(float delta)
 
     m_camera->update(delta);
     m_scoreBoard->update();
-    m_messages->update(delta);
     m_referee->update();
+    m_messages->update(delta);
 }
 
 void World::prepare()

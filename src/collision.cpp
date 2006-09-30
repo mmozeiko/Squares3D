@@ -359,15 +359,20 @@ void CollisionTree::render() const
         Video::instance->enableMaterial(last);
         for (size_t i = 0; i < m_faces.size(); i++)
         {
-            if (last != m_materials[i] || i==m_faces.size()-1)
-            {
-                Video::instance->disableMaterial(last);
-                if (i!=m_faces.size()-1)
-                {
-                    Video::instance->enableMaterial(m_materials[i]);
-                    last = m_materials[i];
-                }
-            }
+            //TODO: WTF IS THIS FOR?
+            //if (last != m_materials[i] || i==m_faces.size()-1)
+            //{
+            //    Video::instance->disableMaterial(last);
+            //    if (i!=m_faces.size()-1)
+            //    {
+            //        Video::instance->enableMaterial(m_materials[i]);
+            //        last = m_materials[i];
+            //    }
+            //}
+            //above code would not render each face with different texture
+            //i have put the material enabling outside
+            Video::instance->enableMaterial(m_materials[i]);
+
             //Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
             //glInterleavedArrays(GL_T2F_N3F_V3F, 0, NULL);
             //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); 

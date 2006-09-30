@@ -77,28 +77,114 @@
             </face>
         </collision>
 
+
+
         <collision id="wall" type="tree">
-            <face material="brick" property="brick">
+            <face material="rock" property="brick">
                 <vertex x="1.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
                 <vertex x="1.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
                 <vertex x="1.0" y="0.0" z="-10.0" u="10.0" v="1.5" />
                 <vertex x="1.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
             </face>
 
-            <face material="brick" property="brick">
+            <face material="rock" property="brick">
                 <vertex x="0.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
                 <vertex x="0.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
                 <vertex x="0.0" y="0.0" z="-10.0" u="10.0" v="1.5" />
                 <vertex x="0.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
             </face>
 
-            <face material="brick" property="brick">
+            <face material="rock" property="brick">
                 <vertex x="0.0" y="3.0" z="10.0"  u="0.0" v="0.5" />
                 <vertex x="1.0" y="3.0" z="10.0"  u="0.0" v="0.0" />
                 <vertex x="1.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
                 <vertex x="0.0" y="3.0" z="-10.0" u="10.0" v="0.5" />
             </face>
         </collision>
+
+        <collision id="houseWall" type="tree">
+            <face material="brick" property="brick">
+                <vertex x="-5.0"  y="0.0" z="-2.5"   u="0.0"  v="0.0" />
+                <vertex x="-5.0"  y="5.0" z="-2.5"   u="0.0"  v="2.5" />
+                <vertex x="5.0"   y="5.0" z="-2.5"   u="5.0"  v="2.5" />
+                <vertex x="5.0"   y="0.0" z="-2.5"   u="5.0"  v="0.0" />
+            </face>
+            <face material="brick" property="brick">
+                <vertex x="-5.0"  y="0.0" z="0.0"   u="0.0"   v="0.0" />
+                <vertex x="-5.0"  y="7.5" z="0.0"   u="0.0"   v="3.75" />
+                <vertex x="-5.0"  y="5.0" z="-2.5"   u="1.25"  v="2.5" />
+                <vertex x="-5.0"  y="0.0" z="-2.5"   u="1.25"  v="0.0" />
+            </face>
+            <face material="brick" property="brick">
+                <vertex x="-5.0"  y="0.0" z="2.5"   u="0.0"   v="0.0" />
+                <vertex x="-5.0"  y="5.0" z="2.5"   u="0.0"   v="2.5" />
+                <vertex x="-5.0"  y="7.5" z="0.0"   u="1.25"  v="3.75" />
+                <vertex x="-5.0"  y="0.0" z="0.0"   u="1.25"  v="0.0" />
+            </face>
+            <face material="brick" property="brick">
+                <vertex x="5.0"  y="7.5" z="0.0"   u="0.0"   v="3.75" />
+                <vertex x="5.0"  y="0.0" z="0.0"   u="0.0"   v="0.0" />
+                <vertex x="5.0"  y="0.0" z="-2.5"   u="1.25"  v="0.0" />
+                <vertex x="5.0"  y="5.0" z="-2.5"   u="1.25"  v="2.5" />
+            </face>
+            <face material="brick" property="brick">
+                <vertex x="5.0"  y="5.0" z="2.5"   u="0.0"   v="2.5" />
+                <vertex x="5.0"  y="0.0" z="2.5"   u="0.0"   v="0.0" />
+                <vertex x="5.0"  y="0.0" z="0.0"   u="1.25"  v="0.0" />
+                <vertex x="5.0"  y="7.5" z="0.0"   u="1.25"  v="3.75" />
+            </face>
+            <face material="window" property="brick">
+                <vertex x="-3.5" y="1.0" z="-2.6"   u="0.0"  v="0.0" />
+                <vertex x="-3.5" y="2.0" z="-2.6"   u="0.0"  v="1.0" />
+                <vertex x="-2.5" y="2.0" z="-2.6"   u="1.0"  v="1.0" />
+                <vertex x="-2.5" y="1.0" z="-2.6"   u="1.0"  v="0.0" />
+            </face>
+            <face material="window" property="brick">
+                <vertex x="2.5"  y="1.0" z="-2.6"   u="0.0"  v="0.0" />
+                <vertex x="2.5"  y="2.0" z="-2.6"   u="0.0"  v="1.0" />
+                <vertex x="3.5"  y="2.0" z="-2.6"   u="1.0"  v="1.0" />
+                <vertex x="3.5"  y="1.0" z="-2.6"   u="1.0"  v="0.0" />
+            </face>
+            <face material="window" property="brick">
+                <vertex x="-3.5"  y="3.0" z="-2.6"   u="0.0"  v="0.0" />
+                <vertex x="-3.5"  y="4.0" z="-2.6"   u="0.0"  v="1.0" />
+                <vertex x="-2.5"  y="4.0" z="-2.6"   u="1.0"  v="1.0" />
+                <vertex x="-2.5"  y="3.0" z="-2.6"   u="1.0"  v="0.0" />
+            </face>
+            <face material="window" property="brick">
+                <vertex x="-0.5"  y="3.0" z="-2.6"   u="0.0"  v="0.0" />
+                <vertex x="-0.5"  y="4.0" z="-2.6"   u="0.0"  v="1.0" />
+                <vertex x="0.5"   y="4.0" z="-2.6"   u="1.0"  v="1.0" />
+                <vertex x="0.5"   y="3.0" z="-2.6"   u="1.0"  v="0.0" />
+            </face>
+            <face material="window" property="brick">
+                <vertex x="2.5"  y="3.0" z="-2.6"   u="0.0"  v="0.0" />
+                <vertex x="2.5"  y="4.0" z="-2.6"   u="0.0"  v="1.0" />
+                <vertex x="3.5"  y="4.0" z="-2.6"   u="1.0"  v="1.0" />
+                <vertex x="3.5"  y="3.0" z="-2.6"   u="1.0"  v="0.0" />
+            </face>
+            <face material="door" property="brick">
+                <vertex x="-0.5"  y="0.0" z="-2.6"   u="0.0"  v="0.0" />
+                <vertex x="-0.5"  y="2.0" z="-2.6"   u="0.0"  v="1.0" />
+                <vertex x="0.5"   y="2.0" z="-2.6"   u="1.0"  v="1.0" />
+                <vertex x="0.5"   y="0.0" z="-2.6"   u="1.0"  v="0.0" />
+            </face>
+            <face material="roof" property="brick">
+                <vertex x="-5.5"  y="4.5" z="-3.0"  u="0.0"  v="0.0" />
+                <vertex x="-5.5"  y="7.5" z="0.0"   u="0.0"  v="3.0" />
+                <vertex x="5.5"   y="7.5" z="0.0"   u="3.0"  v="3.0" />
+                <vertex x="5.5"   y="4.5" z="-3.0"  u="3.0"  v="0.0" />
+            </face>
+            <face material="wood" property="brick">
+                <vertex x="-5.5"  y="4.5" z="3.0"   u="0.0"  v="0.0" />
+                <vertex x="-5.5"  y="7.5" z="0.0"   u="0.0"  v="3.0" />
+                <vertex x="5.5"   y="7.5" z="0.0"   u="3.0"  v="3.0" />
+                <vertex x="5.5"   y="4.5" z="3.0"   u="3.0"  v="0.0" />
+            </face>
+
+
+        </collision>
+
 
         <collision id="tower_left" type="box" mass="200.0" material="wood">
             <size x="1.0" y="2.0" z="1.0"/>

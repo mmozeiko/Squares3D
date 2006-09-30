@@ -4,8 +4,23 @@
             <collision>level</collision>
         </body>
 
+        <body id="house">
+            <position x="15.0" y="0.0" z="15.0"/>
+            <collision>houseWall</collision>
+        </body>
         
+        <body id="house1">
+            <position x="20.0" y="0.0" z="10.0"/>
+            <rotation x="0.0" y="90.0" z="0.0"/>
+            <collision>houseWall</collision>
+        </body>
         
+        <body id="house2">
+            <position x="-7.0" y="0.0" z="7.0"/>
+            <rotation x="0.0" y="-45.0" z="0.0"/>
+            <collision>houseWall</collision>
+        </body>
+
         <body id="wallLeft">
             <position x="-10.0" y="0.0" z="0.0"/>
             <collision>wall</collision>

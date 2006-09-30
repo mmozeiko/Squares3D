@@ -28,7 +28,7 @@
             </colors>
         </material>
 
-        <material id="brick">
+        <material id="rock">
             <texture2D name="rock"/>
             <colors>
                 <ambient r="0.5" g="0.5" b="0.5" />
@@ -36,6 +36,38 @@
             </colors>
         </material>
 
+        <material id="brick">
+            <texture2D name="brick"/>
+            <colors>
+                <ambient r="0.5" g="0.5" b="0.5" />
+                <shine>1.0</shine>
+            </colors>
+        </material>
+
+        <material id="window">
+            <texture2D name="window"/>
+            <colors>
+                <ambient r="0.5" g="0.5" b="0.5" />
+                <shine>1.0</shine>
+            </colors>
+        </material>
+
+        <material id="door">
+            <texture2D name="door"/>
+            <colors>
+                <ambient r="0.5" g="0.5" b="0.5" />
+                <shine>1.0</shine>
+            </colors>
+        </material>
+        
+        <material id="roof">
+            <texture2D name="roof"/>
+            <colors>
+                <ambient r="0.5" g="0.5" b="0.5" />
+                <shine>1.0</shine>
+            </colors>
+        </material>
+        
         <material id="wood">
             <texture2D name="wood"/>
             <colors>
