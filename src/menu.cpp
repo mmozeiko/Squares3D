@@ -259,7 +259,7 @@ public:
     float   m_height;
     Vector  m_centerPos;
 
-    Submenu(const Font* font) : m_activeEntry(0), m_title(L""), m_font(font), m_height(0) {}
+    Submenu(const Font* font, const Font* fontBig) : m_activeEntry(0), m_title(L""), m_font(font), m_fontBig(fontBig), m_height(0) {}
     ~Submenu();
 
     void addEntry(Entry* entry);
@@ -269,15 +269,17 @@ public:
     void setTitle(const wstring& title, const Vector& position);
     void activateNextEntry(bool moveDown);
 
-private:
-    wstring m_title;
-    Vector m_titlePos;
-    const Font* m_font;
-
-    Vector m_previousMousePos;
-
     Vector m_upper;
     Vector m_lower;
+
+    wstring m_title;
+    Vector m_titlePos;
+
+private:
+    const Font* m_font;
+    const Font* m_fontBig;
+
+    Vector m_previousMousePos;
 };
 
 
@@ -456,8 +458,7 @@ void Submenu::control(int key)
     for (size_t i = 0; i < m_entries.size(); i++)
     {
         Entry* currentEntry = m_entries[i];
-        if (currentEntry->isEnabled() 
-            && (m_previousMousePos != mousePos)
+        if ( (m_previousMousePos != mousePos)
             && currentEntry->isMouseOver(mousePos))
         {
             m_activeEntry = i;
@@ -467,9 +468,13 @@ void Submenu::control(int key)
 
     Entry* currentEntry = m_entries[m_activeEntry];
 
+    
     if (b != -1)
     {
-        currentEntry->click(b);
+        if (currentEntry->isMouseOver(mousePos))
+        {
+            currentEntry->click(b);
+        }
     }
     else if (key != -1)
     {
@@ -555,6 +560,7 @@ void Submenu::activateNextEntry(bool moveDown)
         {
             moveDown ? m_activeEntry++ : m_activeEntry--;
         }
+        
         if (!m_entries[m_activeEntry]->isEnabled())
         {
             activateNextEntry(moveDown);
@@ -600,19 +606,17 @@ void Submenu::render() const
     if (!m_title.empty())
     {
         // TODO: move somewhere else
-        const Font* f  = Font::get("Arial_72pt_bold");
-        f->begin();
+        m_fontBig->begin();
         glPushMatrix();
-        glTranslatef(m_titlePos.x, 500 /*m_titlePos.y*/, 0);
-        //glScalef(2.5f, 2.5f, 2.5f);
+        glTranslatef(m_titlePos.x, m_titlePos.y, 0);
         glColor3fv(Vector(0, 0.7f, 0).v);
-        f->render(m_title, Font::Align_Center);
+        m_fontBig->render(m_title, Font::Align_Center);
         glPopMatrix();
-        f->end();
+        m_fontBig->end();
     }
 }
 
-Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_state(State::Current)
+Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -634,6 +638,7 @@ Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_state(State::Current)
     loadMenu();
     Input::instance->startButtonBuffer();
     Input::instance->startKeyBuffer();
+    glfwEnable(GLFW_MOUSE_CURSOR);
 }
 
 void Menu::loadMenu()
@@ -649,7 +654,7 @@ void Menu::loadMenu()
 
     // Main Submenu
 
-    Submenu* submenu = new Submenu(m_font);
+    Submenu* submenu = new Submenu(m_font, m_fontBig);
 
     submenu->addEntry(new GameEntry(language->get(TEXT_START_GAME), this, State::World));
     
@@ -663,11 +668,11 @@ void Menu::loadMenu()
 
 
     // Options Submenu
-    submenu = new Submenu(m_font);
+    submenu = new Submenu(m_font, m_fontBig);
     
-    Vector titlePos = Vector(static_cast<float>(resX) / 2,
-                             resY - static_cast<float>(resY) / 6, 
-                             0);
+    Vector titlePos = Vector(static_cast<float>(resX) / 2, 0, 0);
+    float titleY = 0.0f;
+
     submenu->setTitle(language->get(TEXT_OPTIONS), titlePos);
 
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptions"));
@@ -678,11 +683,12 @@ void Menu::loadMenu()
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));    
 
     submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["options"] = submenu;
 
 
     // VIDEO Options Submenu
-    submenu = new Submenu(m_font);
+    submenu = new Submenu(m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS), titlePos);
 
@@ -729,11 +735,12 @@ void Menu::loadMenu()
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
     
     submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["videoOptions"] = submenu;
 
 
     // AUDIO Options Submenu
-    submenu = new Submenu(m_font);
+    submenu = new Submenu(m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_AUDIO_OPTIONS), titlePos);
 
@@ -745,12 +752,13 @@ void Menu::loadMenu()
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
     
     submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["audioOptions"] = submenu;
 
     
     
     // OTHER Options Submenu
-    submenu = new Submenu(m_font);
+    submenu = new Submenu(m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_OTHER_OPTIONS), titlePos);
 
@@ -765,13 +773,24 @@ void Menu::loadMenu()
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
 
     submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["otherOptions"] = submenu;
 
-
+    titleY += m_font->getHeight() / 2;
+    titleY = std::min(titleY, resY - static_cast<float>(m_fontBig->getHeight()));
+    
+    for each_(Submenus, m_submenus, iter)
+    {
+        if (!iter->second->m_title.empty())
+        {
+            iter->second->m_titlePos.y = titleY;
+        }
+    }
 }
 
 Menu::~Menu()
 {
+    glfwDisable(GLFW_MOUSE_CURSOR);
     Input::instance->endKeyBuffer();
     Input::instance->endButtonBuffer();
 

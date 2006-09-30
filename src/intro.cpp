@@ -16,7 +16,7 @@ static const int PIECE_XCOUNT = 11;
 static const int PIECE_YCOUNT = 6;
 
 static const float BALL_MASS = 5000.0f;
-static const float BALL_R = 0.6f;
+static const float BALL_R = 0.5f;
 
 static void OnForce(const NewtonBody* body)
 {
@@ -30,8 +30,6 @@ static void OnForce(const NewtonBody* body)
 Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
 {
     m_newtonWorld = NewtonCreate(NULL, NULL);
-    NewtonSetSolverModel(m_newtonWorld, 10);
-    NewtonSetFrictionModel(m_newtonWorld, 1);
 
     vector<UV> piece_uv;
 
@@ -209,12 +207,16 @@ void Intro::control()
     }
     if (m_timePassed > BALL_KICK_SECS && !m_ballKicked)
     {
-        Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 3.0f));
+        Matrix matrix = Matrix::translate(Vector(0.0f, BALL_R, 2.0f));
         NewtonBodySetMatrix(m_ball_body, matrix.m);
-        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -2.5f).v);
         NewtonWorldUnfreezeBody(m_newtonWorld, m_ball_body);
+        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -1.0f).v);
         
         m_ballKicked = true;
+    }
+    else if (m_ballKicked && m_ball_matrix.row(3).z > BALL_R)
+    {
+        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -1.0f).v);
     }
 }
 
@@ -280,7 +282,7 @@ void Intro::render() const
     glPushMatrix();
     glMultMatrixf(m_ball_matrix.m);
     m_ballTex->bind();
-    Video::instance->renderSphere(BALL_R);
+    Video::instance->renderSphereHiQ(BALL_R);
     glPopMatrix();
 
     // fade in

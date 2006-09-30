@@ -107,15 +107,16 @@ Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(fal
     Config::instance->m_video.samples = glfwGetWindowParam(GLFW_FSAA_SAMPLES);
 
     glfwDisable(GLFW_KEY_REPEAT);
-    glfwEnable(GLFW_MOUSE_CURSOR);
+    glfwDisable(GLFW_MOUSE_CURSOR);
 
     loadExtensions();
     m_quadricSphere = gluNewQuadric();
     m_quadricAxes = gluNewQuadric();
-    m_quadricWireSphere = gluNewQuadric();
+    m_quadricSphereHiQ = gluNewQuadric();
     gluQuadricTexture(m_quadricSphere, GLU_TRUE);
     gluQuadricNormals(m_quadricSphere, GLU_TRUE);
-    gluQuadricDrawStyle(m_quadricWireSphere, GLU_SILHOUETTE);
+    gluQuadricTexture(m_quadricSphereHiQ, GLU_TRUE);
+    gluQuadricNormals(m_quadricSphereHiQ, GLU_TRUE);
     m_resolution = make_pair(width, height);
 }
 
@@ -125,7 +126,7 @@ Video::~Video()
 
     gluDeleteQuadric(m_quadricSphere);
     gluDeleteQuadric(m_quadricAxes);
-    gluDeleteQuadric(m_quadricWireSphere);
+    gluDeleteQuadric(m_quadricSphereHiQ);
 
     unloadTextures();
 
@@ -268,9 +269,9 @@ void Video::renderSphere(float radius) const
     gluSphere(m_quadricSphere, radius, 16, 16);
 }
     
-void Video::renderWireSphere(float radius) const
+void Video::renderSphereHiQ(float radius) const
 {
-    gluSphere(m_quadricWireSphere, radius, 8, 8);
+    gluSphere(m_quadricSphereHiQ, radius, 64, 64);
 }
   
 void Video::renderAxes(float size) const

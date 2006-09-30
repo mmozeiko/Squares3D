@@ -33,6 +33,7 @@ public:
 
     Music*      m_music;
     const Font* m_font;
+    const Font* m_fontBig;
     Submenu*    m_currentSubmenu;
 
     Submenus     m_submenus;

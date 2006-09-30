@@ -41,7 +41,7 @@ public:
     void renderCube() const;
     void renderFace(const Face& face) const;
     void renderSphere(float radius = 1.0f) const;
-    void renderWireSphere(float radius = 1.0f) const;
+    void renderSphereHiQ(float radius = 1.0f) const;
     void renderAxes(float size = 5.0f) const;
     void renderRoundRect(const Vector& lower, const Vector& upper, float r) const;
 
@@ -124,7 +124,7 @@ private:
     void loadExtensions();
 
     GLUquadric*   m_quadricSphere;
-    GLUquadric*   m_quadricWireSphere;
+    GLUquadric*   m_quadricSphereHiQ;
     GLUquadric*   m_quadricAxes;
 
     ShaderMap     m_shaders;

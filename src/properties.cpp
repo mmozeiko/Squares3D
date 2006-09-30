@@ -71,7 +71,7 @@ int Properties::getPropertyID(const string& name)
     if (iter == m_propertiesID.end())
     {
         int result = ++m_uniqueID;
-        clog << "Property " << name << " id = " << result << endl;
+        //clog << "Property " << name << " id = " << result << endl;
         m_propertiesID.insert(make_pair(name, result));
 
         return result;
