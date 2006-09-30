@@ -8,10 +8,4 @@
     <item name="PLAYER_TOUCHES_TWICE"  value="$1 диви пиескариени!&#10;+$2"/>
     <item name="HITS_COMBO"            value="$1 КОМБО!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
-
-    <!-- Main menu -->
-    <!--item name="START_GAME"            value="Sākt Spēli"/>
-    <item name="OPTIONS"               value="Opcijas"/>
-    <item name="CREDITS"               value="Kredīti"/>
-    <item name="QUIT_GAME"             value="Beigt Spēli"/-->
 </xml>

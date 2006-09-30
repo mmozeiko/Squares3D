@@ -9,15 +9,34 @@
     <item name="HITS_COMBO"            value="$1 Uzsitienu kombo!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
 
+    <item name="ESC_MESSAGE">
+        Nospiediet ESCAPE, lai turpinātu
+
+        Nospiediet ENTER, lai izietu uz galveno izvēlni..
+    </item>
 
     <!-- Main menu -->
     <item name="START_GAME"            value="Sākt Spēli"/>
-    <item name="OPTIONS"               value="Opcijas"/>
-    <item name="CREDITS"               value="Kredīti"/>
+    <item name="OPTIONS"               value="Uzstādījumi"/>
+    <item name="AUDIO_OPTIONS"         value="Skaņas Uzstādījumi"/>
+    <item name="VIDEO_OPTIONS"         value="Attēla Uzstādījumi"/>
+    <item name="OTHER_OPTIONS"         value="Citi Uzstādījumi"/>
+    <item name="CREDITS"               value="Šautauts savējiem"/>
     <item name="QUIT_GAME"             value="Beigt Spēli"/>
+    <item name="BACK"                  value="Atpakaļ"/>
+    <item name="SAVE"                  value="Uzstādīt Uzstādījumus"/>
+
     <!-- Options -->
-    <item name="RESOLUTION"            value="Izšķirtspēja"/>
-    <item name="FULLSCREEN"            value="Pilnekrāns"/>
     <item name="TRUE"                  value="Jā"/>
     <item name="FALSE"                 value="Nē"/>
+    <item name="RESOLUTION"            value="Izšķirtspēja"/>
+    <item name="FULLSCREEN"            value="Pilnekrāns"/>
+    <item name="VSYNC"                 value="Vertikālā sinhronizācija"/>
+    <item name="FSAA"                  value="Attēla izlīdzināšana"/>
+    <item name="SHADERS"               value="Izmantot Šeiderus"/>
+    <item name="SHADOWTYPE"            value="Izmantot Ēnas"/>
+    <item name="SHADOWMAPSIZE"         value="Ēnukaršu izmērs"/>
+    <item name="SHOWFPS"               value="Rādīt Kadrus/sekundē"/>
+    <item name="AUDIO"                 value="Skaņa ieslēgta"/>
+    <item name="LANGUAGE"              value="Valoda"/>
 </xml>
