@@ -12,8 +12,7 @@ Account::Account() :
 }
 
 ScoreBoard::ScoreBoard(Messages* messages) : 
-    m_messages(messages),
-    m_scoreChanged(false)
+    m_messages(messages)
 {
     //TODO: make universal
     float fontSize = 32;
@@ -22,17 +21,19 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     float tabX = resX / 70;
     float tabY = resY / 100;
 
-    m_boardPositions.push_back(make_pair(Vector(tabX, tabY, 0), Font::Align_Left));
-    m_boardPositions.push_back(make_pair(Vector(tabX, resY - fontSize - tabY, 0), Font::Align_Left));
-    m_boardPositions.push_back(make_pair(Vector(resX - tabX, resY - fontSize - tabY, 0), Font::Align_Right));
-    m_boardPositions.push_back(make_pair(Vector(resX - tabX, tabY, 0), Font::Align_Right));
+    m_boardPositions.push_back(BoardInfo(Vector(tabX, tabY, 0), Font::Align_Left, 1));
+    m_boardPositions.push_back(BoardInfo(Vector(tabX, resY - fontSize - tabY, 0), Font::Align_Left, -1));
+    m_boardPositions.push_back(BoardInfo(Vector(resX - tabX, resY - fontSize - tabY, 0), Font::Align_Right, -1));
+    m_boardPositions.push_back(BoardInfo(Vector(resX - tabX, tabY, 0), Font::Align_Right, 1));
     
     reset();
 
-    m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO), 
+    m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS), 
                                       Vector(resX / 2, 50.0f, 0),
                                       Vector(1,1,0),
-                                      0);
+                                      0,
+                                      Font::Align_Center,
+                                      32);
     m_messages->add2D(m_comboMessage);
 }
 
@@ -79,12 +80,25 @@ void ScoreBoard::reset()
     {
         m_scores[m_playerOrder[i]] = Account();
         ScoreMessage* msg = new ScoreMessage(Language::instance->get(TEXT_SCORE_MESSAGE)(m_playerOrder[i]),
-                                m_boardPositions[i].first, 
+                                m_boardPositions[i].m_position, 
                                 Vector(0,1,0), 
                                 m_scores[m_playerOrder[i]].m_total, 
-                                m_boardPositions[i].second);
+                                m_boardPositions[i].m_alignement);
         m_messages->add2D(msg);
-        m_msgVec.push_back(msg);
+        m_scoreMessages.push_back(msg);
+
+        //TODO: make universal
+        float fontSize = 32;
+        Vector correctorPos(0.0f, (fontSize + 2.0f) * m_boardPositions[i].m_nextDirectionY, 0.0f);
+        
+        ComboMessage* msg1 = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO),
+                                m_boardPositions[i].m_position + correctorPos, 
+                                Vector(0,1,0), 
+                                m_scores[m_playerOrder[i]].m_combo, 
+                                m_boardPositions[i].m_alignement);
+        m_messages->add2D(msg1);
+        m_selfComboMessages.push_back(msg1);
+
     }
 }
 
@@ -92,7 +106,6 @@ int ScoreBoard::addTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += m_joinedCombo;
-    m_scoreChanged = true;
     return m_joinedCombo;
 }
 
@@ -100,7 +113,6 @@ int ScoreBoard::addPoint(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += 1;
-    m_scoreChanged = true;
     return 1;
 }
 
@@ -108,7 +120,6 @@ int ScoreBoard::addSelfTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += acc.m_combo;
-    m_scoreChanged = true;
     return acc.m_combo;
 }
 
@@ -123,12 +134,9 @@ void ScoreBoard::incrementCombo(const string& name, const Vector& position)
 void ScoreBoard::update()
 {
     m_comboMessage->m_points = m_joinedCombo;
-    if (m_scoreChanged)
+    for (size_t i = 0; i < m_playerOrder.size(); i++)
     {
-        for (size_t i = 0; i < m_playerOrder.size(); i++)
-        {
-            m_msgVec[i]->m_score = m_scores[m_playerOrder[i]].m_total;
-        }
+        m_scoreMessages[i]->m_score = m_scores[m_playerOrder[i]].m_total;
+        m_selfComboMessages[i]->m_points = m_scores[m_playerOrder[i]].m_combo;
     }
-    m_scoreChanged = false;
 }

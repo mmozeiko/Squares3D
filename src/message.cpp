@@ -134,8 +134,9 @@ ComboMessage::ComboMessage(const wstring&        message,
                            const Vector&         position, 
                            const Vector&         color,
                            const int             points,
-                           const Font::AlignType align) : 
-    Message(message, position, color, align),
+                           const Font::AlignType align,
+                           const int             fontSize) : 
+    Message(message, position, color, align, fontSize),
     m_points(points)
 {
 }

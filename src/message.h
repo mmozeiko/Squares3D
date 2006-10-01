@@ -103,7 +103,8 @@ public:
         const Vector&         position, 
         const Vector&         color,
         const int             points,
-        const Font::AlignType align = Font::Align_Center);
+        const Font::AlignType align = Font::Align_Center,
+        const int             fontSize = 32);
     
     int m_points;
 

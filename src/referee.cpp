@@ -184,6 +184,7 @@ void Referee::processCriticalEvent()
                                               72,
                                               0.8f));
         m_gameOver = true;
+        m_scoreBoard->resetCombo();
     }
     else
     {

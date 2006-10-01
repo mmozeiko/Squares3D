@@ -7,6 +7,7 @@
     <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
     <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
     <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
+    <item name="HITS"                  value="$1 Hits!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
 
     <item name="ESC_MESSAGE">
