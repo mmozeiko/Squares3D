@@ -7,7 +7,7 @@
     <item name="OUT_FROM_MIDDLE_LINE"  value="Bumba ārā no viduslīnijas!"/>
     <item name="PLAYER_TOUCHES_TWICE"  value="$1 divi pieskārieni!&#10;+$2"/>
     <item name="HITS_COMBO"            value="$1 Uzsitienu kombo!!"/>
-    <item name="HITS"                  value="$1 Hits!!"/>
+    <item name="HITS"                  value="$1 Uzsitieni!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
 
     <item name="ESC_MESSAGE">

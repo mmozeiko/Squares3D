@@ -4,6 +4,8 @@
 #include "font.h"
 #include "video.h"
 
+#define FADESPEED 2
+
 Message::Message(const wstring&        message, 
                  const Vector&         position, 
                  const Vector&         color, 
@@ -109,7 +111,7 @@ bool FlowingMessage::applyDelta(float delta)
     //message fading
     if (m_timeToLive < 0.5f)
     {
-        m_color.w = 2.0f*m_timeToLive;
+        m_color.w = 2.0f * m_timeToLive;
     }
 
     return m_timeToLive <= 0.0f;
@@ -137,16 +139,29 @@ ComboMessage::ComboMessage(const wstring&        message,
                            const Font::AlignType align,
                            const int             fontSize) : 
     Message(message, position, color, align, fontSize),
-    m_points(points)
+    m_points(points),
+    m_previousPoints(points)
 {
 }
 
 wstring ComboMessage::getText() const
 {
-    if (m_points > 1)
-    {
-        return Formatter(m_text)(m_points);
-    }
-    return L"";
+    return Formatter(m_text)(m_previousPoints);
 }
 
+bool ComboMessage::applyDelta(float delta)
+{
+    if (m_points < 2)
+    {
+        if (m_color.w > 0.0f)
+        {
+            m_color.w -= delta * FADESPEED;
+        }
+    }
+    else
+    {
+        m_color.w = 1.0f;
+        m_previousPoints = m_points;
+    }
+    return false;
+}

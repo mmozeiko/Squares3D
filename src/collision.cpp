@@ -362,11 +362,8 @@ void CollisionTree::render() const
             if (last != m_materials[i] || i==m_faces.size()-1)
             {
                 Video::instance->disableMaterial(last);
-                if (i!=m_faces.size()-1)
-                {
-                    Video::instance->enableMaterial(m_materials[i]);
-                    last = m_materials[i];
-                }
+                Video::instance->enableMaterial(m_materials[i]);
+                last = m_materials[i];
             }
             //this line does the same as whole if block above, but in more ineffective way
             //Video::instance->enableMaterial(m_materials[i]);

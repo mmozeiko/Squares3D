@@ -4,22 +4,50 @@
             <collision>level</collision>
         </body>
 
-        <body id="house">
+        <body id="house1">
             <position x="15.0" y="0.0" z="15.0"/>
-            <collision>houseWall</collision>
+            <collision>house</collision>
         </body>
         
-        <body id="house1">
+        <body id="house1-2">
             <position x="20.0" y="0.0" z="10.0"/>
             <rotation x="0.0" y="90.0" z="0.0"/>
-            <collision>houseWall</collision>
+            <collision>house</collision>
+        </body>
+
+        <body id="house2">
+            <position x="0.0" y="0.0" z="30.0"/>
+            <collision>house</collision>
+        </body>
+
+        <body id="house2-1">
+            <position x="0.0" y="0.0" z="25.0"/>
+            <rotation x="0.0" y="90.0" z="0.0"/>
+            <collision>house</collision>
         </body>
         
-        <body id="house2">
+        <body id="house3">
             <position x="-7.0" y="0.0" z="7.0"/>
             <rotation x="0.0" y="-45.0" z="0.0"/>
-            <collision>houseWall</collision>
+            <collision>house</collision>
         </body>
+
+        <body id="house4">
+            <position x="0.0" y="0.0" z="-20.0"/>
+            <rotation x="0.0" y="180.0" z="0.0"/>
+            <collision>house</collision>
+        </body>
+        <body id="house4-1">
+            <position x="-10.0" y="0.0" z="-18.0"/>
+            <rotation x="0.0" y="180.0" z="0.0"/>
+            <collision>house</collision>
+        </body>
+        <body id="house4-2">
+            <position x="10.0" y="0.0" z="-22.0"/>
+            <rotation x="0.0" y="180.0" z="0.0"/>
+            <collision>house</collision>
+        </body>
+
 
         <body id="wallLeft">
             <position x="-10.0" y="0.0" z="0.0"/>

@@ -9,6 +9,8 @@
 #include "video.h"
 #include "language.h"
 
+#define BALLRESETTIME 2.0f
+
 bool isBallInField(const Vector& position, 
                    const Vector& lowerLeft, 
                    const Vector& upperRight,
@@ -103,7 +105,7 @@ void Referee::update()
 {
     if (m_mustResetBall && !m_gameOver)
     {
-        if (m_timer.read() - m_faultTime > 1.0f)
+        if (m_timer.read() - m_faultTime > BALLRESETTIME)
         {
             resetBall();
             m_mustResetBall = false;

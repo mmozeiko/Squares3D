@@ -66,7 +66,7 @@ public:
         const Vector&         position, 
         const Vector&         color, 
         const Font::AlignType align = Font::Align_Left,
-        const float              timeToLive = 3);
+        const float           timeToLive = 2.0f);
 
 protected:
 
@@ -106,9 +106,13 @@ public:
         const Font::AlignType align = Font::Align_Center,
         const int             fontSize = 32);
     
+    bool applyDelta(float delta);
+    bool render();
+
     int m_points;
 
 protected:
+    int m_previousPoints;
     wstring getText() const;
 };
 

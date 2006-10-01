@@ -28,7 +28,7 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     
     reset();
 
-    m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS), 
+    m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO), 
                                       Vector(resX / 2, 50.0f, 0),
                                       Vector(1,1,0),
                                       0,
@@ -91,7 +91,7 @@ void ScoreBoard::reset()
         float fontSize = 32;
         Vector correctorPos(0.0f, (fontSize + 2.0f) * m_boardPositions[i].m_nextDirectionY, 0.0f);
         
-        ComboMessage* msg1 = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO),
+        ComboMessage* msg1 = new ComboMessage(Language::instance->get(TEXT_HITS),
                                 m_boardPositions[i].m_position + correctorPos, 
                                 Vector(0,1,0), 
                                 m_scores[m_playerOrder[i]].m_combo, 
