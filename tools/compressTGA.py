@@ -29,6 +29,7 @@ def process(infile, outfile):
   
   first = True
   while idx < len(data):
+    if idx+3 >= len(data): break
     pix = [ord(data[idx]), ord(data[idx+1]), ord(data[idx+2])]
     if bpp==4: pix.append(ord(data[idx+3]))
     idx += bpp
@@ -88,7 +89,7 @@ for root, dir, files in os.walk(DATA_PATH):
     name = os.path.join(root, f)
     if name[-4:] == ".tga":
       print name
-      try:
-        process(name, name)
-      except:
-        print "Exception!"
+      #try:
+      process(name, name)
+      #except:
+      #  print "Exception!"

@@ -104,18 +104,17 @@ public:
     static PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffersEXT;
     static PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbufferEXT;
 
-    /*
     static PFNGLGENBUFFERSARBPROC              glGenBuffersARB;
     static PFNGLBINDBUFFERARBPROC              glBindBufferARB;
     static PFNGLBUFFERDATAARBPROC              glBufferDataARB;
     static PFNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB;
-    */
+    static PFNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
 
     bool m_haveShaders;
     bool m_haveShadows;
     bool m_haveShadowsFB;
 
-    //bool m_haveVBO;
+    bool m_haveVBO;
 
 private:
     template <typename T>

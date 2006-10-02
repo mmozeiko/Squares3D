@@ -411,6 +411,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\grass.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\grass.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\level.cpp"
 					>
 				</File>

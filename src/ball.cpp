@@ -47,12 +47,13 @@ Ball::Ball(Body* body) : m_body(body)
     m_shadowList = Video::instance->newList();
     glNewList(m_shadowList, GL_COMPILE);
 
-    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
+    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
 
-    glColor4f(0.3f, 0.3f, 0.3f, 0.3f);
     glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+    glColor4f(0.2f, 0.2f, 0.2f, 0.1f);
 
     glBegin(GL_TRIANGLE_FAN);
     glVertex3f(0.0f, 0.0f, 0.0f);

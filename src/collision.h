@@ -14,7 +14,7 @@ class Collision : NoCopy
     friend class Body;
 
 public:
-    static Collision* create(const XMLnode& node, const Level* level);
+    static Collision* create(const XMLnode& node, Level* level);
     
     virtual void render() const = 0;
 

@@ -21,7 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
 
 Video* System<Video>::instance = NULL;
 
-Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false) //, m_haveVBO(false)
+Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false), m_haveVBO(false)
 {
     setInstance(this);
 
@@ -477,12 +477,11 @@ PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC Video::glFramebufferRenderbufferEXT = NULL;
 PFNGLDELETERENDERBUFFERSEXTPROC     Video::glDeleteRenderbuffersEXT = NULL;
 PFNGLBINDRENDERBUFFEREXTPROC        Video::glBindRenderbufferEXT = NULL;
 
-/*
 PFNGLGENBUFFERSARBPROC              Video::glGenBuffersARB = NULL;
 PFNGLBINDBUFFERARBPROC              Video::glBindBufferARB = NULL;
 PFNGLBUFFERDATAARBPROC              Video::glBufferDataARB = NULL;
 PFNGLDELETEBUFFERSARBPROC           Video::glDeleteBuffersARB = NULL;
-*/
+PFNGLBUFFERSUBDATAARBPROC           Video::glBufferSubDataARB = NULL;
 
 template <typename T>
 void Video::loadProcAddress(const char* name, T& proc) const
@@ -572,7 +571,6 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glBindRenderbufferEXT);
     }
 
-    /*
     if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
     {
         m_haveVBO = true;
@@ -581,8 +579,8 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glBindBufferARB);
         loadProc(glBufferDataARB);
         loadProc(glDeleteBuffersARB);
+        loadProc(glBufferSubDataARB);
     }
-    */
 
     if (glfwExtensionSupported("GL_ARB_depth_texture") &&
         glfwExtensionSupported("GL_ARB_shadow"))

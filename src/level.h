@@ -10,10 +10,12 @@ class Material;
 class Properties;
 class Collision;
 class Body;
+struct Face;
 
-typedef map<string, Material*>  MaterialMap;
-typedef map<string, Collision*> CollisionsMap;
-typedef map<string, Body*>      BodiesMap;
+typedef map<string, Material*>       MaterialMap;
+typedef map<string, Collision*>      CollisionsMap;
+typedef map<string, Body*>           BodiesMap;
+typedef set<pair<Face*, Material*> > FaceSet;
 
 Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols);
 
@@ -29,6 +31,7 @@ public:
 
     BodiesMap     m_bodies;
     CollisionsMap m_collisions;
+    FaceSet       m_faces;
     MaterialMap   m_materials;
     Properties*   m_properties;
 };

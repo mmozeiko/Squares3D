@@ -18,6 +18,7 @@ class Messages;
 class Message;
 class ScoreBoard;
 class FrameBuffer;
+class Grass;
 
 class World : public State, public System<World>
 {
@@ -37,6 +38,7 @@ public:
     Music*           m_music;
     Camera*          m_camera;
     SkyBox*          m_skybox;
+    Grass*           m_grass;
     NewtonWorld*     m_newtonWorld;
     Level*           m_level;
     vector<Player*>  m_localPlayers;

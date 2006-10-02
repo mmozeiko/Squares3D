@@ -20,6 +20,7 @@
 #include "scoreboard.h"
 #include "config.h"
 #include "framebuffer.h"
+#include "grass.h"
 
 World* System<World>::instance = NULL;
 
@@ -75,7 +76,8 @@ World::World() :
     m_referee(NULL),
     m_messages(NULL),
     m_scoreBoard(NULL),
-    m_framebuffer(NULL)
+    m_framebuffer(NULL),
+    m_grass(NULL)
 {
     setInstance(this); // MUST go first
 
@@ -103,6 +105,7 @@ World::World() :
 void World::init()
 {
     m_level->load("level.xml");
+    m_grass = new Grass(m_level);
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
@@ -146,6 +149,10 @@ World::~World()
 
     killShadowStuff();
     delete m_framebuffer;
+    if (m_grass != NULL)
+    {
+        delete m_grass;
+    }
 
     m_music->stop();
     Audio::instance->unloadMusic(m_music);
@@ -204,6 +211,7 @@ void World::update(float delta)
     m_scoreBoard->update();
     m_referee->update();
     m_messages->update(delta);
+    m_grass->update(delta);
 }
 
 void World::prepare()
@@ -230,6 +238,7 @@ void World::render() const
         renderScene();
 
         m_ball->renderShadow(m_lightPosition);
+        m_grass->render();
     }
     else if (shadow_type == 1)
     {
@@ -454,6 +463,7 @@ void World::shadowMapPass2() const
 
     //Draw the scene
     renderScene();
+    m_grass->render();
 }
 
 void World::shadowMapPass3() const
@@ -492,6 +502,8 @@ void World::shadowMapPass3() const
 
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     renderScene();
+    glDisable(GL_ALPHA_TEST);
+    m_grass->render();
     Video::glActiveTextureARB(GL_TEXTURE1_ARB);
 
     //Restore states

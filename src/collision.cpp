@@ -40,7 +40,7 @@ public:
 class CollisionTree : public Collision
 {
 public:
-    CollisionTree(const XMLnode& node, const Level* level);
+    CollisionTree(const XMLnode& node, Level* level);
     ~CollisionTree();
     void render() const;
 
@@ -78,7 +78,7 @@ void Collision::create(NewtonCollision* collision, int propertyID, float mass)
     m_origin *= mass;
 }
 
-Collision* Collision::create(const XMLnode& node, const Level* level)
+Collision* Collision::create(const XMLnode& node, Level* level)
 {
     string type = node.getAttribute("type");
     
@@ -246,7 +246,7 @@ void CollisionSphere::render() const
     glPopMatrix();
 }
 
-CollisionTree::CollisionTree(const XMLnode& node, const Level* level) : 
+CollisionTree::CollisionTree(const XMLnode& node, Level* level) : 
     Collision(node), m_first(true), m_list(0)
 
 {
@@ -277,6 +277,8 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
 
             m_faces.push_back(Face());
             Face& face = m_faces.back();
+            
+            // needed in grass calculations
 
             for each_const(XMLnodes, node.childs, iter)
             {
@@ -296,14 +298,15 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
                 throw Exception("Face must have 3 or 4 vertexes");
             }
 
-            Vector v0 = face.vertexes[0];
-            Vector v1 = face.vertexes[1];
-            Vector v2 = face.vertexes[2];
+            const Vector& v0 = face.vertexes[0];
+            const Vector& v1 = face.vertexes[1];
+            const Vector& v2 = face.vertexes[2];
             
             Vector normal = (v1-v0) ^ (v2-v0);
             normal.norm();
 
             face.normal.resize(face.vertexes.size(), normal);
+
         }
         else
         {
@@ -331,6 +334,10 @@ CollisionTree::CollisionTree(const XMLnode& node, const Level* level) :
     
     create(collision);
 
+    for (size_t i=0; i<m_faces.size(); i++)
+    {
+        level->m_faces.insert(make_pair(&m_faces[i], m_materials[i]));
+    }
     /*
     m_buffers.resize(m_faces.size());
     Video::glGenBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
