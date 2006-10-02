@@ -465,7 +465,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
     float size2 = size/2.0f;
     float x = -size2;
-    float STEP = 0.4f;
+    float STEP = 0.25f;
 
     int maxIdx = 0;
     bool maxIdxB = false;
@@ -524,7 +524,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
             
             if (i3 > 65535)
             {
-                throw Exception("Too many vertieces in heightmap!!");
+                throw Exception("Too many vertices in heightmap!!");
             }
 
             m_indices.push_back(i1);
@@ -548,10 +548,10 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         Video::glGenBuffersARB(3, &m_buffers[0]);
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
-        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_vertices.size() * sizeof(Vector), &m_vertices[0], GL_STATIC_DRAW_ARB);
+        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_normals.size() * sizeof(Vector), &m_normals[0], GL_STATIC_DRAW_ARB);
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
-        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_normals.size() * sizeof(Vector), &m_normals[0], GL_STATIC_DRAW_ARB);
+        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_vertices.size() * sizeof(Vector), &m_vertices[0], GL_STATIC_DRAW_ARB);
 
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[2]);
         Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
