@@ -26,7 +26,11 @@
             <radius x="0.2" y="0.2" z="0.2" />
         </collision>
 
-        <collision id="level" type="tree">
+        <collision id="level" type="heightmap">
+            <heightmap size="40.0" name="test1"/>
+        </collision>
+
+        <collision id="level_vecais" type="tree">
             <face material="pavement" property="pavement">
                 <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
                 <vertex x="0.0"  y="0.0" z="3.0" u="1.0" v="0.0" />

@@ -42,6 +42,7 @@ class CollisionTree : public Collision
 public:
     CollisionTree(const XMLnode& node, Level* level);
     ~CollisionTree();
+
     void render() const;
 
     vector<Face>         m_faces;
@@ -51,6 +52,20 @@ public:
     mutable unsigned int m_list;
 };
 
+class CollisionHMap : public Collision
+{
+public:
+    CollisionHMap(const XMLnode& node, Level* level);
+    ~CollisionHMap();
+    
+    void render() const;
+
+    vector<Vector>         m_vertices;
+    vector<Vector>         m_normals;
+    vector<unsigned short> m_indices;
+
+    unsigned int m_buffers[3];
+};
 
 Collision::Collision(const XMLnode& node) : m_inertia(), m_mass(0.0f), m_origin()
 {
@@ -93,6 +108,10 @@ Collision* Collision::create(const XMLnode& node, Level* level)
     else if (type == "tree")
     {
         return new CollisionTree(node, level);
+    }
+    else if (type == "heightmap")
+    {
+        return new CollisionHMap(node, level);
     }
     else
     {
@@ -248,7 +267,6 @@ void CollisionSphere::render() const
 
 CollisionTree::CollisionTree(const XMLnode& node, Level* level) : 
     Collision(node), m_first(true), m_list(0)
-
 {
     vector<int> props;
 
@@ -391,4 +409,197 @@ void CollisionTree::render() const
 CollisionTree::~CollisionTree()
 {
 //    Video::glDeleteBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
+}
+
+CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node)
+{
+    string hmap;
+    float size;
+
+    for each_const(XMLnodes, node.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name == "heightmap")
+        {
+            hmap = node.getAttribute("name");
+            size = node.getAttribute<float>("size");
+        }
+        else
+        {
+            throw Exception("Invalid collision, unknown node - " + node.name);
+        }
+    }
+    
+    if (hmap.empty())
+    {
+        throw Exception("Invalid heightmap collision, heightmap name not specified");
+    }
+
+    string filename = "/data/heightmaps/" + hmap + ".tga";
+    File::Reader file(filename);
+    if (!file.is_open())
+    {
+        throw Exception("Heightmap '" + filename + "' not found");
+    }
+
+    vector<char> data(file.size());
+    file.read(&data[0], data.size());
+    file.close();
+    
+    GLFWimage image;
+    if (glfwReadMemoryImage(&data[0], static_cast<int>(data.size()), &image, GLFW_NO_RESCALE_BIT)==GL_FALSE)
+    {
+        throw Exception("Invalid heightmap '" + filename + "' format");
+    }
+
+    if (image.BytesPerPixel != 1)
+    {
+        throw Exception("Invalid heightmap '" + filename + "', image must be grayscale");
+    }
+
+    int id = level->m_properties->getDefault();
+
+    NewtonCollision* collision = NewtonCreateTreeCollision(World::instance->m_newtonWorld, NULL);
+    NewtonTreeCollisionBeginBuild(collision);
+
+
+    float size2 = size/2.0f;
+    float x = -size2;
+    float STEP = 0.4f;
+
+    int maxIdx = 0;
+    bool maxIdxB = false;
+
+    while (x < size2)
+    {
+        int ix = static_cast<int>((x + size2) * image.Width / size);
+        int ix2 = static_cast<int>((x + size2 + STEP) * image.Width / size);
+        if (ix2 >= image.Width) break;
+
+        float z = -size2;
+        while (z < size2)
+        {
+            int iz = static_cast<int>((z + size2) * image.Height / size);
+            int iz2 = static_cast<int>((z + size2 + STEP) * image.Height / size);
+            if (iz2 >= image.Height) break;
+            
+            float y1 = (image.Data[image.Width * iz + ix] - 128) / 10.0f;
+            float y2 = (image.Data[image.Width * iz2 + ix] - 128) / 10.0f;
+            float y3 = (image.Data[image.Width * iz2 + ix2] - 128) / 10.0f;
+            float y4 = (image.Data[image.Width * iz + ix2] - 128) / 10.0f;
+
+            const Vector v0 = Vector(x, y1, z);
+            const Vector v1 = Vector(x, y2, z+STEP);
+            const Vector v2 = Vector(x+STEP, y3, z+STEP);
+            const Vector v3 = Vector(x+STEP, y3, z);
+            
+            Vector normal = (v1 - v0)  ^ (v3 - v0);
+            normal.norm();
+                
+            m_vertices.push_back(v0);
+            m_normals.push_back(normal);
+
+            const Vector arr1[] = { v0, v1, v2 };
+            const Vector arr2[] = { v1, v2, v3 };
+            NewtonTreeCollisionAddFace(collision, 3, arr1[0].v, sizeof(Vector), id);
+            NewtonTreeCollisionAddFace(collision, 3, arr2[0].v, sizeof(Vector), id);
+
+            unsigned int idx = static_cast<unsigned int>(m_vertices.size());
+ 
+            z += STEP;
+            if (!maxIdxB) maxIdx++;
+        }
+        if (!maxIdxB) maxIdxB = true;
+        x += STEP;
+    }
+
+    for (int x=0; x<maxIdx-1; x++)
+    {
+        for (int z=0; z<maxIdx-1; z++)
+        {
+            int i1 = x*maxIdx+z;
+            int i2 = x*maxIdx+z+1;
+            int i3 = (x+1)*maxIdx+z+1;
+            int i4 = (x+1)*maxIdx+z;
+            
+            if (i3 > 65535)
+            {
+                throw Exception("Too many vertieces in heightmap!!");
+            }
+
+            m_indices.push_back(i1);
+            m_indices.push_back(i2);
+            m_indices.push_back(i4);
+
+            m_indices.push_back(i2);
+            m_indices.push_back(i3);
+            m_indices.push_back(i4);
+        }
+    }
+    
+    NewtonTreeCollisionEndBuild(collision, 0);
+    
+    create(collision);
+
+    glfwFreeImage(&image);
+    
+    if (Video::instance->m_haveVBO)
+    {
+        Video::glGenBuffersARB(3, &m_buffers[0]);
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
+        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_vertices.size() * sizeof(Vector), &m_vertices[0], GL_STATIC_DRAW_ARB);
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
+        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_normals.size() * sizeof(Vector), &m_normals[0], GL_STATIC_DRAW_ARB);
+
+        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[2]);
+        Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+    }
+}
+
+void CollisionHMap::render() const
+{
+    if (m_indices.size() == 0)
+    {
+        return;
+    }
+
+    glDisable(GL_TEXTURE_2D);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    if (Video::instance->m_haveVBO)
+    {
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
+        glNormalPointer(GL_FLOAT, sizeof(Vector), NULL);
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
+        glVertexPointer(4, GL_FLOAT, 0, NULL);
+
+        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[2]);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, NULL);
+
+        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    }
+    else
+    {
+        glNormalPointer(GL_FLOAT, sizeof(Vector), &m_normals[0]);
+        glVertexPointer(3, GL_FLOAT, sizeof(Vector), &m_vertices[0]);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, &m_indices[0]);
+    }
+
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnable(GL_TEXTURE_2D);
+}
+
+CollisionHMap::~CollisionHMap()
+{
+    if (Video::instance->m_haveVBO)
+    {
+        Video::glDeleteBuffersARB(3, &m_buffers[0]);
+    }
 }

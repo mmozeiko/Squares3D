@@ -75,7 +75,7 @@
         </body>
 
 
-        <body id="wallLeft">
+        <!--body id="wallLeft">
             <position x="-10.0" y="0.0" z="0.0"/>
             <collision>wall</collision>
         </body>
@@ -96,7 +96,7 @@
             <position x="0.0" y="-0.001" z="-10.0"/>
             <rotation x="0.0" y="-90.0" z="0.0"/>
             <collision>wall</collision>
-        </body>
+        </body-->
 
 
         <!--body id="player">

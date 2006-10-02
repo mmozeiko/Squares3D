@@ -573,7 +573,7 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
 
     if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
     {
-        m_haveVBO = true;
+        //m_haveVBO = true;
 
         loadProc(glGenBuffersARB);
         loadProc(glBindBufferARB);
