@@ -3,6 +3,9 @@
         <body id="level">
             <collision>level</collision>
         </body>
+        <body id="field">
+            <collision>field</collision>
+        </body>
         
         <body id="seat">
             <position x="-8.0" y="0.0" z="2.0"/>

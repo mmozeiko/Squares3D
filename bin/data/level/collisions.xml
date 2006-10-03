@@ -30,7 +30,7 @@
             <heightmap size="40.0" name="test1"/>
         </collision>
 
-        <collision id="level_vecais" type="tree">
+        <collision id="field" type="tree">
             <face material="pavement" property="pavement">
                 <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
                 <vertex x="0.0"  y="0.0" z="3.0" u="1.0" v="0.0" />
@@ -59,7 +59,7 @@
                 <vertex x="-3.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
             </face>
 
-            <face material="grass" property="grass">
+            <!--face material="grass" property="grass">
                 <vertex x="-10.0" y="0.0" z="10.0" u="0.0"  v="0.0" />
                 <vertex x="10.0"  y="0.0" z="10.0" u="10.0" v="0.0" />
                 <vertex x="10.0"  y="0.0" z="3.0"  u="10.0" v="3.5" />
@@ -85,7 +85,7 @@
                 <vertex x="-3.0"  y="0.0" z="3.0"  u="3.5" v="0.0" />
                 <vertex x="-3.0"  y="0.0" z="-3.0" u="3.5" v="3.0" />
                 <vertex x="-10.0" y="0.0" z="-3.0" u="0.0" v="3.0" />
-            </face>
+            </face-->
         </collision>
 
 
@@ -264,9 +264,9 @@
             <size x="2.0" y="0.1" z="0.5"/>
             <offset x="0.0" y="0.5" z="0.0" />
         </collision>
-        <collision id="smallLegForPlayer_Small" type="box" mass="40.0" material="wood">
-            <size x="0.3" y="0.01" z="0.3"/>
-            <offset x="0.0" y="-0.5" z="0.0" />
+        <collision id="smallLegForPlayer_Small" type="sphere" mass="400.0" material="wood">
+            <radius x="0.1"  y="0.05" z="0.1" />
+            <offset x="0.0" y="-0.45" z="0.0" />
         </collision>
         
     </collisions>
