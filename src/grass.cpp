@@ -4,7 +4,7 @@
 #include "material.h"
 #include "random.h"
 
-static const float DENSITY = 8;
+static const float DENSITY = 1.0f; // 1 2 4
 
 Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
 {
@@ -17,20 +17,18 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
             continue;
         }
         
-        size_t vn = face->vertexes.size();
         Vector side1 = face->vertexes[1] - face->vertexes[0];
         Vector side2 = face->vertexes[2] - face->vertexes[0];
         Vector areaV = side1 ^ side2;
         float area = areaV.magnitude();
         float count = DENSITY * area;
 
-        vector<float> rnd(vn);
-        
+        if (count < 1.0f && Random::getFloat() < count)
         for (int n = 0; n < count; n++)
         {
             float sum = 0.0f;
 
-            Vector v = face->vertexes[0] + side1 * (Random::getFloatN(0.94f) + 0.03f) + side2 * (Random::getFloatN(0.94f) + 0.03f);
+            Vector v = face->vertexes[0] + side1 * (Random::getFloat()) + side2 * (Random::getFloat());
 
             Matrix trM = Matrix::translate(v) * Matrix::rotateY(Random::getFloatN(2*M_PI));
 
@@ -46,8 +44,9 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
 
         }
     }
+
     m_count = m_faces.size();
-    
+   
     if (Video::instance->m_haveVBO)
     {
         Video::glGenBuffersARB(1, &m_buffer);
@@ -73,7 +72,7 @@ void Grass::update(float delta)
 {
     m_time += delta;
 
-    float n = 0.2f*sin(m_time * M_PI / 4.0f);
+    float n = 0.4f*sin(m_time * M_PI / 6.0f);
 
     for (size_t i=0; i<m_count; i+=4)
     {

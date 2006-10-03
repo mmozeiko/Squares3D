@@ -83,7 +83,7 @@ World::World() :
 
     m_framebuffer = new FrameBuffer();
     setupShadowStuff();
-    setLight(Vector(-15.0f, 30.0f, 13.0f));
+    setLight(Vector(-25.0f, 30.0f, 23.0f));
 
     //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
     m_camera = new Camera(Vector(0.0f, 9.0f, 14.0f), 30.0f, 0.0f);
@@ -288,7 +288,8 @@ void World::setLight(const Vector& position)
     glPushMatrix();
     
     glLoadIdentity();
-    gluPerspective(50.0f, 1.0f, 1.0f, 52.0f);
+    //gluPerspective(45.0f, 1.0f, 10.0f, 70.0f);
+    glOrtho(-20.0f, 20.0f, -20.0f, 20.0f, 10.0f, 70.0f);
     glGetFloatv(GL_MODELVIEW_MATRIX, m_lightProjection.m);
 
     glLoadIdentity();
@@ -414,7 +415,8 @@ void World::shadowMapPass1() const
     //tommeer lieli HAKi. TODO.
     //glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(-0.3f, -0.05f); 
+    //glPolygonOffset(-0.3f, -0.05f); 
+    glPolygonOffset(1.0f, 4.0f); 
     //glPolygonOffset(1.0f, 2.0f);
 
     //Draw the scene

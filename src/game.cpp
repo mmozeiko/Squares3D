@@ -18,8 +18,6 @@
 
 #include "vmath.h"
 
-//#define WIREFRAME
-
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
 #define MOVIE_HEIGHT 480
@@ -176,9 +174,16 @@ void Game::run()
 
         m_state->prepare();
 
-#ifdef WIREFRAME        
-        glPolygonMode(GL_FRONT, GL_LINE);
-        glClear(GL_COLOR_BUFFER_BIT);
+#ifndef NDEBUG
+        if (Input::instance->key('`'))
+        {
+            glPolygonMode(GL_FRONT, GL_LINE);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+        else
+        {
+            glPolygonMode(GL_FRONT, GL_FILL);
+        }
 #endif
         m_state->render();
         
