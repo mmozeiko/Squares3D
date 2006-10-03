@@ -4,6 +4,7 @@
             <collision>level</collision>
         </body>
         <body id="field">
+            <position x="0.0" y="0.001" z="0.0"/>
             <collision>field</collision>
         </body>
         

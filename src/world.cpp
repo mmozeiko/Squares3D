@@ -416,8 +416,8 @@ void World::shadowMapPass1() const
     //tommeer lieli HAKi. TODO.
     //glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    //glPolygonOffset(-0.3f, -0.05f); 
-    glPolygonOffset(1.0f, 4.0f); 
+    glPolygonOffset(-0.3f, -0.05f); 
+    //glPolygonOffset(1.0f, 2.0f); 
     //glPolygonOffset(1.0f, 2.0f);
 
     //Draw the scene
