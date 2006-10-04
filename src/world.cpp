@@ -297,7 +297,7 @@ void World::setLight(const Vector& position)
     
     glLoadIdentity();
     //gluPerspective(45.0f, 1.0f, 10.0f, 70.0f);
-    glOrtho(-35.0f, 28.0f, -15.0f, 24.0f, 2.0f, 70.0f);
+    glOrtho(-40.0f, 28.0f, -15.0f, 26.0f, 2.0f, 70.0f);
     glGetFloatv(GL_MODELVIEW_MATRIX, m_lightProjection.m);
 
     glLoadIdentity();
