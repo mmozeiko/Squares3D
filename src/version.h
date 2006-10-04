@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-static const string g_version = "build_190";
+static const string g_version = "build 190";
 
 #endif

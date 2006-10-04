@@ -23,7 +23,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
         in.close();
     }
 
-    string version = xml.getAttribute<string>("version", "");
+    string version = xml.getAttribute("version", string());
     
     if (version != g_version)
     {
