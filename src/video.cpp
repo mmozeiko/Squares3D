@@ -21,7 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
 
 Video* System<Video>::instance = NULL;
 
-Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false), m_haveVBO(false)
+Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false), m_haveVBO(false), m_shadowMap3ndPass(false)
 {
     setInstance(this);
 

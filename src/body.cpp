@@ -6,6 +6,7 @@
 #include "video.h"
 #include "level.h"
 #include "properties.h"
+#include "geometry.h"
 
 typedef map<string, Collision*> CollisionsMap;
 typedef map<string, Body*>      BodiesMap;
@@ -170,11 +171,31 @@ void Body::onSetForceAndTorque(const NewtonBody* body)
 
 void Body::render() const
 {
+    bool doit = false;
+    if (Video::instance->m_shadowMap3ndPass)
+    {
+        const Vector pos = m_matrix.row(3);
+        if (!isPointInRectangle(pos, g_fieldLower, g_fieldUpper))
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            doit = true;
+        }
+    }
+
     Video::instance->begin(m_matrix);
 
     for each_const(CollisionSet, m_collisions, iter)
     {
         (*iter)->render();
+    }
+
+    if (doit)
+    {
+        Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_2D);
+        Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     }
 
     Video::instance->end();

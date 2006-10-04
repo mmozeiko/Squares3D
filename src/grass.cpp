@@ -48,17 +48,33 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
 
                 if (!(isPointInRectangle(v, lower, upper)))
                 {
+
                     Matrix trM = Matrix::translate(v) * Matrix::rotateY(Random::getFloatN(2*M_PI));
 
-                    m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-0.2f, 0.0f, 0.0f)) );
-                    m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+0.2f, 0.0f, 0.0f)) );
-                    m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+0.2f, 0.4f, 0.0f)) );
-                    m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-0.2f, 0.4f, 0.0f)) );
+                    if (isPointInRectangle(v, g_fieldLower, g_fieldUpper))
+                    {
+                        m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-0.2f, 0.0f, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+0.2f, 0.0f, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+0.2f, 0.4f, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-0.2f, 0.4f, 0.0f)) );
 
-                    m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -0.2f)) );
-                    m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +0.2f)) );
-                    m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, 0.4f, +0.2f)) );
-                    m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, 0.4f, -0.2f)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -0.2f)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +0.2f)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, 0.4f, +0.2f)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, 0.4f, -0.2f)) );
+                    }
+                    else
+                    {
+                        m_faces2.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-0.2f, 0.0f, 0.0f)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+0.2f, 0.0f, 0.0f)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+0.2f, 0.4f, 0.0f)) );
+                        m_faces2.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-0.2f, 0.4f, 0.0f)) );
+
+                        m_faces2.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -0.2f)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +0.2f)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, 0.4f, +0.2f)) );
+                        m_faces2.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, 0.4f, -0.2f)) );
+                    }
                 }
 
             }
@@ -66,15 +82,20 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
     }
 
     m_count = m_faces.size();
-   
+    m_count2 = m_faces2.size();
+
     if (Video::instance->m_haveVBO)
     {
-        Video::glGenBuffersARB(1, &m_buffer);
+        Video::glGenBuffersARB(2, &m_buffer[0]);
 
-        if (m_count > 0)
+        if (m_count+m_count2 > 0)
         {
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer);
+            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
             Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count, &m_faces[0], GL_DYNAMIC_DRAW_ARB);
+
+            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+            Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count2, &m_faces2[0], GL_DYNAMIC_DRAW_ARB);
+
             Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         }
     }
@@ -87,7 +108,7 @@ Grass::~Grass()
 {
     if (Video::instance->m_haveVBO)
     {
-        Video::glDeleteBuffersARB(1, &m_buffer);
+        Video::glDeleteBuffersARB(2, &m_buffer[0]);
     }
 }
 
@@ -107,11 +128,21 @@ void Grass::update(float delta)
         m_faces[i+2].uv.u = 1.0f + n;
         m_faces[i+3].uv.u = 0.0f + n;
     }
+    
+    for (size_t i=0; i<m_count2; i+=4)
+    {
+        m_faces2[i+2].uv.u = 1.0f + n;
+        m_faces2[i+3].uv.u = 0.0f + n;
+    }
 
     if (Video::instance->m_haveVBO)
     {
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer);
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
         Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count, &m_faces[0]);
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+        Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count2, &m_faces2[0]);
+
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
@@ -127,6 +158,9 @@ void Grass::render() const
 
     glPushAttrib(GL_ENABLE_BIT | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (0.5f*Vector::One).v);
+
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glDepthMask(GL_FALSE);
@@ -134,15 +168,52 @@ void Grass::render() const
 
     if (Video::instance->m_haveVBO)
     {
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer);
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
         glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), NULL);
-        glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count)); 
+        glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));
+
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisable(GL_TEXTURE_2D);   
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+        glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), NULL);
+        glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count2));
+
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glEnable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
     else
     {
         glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), &m_faces[0]);
         glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));
+
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+
+        glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), &m_faces2[0]);
+        glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count2));
+
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glEnable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+
     }
 
     glPopAttrib();

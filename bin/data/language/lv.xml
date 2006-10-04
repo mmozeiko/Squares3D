@@ -40,7 +40,7 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     <item name="FSAA"                  value="Attēla izlīdzināšana"/>
     <item name="SHADERS"               value="Izmantot Šeiderus"/>
     <item name="SHADOW_TYPE"           value="Izmantot Ēnas"/>
-    <item name="SHADOWMAP_SIZE"        value="Ēnukaršu izmērs"/>
+    <item name="SHADOWMAP_SIZE"        value="Ēnu Kvalitāte"/>
     <item name="SHOW_FPS"              value="Rādīt Kadrus/sekundē"/>
     <item name="GRASS_DENSITY"         value="Apzāļojumu Kvalitāte"/>
     <item name="TERRAIN_DETAIL"        value="Reljefa Kvalitāte"/>

@@ -8,6 +8,7 @@
 #include "world.h"
 #include "texture.h"
 #include "config.h"
+#include "geometry.h"
 
 class CollisionConvex : public Collision
 {
@@ -66,12 +67,12 @@ public:
     vector<Vector>         m_normals;
     vector<Vector>         m_vertices;
     vector<unsigned short> m_indices;
+    vector<unsigned short> m_indices2;
 
-    Texture*               m_texture;
+    Texture*     m_texture;
+    unsigned int m_buffers[5];
 
-    vector<Face>           m_tmpFaces;
-
-    unsigned int m_buffers[4];
+    vector<Face> m_tmpFaces;
 };
 
 Collision::Collision(const XMLnode& node) : m_inertia(), m_mass(0.0f), m_origin()
@@ -418,7 +419,7 @@ CollisionTree::~CollisionTree()
 //    Video::glDeleteBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
 }
 
-CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node)
+CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node), m_texture(NULL)
 {
     string hmap;
     float size;
@@ -616,6 +617,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         m_tmpFaces.resize(2*maxIdx*maxIdx);
         int cnt = 0;
 
+        Material* grass = level->m_materials["grass"];
+
         for (int z=0; z<maxIdx-1; z++)
         {
             for (int x=0; x<maxIdx-1; x++)
@@ -624,42 +627,69 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
                 int i2 = (z+1)*maxIdx+x;
                 int i3 = (z+1)*maxIdx+x+1;
                 int i4 = z*maxIdx+x+1;
+
+                const Vector& v1 = m_vertices[i1];
+                const Vector& v2 = m_vertices[i2];
+                const Vector& v3 = m_vertices[i3];
+                const Vector& v4 = m_vertices[i4];
                 
                 if (i3 > 65535)
                 {
                     throw Exception("Too many vertices in heightmap!!");
                 }
 
-                m_indices.push_back(i1);
-                m_indices.push_back(i2);
-                m_indices.push_back(i4);
+                if (isPointInRectangle(v1, g_fieldLower, g_fieldUpper) &&
+                    isPointInRectangle(v2, g_fieldLower, g_fieldUpper) &&
+                    isPointInRectangle(v4, g_fieldLower, g_fieldUpper))
+                {
+                    m_indices.push_back(i1);
+                    m_indices.push_back(i2);
+                    m_indices.push_back(i4);
+                }
+                else
+                {
+                    m_indices2.push_back(i1);
+                    m_indices2.push_back(i2);
+                    m_indices2.push_back(i4);
+                }
 
-                m_indices.push_back(i2);
-                m_indices.push_back(i3);
-                m_indices.push_back(i4);
+                if (isPointInRectangle(v2, g_fieldLower, g_fieldUpper) &&
+                    isPointInRectangle(v3, g_fieldLower, g_fieldUpper) &&
+                    isPointInRectangle(v4, g_fieldLower, g_fieldUpper))
+                {
+                    m_indices.push_back(i2);
+                    m_indices.push_back(i3);
+                    m_indices.push_back(i4);
+                }
+                else
+                {
+                    m_indices2.push_back(i2);
+                    m_indices2.push_back(i3);
+                    m_indices2.push_back(i4);
+                }
 
                 {
-                    const Vector arr[] = { m_vertices[i1], m_vertices[i2], m_vertices[i4] };
+                    const Vector arr[] = { v1, v2, v4 };
                     NewtonTreeCollisionAddFace(collision, 3, arr[0].v, sizeof(Vector), id);
                 }
                 {
-                    const Vector arr[] = { m_vertices[i2], m_vertices[i3], m_vertices[i4] };
+                    const Vector arr[] = { v2, v3, v4 };
                     NewtonTreeCollisionAddFace(collision, 3, arr[0].v, sizeof(Vector), id);
                 }
 
                 Face* face = & m_tmpFaces[cnt++];
                 face->vertexes.resize(3);
-                face->vertexes[0] = m_vertices[i1];
-                face->vertexes[1] = m_vertices[i2];
-                face->vertexes[2] = m_vertices[i3];
-                level->m_faces.insert(make_pair(face, level->m_materials["grass"]));
+                face->vertexes[0] = v1;
+                face->vertexes[1] = v2;
+                face->vertexes[2] = v3;
+                level->m_faces.insert(make_pair(face, grass));
 
                 face = & m_tmpFaces[cnt++];
                 face->vertexes.resize(3);
-                face->vertexes[0] = m_vertices[i2];
-                face->vertexes[1] = m_vertices[i3];
-                face->vertexes[2] = m_vertices[i4];
-                level->m_faces.insert(make_pair(face, level->m_materials["grass"]));
+                face->vertexes[0] = v2;
+                face->vertexes[1] = v3;
+                face->vertexes[2] = v4;
+                level->m_faces.insert(make_pair(face, grass));
             }
         }
     }
@@ -670,7 +700,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
     
     if (Video::instance->m_haveVBO)
     {
-        Video::glGenBuffersARB(4, &m_buffers[0]);
+        Video::glGenBuffersARB(5, &m_buffers[0]);
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
         Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_uv.size() * sizeof(UV), &m_uv[0], GL_STATIC_DRAW_ARB);
@@ -683,6 +713,9 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
         Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
+
+        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
+        Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices2.size() * sizeof(unsigned short), &m_indices2[0], GL_STATIC_DRAW_ARB);
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
@@ -713,6 +746,23 @@ void CollisionHMap::render() const
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, NULL);
 
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+        
+        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, NULL);
+
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glEnable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
@@ -722,6 +772,19 @@ void CollisionHMap::render() const
         glNormalPointer(GL_FLOAT, sizeof(Vector), &m_normals[0]);
         glVertexPointer(3, GL_FLOAT, sizeof(Vector), &m_vertices[0]);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, &m_indices[0]);
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, &m_indices2[0]);
+        if (Video::instance->m_shadowMap3ndPass)
+        {
+            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glEnable(GL_TEXTURE_2D);
+            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
     }
 }
 
@@ -729,6 +792,6 @@ CollisionHMap::~CollisionHMap()
 {
     if (Video::instance->m_haveVBO)
     {
-        Video::glDeleteBuffersARB(4, &m_buffers[0]);
+        Video::glDeleteBuffersARB(5, &m_buffers[0]);
     }
 }

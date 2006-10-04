@@ -83,7 +83,7 @@ World::World() :
 
     m_framebuffer = new FrameBuffer();
     setupShadowStuff();
-    setLight(Vector(-25.0f, 30.0f, 23.0f));
+    setLight(Vector(-15.0f, 30.0f, 18.0f));
 
     //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
     m_camera = new Camera(Vector(0.0f, 9.0f, 14.0f), 30.0f, 0.0f);
@@ -290,12 +290,12 @@ void World::setLight(const Vector& position)
     
     glLoadIdentity();
     //gluPerspective(45.0f, 1.0f, 10.0f, 70.0f);
-    glOrtho(-20.0f, 20.0f, -20.0f, 20.0f, 10.0f, 70.0f);
+    glOrtho(-40.0f, 30.0f, -25.0f, 28.0f, 10.0f, 70.0f);
     glGetFloatv(GL_MODELVIEW_MATRIX, m_lightProjection.m);
 
     glLoadIdentity();
     gluLookAt(  m_lightPosition.x, m_lightPosition.y, m_lightPosition.z,
-                0.0f, 0.0f, 0.0f,
+                4.0f, 0.0f, 5.0f,
                 0.0f, 1.0f, 0.0f);
     glGetFloatv(GL_MODELVIEW_MATRIX, m_lightView.m);
 
@@ -417,7 +417,7 @@ void World::shadowMapPass1() const
     //tommeer lieli HAKi. TODO.
     //glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(0.0f, -0.05f); 
+    glPolygonOffset(1.0f, +4.0f); 
     //glPolygonOffset(1.0f, 2.0f); 
     //glPolygonOffset(1.0f, 2.0f);
 
@@ -505,9 +505,11 @@ void World::shadowMapPass3() const
     glEnable(GL_TEXTURE_GEN_Q);
 
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    Video::instance->m_shadowMap3ndPass = true;
     renderScene();
     glDisable(GL_ALPHA_TEST);
     m_grass->render();
+    Video::instance->m_shadowMap3ndPass = false;
     Video::glActiveTextureARB(GL_TEXTURE1_ARB);
 
     //Restore states

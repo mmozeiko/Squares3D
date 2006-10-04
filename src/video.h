@@ -12,6 +12,9 @@ class Shader;
 class Material;
 class Texture;
 
+static const Vector g_fieldLower(-25.0f, 0.0f, -25.0f);
+static const Vector g_fieldUpper(25.0f, 0.0f, 25.0f);
+
 struct UV
 {
     UV(float u = 0.0f, float v = 0.0f) : u(u), v(v) {}
@@ -115,6 +118,8 @@ public:
     bool m_haveShadowsFB;
 
     bool m_haveVBO;
+
+    bool m_shadowMap3ndPass;
 
 private:
     template <typename T>

@@ -36,7 +36,7 @@ Press ENTER to quit to main menu..
     <item name="FSAA"                  value="Antialiasing"/>
     <item name="SHADERS"               value="Use Shaders"/>
     <item name="SHADOW_TYPE"           value="Use Shadows"/>
-    <item name="SHADOWMAP_SIZE"        value="Shadowmap Size"/>
+    <item name="SHADOWMAP_SIZE"        value="Shadow Quality"/>
     <item name="SHOW_FPS"              value="Show FPS"/>
     <item name="GRASS_DENSITY"         value="Grass Density"/>
     <item name="TERRAIN_DETAIL"        value="Terrain Detail"/>
