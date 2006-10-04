@@ -208,10 +208,10 @@
                 <vertex x="5.01"  y="2.0" z="0.5"   u="0.0"  v="1.0" />
             </face>
             <face material="roof" property="brick">
-                <vertex x="-5.5"  y="4.55" z="-3.0"  u="0.0"  v="0.0" />
-                <vertex x="-5.5"  y="7.55" z="0.0"   u="0.0"  v="3.0" />
-                <vertex x="5.5"   y="7.55" z="0.0"   u="3.0"  v="3.0" />
-                <vertex x="5.5"   y="4.55" z="-3.0"  u="3.0"  v="0.0" />
+                <vertex x="-5.5"  y="4.8" z="-3.0"  u="0.0"  v="0.0" />
+                <vertex x="-5.5"  y="7.8" z="0.0"   u="0.0"  v="3.0" />
+                <vertex x="5.5"   y="7.8" z="0.0"   u="3.0"  v="3.0" />
+                <vertex x="5.5"   y="4.8" z="-3.0"  u="3.0"  v="0.0" />
             </face>
             <face material="wood" property="brick">
                 <vertex x="-5.5"  y="7.5" z="0.0"   u="0.0"  v="3.0" />
@@ -220,10 +220,10 @@
                 <vertex x="5.5"   y="7.5" z="0.0"   u="3.0"  v="3.0" />
             </face>
             <face material="roof" property="brick">
-                <vertex x="-5.5"  y="7.55" z="0.0"   u="0.0"  v="3.0" />
-                <vertex x="-5.5"  y="4.55" z="3.0"   u="0.0"  v="0.0" />
-                <vertex x="5.5"   y="4.55" z="3.0"   u="3.0"  v="0.0" />
-                <vertex x="5.5"   y="7.55" z="0.0"   u="3.0"  v="3.0" />
+                <vertex x="-5.5"  y="7.8" z="0.0"   u="0.0"  v="3.0" />
+                <vertex x="-5.5"  y="4.8" z="3.0"   u="0.0"  v="0.0" />
+                <vertex x="5.5"   y="4.8" z="3.0"   u="3.0"  v="0.0" />
+                <vertex x="5.5"   y="7.8" z="0.0"   u="3.0"  v="3.0" />
             </face>
             <face material="wood" property="brick">
                 <vertex x="-5.5"  y="4.5" z="3.0"   u="0.0"  v="0.0" />
@@ -231,6 +231,44 @@
                 <vertex x="5.5"   y="7.5" z="0.0"   u="3.0"  v="3.0" />
                 <vertex x="5.5"   y="4.5" z="3.0"   u="3.0"  v="0.0" />
             </face>
+            <!--jumta malinjas-->
+            <face material="wood" property="brick">
+                <vertex x="-5.5"  y="7.5" z="0.0"   u="0.0"  v="0.0" />
+                <vertex x="-5.5"  y="7.8" z="0.0"   u="0.0"  v="0.18" />
+                <vertex x="-5.5"  y="4.8" z="-3.0"  u="3.0"  v="0.18" />
+                <vertex x="-5.5"  y="4.5" z="-3.0"  u="3.0"  v="0.0" />
+            </face>
+            <face material="wood" property="brick">
+                <vertex x="5.5"  y="7.8" z="0.0"   u="0.0"  v="0.18" />
+                <vertex x="5.5"  y="7.5" z="0.0"   u="0.0"  v="0.0" />
+                <vertex x="5.5"  y="4.5" z="-3.0"  u="3.0"  v="0.0" />
+                <vertex x="5.5"  y="4.8" z="-3.0"  u="3.0"  v="0.18" />
+            </face>
+            <face material="wood" property="brick">
+                <vertex x="-5.5"  y="4.5" z="-3.0"  u="0.0"  v="0.0" />
+                <vertex x="-5.5"  y="4.8" z="-3.0"  u="0.0"  v="0.18" />
+                <vertex x="5.5"   y="4.8" z="-3.0"  u="3.0"  v="0.18" />
+                <vertex x="5.5"   y="4.5" z="-3.0"  u="3.0"  v="0.0" />
+            </face>
+            <face material="wood" property="brick">
+                <vertex x="-5.5"  y="4.5" z="3.0"  u="0.0"  v="0.0" />
+                <vertex x="-5.5"  y="4.8" z="3.0"  u="0.0"  v="0.18" />
+                <vertex x="-5.5"  y="7.8" z="0.0"  u="3.0"  v="0.18" />
+                <vertex x="-5.5"  y="7.5" z="0.0"  u="3.0"  v="0.0" />
+            </face>
+            <face material="wood" property="brick">
+                <vertex x="5.5"  y="4.8" z="3.0"  u="0.0"  v="0.18" />
+                <vertex x="5.5"  y="4.5" z="3.0"  u="0.0"  v="0.0" />
+                <vertex x="5.5"  y="7.5" z="0.0"  u="3.0"  v="0.0" />
+                <vertex x="5.5"  y="7.8" z="0.0"  u="3.0"  v="0.18" />
+            </face>
+            <face material="wood" property="brick">
+                <vertex x="-5.5"  y="4.8" z="3.0"  u="0.0"  v="0.18" />
+                <vertex x="-5.5"  y="4.5" z="3.0"  u="0.0"  v="0.0" />
+                <vertex x="5.5"   y="4.5" z="3.0"  u="3.0"  v="0.0" />
+                <vertex x="5.5"   y="4.8" z="3.0"  u="3.0"  v="0.18" />
+            </face>
+            <!--malinju beigas-->
         </collision>
 <!--pretty house ends here-->
 
