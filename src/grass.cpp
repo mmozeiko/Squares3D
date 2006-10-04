@@ -6,10 +6,16 @@
 #include "geometry.h"
 #include "config.h"
 
+//brightness of grass
+#define GRASS_BRIGHTNESS 0.7f
+
 Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
 {
     // 1.0f, 2.0f, 4.0f
     float grass_density = static_cast<float>(1 << Config::instance->m_video.grass_density);
+    
+    //size of grass face
+    const float SIZE = 0.8f;
 
     const Vector lower(-2.99f, 0.0f, -2.99f);
     const Vector upper(2.99f, 0.0f, 2.99f);
@@ -53,27 +59,27 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
 
                     if (isPointInRectangle(v, g_fieldLower, g_fieldUpper))
                     {
-                        m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-0.2f, 0.0f, 0.0f)) );
-                        m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+0.2f, 0.0f, 0.0f)) );
-                        m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+0.2f, 0.4f, 0.0f)) );
-                        m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-0.2f, 0.4f, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-SIZE / 2, 0.0f, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+SIZE / 2, 0.0f, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+SIZE / 2, SIZE, 0.0f)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-SIZE / 2, SIZE, 0.0f)) );
 
-                        m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -0.2f)) );
-                        m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +0.2f)) );
-                        m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, 0.4f, +0.2f)) );
-                        m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, 0.4f, -0.2f)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -SIZE / 2)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +SIZE / 2)) );
+                        m_faces.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, SIZE, +SIZE / 2)) );
+                        m_faces.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, SIZE, -SIZE / 2)) );
                     }
                     else
                     {
-                        m_faces2.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-0.2f, 0.0f, 0.0f)) );
-                        m_faces2.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+0.2f, 0.0f, 0.0f)) );
-                        m_faces2.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+0.2f, 0.4f, 0.0f)) );
-                        m_faces2.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-0.2f, 0.4f, 0.0f)) );
-
-                        m_faces2.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -0.2f)) );
-                        m_faces2.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +0.2f)) );
-                        m_faces2.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, 0.4f, +0.2f)) );
-                        m_faces2.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, 0.4f, -0.2f)) );
+                        m_faces2.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-SIZE / 2, 0.0f, 0.0f)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+SIZE / 2, 0.0f, 0.0f)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+SIZE / 2, SIZE, 0.0f)) );
+                        m_faces2.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-SIZE / 2, SIZE, 0.0f)) );
+                                                                      
+                        m_faces2.push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -SIZE / 2)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +SIZE / 2)) );
+                        m_faces2.push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, SIZE, +SIZE / 2)) );
+                        m_faces2.push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, SIZE, -SIZE / 2)) );
                     }
                 }
 
@@ -159,7 +165,7 @@ void Grass::render() const
     glPushAttrib(GL_ENABLE_BIT | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (0.5f*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS*Vector::One).v);
 
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
