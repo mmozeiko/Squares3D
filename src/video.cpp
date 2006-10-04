@@ -592,7 +592,7 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         }
         else
         {
-            Config::instance->m_video.shadowmap_size = 512;
+            Config::instance->m_video.shadowmap_size = 0;
         }
     }
 

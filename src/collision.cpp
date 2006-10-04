@@ -7,7 +7,7 @@
 #include "properties.h"
 #include "world.h"
 #include "texture.h"
-#include "geometry.h"
+#include "config.h"
 
 class CollisionConvex : public Collision
 {
@@ -446,7 +446,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
     NewtonCollision* collision = NewtonCreateTreeCollision(World::instance->m_newtonWorld, NULL);
     NewtonTreeCollisionBeginBuild(collision);
-
+     
+#if 0    
     if (File::exists("/data/heightmaps/" + hmap + ".hmap"))
     {
         string filename = "/data/heightmaps/" + hmap + ".hmap";
@@ -469,16 +470,16 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         m_normals.resize(vlen);
         m_uv.resize(vlen);
 
-        m_indices.resize(ilen*3);
+        m_indices.resize(3*ilen);
 
         file.read(&m_vertices[0], sizeof(Vector)*vlen);
         file.read(&m_normals[0], sizeof(Vector)*vlen);
         file.read(&m_uv[0], sizeof(UV)*vlen);
-        file.read(&m_indices[0], sizeof(unsigned short)*ilen*3);
+        file.read(&m_indices[0], sizeof(unsigned short)*3*ilen);
         
         file.close();
 
-        m_tmpFaces.resize(ilen*3);
+        m_tmpFaces.resize(3*ilen);
         for (int i=0; i<ilen*3; i+=3)
         {
             int i0 = m_indices[i+0];
@@ -497,11 +498,13 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         }
     }
     else
+#endif
     {
         string filename = "/data/heightmaps/" + hmap + ".tga";
         File::Reader file(filename);
         if (!file.is_open())
         {
+
             throw Exception("Heightmap '" + filename + "' not found");
         }
 
@@ -522,56 +525,96 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
 
         float size2 = size/2.0f;
-        float STEP = 0.25f;
+
+        // 0.5f, 1.0f, 1.5f
+        float terrain_detail = static_cast<float>(Config::instance->m_video.terrain_detail);
+        float STEP = ((2-terrain_detail)+1)/2.0f;
 
         int maxIdx = 0;
         bool maxIdxB = false;
 
         float z = -size2;
-        while (z < size2)
+        while (true)
         {
+            bool badMargin = false; // for normal
+
+            float z2 = z + STEP;
             int iz = static_cast<int>((z + size2) * image.Height / size);
-            int iz2 = static_cast<int>((z + size2 + STEP) * image.Height / size);
-            if (iz2 >= image.Height) break;
+            int iz2 = static_cast<int>((z2 + size2) * image.Height / size);
+            if (iz >= image.Height)
+            {
+                z = size2;
+                iz = image.Height-1;
+            }
+            if (iz2 >= image.Height)
+            {
+                z2 = size2;
+                iz2 = image.Height-1;
+                badMargin = true;
+            }
 
             float x = -size2;
-            while (x < size2)
+            while (true)
             {
+                float x2 = x + STEP;
                 int ix = static_cast<int>((x + size2) * image.Width / size);
-                int ix2 = static_cast<int>((x + size2 + STEP) * image.Width / size);
-                if (ix2 >= image.Width) break;
+                int ix2 = static_cast<int>((x2 + size2) * image.Width / size);
+                if (ix >= image.Width)
+                {
+                    x = size2;
+                    ix = image.Width-1;
+                }
+                if (ix2 >= image.Width)
+                {
+                    x2 = size2;
+                    ix2 = image.Width-1;
+                    badMargin = true;
+                }
 
                 float y1 = (image.Data[image.Width * iz + ix] - 128) / 20.0f;
                 float y2 = (image.Data[image.Width * iz2 + ix] - 128) / 20.0f;
-                float y3 = (image.Data[image.Width * iz2 + ix2] - 128) / 20.0f;
                 float y4 = (image.Data[image.Width * iz + ix2] - 128) / 20.0f;
 
                 const Vector v0 = Vector(x, y1, z);
-                const Vector v1 = Vector(x, y2, z+STEP);
-                //const Vector v2 = Vector(x+STEP, y3, z+STEP);
-                const Vector v3 = Vector(x+STEP, y4, z);
+                const Vector v1 = Vector(x, y2, z2);
+                const Vector v3 = Vector(x2, y4, z);
                 
-                Vector normal = (v1 - v0)  ^ (v3 - v0);
-                normal.norm();
+                Vector normal;
+                if (badMargin)
+                {
+                    normal = m_normals.back();
+                }
+                else
+                {
+                    normal = (v1 - v0)  ^ (v3 - v0);
+                    normal.norm();
+                }
 
                 m_vertices.push_back(v0);
                 m_normals.push_back(normal);
                 m_uv.push_back(UV(x*2, z*2));
 
-                 x += STEP;
                 if (!maxIdxB) maxIdx++;
+
+                if (x == size2)
+                {
+                    break;
+                }
+                x += STEP;
             }
             if (!maxIdxB) maxIdxB = true;
+
+            if (z == size2)
+            {
+                break;
+            }
             z += STEP;
         }
-        
+      
         glfwFreeImage(&image);
 
         m_tmpFaces.resize(2*maxIdx*maxIdx);
         int cnt = 0;
-
-        const Vector lower(-3.0f, 0.0f, -3.0f);
-        const Vector upper(2.99f, 0.0f, 2.99f);
 
         for (int z=0; z<maxIdx-1; z++)
         {
@@ -604,25 +647,19 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
                     NewtonTreeCollisionAddFace(collision, 3, arr[0].v, sizeof(Vector), id);
                 }
 
-                if (!(isPointInRectangle(m_vertices[i1], lower, upper) ||
-                      isPointInRectangle(m_vertices[i1], lower, upper) ||
-                      isPointInRectangle(m_vertices[i3], lower, upper) ||
-                      isPointInRectangle(m_vertices[i4], lower, upper)))
-                {
-                    Face* face = & m_tmpFaces[cnt++];
-                    face->vertexes.resize(3);
-                    face->vertexes[0] = m_vertices[i1];
-                    face->vertexes[1] = m_vertices[i2];
-                    face->vertexes[2] = m_vertices[i3];
-                    level->m_faces.insert(make_pair(face, level->m_materials["grass"]));
+                Face* face = & m_tmpFaces[cnt++];
+                face->vertexes.resize(3);
+                face->vertexes[0] = m_vertices[i1];
+                face->vertexes[1] = m_vertices[i2];
+                face->vertexes[2] = m_vertices[i3];
+                level->m_faces.insert(make_pair(face, level->m_materials["grass"]));
 
-                    face = & m_tmpFaces[cnt++];
-                    face->vertexes.resize(3);
-                    face->vertexes[0] = m_vertices[i2];
-                    face->vertexes[1] = m_vertices[i3];
-                    face->vertexes[2] = m_vertices[i4];
-                    level->m_faces.insert(make_pair(face, level->m_materials["grass"]));
-                }
+                face = & m_tmpFaces[cnt++];
+                face->vertexes.resize(3);
+                face->vertexes[0] = m_vertices[i2];
+                face->vertexes[1] = m_vertices[i3];
+                face->vertexes[2] = m_vertices[i4];
+                level->m_faces.insert(make_pair(face, level->m_materials["grass"]));
             }
         }
     }

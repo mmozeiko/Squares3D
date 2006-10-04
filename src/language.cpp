@@ -39,9 +39,14 @@ Language::Language()
     REGISTER_TEXT_TYPE(VSYNC);
     REGISTER_TEXT_TYPE(FSAA);
     REGISTER_TEXT_TYPE(SHADERS);
-    REGISTER_TEXT_TYPE(SHADOWTYPE);
-    REGISTER_TEXT_TYPE(SHADOWMAPSIZE);
-    REGISTER_TEXT_TYPE(SHOWFPS);
+    REGISTER_TEXT_TYPE(SHADOW_TYPE);
+    REGISTER_TEXT_TYPE(SHADOWMAP_SIZE);
+    REGISTER_TEXT_TYPE(SHOW_FPS);
+    REGISTER_TEXT_TYPE(GRASS_DENSITY);
+    REGISTER_TEXT_TYPE(TERRAIN_DETAIL);
+    REGISTER_TEXT_TYPE(LOW);
+    REGISTER_TEXT_TYPE(MEDIUM);
+    REGISTER_TEXT_TYPE(HIGH);
     REGISTER_TEXT_TYPE(AUDIO);
     REGISTER_TEXT_TYPE(LANGUAGE);
 
@@ -117,6 +122,7 @@ int Language::load(const string& name)
         {
             throw Exception("Invalid language file '" + filename + "'");
         }
+
         StrToTextTypeMap::const_iterator txtIter = m_texts.find(node.getAttribute("name"));
         if (txtIter == m_texts.end())
         {

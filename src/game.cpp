@@ -210,11 +210,12 @@ void Game::run()
         else if (newState != State::Current)
         {
             delete m_state;
+            m_state = switchState(newState);
+            m_state->init();
+
             timer.reset();
             fps.reset();
             currentTime = accum = 0.0f;
-            m_state = switchState(newState);
-            m_state->init();
         }
         
         // glfw minmize/restore focus bug

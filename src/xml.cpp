@@ -46,7 +46,7 @@ void outputNode(const XMLnode& node, std::ostream& stream, int level)
     }
 
     stream << '<' << node.name;
-    if (node.attributes.empty())
+    if (!node.attributes.empty())
     {
         for each_const(StringMap, node.attributes, iter)
         {
@@ -175,7 +175,7 @@ public:
 
             size_t read = m_reader.read(buffer, BUFSIZE);
          
-            if (XML_ParseBuffer(m_parser, static_cast<int>(read), m_reader.eof() ? 1 : 0) == XML_STATUS_ERROR)
+            if (XML_ParseBuffer(m_parser, static_cast<int>(read), m_reader.eof() || read==0 ? 1 : 0) == XML_STATUS_ERROR)
             {
                 size_t c = XML_GetErrorColumnNumber(m_parser);
                 size_t l = XML_GetErrorLineNumber(m_parser);

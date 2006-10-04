@@ -108,7 +108,7 @@ public:
     virtual wstring getString() const                    { return m_string; }
     virtual string getValueID() const                    { return "";       }
     virtual wstring getValue() const                     { return L"";      }
-    virtual size_t getCurrentValueIdx() const            { return -1;       }
+    virtual int getCurrentValueIdx() const               { return -1;       }
     virtual bool isEnabled() const                       { return true;     }
     virtual void reset()                                 {}
 
@@ -150,7 +150,7 @@ public:
     wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
     string getValueID() const                      { return m_value.m_id; }
     wstring getValue() const                       { return m_value.getCurrent(); }
-    size_t getCurrentValueIdx() const              { return m_value.m_current; }
+    int getCurrentValueIdx() const                 { return static_cast<int>(m_value.m_current); }
     bool isEnabled() const                         { return m_enabled; }
     void reset();
     
@@ -334,11 +334,19 @@ void OptionEntry::reset()
         {
             m_enabled = false;
         }
-        m_value.m_current = Config::instance->m_video.shadowmap_size / 1024;
+        m_value.m_current = Config::instance->m_video.shadowmap_size;
     }
     else if (m_value.m_id == "show_fps")
     {
         m_value.m_current = Config::instance->m_video.show_fps ? 1 : 0;
+    }
+    else if (m_value.m_id == "grass_density")
+    {
+        m_value.m_current = Config::instance->m_video.grass_density;
+    }
+    else if (m_value.m_id == "terrain_detail")
+    {
+        m_value.m_current = Config::instance->m_video.terrain_detail;
     }
     else if (m_value.m_id == "audio")
     {
@@ -398,8 +406,7 @@ void ApplyOptionsEntry::click(int button)
         }
         else if (id == "fsaa_samples")
         {
-            size_t idx = (*iter)->getCurrentValueIdx();
-            Config::instance->m_video.samples = 2 * static_cast<int>(idx);
+            Config::instance->m_video.samples = 2 * (*iter)->getCurrentValueIdx();
         }
         else if (id == "use_shaders")
         {
@@ -411,12 +418,19 @@ void ApplyOptionsEntry::click(int button)
         }
         else if (id == "shadowmap_size")
         {
-            size_t idx = (*iter)->getCurrentValueIdx();
-            Config::instance->m_video.shadowmap_size = 512 << idx;
+            Config::instance->m_video.shadowmap_size = (*iter)->getCurrentValueIdx();
         }
         else if (id == "show_fps")
         {
             Config::instance->m_video.show_fps = (*iter)->getCurrentValueIdx()==1;
+        }
+        else if (id == "grass_density")
+        {
+            Config::instance->m_video.grass_density = (*iter)->getCurrentValueIdx();
+        }
+        else if (id == "terrain_detail")
+        {
+            Config::instance->m_video.terrain_detail = (*iter)->getCurrentValueIdx();
         }
         else if (id == "audio")
         {
@@ -719,16 +733,28 @@ void Menu::loadMenu()
     submenu->addEntry(new OptionEntry(language->get(TEXT_SHADERS), valSh));
 
     BoolValue valShad("shadow_type");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWTYPE), valShad));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOW_TYPE), valShad));
 
     Value valShadS("shadowmap_size");
-    valShadS.add(L"512");
-    valShadS.add(L"1024");
-    valShadS.add(L"2048");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWMAPSIZE), valShadS));
+    valShadS.add(language->get(TEXT_LOW));
+    valShadS.add(language->get(TEXT_MEDIUM));
+    valShadS.add(language->get(TEXT_HIGH));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWMAP_SIZE), valShadS));
+
+    Value valGD("grass_density");
+    valGD.add(language->get(TEXT_LOW));
+    valGD.add(language->get(TEXT_MEDIUM));
+    valGD.add(language->get(TEXT_HIGH));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_GRASS_DENSITY), valGD));
+
+    Value valTD("terrain_detail");
+    valTD.add(language->get(TEXT_LOW));
+    valTD.add(language->get(TEXT_MEDIUM));
+    valTD.add(language->get(TEXT_HIGH));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_TERRAIN_DETAIL), valTD));
 
     BoolValue valFPS("show_fps");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHOWFPS), valFPS));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SHOW_FPS), valFPS));
 
     submenu->addEntry(new SpacerEntry());
     submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptions"));

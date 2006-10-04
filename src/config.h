@@ -15,6 +15,9 @@ struct VideoConfig
     int  shadow_type;
     int  shadowmap_size;
     bool show_fps;
+
+    int  grass_density;   // 0 1 2
+    int  terrain_detail;  // 0 1 2
 };
 
 struct AudioConfig

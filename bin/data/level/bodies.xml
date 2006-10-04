@@ -4,7 +4,7 @@
             <collision>level</collision>
         </body>
         <body id="field">
-            <position x="0.0" y="0.001" z="0.0"/>
+            <position x="0.0" y="0.01" z="0.0"/>
             <collision>field</collision>
         </body>
         
@@ -35,45 +35,46 @@
             <collision>smallLegForPlayer_Small</collision>
         </body> 
         <body id="house1">
-            <position x="15.0" y="0.0" z="15.0"/>
+            <position x="19.5" y="0.0" z="20.5"/>
             <collision>house</collision>
         </body>
         
         <body id="house1-2">
-            <position x="20.0" y="0.0" z="10.0"/>
+            <position x="21.5" y="0.0" z="16.0"/>
             <rotation x="0.0" y="90.0" z="0.0"/>
             <collision>house</collision>
         </body>
 
         <body id="house2">
-            <position x="0.0" y="0.0" z="30.0"/>
+            <position x="9.5" y="0.0" z="22.5"/>
+            <rotation x="0.0" y="0.0" z="0.0"/>
             <collision>house</collision>
         </body>
 
         <body id="house2-1">
-            <position x="0.0" y="0.0" z="25.0"/>
-            <rotation x="0.0" y="90.0" z="0.0"/>
+            <position x="-0.5" y="0.0" z="20.5"/>
+            <rotation x="0.0" y="0.0" z="0.0"/>
             <collision>house</collision>
         </body>
         
         <body id="house3">
-            <position x="-14.0" y="0.0" z="14.0"/>
+            <position x="-15.0" y="0.0" z="15.0"/>
             <rotation x="0.0" y="-45.0" z="0.0"/>
             <collision>house</collision>
         </body>
 
         <body id="house4">
-            <position x="0.0" y="0.0" z="-20.0"/>
+            <position x="-15.0" y="0.0" z="-17.5"/>
             <rotation x="0.0" y="180.0" z="0.0"/>
             <collision>house</collision>
         </body>
         <body id="house4-1">
-            <position x="-10.0" y="0.0" z="-18.0"/>
+            <position x="-5.0" y="0.0" z="-19.5"/>
             <rotation x="0.0" y="180.0" z="0.0"/>
             <collision>house</collision>
         </body>
         <body id="house4-2">
-            <position x="10.0" y="0.0" z="-22.0"/>
+            <position x="5.0" y="0.0" z="-21.5"/>
             <rotation x="0.0" y="180.0" z="0.0"/>
             <collision>house</collision>
         </body>

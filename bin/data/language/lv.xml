@@ -11,9 +11,9 @@
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
 
     <item name="ESC_MESSAGE">
-        Nospiediet ESCAPE, lai turpinātu
+Nospiediet ESCAPE, lai turpinātu
 
-        Nospiediet ENTER, lai izietu uz galveno izvēlni..
+Nospiediet ENTER, lai izietu uz galveno izvēlni..
     </item>
 
     <!-- Main menu -->
@@ -30,14 +30,20 @@
     <!-- Options -->
     <item name="TRUE"                  value="Jā"/>
     <item name="FALSE"                 value="Nē"/>
+    <item name="LOW"                   value="Zema"/>
+    <item name="MEDIUM"                value="Vidēja"/>
+    <item name="HIGH"                  value="Augsta"/>
+
     <item name="RESOLUTION"            value="Izšķirtspēja"/>
     <item name="FULLSCREEN"            value="Pilnekrāns"/>
     <item name="VSYNC"                 value="Vertikālā sinhronizācija"/>
     <item name="FSAA"                  value="Attēla izlīdzināšana"/>
     <item name="SHADERS"               value="Izmantot Šeiderus"/>
-    <item name="SHADOWTYPE"            value="Izmantot Ēnas"/>
-    <item name="SHADOWMAPSIZE"         value="Ēnukaršu izmērs"/>
-    <item name="SHOWFPS"               value="Rādīt Kadrus/sekundē"/>
-    <item name="AUDIO"                 value="Skaņa ieslēgta"/>
+    <item name="SHADOW_TYPE"           value="Izmantot Ēnas"/>
+    <item name="SHADOWMAP_SIZE"        value="Ēnukaršu izmērs"/>
+    <item name="SHOW_FPS"              value="Rādīt Kadrus/sekundē"/>
+    <item name="GRASS_DENSITY"         value="Apzāļojumu Kvalitāte"/>
+    <item name="TERRAIN_DETAIL"        value="Reljefa Kvalitāte"/>
+    <item name="AUDIO"                 value="Skaņa Ieslēgta"/>
     <item name="LANGUAGE"              value="Valoda"/>
 </xml>

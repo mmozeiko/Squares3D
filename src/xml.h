@@ -41,6 +41,8 @@ public:
     inline T getAttribute(const string& name, T defaultValue) const;
 
     inline string getAttribute(const string& name, const string& defaultValue) const;
+    
+    inline void setAttribute(const string& name, const string& value);
 
 private:
     StringMap attributes;
@@ -98,6 +100,11 @@ string XMLnode::getAttribute(const string& name, const string& defaultValue) con
         return iter->second;
     }
     return defaultValue;
+}
+
+void XMLnode::setAttribute(const string& name, const string& value)
+{
+    attributes[name] = value;
 }
 
 #endif // __XML_H__

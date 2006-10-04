@@ -318,7 +318,7 @@ void World::setupShadowStuff()
         return;
     }
 
-    m_shadowSize = Config::instance->m_video.shadowmap_size;
+    m_shadowSize = (1 << Config::instance->m_video.shadowmap_size) * 512; // 512, 1024, 2048
 
     bool valid = false;
     if (Video::instance->m_haveShadowsFB)
@@ -344,12 +344,13 @@ void World::setupShadowStuff()
     {
         m_withFBO = true;
         m_framebuffer->unbind();
-        Config::instance->m_video.shadowmap_size = m_shadowSize;
+        Config::instance->m_video.shadowmap_size = m_shadowSize / 512;
     }
     else
     {
         m_withFBO = false;
-        m_shadowSize = Config::instance->m_video.shadowmap_size = 512;
+        Config::instance->m_video.shadowmap_size = 0;
+        m_shadowSize = 512;
         if (Video::instance->getResolution().second < 512)
         {
             m_shadowSize = 256;
@@ -416,7 +417,7 @@ void World::shadowMapPass1() const
     //tommeer lieli HAKi. TODO.
     //glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(-0.3f, -0.05f); 
+    glPolygonOffset(0.0f, -0.05f); 
     //glPolygonOffset(1.0f, 2.0f); 
     //glPolygonOffset(1.0f, 2.0f);
 

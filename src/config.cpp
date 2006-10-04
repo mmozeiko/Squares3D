@@ -1,12 +1,13 @@
 #include "config.h"
 #include "file.h"
 #include "xml.h"
+#include "version.h"
 
 Config* System<Config>::instance = NULL;
 
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1024, true };
+const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1, true, 1, 1 };
 const AudioConfig Config::defaultAudio = { true };
 const MiscConfig Config::defaultMisc = { true, "en" };
 
@@ -20,6 +21,14 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
     {
         xml.load(in);
         in.close();
+    }
+
+    string version = xml.getAttribute<string>("version", "4tet");
+    
+    if (version != g_version)
+    {
+        // config file version mismatch
+        return;
     }
 
     // TODO: maybe rewrite with map<string, variable&>
@@ -72,17 +81,39 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 else if (node.name == "shadowmap_size")
                 {
                     int shadowmap_size = cast<int>(node.value);
-                    if (shadowmap_size != 512 &&
-                        shadowmap_size != 1024 &&
-                        shadowmap_size != 2048)
+                    if (shadowmap_size != 0 &&
+                        shadowmap_size != 1 &&
+                        shadowmap_size != 2)
                     {
-                        shadowmap_size = 1024;
+                        shadowmap_size = 1;
                     }
                     m_video.shadowmap_size = shadowmap_size;
                 }
                 else if (node.name == "show_fps")
                 {
                     m_video.show_fps = cast<int>(node.value)==1;
+                }
+                else if (node.name == "grass_density")
+                {
+                    int grass_density = cast<int>(node.value);
+                    if (grass_density != 0 &&
+                        grass_density != 1 &&
+                        grass_density != 2)
+                    {
+                        grass_density = 1;
+                    }
+                    m_video.grass_density = grass_density;
+                }
+                else if (node.name == "terrain_detail")
+                {
+                    int terrain_detail = cast<int>(node.value);
+                    if (terrain_detail != 0 &&
+                        terrain_detail != 1 &&
+                        terrain_detail != 2)
+                    {
+                        terrain_detail = 1;
+                    }
+                    m_video.terrain_detail = terrain_detail;
                 }
                 else
                 {
@@ -139,13 +170,8 @@ Config::~Config()
 {
     clog << "Saving configuration." << endl;
 
-    File::Writer out(CONFIG_FILE);
-    if (!out.is_open())
-    {
-        throw Exception("Failed to open " + CONFIG_FILE + " for writing");
-    }
-
     XMLnode xml("config");
+    xml.setAttribute("version", g_version);
 
     xml.childs.push_back(XMLnode("video"));
     xml.childs.back().childs.push_back(XMLnode("width", cast<string>(m_video.width)));
@@ -157,6 +183,8 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("shadow_type", cast<string>(m_video.shadow_type)));
     xml.childs.back().childs.push_back(XMLnode("shadowmap_size", cast<string>(m_video.shadowmap_size)));
     xml.childs.back().childs.push_back(XMLnode("show_fps", cast<string>(m_video.show_fps ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("grass_density", cast<string>(m_video.grass_density)));
+    xml.childs.back().childs.push_back(XMLnode("terrain_detail", cast<string>(m_video.terrain_detail)));
 
     xml.childs.push_back(XMLnode("audio"));
     xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));
@@ -165,6 +193,11 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("language", m_misc.language));
 
+    File::Writer out(CONFIG_FILE);
+    if (!out.is_open())
+    {
+        throw Exception("Failed to open " + CONFIG_FILE + " for writing");
+    }
     xml.save(out);
     out.close();
 }

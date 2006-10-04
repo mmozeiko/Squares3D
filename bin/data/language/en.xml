@@ -35,9 +35,16 @@ Press ENTER to quit to main menu..
     <item name="VSYNC"                 value="Vertical Sync"/>
     <item name="FSAA"                  value="Antialiasing"/>
     <item name="SHADERS"               value="Use Shaders"/>
-    <item name="SHADOWTYPE"            value="Use Shadows"/>
-    <item name="SHADOWMAPSIZE"         value="Shadowmap Size"/>
-    <item name="SHOWFPS"               value="Show FPS"/>
+    <item name="SHADOW_TYPE"           value="Use Shadows"/>
+    <item name="SHADOWMAP_SIZE"        value="Shadowmap Size"/>
+    <item name="SHOW_FPS"              value="Show FPS"/>
+    <item name="GRASS_DENSITY"         value="Grass Density"/>
+    <item name="TERRAIN_DETAIL"        value="Terrain Detail"/>
+
+    <item name="LOW"                   value="Low"/>
+    <item name="MEDIUM"                value="Medium"/>
+    <item name="HIGH"                  value="High"/>
+
     <item name="AUDIO"                 value="Audio On"/>
     <item name="LANGUAGE"              value="Language"/>
 

@@ -191,6 +191,10 @@
 				RelativePath=".\src\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\version.h"
+				>
+			</File>
 			<Filter
 				Name="Game Logic"
 				>

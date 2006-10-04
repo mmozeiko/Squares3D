@@ -5,6 +5,7 @@
 #include "random.h"
 #include "utilities.h"
 #include "game.h"
+#include "version.h"
 
 #ifdef WIN32
 #define VC_EXTRALEAN
@@ -15,10 +16,12 @@ int main(int, char* argv[])
 {
     STATIC_CHECK(sizeof(wchar_t)==2, DANGER_SIZE_OF_WCHAR_IS_NOT_2);
 
-#ifdef NDEBUG    
+#ifdef NDEBUG
     std::ofstream log("log.txt");
     clog.rdbuf(log.rdbuf());
 #endif
+
+    clog << "*** Squares 3D version: " << g_version << " ***" << endl;
 
     clog << "Started: " << getDateTime() << endl;
 
