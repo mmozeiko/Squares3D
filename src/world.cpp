@@ -344,7 +344,7 @@ void World::setupShadowStuff()
     {
         m_withFBO = true;
         m_framebuffer->unbind();
-        Config::instance->m_video.shadowmap_size = m_shadowSize / 512;
+        Config::instance->m_video.shadowmap_size = (m_shadowSize / 512) >> 1;
     }
     else
     {

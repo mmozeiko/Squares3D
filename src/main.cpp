@@ -67,7 +67,7 @@ int main(int, char* argv[])
 
     clog << "Finished: " << getDateTime() << endl;
 
-#ifdef NDEBUG    
+#ifndef NDEBUG    
     m_dumpMemoryReport();
 #endif
     
