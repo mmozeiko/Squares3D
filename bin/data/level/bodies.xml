@@ -35,12 +35,12 @@
             <collision>smallLegForPlayer_Small</collision>
         </body> 
         <body id="house1">
-            <position x="19.5" y="0.0" z="20.5"/>
+            <position x="20.0" y="0.0" z="18.5"/>
             <collision>house</collision>
         </body>
         
         <body id="house1-2">
-            <position x="21.5" y="0.0" z="16.0"/>
+            <position x="21.5" y="0.0" z="15.0"/>
             <rotation x="0.0" y="90.0" z="0.0"/>
             <collision>house</collision>
         </body>

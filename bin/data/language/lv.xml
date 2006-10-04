@@ -17,33 +17,36 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     </item>
 
     <!-- Main menu -->
-    <item name="START_GAME"            value="Sākt Spēli"/>
-    <item name="OPTIONS"               value="Uzstādījumi"/>
-    <item name="AUDIO_OPTIONS"         value="Skaņas Uzstādījumi"/>
-    <item name="VIDEO_OPTIONS"         value="Attēla Uzstādījumi"/>
-    <item name="OTHER_OPTIONS"         value="Citi Uzstādījumi"/>
-    <item name="CREDITS"               value="Šautauts savējiem"/>
-    <item name="QUIT_GAME"             value="Beigt Spēli"/>
-    <item name="BACK"                  value="Atpakaļ"/>
-    <item name="SAVE"                  value="Uzstādīt Uzstādījumus"/>
-
-    <!-- Options -->
-    <item name="TRUE"                  value="Jā"/>
-    <item name="FALSE"                 value="Nē"/>
-    <item name="LOW"                   value="Zema"/>
-    <item name="MEDIUM"                value="Vidēja"/>
-    <item name="HIGH"                  value="Augsta"/>
-
-    <item name="RESOLUTION"            value="Izšķirtspēja"/>
-    <item name="FULLSCREEN"            value="Pilnekrāns"/>
-    <item name="VSYNC"                 value="Vertikālā sinhronizācija"/>
-    <item name="FSAA"                  value="Attēla izlīdzināšana"/>
-    <item name="SHADERS"               value="Izmantot Šeiderus"/>
-    <item name="SHADOW_TYPE"           value="Izmantot Ēnas"/>
-    <item name="SHADOWMAP_SIZE"        value="Ēnu Kvalitāte"/>
-    <item name="SHOW_FPS"              value="Rādīt Kadrus/sekundē"/>
-    <item name="GRASS_DENSITY"         value="Apzāļojumu Kvalitāte"/>
-    <item name="TERRAIN_DETAIL"        value="Reljefa Kvalitāte"/>
-    <item name="AUDIO"                 value="Skaņa Ieslēgta"/>
-    <item name="LANGUAGE"              value="Valoda"/>
+    <item name="START_GAME"               value="Sākt Spēli"/>
+    <item name="OPTIONS"                  value="Uzstādījumi"/>
+    <item name="AUDIO_OPTIONS"            value="Skaņas Uzstādījumi"/>
+    <item name="VIDEO_OPTIONS"            value="Attēla Uzstādījumi"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus Video Uzstādījumi"/>
+    <item name="OTHER_OPTIONS"            value="Citi Uzstādījumi"/>
+    <item name="CREDITS"                  value="Šautauts savējiem"/>
+    <item name="QUIT_GAME"                value="Beigt Spēli"/>
+    <item name="BACK"                     value="Atpakaļ"/>
+    <item name="SAVE"                     value="Uzstādīt Uzstādījumus"/>
+                                       
+    <!-- Options -->                      
+    <item name="TRUE"                     value="Jā"/>
+    <item name="FALSE"                    value="Nē"/>
+    <item name="LOW"                      value="Zema"/>
+    <item name="MEDIUM"                   value="Vidēja"/>
+    <item name="HIGH"                     value="Augsta"/>
+    <item name="CUSTOM"                   value="Dažāda"/>
+                                       
+    <item name="RESOLUTION"               value="Izšķirtspēja"/>
+    <item name="FULLSCREEN"               value="Pilnekrāns"/>
+    <item name="VSYNC"                    value="Vertikālā sinhronizācija"/>
+    <item name="FSAA"                     value="Attēla izlīdzināšana"/>
+    <item name="SHADERS"                  value="Izmantot Šeiderus"/>
+    <item name="SHADOW_TYPE"              value="Izmantot Ēnas"/>
+    <item name="SHADOWMAP_SIZE"           value="Ēnu Kvalitāte"/>
+    <item name="SHOW_FPS"                 value="Rādīt Kadrus/sekundē"/>
+    <item name="GRASS_DENSITY"            value="Apzāļojumu Kvalitāte"/>
+    <item name="TERRAIN_DETAIL"           value="Reljefa Kvalitāte"/>
+    <item name="AUDIO"                    value="Skaņa Ieslēgta"/>
+    <item name="LANGUAGE"                 value="Valoda"/>
+    <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes Detalizācija"/>
 </xml>

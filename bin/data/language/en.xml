@@ -17,35 +17,40 @@ Press ENTER to quit to main menu..
     </item>
 
     <!-- Main menu -->
-    <item name="START_GAME"            value="Start Game"/>
-    <item name="OPTIONS"               value="Options"/>
-    <item name="AUDIO_OPTIONS"         value="Audio Options"/>
-    <item name="VIDEO_OPTIONS"         value="Video Options"/>
-    <item name="OTHER_OPTIONS"         value="Other Options"/>
-    <item name="CREDITS"               value="Credits"/>
-    <item name="QUIT_GAME"             value="Quit Game"/>
-    <item name="BACK"                  value="Back"/>
-    <item name="SAVE"                  value="Apply Settings"/>
-    
-    <!-- Options -->
-    <item name="TRUE"                  value="Yes"/>
-    <item name="FALSE"                 value="No"/>
-    <item name="RESOLUTION"            value="Resolution"/>
-    <item name="FULLSCREEN"            value="Fullscreen"/>
-    <item name="VSYNC"                 value="Vertical Sync"/>
-    <item name="FSAA"                  value="Antialiasing"/>
-    <item name="SHADERS"               value="Use Shaders"/>
-    <item name="SHADOW_TYPE"           value="Use Shadows"/>
-    <item name="SHADOWMAP_SIZE"        value="Shadow Quality"/>
-    <item name="SHOW_FPS"              value="Show FPS"/>
-    <item name="GRASS_DENSITY"         value="Grass Density"/>
-    <item name="TERRAIN_DETAIL"        value="Terrain Detail"/>
-
-    <item name="LOW"                   value="Low"/>
-    <item name="MEDIUM"                value="Medium"/>
-    <item name="HIGH"                  value="High"/>
-
-    <item name="AUDIO"                 value="Audio On"/>
-    <item name="LANGUAGE"              value="Language"/>
+    <item name="START_GAME"               value="Start Game"/>
+    <item name="OPTIONS"                  value="Options"/>
+    <item name="AUDIO_OPTIONS"            value="Audio Options"/>
+    <item name="VIDEO_OPTIONS"            value="Video Options"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Video Options Advanced"/>
+    <item name="OTHER_OPTIONS"            value="Other Options"/>
+    <item name="CREDITS"                  value="Credits"/>
+    <item name="QUIT_GAME"                value="Quit Game"/>
+    <item name="BACK"                     value="Back"/>
+    <item name="SAVE"                     value="Apply Settings"/>
+                                       
+    <!-- Options -->                   
+    <item name="TRUE"                     value="Yes"/>
+    <item name="FALSE"                    value="No"/>
+    <item name="RESOLUTION"               value="Resolution"/>
+    <item name="FULLSCREEN"               value="Fullscreen"/>
+    <item name="VSYNC"                    value="Vertical Sync"/>
+    <item name="FSAA"                     value="Antialiasing"/>
+    <item name="SHADERS"                  value="Use Shaders"/>
+    <item name="SHADOW_TYPE"              value="Use Shadows"/>
+    <item name="SHADOWMAP_SIZE"           value="Shadow Quality"/>
+    <item name="SHOW_FPS"                 value="Show FPS"/>
+    <item name="GRASS_DENSITY"            value="Grass Density"/>
+    <item name="TERRAIN_DETAIL"           value="Terrain Detail"/>
+    <item name="ENVIRONMENT_DETAILS"      value="Environmental Details"/>
+                                       
+                                       
+    <item name="LOW"                      value="Low"/>
+    <item name="MEDIUM"                   value="Medium"/>
+    <item name="HIGH"                     value="High"/>
+    <item name="CUSTOM"              value="Custom"/>
+                                       
+                                       
+    <item name="AUDIO"                    value="Audio On"/>
+    <item name="LANGUAGE"                 value="Language"/>
 
 </xml>

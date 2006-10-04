@@ -178,11 +178,14 @@ void OptionEntry::click(int button)
     if ((button == GLFW_MOUSE_BUTTON_LEFT)
         || (button == GLFW_MOUSE_BUTTON_RIGHT)
         || (button == GLFW_KEY_LEFT)
-        || (button == GLFW_KEY_RIGHT))
+        || (button == GLFW_KEY_RIGHT)
+        || (button == GLFW_KEY_ENTER))
     {
         if (m_enabled)
         {
-            m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_RIGHT));
+            m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
+                                  || (button == GLFW_KEY_RIGHT)
+                                  || (button == GLFW_KEY_ENTER));
         }
     }
 }
@@ -288,7 +291,23 @@ void OptionEntry::reset()
 {
     // Sync option values to values in Config object
 
-    if (m_value.m_id == "resolution")
+    if (m_value.m_id == "environment_details")
+    {
+        int shMaps = Config::instance->m_video.shadowmap_size;
+        int grDens = Config::instance->m_video.grass_density;
+        int terDet = Config::instance->m_video.terrain_detail;
+        
+        for (int i = 0; i < 4; i++)
+        {
+            if ((shMaps == i) && (grDens == i) && (terDet == i))
+            {
+                m_value.m_current = i;
+                break;
+            }
+            m_value.m_current = i;
+        }
+    }
+    else if (m_value.m_id == "resolution")
     {
         const IntPairVector resolutions = Video::instance->getModes();
         for (size_t i = 0; i < resolutions.size(); i++)
@@ -389,6 +408,16 @@ void ApplyOptionsEntry::click(int button)
     for each_const(Entries, m_menu->m_currentSubmenu->m_entries, iter)
     {
         string id = (*iter)->getValueID();
+
+        if (id == "environment_details")
+        {
+            if ((*iter)->getCurrentValueIdx() != 3)
+            {
+                Config::instance->m_video.shadowmap_size = (*iter)->getCurrentValueIdx();
+                Config::instance->m_video.grass_density = (*iter)->getCurrentValueIdx();
+                Config::instance->m_video.terrain_detail = (*iter)->getCurrentValueIdx();
+            }
+        }
 
         if (id == "resolution")
         {
@@ -689,7 +718,7 @@ void Menu::loadMenu()
 
     submenu->setTitle(language->get(TEXT_OPTIONS), titlePos);
 
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptions"));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptionsEasy"));
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_AUDIO_OPTIONS), this, "audioOptions"));
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_OTHER_OPTIONS), this, "otherOptions"));
 
@@ -701,7 +730,7 @@ void Menu::loadMenu()
     m_submenus["options"] = submenu;
 
 
-    // VIDEO Options Submenu
+    // VIDEO Options NOOBS Submenu
     submenu = new Submenu(m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS), titlePos);
@@ -717,6 +746,28 @@ void Menu::loadMenu()
 
     BoolValue valFS("fullscreen");
     submenu->addEntry(new OptionEntry(language->get(TEXT_FULLSCREEN), valFS));
+
+    Value valEnvDet("environment_details");
+    valEnvDet.add(language->get(TEXT_LOW));
+    valEnvDet.add(language->get(TEXT_MEDIUM));
+    valEnvDet.add(language->get(TEXT_HIGH));
+    valEnvDet.add(language->get(TEXT_CUSTOM));
+    submenu->addEntry(new OptionEntry(language->get(TEXT_ENVIRONMENT_DETAILS), valEnvDet));
+
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS_ADVANCED), this, "videoOptions"));
+
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptionsEasy"));
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
+    
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["videoOptionsEasy"] = submenu;
+
+    // VIDEO Options ADVANCED Submenu
+    submenu = new Submenu(m_font, m_fontBig);
+    
+    submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS_ADVANCED), titlePos);
 
     BoolValue valVS("vsync");
     submenu->addEntry(new OptionEntry(language->get(TEXT_VSYNC), valVS));
@@ -758,7 +809,7 @@ void Menu::loadMenu()
 
     submenu->addEntry(new SpacerEntry());
     submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptions"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "videoOptionsEasy"));    
     
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
