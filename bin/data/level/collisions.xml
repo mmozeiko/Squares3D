@@ -6,21 +6,16 @@
             <radius   x="0.25"  y="0.25" z="0.5" />
             <rotation x="-90.0" y="0.0"  z="0.0" />
         </collision>
-
-        <collision id="player_small" type="sphere" mass="20.0" material="penguin" property="player">
-            <radius   x="0.25"  y="0.25" z="0.5" />
-            <rotation x="-90.0" y="0.0"  z="0.0" />
-        </collision>
-        
+      
         <collision id="Dmitry" type="sphere" mass="20.0" material="penguin" property="player">
             <radius   x="0.35"  y="0.35" z="0.5" />
             <rotation x="-90.0" y="0.0"  z="0.0" />
         </collision>
         
-        <collision id="player_biggy" type="box" mass="30.0" property="player">
+        <!--collision id="player_biggy" type="box" mass="30.0" property="player">
             <size     x="0.9"  y="0.9" z="0.9" />
             <rotation x="-90.0" y="0.0"  z="0.0" />
-        </collision>
+        </collision-->
 
         <collision id="football" type="sphere" mass="0.4" material="football" property="football">
             <radius x="0.2" y="0.2" z="0.2" />
@@ -90,7 +85,7 @@
 
 
 
-        <collision id="wall" type="tree">
+        <!--collision id="wall" type="tree">
             <face material="rock" property="brick">
                 <vertex x="1.0" y="3.0" z="10.0"  u="0.0"  v="0.0" />
                 <vertex x="1.0" y="0.0" z="10.0"  u="0.0"  v="1.5" />
@@ -111,7 +106,7 @@
                 <vertex x="1.0" y="3.0" z="-10.0" u="10.0" v="0.0" />
                 <vertex x="0.0" y="3.0" z="-10.0" u="10.0" v="0.5" />
             </face>
-        </collision>
+        </collision-->
 
         
 <!--pretty house takes pretty amount of code :) -->
@@ -239,7 +234,7 @@
         </collision>
 <!--pretty house ends here-->
 
-        <collision id="tower_left" type="box" mass="200.0" material="wood">
+        <!--collision id="tower_left" type="box" mass="200.0" material="wood">
             <size x="1.0" y="2.0" z="1.0"/>
         </collision>
         <collision id="tower_right" type="box" mass="200.0" material="wood">
@@ -250,7 +245,7 @@
         </collision>
         <collision id="tower_top" type="box" mass="400.0" material="wood">
             <size x="1.0" y="4.0" z="1.0"/>
-        </collision>
+        </collision-->
         
         <collision id="restSeatFoot1" type="box" mass="40.0" material="wood">
             <size x="0.5" y="0.3" z="0.5"/>
