@@ -6,8 +6,8 @@
 #include "level.h"
 #include "body.h"
 
-static const float LOOK_SPEED = 1.0f;
-static const float MOVE_SPEED = 10.0f;
+static const float LOOK_SPEED = 3.0f;
+static const float MOVE_SPEED = 20.0f;
 
 /*
 Translate(Camera.Position);

@@ -725,7 +725,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
 void CollisionHMap::render() const
 {
-    if (m_indices.size() == 0)
+    if (m_indices.size() + m_indices2.size() == 0)
     {
         return;
     }
@@ -743,24 +743,30 @@ void CollisionHMap::render() const
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[2]);
         glVertexPointer(3, GL_FLOAT, sizeof(Vector), NULL);
 
-        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, NULL);
-
-        if (Video::instance->m_shadowMap3ndPass)
+        if (m_indices.size() != 0)
         {
-            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
-            glDisable(GL_TEXTURE_2D);
-            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, NULL);
         }
-        
-        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, NULL);
 
-        if (Video::instance->m_shadowMap3ndPass)
+        if (m_indices2.size() != 0)
         {
-            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
-            glEnable(GL_TEXTURE_2D);
-            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            if (Video::instance->m_shadowMap3ndPass)
+            {
+                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glDisable(GL_TEXTURE_2D);
+                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            }
+            
+            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, NULL);
+
+            if (Video::instance->m_shadowMap3ndPass)
+            {
+                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glEnable(GL_TEXTURE_2D);
+                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            }
         }
 
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
@@ -771,19 +777,27 @@ void CollisionHMap::render() const
         glTexCoordPointer(2, GL_FLOAT, sizeof(UV), &m_uv[0]);
         glNormalPointer(GL_FLOAT, sizeof(Vector), &m_normals[0]);
         glVertexPointer(3, GL_FLOAT, sizeof(Vector), &m_vertices[0]);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, &m_indices[0]);
-        if (Video::instance->m_shadowMap3ndPass)
+
+        if (m_indices.size() != 0)
         {
-            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
-            glDisable(GL_TEXTURE_2D);
-            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, &m_indices[0]);
         }
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, &m_indices2[0]);
-        if (Video::instance->m_shadowMap3ndPass)
+
+        if (m_indices2.size() != 0)
         {
-            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
-            glEnable(GL_TEXTURE_2D);
-            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            if (Video::instance->m_shadowMap3ndPass)
+            {
+                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glDisable(GL_TEXTURE_2D);
+                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            }
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, &m_indices2[0]);
+            if (Video::instance->m_shadowMap3ndPass)
+            {
+                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glEnable(GL_TEXTURE_2D);
+                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            }
         }
     }
 }

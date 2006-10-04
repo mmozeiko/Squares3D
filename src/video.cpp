@@ -105,6 +105,10 @@ Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(fal
     }
 
     Config::instance->m_video.samples = glfwGetWindowParam(GLFW_FSAA_SAMPLES);
+    if (Config::instance->m_video.samples > 0)
+    {
+        glEnable(GL_MULTISAMPLE_ARB);
+    }
 
     glfwDisable(GLFW_KEY_REPEAT);
     glfwDisable(GLFW_MOUSE_CURSOR);
