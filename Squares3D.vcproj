@@ -643,6 +643,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\bin\data\level\cpu_players.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\bin\data\level\joints.xml"
 					>
 				</File>
@@ -652,6 +656,10 @@
 				</File>
 				<File
 					RelativePath=".\bin\data\level\materials.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\players.xml"
 					>
 				</File>
 				<File

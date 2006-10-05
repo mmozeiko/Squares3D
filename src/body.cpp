@@ -8,8 +8,18 @@
 #include "properties.h"
 #include "geometry.h"
 
-typedef map<string, Collision*> CollisionsMap;
-typedef map<string, Body*>      BodiesMap;
+Body::Body(const string& id, const Collision* collision):
+    m_id(id),
+    m_matrix(),
+    m_collideable(NULL)
+{
+    m_totalMass = collision->m_mass;
+    m_totalInertia = collision->m_inertia;
+
+    m_collisions.insert(collision);
+
+    createNewtonBody(collision->m_newtonCollision, collision->m_origin, Vector(), Vector());
+}    
 
 Body::Body(const XMLnode& node):
     m_matrix(),
@@ -36,16 +46,7 @@ Body::Body(const XMLnode& node):
         }
         else if (node.name == "collision")
         { 
-            string id = node.value;
-            CollisionsMap::const_iterator iter = World::instance->m_level->m_collisions.find(id);
-            if (iter != World::instance->m_level->m_collisions.end())
-            {
-                m_collisions.insert(iter->second);
-            }
-            else
-            {
-                throw Exception("Could not find specified collision for body '" + id + "'");
-            }
+            m_collisions.insert(World::instance->m_level->getCollision(node.value));
         }
         else
         {
@@ -128,6 +129,8 @@ void Body::createNewtonBody(const NewtonCollision* newtonCollision,
 
 Body::~Body()
 {
+    //TODO: destroy m_body
+
     /*
     for each_const(CollisionSet, m_collisions, iter)
     {

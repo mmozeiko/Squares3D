@@ -210,7 +210,7 @@ void Referee::registerBall(Ball* ball)
 void Referee::registerPlayer(const string& name, Player* player)
 {
     m_players[player->m_body] = make_pair(name, player);
-    m_scoreBoard->registerPlayer(name);
+    m_scoreBoard->registerPlayer(name, player->m_color);
     player->m_referee = this;
 }
 

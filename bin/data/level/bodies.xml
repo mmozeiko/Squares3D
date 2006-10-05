@@ -118,7 +118,7 @@
 
 
 
-        <body id="penguin0">
+        <!--body id="penguin0">
             <position x="-8.0" y="5.5" z="5.0" />
             <rotation x="0.0" y="0.0" z="0.0" />
             <collision>player_small</collision>
@@ -140,7 +140,7 @@
             <position x="-8.0" y="5.5" z="4.0" />
             <rotation x="0.0" y="0.0" z="0.0" />
             <collision>Dmitry</collision>
-        </body>
+        </body-->
 
 
         <!--body id="tower_left">

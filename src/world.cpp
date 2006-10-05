@@ -120,14 +120,19 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
-    Player* human = new LocalPlayer("penguin3", Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
+    Player* human = m_level->getPlayer("Dimitris");
+    human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
-    m_referee->registerPlayer("player1", human);
+    m_referee->registerPlayer(human->m_name, human);
     m_ball->addBodyToFilter(human->m_body);
 
     int i = 0;
     //todo: position ai players without such hacks
+    StringVector playerNames;
+    playerNames.push_back("Vitolds");
+    playerNames.push_back("Macgyver");
+    playerNames.push_back("Chuck Norris");
     for (float x = -1.5f; x <= 1.5f; x += 3.0f)
     { 
         for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
@@ -135,10 +140,11 @@ void World::init()
             if ((x != -1.5f) || (z != -1.5f))
             {
                 Vector pos(x, 1.0f, z);
-                Player* ai = new AiPlayer("penguin" + cast<string>(i), pos, Vector::Zero);
+                Player* ai = m_level->getPlayer(playerNames[i]);
+                ai->setDisplacement(pos, Vector::Zero);
                 m_localPlayers.push_back(ai);
 
-                m_referee->registerPlayer("ai_player" + cast<string>(i), m_localPlayers.back());
+                m_referee->registerPlayer(ai->m_name, m_localPlayers.back());
                 m_ball->addBodyToFilter(ai->m_body);
                 i++;
             }
@@ -162,9 +168,9 @@ World::~World()
     m_music->stop();
     Audio::instance->unloadMusic(m_music);
 
-    for each_const(vector<Player*>, m_localPlayers, player)
+    for each_const(PlayersMap, m_level->m_players, iter)
     {
-        delete *player;
+        delete iter->second;
     }
 
     delete m_ball;
@@ -223,6 +229,10 @@ void World::prepare()
 {
     m_camera->prepare();
     m_level->prepare();
+    for each_const(vector<Player*>, m_localPlayers, iter)
+    {
+        (*iter)->m_body->prepare();
+    }
 }
 
 void World::render() const
@@ -286,6 +296,11 @@ void World::render() const
 void World::renderScene() const
 {
     //Video::instance->renderAxes();   
+
+    for each_const(vector<Player*>, m_localPlayers, iter)
+    {
+        (*iter)->m_body->render();
+    }
 
     m_level->render();
 }

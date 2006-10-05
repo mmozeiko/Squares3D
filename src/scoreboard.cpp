@@ -37,10 +37,31 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     m_messages->add2D(m_comboMessage);
 }
 
-void ScoreBoard::registerPlayer(const string& name)
+void ScoreBoard::registerPlayer(const string& name, const Vector& color)
 {
+    static size_t i = 0;
     m_scores[name] = Account();
     m_playerOrder.push_back(name);
+    ScoreMessage* msg = new ScoreMessage(Language::instance->get(TEXT_SCORE_MESSAGE)(m_playerOrder[i]),
+                                m_boardPositions[i].m_position, 
+                                color, 
+                                m_scores[name].m_total, 
+                                m_boardPositions[i].m_alignement);
+    m_messages->add2D(msg);
+    m_scoreMessages.push_back(msg);
+
+    //TODO: make universal
+    float fontSize = 32;
+    Vector correctorPos(0.0f, (fontSize + 2.0f) * m_boardPositions[i].m_nextDirectionY, 0.0f);
+    
+    ComboMessage* msg1 = new ComboMessage(Language::instance->get(TEXT_HITS),
+                            m_boardPositions[i].m_position + correctorPos, 
+                            color, 
+                            m_scores[name].m_combo, 
+                            m_boardPositions[i].m_alignement);
+    m_messages->add2D(msg1);
+    m_selfComboMessages.push_back(msg1);
+    i++;
 }
 
 StringIntPair ScoreBoard::getMostScoreData()
@@ -76,30 +97,6 @@ void ScoreBoard::resetCombo()
 void ScoreBoard::reset()
 {
     resetCombo();
-    for (size_t i = 0; i < m_playerOrder.size(); i++)
-    {
-        m_scores[m_playerOrder[i]] = Account();
-        ScoreMessage* msg = new ScoreMessage(Language::instance->get(TEXT_SCORE_MESSAGE)(m_playerOrder[i]),
-                                m_boardPositions[i].m_position, 
-                                Vector(0,1,0), 
-                                m_scores[m_playerOrder[i]].m_total, 
-                                m_boardPositions[i].m_alignement);
-        m_messages->add2D(msg);
-        m_scoreMessages.push_back(msg);
-
-        //TODO: make universal
-        float fontSize = 32;
-        Vector correctorPos(0.0f, (fontSize + 2.0f) * m_boardPositions[i].m_nextDirectionY, 0.0f);
-        
-        ComboMessage* msg1 = new ComboMessage(Language::instance->get(TEXT_HITS),
-                                m_boardPositions[i].m_position + correctorPos, 
-                                Vector(0,1,0), 
-                                m_scores[m_playerOrder[i]].m_combo, 
-                                m_boardPositions[i].m_alignement);
-        m_messages->add2D(msg1);
-        m_selfComboMessages.push_back(msg1);
-
-    }
 }
 
 int ScoreBoard::addTotalPoints(const string& name)

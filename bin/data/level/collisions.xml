@@ -6,7 +6,12 @@
             <radius   x="0.25"  y="0.25" z="0.5" />
             <rotation x="-90.0" y="0.0"  z="0.0" />
         </collision>
-      
+
+        <collision id="player_thin" type="sphere" mass="20.0" material="penguin" property="player">
+            <radius   x="0.22"  y="0.22" z="0.6" />
+            <rotation x="-90.0" y="0.0"  z="0.0" />
+        </collision>
+        
         <collision id="Dmitry" type="sphere" mass="20.0" material="penguin" property="player">
             <radius   x="0.35"  y="0.35" z="0.5" />
             <rotation x="-90.0" y="0.0"  z="0.0" />

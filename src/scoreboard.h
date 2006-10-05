@@ -36,7 +36,7 @@ class ScoreBoard : NoCopy
 {
 public:
     ScoreBoard(Messages* messages);
-    void registerPlayer(const string& name);
+    void registerPlayer(const string& name, const Vector& color);
     int addTotalPoints(const string& name);
     int addPoint(const string& name);
     void incrementCombo(const string& name, const Vector& position);

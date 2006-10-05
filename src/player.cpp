@@ -5,10 +5,51 @@
 #include "world.h"
 #include "referee.h"
 #include "input.h"
+#include "xml.h"
+#include "collision.h"
+#include "level.h"
 
-Player::Player(const string& id, const Vector& position, const Vector& rotation) :
-    m_body(World::instance->m_level->getBody(id)),
-    m_isOnGround(true)
+Player::Player(const XMLnode& node, const Level* level) :
+    m_lowerLeft(Vector::Zero),
+    m_upperRight(Vector::Zero),
+    m_isOnGround(true),
+    m_referee(NULL)
+{
+    m_name = node.getAttribute("id");
+
+    Collision* collision = level->getCollision(node.getAttribute("collisionID"));
+    
+    m_body = new Body(m_name, collision);
+
+    for each_const(XMLnodes, node.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name == "color")
+        {
+            m_color = getAttributesInVector(node, "rgb");
+        }
+        else if (node.name == "char")
+        {
+            m_speed = node.getAttribute<float>("speed");
+            m_accuracy = node.getAttribute<float>("accuracy");
+        }
+        else
+        {
+            throw Exception("Invalid player, unknown node - " + node.name);
+        }
+    }
+    
+    // set the viscous damping the minimum
+    NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
+    NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);
+
+      // add an up vector constraint to help in keeping the body upright
+    m_upVector = NewtonConstraintCreateUpVector(World::instance->m_newtonWorld, Vector::Y.v, m_body->m_newtonBody); 
+
+    m_body->setCollideable(this);
+}
+
+void Player::setDisplacement(const Vector& position, const Vector& rotation)
 {
     m_body->setTransform(position, rotation);
 
@@ -20,19 +61,11 @@ Player::Player(const string& id, const Vector& position, const Vector& rotation)
 
     if (z > 0) m_upperRight[2] = z;
     else m_lowerLeft[2] = z;
-
-    // set the viscous damping the minimum
-    NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
-    NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);
-
-      // add an up vector constraint to help in keeping the body upright
-    m_upVector = NewtonConstraintCreateUpVector(World::instance->m_newtonWorld, Vector::Y.v, m_body->m_newtonBody); 
-
-    m_body->setCollideable(this);
 }
 
 Player::~Player()
 {
+    delete m_body;
     NewtonDestroyJoint(World::instance->m_newtonWorld, m_upVector);
 }
 
@@ -89,7 +122,10 @@ void Player::onSetForceAndTorque()
 
 void Player::onCollide(const Body* other, const NewtonMaterial* material)
 {
-    m_referee->process(m_body, other);
+    if (m_referee != NULL)
+    {
+        m_referee->process(m_body, other);
+    }
 }
 
 void Player::onImpact(const Body* other, const Vector& position, const float speed)

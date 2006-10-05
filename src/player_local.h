@@ -9,7 +9,7 @@ class Input;
 class LocalPlayer : public Player
 {
 public:
-    LocalPlayer(const string& id, const Vector& position, const Vector& rotation);
+    LocalPlayer(const XMLnode& node, const Level* level);
     ~LocalPlayer();
 
     void control();

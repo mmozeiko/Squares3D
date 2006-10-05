@@ -3,8 +3,8 @@
 #include "camera.h"
 #include "world.h"
 
-LocalPlayer::LocalPlayer(const string& id, const Vector& position, const Vector& rotation) :
-    Player(id, position, rotation)
+LocalPlayer::LocalPlayer(const XMLnode& node, const Level* level) :
+    Player(node, level)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);

@@ -6,8 +6,8 @@
 #include "random.h"
 #include "geometry.h"
 
-AiPlayer::AiPlayer(const string& id, const Vector& position, const Vector& rotation) :
-    Player(id, position, rotation)
+AiPlayer::AiPlayer(const XMLnode& node, const Level* level) :
+    Player(node, level)
 {
 }
 
