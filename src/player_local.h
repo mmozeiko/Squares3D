@@ -4,8 +4,6 @@
 #include "common.h"
 #include "player.h"
 
-class Input;
-
 class LocalPlayer : public Player
 {
 public:

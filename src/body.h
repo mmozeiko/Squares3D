@@ -12,7 +12,7 @@ class Body;
 
 typedef set<const Collision*> CollisionSet;
 
-class Collideable
+class Collideable : NoCopy
 {
 public:
     // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
@@ -24,7 +24,7 @@ public:
     virtual void onSetForceAndTorque() {}
 };
 
-class Body : public Collideable, NoCopy
+class Body : public Collideable
 {
     friend class Level;
 

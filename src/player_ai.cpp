@@ -2,7 +2,6 @@
 #include "input.h"
 #include "world.h"
 #include "body.h"
-#include "camera.h"
 #include "random.h"
 #include "geometry.h"
 

@@ -10,7 +10,7 @@ namespace File
     class Reader;
 }
 
-class Texture
+class Texture : NoCopy
 {
 public:
     enum FilterType { None, Bilinear, Trilinear };

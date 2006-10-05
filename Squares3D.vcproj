@@ -247,6 +247,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\player_remote.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\player_remote.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\referee.cpp"
 					>
 				</File>
@@ -603,6 +611,10 @@
 					</File>
 					<File
 						RelativePath=".\src\network.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\packet.cpp"
 						>
 					</File>
 					<File

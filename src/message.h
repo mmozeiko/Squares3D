@@ -8,7 +8,7 @@
 class Messages;
 class Font;
 
-class Message
+class Message : NoCopy
 {
     friend class Messages;
 public:

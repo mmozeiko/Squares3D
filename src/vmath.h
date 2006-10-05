@@ -414,6 +414,8 @@ public:
     }
 };
 
+Vector lerp(const Vector& v1, const Vector& v2, float alpha);
+
 Vector operator * (const Matrix& mx, const Vector& vec);
 Vector operator * (const Vector& vec, const Matrix& mx);
 Matrix operator * (const Matrix& first, const Matrix& second);

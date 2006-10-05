@@ -57,7 +57,7 @@ enum TextType
 typedef map<TextType, wstring> TextTypeMap;
 typedef map<string, TextType> StrToTextTypeMap;
 
-class Language : public System<Language>
+class Language : public System<Language>, NoCopy
 {
 public:
     Language();

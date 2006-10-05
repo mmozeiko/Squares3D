@@ -21,6 +21,7 @@
 #include "config.h"
 #include "framebuffer.h"
 #include "grass.h"
+#include "network.h"
 
 static const float OBJECT_BRIGHTNESS = 0.25f;
 static const float GRASS_BRIGHTNESS1 = 0.6f;
@@ -150,6 +151,17 @@ void World::init()
             }
         }
     }
+
+    Network* net = Network::instance;
+    for each_const(BodiesMap, m_level->m_bodies, iter)
+    {
+        if (iter->second->getMass() > 0.0f)
+        {
+            net->add(iter->second);
+        }
+    }
+
+
     m_scoreBoard->reset();
     Input::instance->startKeyBuffer();
 }

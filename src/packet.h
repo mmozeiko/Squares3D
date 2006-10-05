@@ -3,10 +3,37 @@
 
 #include "common.h"
 
-class Packet
+class Packet : NoCopy
+{
+protected:
+    Packet();
+    Packet(const bytes& data);
+
+    byte   readByte();
+    int    readInt();
+    float  readFloat();
+    string readString();
+
+    void writeByte(byte x);
+    void writeInt(int x);
+    void writeFloat(float x);
+    void writeString(const string& x);
+
+private:
+    bytes  m_data;
+    size_t m_pos;
+    size_t m_size;
+};
+
+class ControlPacket : public Packet
 {
 public:
-    Packet(const bytes& data);  
+    ControlPacket(const bytes& data);
+    ControlPacket(int control);
+
+private:
+    int m_control;
+
 };
 
 #endif

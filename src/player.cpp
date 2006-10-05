@@ -99,6 +99,7 @@ void Player::onSetForceAndTorque()
       
     Vector targetVel = m_direction;
 
+    //Vector Force = ( 0.5f * mass * ( ( desiredVel - currentVel ) / timeStep ) ); 
     Vector force = (targetVel * 5.0f - currentVel ) * timestepInv * m_body->getMass();
 
     m_isOnGround = fabs(currentVel.y) < 0.01f; // small speed magnitude

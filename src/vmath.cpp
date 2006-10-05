@@ -13,6 +13,11 @@ std::ostream& operator << (std::ostream& os, const Vector& vec)
     return os << "Vector(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
 }
 
+Vector lerp(const Vector& v1, const Vector& v2, float alpha)
+{
+    return v1 * (1.0f - alpha) + v2 * alpha;
+}
+
 void Matrix::rotation(float angle, const Vector& vec)
 {
     float s = std::sinf(angle);

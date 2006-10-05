@@ -4,7 +4,7 @@
 #include "common.h"
 #include "vmath.h"
 
-class Camera
+class Camera : NoCopy
 {
 public:
     Camera(const Vector& pos = Vector(15.0f, 20.0f, 15.0f), float angleX = 0, float angleY = 0);

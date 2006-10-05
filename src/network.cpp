@@ -1,10 +1,6 @@
-#include <enet/enet.h>
-
 #include "network.h"
 #include "random.h"
-
-struct Network::Priv_ENetHost : ENetHost {};
-struct Network::Priv_ENetPeer : ENetPeer {};
+#include "body.h"
 
 const int SQUARES_PORT = 12321;
 
@@ -32,6 +28,11 @@ Network::~Network()
     clog << "Closing network." << endl;
     close();
     enet_deinitialize();
+
+    for each_const(ActiveBodySet, m_activeBodies, iter)
+    {
+        delete *iter;
+    }
 }
 
 void Network::createServer()
@@ -41,7 +42,7 @@ void Network::createServer()
     address.host = ENET_HOST_ANY;
     address.port = SQUARES_PORT;
 
-    m_host = static_cast<Priv_ENetHost*>(enet_host_create(&address, 3, 0, 0)); // 3 clients
+    m_host = enet_host_create(&address, 3, 0, 0); // 3 clients
     if (m_host == NULL)
     {
         throw Exception("enet_host_create failed");
@@ -52,7 +53,7 @@ void Network::createServer()
 
 void Network::createClient()
 {
-    m_host = static_cast<Priv_ENetHost*>(enet_host_create(NULL, 1, 0, 0));
+    m_host = enet_host_create(NULL, 1, 0, 0);
     if (m_host == NULL)
     {
         throw Exception("enet_host_create failed");
@@ -72,7 +73,7 @@ void Network::connect(const string& host)
     }
     address.port = SQUARES_PORT;
 
-    m_server = static_cast<Priv_ENetPeer*>(enet_host_connect(m_host, &address, 0));
+    m_server = enet_host_connect(m_host, &address, 0);
 }
 
 void Network::sendDisconnect()
@@ -136,4 +137,11 @@ void Network::update()
 
         clog << "Network event: " << type << endl;
     }
+}
+
+void Network::add(Body* body)
+{
+    ActiveBody* ab = new ActiveBody();
+    ab->body = body;
+    m_activeBodies.insert(ab);
 }
