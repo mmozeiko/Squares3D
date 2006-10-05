@@ -299,7 +299,7 @@ void OptionEntry::reset()
         
         for (int i = 0; i < 4; i++)
         {
-            if ((shMaps == i) && (grDens == i) && (terDet == i))
+            if (((!Video::instance->m_haveShadows) || (shMaps == i)) && (grDens == i) && (terDet == i))
             {
                 m_value.m_current = i;
                 break;
@@ -352,8 +352,12 @@ void OptionEntry::reset()
         if (!Video::instance->m_haveShadows)
         {
             m_enabled = false;
+            m_value.m_current = 3; //not supported
         }
-        m_value.m_current = Config::instance->m_video.shadowmap_size;
+        else
+        {
+            m_value.m_current = Config::instance->m_video.shadowmap_size;
+        }
     }
     else if (m_value.m_id == "show_fps")
     {
@@ -413,7 +417,10 @@ void ApplyOptionsEntry::click(int button)
         {
             if ((*iter)->getCurrentValueIdx() != 3)
             {
-                Config::instance->m_video.shadowmap_size = (*iter)->getCurrentValueIdx();
+                if (Video::instance->m_haveShadows)
+                {
+                    Config::instance->m_video.shadowmap_size = (*iter)->getCurrentValueIdx();
+                }
                 Config::instance->m_video.grass_density = (*iter)->getCurrentValueIdx();
                 Config::instance->m_video.terrain_detail = (*iter)->getCurrentValueIdx();
             }
@@ -447,7 +454,10 @@ void ApplyOptionsEntry::click(int button)
         }
         else if (id == "shadowmap_size")
         {
-            Config::instance->m_video.shadowmap_size = (*iter)->getCurrentValueIdx();
+            if (Video::instance->m_haveShadows)
+            {
+                Config::instance->m_video.shadowmap_size = (*iter)->getCurrentValueIdx();
+            }
         }
         else if (id == "show_fps")
         {
@@ -502,7 +512,8 @@ void Submenu::control(int key)
     {
         Entry* currentEntry = m_entries[i];
         if ( (m_previousMousePos != mousePos)
-            && currentEntry->isMouseOver(mousePos))
+            && currentEntry->isMouseOver(mousePos)
+            && (currentEntry->isEnabled()))
         {
             m_activeEntry = i;
             break;
@@ -790,6 +801,7 @@ void Menu::loadMenu()
     valShadS.add(language->get(TEXT_LOW));
     valShadS.add(language->get(TEXT_MEDIUM));
     valShadS.add(language->get(TEXT_HIGH));
+    valShadS.add(language->get(TEXT_NOT_SUPPORTED));
     submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWMAP_SIZE), valShadS));
 
     Value valGD("grass_density");
@@ -892,6 +904,11 @@ void Menu::setState(State::Type state)
 void Menu::setSubmenu(const string& submenuToSwitchTo)
 {
     m_currentSubmenu = m_submenus.find(submenuToSwitchTo)->second;
+    
+    //highlight the first non disabled entry from above
+    m_currentSubmenu->m_activeEntry = m_currentSubmenu->m_entries.size() - 1;
+    m_currentSubmenu->activateNextEntry(true);
+
 
     Entries& entries = m_submenus[submenuToSwitchTo]->m_entries;
     for each_(Entries, entries, iter)

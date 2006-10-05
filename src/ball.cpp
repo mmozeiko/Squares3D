@@ -6,6 +6,7 @@
 #include "collision.h"
 #include "world.h"
 #include "video.h"
+#include "geometry.h"
 
 TriggerFlags::TriggerFlags()
 {
@@ -19,7 +20,7 @@ void TriggerFlags::loadDefaults()
     m_hasTriggered = false;
 }
 
-Ball::Ball(Body* body) : m_body(body)
+Ball::Ball(Body* body, const Collision* levelCollision) : m_body(body), m_levelCollision(levelCollision)
 {
     m_body->setCollideable(this);
     setPosition0();
@@ -138,14 +139,28 @@ void Ball::triggerEnd()
 
 void Ball::renderShadow(const Vector& lightPosition) const
 {
-    Vector delta = lightPosition - m_body->getPosition();
+    const Vector pos = m_body->getPosition();
+    const Vector delta = lightPosition - pos;
     float t = lightPosition.y / delta.y;
 
     float x = lightPosition.x - t * delta.x;
     float z = lightPosition.z - t * delta.z;
 
+    float y;
+
+    if (isPointInRectangle(pos, Vector(-3, 0, -3), Vector(3, 0, 3)))
+    {
+        y = 0.0105f;
+    }
+    else
+    {
+        y = m_levelCollision->getHeight(pos.x, pos.z) + 0.01f;
+        x = pos.x;
+        z = pos.z;
+    }
+
     glPushMatrix();
-    glTranslatef(x, 0.01f, z);
+    glTranslatef(x, y, z);
     glCallList(m_shadowList);
     glPopMatrix();
 }

@@ -167,7 +167,9 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
                 {
                     glTexCoord2fv(Vector::Zero.v);
                 }
-                glVertex3fv(vertices[faces[i][k]]);
+                glVertex3f(vertices[faces[i][k]][0]*PIECE_SIZEX, 
+                           vertices[faces[i][k]][1]*PIECE_SIZEY,
+                           vertices[faces[i][k]][2]*PIECE_SIZEZ);
             }
         }
         glEnd();
@@ -272,7 +274,6 @@ void Intro::render() const
     {
         glPushMatrix();
         glMultMatrixf(iter->m);
-        glScalef(PIECE_SIZEX, PIECE_SIZEY, PIECE_SIZEZ);
         glCallList(m_cubeListBase + i++);
         glPopMatrix();
     }

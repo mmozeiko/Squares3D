@@ -12,7 +12,7 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
     float grass_density = static_cast<float>(1 << Config::instance->m_video.grass_density);
     
     //size of grass face
-    static const float SIZE = 0.8f;
+    static const float SIZE = 0.4f;
 
     const Vector lower(-2.99f, 0.0f, -2.99f);
     const Vector upper(2.99f, 0.0f, 2.99f);
@@ -86,16 +86,19 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
     {
         Video::glGenBuffersARB(2, &m_buffer[0]);
 
-        if (m_count+m_count2 > 0)
+        if (m_count > 0)
         {
             Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
             Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count, &m_faces[0], GL_DYNAMIC_DRAW_ARB);
+        }
 
+        if (m_count2 > 0)
+        {
             Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
             Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count2, &m_faces2[0], GL_DYNAMIC_DRAW_ARB);
-
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         }
+
+        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 
     m_grassTex = Video::instance->loadTexture("grassWalpha");
@@ -112,7 +115,7 @@ Grass::~Grass()
 
 void Grass::update(float delta)
 {
-    if (m_count == 0)
+    if (m_count+m_count2 == 0)
     {
         return;
     }
@@ -135,11 +138,17 @@ void Grass::update(float delta)
 
     if (Video::instance->m_haveVBO)
     {
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
-        Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count, &m_faces[0]);
+        if (m_count != 0)
+        {
+            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
+            Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count, &m_faces[0]);
+        }
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
-        Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count2, &m_faces2[0]);
+        if (m_count2 != 0)
+        {
+            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+            Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count2, &m_faces2[0]);
+        }
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
@@ -158,8 +167,10 @@ void Grass::render() const
 
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
-    glDepthMask(GL_FALSE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glAlphaFunc(GL_GEQUAL, 0.3f);
+    glEnable(GL_ALPHA_TEST);
 
     if (Video::instance->m_haveVBO)
     {
@@ -167,7 +178,7 @@ void Grass::render() const
         {
             Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
             glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), NULL);
-            glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));\
+            glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));
         }
 
         if (m_count2 != 0)

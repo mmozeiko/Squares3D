@@ -22,7 +22,7 @@
         </collision>
 
         <collision id="level" type="heightmap">
-            <heightmap size="80.0" name="test1"/>
+            <heightmap size="40.0" name="test1"/>
         </collision>
 
         <collision id="field" type="tree">

@@ -62,6 +62,13 @@ public:
     ~CollisionHMap();
     
     void render() const;
+    float getHeight(float x, float y) const;
+
+private:
+    vector<unsigned char>  m_hmap;
+    int                    m_width;
+    int                    m_height;
+    float                  m_size;
 
     vector<UV>             m_uv;
     vector<Vector>         m_normals;
@@ -82,6 +89,11 @@ Collision::Collision(const XMLnode& node) : m_inertia(), m_mass(0.0f), m_origin(
 Collision::~Collision()
 {
     //NewtonReleaseCollision(World::instance->m_newtonWorld, m_newtonCollision);
+}
+
+float Collision::getHeight(float x, float z) const
+{
+    return 0;
 }
 
 void Collision::create(NewtonCollision* collision)
@@ -217,8 +229,10 @@ void CollisionBox::render() const
         glMultMatrixf(m_matrix.m);
     }
 
+    glEnable(GL_NORMALIZE);
     glScalef(m_size.x, m_size.y, m_size.z);
     Video::instance->renderCube();
+    glDisable(GL_NORMALIZE);
 
     Video::instance->disableMaterial(m_material);
 
@@ -265,8 +279,10 @@ void CollisionSphere::render() const
         glMultMatrixf(m_matrix.m);
     }
 
+    glEnable(GL_NORMALIZE);
     glScalef(m_radius.x, m_radius.y, m_radius.z);
     Video::instance->renderSphere();
+    glDisable(GL_NORMALIZE);
 
     Video::instance->disableMaterial(m_material);
 
@@ -525,6 +541,11 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         }
 
 
+        m_size = size;
+        m_width = image.Width;
+        m_height = image.Height;
+        m_hmap.assign(image.Data, image.Data + m_width * m_height);
+
         float size2 = size/2.0f;
 
         // 0.5f, 1.0f, 1.5f
@@ -711,11 +732,17 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[2]);
         Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_vertices.size() * sizeof(Vector), &m_vertices[0], GL_STATIC_DRAW_ARB);
 
-        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
-        Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
+        if (m_indices.size() != 0)
+        {
+            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
+            Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
+        }
 
-        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
-        Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices2.size() * sizeof(unsigned short), &m_indices2[0], GL_STATIC_DRAW_ARB);
+        if (m_indices2.size() != 0)
+        {
+            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
+            Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices2.size() * sizeof(unsigned short), &m_indices2[0], GL_STATIC_DRAW_ARB);
+        }
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
@@ -808,4 +835,14 @@ CollisionHMap::~CollisionHMap()
     {
         Video::glDeleteBuffersARB(5, &m_buffers[0]);
     }
+}
+
+float CollisionHMap::getHeight(float x, float z) const
+{
+    int ix = static_cast<int>((x + m_size/2.0f) * m_width / m_size);
+    int iz = static_cast<int>((z + m_size/2.0f) * m_height / m_size);
+    ix = std::min(std::max(ix, 0), m_width-1);
+    iz = std::min(std::max(iz, 0), m_height-1);
+    
+    return (m_hmap[m_width * iz + ix] - 128) / 20.0f;
 }

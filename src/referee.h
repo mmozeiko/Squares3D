@@ -43,10 +43,11 @@ public:
     void processPlayerGround(const Body* player);
 
 private:
+    bool isGroundObject(const Body* body);
+    
     Vector      m_ballResetPosition; 
     Vector      m_ballResetVelocity;
     bool        m_mustResetBall;
-    float       m_faultTime;
     Timer       m_timer;
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;

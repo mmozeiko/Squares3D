@@ -88,24 +88,29 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard):
     m_messages(messages),
     m_scoreBoard(scoreBoard),
     m_matchPoints(21),
-    m_faultTime(0),
     m_mustResetBall(false),
     m_timer()
 {
     initEvents();
 }
 
+bool Referee::isGroundObject(const Body* body)
+{
+    return ((body == m_ground) || (body == m_field));
+}
+
 void Referee::registerFaultTime()
 {
-    m_faultTime = m_timer.read();
-    m_mustResetBall = false;
+    m_timer.reset();
+    m_mustResetBall = true;
 }
 
 void Referee::update()
 {
+
     if (m_mustResetBall && !m_gameOver)
     {
-        if (m_timer.read() - m_faultTime > BALLRESETTIME)
+        if (m_timer.read() > BALLRESETTIME)
         {
             resetBall();
             m_mustResetBall = false;
@@ -128,7 +133,7 @@ void Referee::resetBall()
             //middle line -> reset coords in center
             resetPosition = Vector(0, resetPosition.y * 3, 0);
         }
-        else if (m_lastTouchedObject == m_ground)
+        else if (isGroundObject(m_lastTouchedObject))
         {
             //ball has left game field from middle line one of players fields
             //also happens when player touches twice
@@ -191,7 +196,6 @@ void Referee::processCriticalEvent()
     else
     {
         registerFaultTime();
-        m_mustResetBall = true;
     }
 
 }
@@ -227,7 +231,7 @@ void Referee::process(const Body* body1, const Body* body2)
 
 void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 {
-    if ((otherBody == m_ground) || (otherBody == m_field))
+    if (isGroundObject(otherBody))
     {
         processPlayerGround(player);
     }
@@ -235,7 +239,7 @@ void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 
 void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 {
-    if ((otherBody == m_ground) || (otherBody == m_field))
+    if (isGroundObject(otherBody))
     {
         processBallGround();
     }
@@ -354,49 +358,46 @@ void Referee::processBallPlayer(const Body* player)
 
     string playerName = m_players[player].first;
 
-    if (m_lastTouchedObject == NULL)
+    if (m_lastTouchedObject == NULL) // last object is neither ground nor player,
     {
-        m_scoreBoard->resetCombo();
+        m_scoreBoard->resetCombo(); //resetting combo in case picked from middle line
         m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
     }
-    else //picked from ground or player
+    else if (isGroundObject(m_lastTouchedObject)) // picked from ground inside
     {
-        if (m_lastTouchedObject == m_ground) //picked from ground inside
+        m_scoreBoard->resetCombo(); //clear combo
+
+        m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
+
+        if ((m_lastFieldOwner == player)
+            && (m_lastTouchedPlayer == player)
+            && (isBallInField(m_ball->getPosition(), 
+                              m_players[player].second->m_lowerLeft, 
+                              m_players[player].second->m_upperRight,
+                              true,
+                              true)))
         {
-            m_scoreBoard->resetCombo(); //clear combo
+            //critical event. double-touched -> fault
 
-            m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
+            int points = m_scoreBoard->addPoint(playerName);
+            m_messages->add3D(new FlowingMessage(
+                Language::instance->get(TEXT_PLAYER_TOUCHES_TWICE)(playerName)(points),
+                player->getPosition(),
+                Vector(1, 0, 0),
+                Font::Align_Center));
 
-            if ((m_lastFieldOwner == player)
-                && (m_lastTouchedPlayer == player)
-                && (isBallInField(m_ball->getPosition(), 
-                                  m_players[player].second->m_lowerLeft, 
-                                  m_players[player].second->m_upperRight,
-                                  true,
-                                  true)))
-            {
-                //critical event. double-touched -> fault
-
-                int points = m_scoreBoard->addPoint(playerName);
-                m_messages->add3D(new FlowingMessage(
-                    Language::instance->get(TEXT_PLAYER_TOUCHES_TWICE)(playerName)(points),
-                    player->getPosition(),
-                    Vector(1, 0, 0),
-                    Font::Align_Center));
-
-                processCriticalEvent();
-                //TODO: restructure ifs?
-                goto end;
-            }
+            processCriticalEvent();
+            //TODO: restructure ifs?
+            goto end;
         }
-        else //picked from player
-        {
-            if (m_lastTouchedPlayer != player) //reset own combo, when picked from other
-            {        
-                m_scoreBoard->resetOwnCombo(playerName);
-            }
-            m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
+    }
+    else //picked from player
+    {
+        if (m_lastTouchedPlayer != player) //reset own combo, when picked from other
+        {        
+            m_scoreBoard->resetOwnCombo(playerName);
         }
+        m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
     }
     
     m_lastTouchedObject = player;

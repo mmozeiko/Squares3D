@@ -16,6 +16,7 @@ struct MaterialContact : NoCopy
 
     Body* body[2];
     const Properties* properties;
+    bool  hasContact;
     
     Vector position;
     float  maxNormalSpeed;
@@ -184,6 +185,7 @@ int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* b
 
     self->maxNormalSpeed = 0.0f;
     self->maxTangentSpeed = 0.0f;
+    self->hasContact = false;
 
     return 1;
 }
@@ -281,6 +283,8 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     }
 
     prop->apply(material);
+    
+    self->hasContact = true;
 
     return 1;
 }
@@ -288,6 +292,11 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 void MaterialContact::onEnd(const NewtonMaterial* material)
 {
     MaterialContact* self = static_cast<MaterialContact*>(NewtonMaterialGetMaterialPairUserData(material));
+
+    if (!self->hasContact)
+    {
+        return;
+    }
 
     self->body[0]->onCollide(self->body[1], material);
     self->body[1]->onCollide(self->body[0], material);

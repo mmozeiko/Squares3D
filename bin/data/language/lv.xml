@@ -21,7 +21,7 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     <item name="OPTIONS"                  value="Uzstādījumi"/>
     <item name="AUDIO_OPTIONS"            value="Skaņas Uzstādījumi"/>
     <item name="VIDEO_OPTIONS"            value="Attēla Uzstādījumi"/>
-    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus Video Uzstādījumi"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus Uzstādījumi"/>
     <item name="OTHER_OPTIONS"            value="Citi Uzstādījumi"/>
     <item name="CREDITS"                  value="Šautauts savējiem"/>
     <item name="QUIT_GAME"                value="Beigt Spēli"/>
@@ -35,6 +35,7 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     <item name="MEDIUM"                   value="Vidēja"/>
     <item name="HIGH"                     value="Augsta"/>
     <item name="CUSTOM"                   value="Dažāda"/>
+    <item name="NOT_SUPPORTED"            value="Nav Pieejama"/>
                                        
     <item name="RESOLUTION"               value="Izšķirtspēja"/>
     <item name="FULLSCREEN"               value="Pilnekrāns"/>

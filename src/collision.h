@@ -17,6 +17,7 @@ public:
     static Collision* create(const XMLnode& node, Level* level);
     
     virtual void render() const = 0;
+    virtual float getHeight(float x, float z) const;
 
     NewtonCollision*  m_newtonCollision;
 

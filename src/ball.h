@@ -5,6 +5,7 @@
 #include "body.h"
 
 class Referee;
+class Collision;
 
 struct TriggerFlags
 {
@@ -21,7 +22,7 @@ typedef map<const Body*, TriggerFlags> TriggerFilterMap;
 class Ball : public Collideable
 {
 public:
-    Ball(Body* body);
+    Ball(Body* body, const Collision* levelCollision);
 
     Vector getPosition() const;
     void   setPosition0();
@@ -42,6 +43,7 @@ private:
     TriggerFilterMap m_filteredBodies;
     
     unsigned int     m_shadowList;
+    const Collision* m_levelCollision;
 };
 
 #endif

@@ -23,7 +23,8 @@
 #include "grass.h"
 
 static const float OBJECT_BRIGHTNESS = 0.25f;
-static const float GRASS_BRIGHTNESS = 0.7f;
+static const float GRASS_BRIGHTNESS1 = 0.6f;
+static const float GRASS_BRIGHTNESS2 = 0.7f;
 
 World* System<World>::instance = NULL;
 
@@ -116,7 +117,7 @@ void World::init()
     m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
     m_referee->m_ground = m_level->getBody("level"); //referee now can recognize ground outside
 
-    m_ball = new Ball(m_level->getBody("football"));
+    m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
     Player* human = new LocalPlayer("penguin3", Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
@@ -244,7 +245,7 @@ void World::render() const
         m_ball->renderShadow(m_lightPosition);
         
         glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS*Vector::One).v);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS2*Vector::One).v);
 
         m_grass->render();
     }
@@ -422,15 +423,20 @@ void World::shadowMapPass1() const
     glColorMask(0, 0, 0, 0);
 
     //tommeer lieli HAKi. TODO.
-    //glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1.0f, 0.0f); 
+    //glPolygonOffset(-0.1f, -0.05f);
+    glPolygonOffset(2.0f, 4.0f);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    //glFrontFace(GL_CCW);
 
     //Draw the scene
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
     renderScene();
     glEnable(GL_TEXTURE_2D);
+
+    glFrontFace(GL_CW);
    
     if (!m_withFBO)
     {
@@ -473,6 +479,9 @@ void World::shadowMapPass2() const
 
     //Draw the scene
     renderScene();
+
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS1*Vector::One).v);
     m_grass->render();
 }
 
@@ -516,9 +525,8 @@ void World::shadowMapPass3() const
 
     renderScene();
 
-    glDisable(GL_ALPHA_TEST);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS2*Vector::One).v);
     m_grass->render();
 
     Video::instance->m_shadowMap3ndPass = false;

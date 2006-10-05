@@ -21,7 +21,7 @@ Press ENTER to quit to main menu..
     <item name="OPTIONS"                  value="Options"/>
     <item name="AUDIO_OPTIONS"            value="Audio Options"/>
     <item name="VIDEO_OPTIONS"            value="Video Options"/>
-    <item name="VIDEO_OPTIONS_ADVANCED"   value="Video Options Advanced"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Advanced Video Options"/>
     <item name="OTHER_OPTIONS"            value="Other Options"/>
     <item name="CREDITS"                  value="Credits"/>
     <item name="QUIT_GAME"                value="Quit Game"/>
@@ -47,7 +47,8 @@ Press ENTER to quit to main menu..
     <item name="LOW"                      value="Low"/>
     <item name="MEDIUM"                   value="Medium"/>
     <item name="HIGH"                     value="High"/>
-    <item name="CUSTOM"              value="Custom"/>
+    <item name="CUSTOM"                   value="Custom"/>
+    <item name="NOT_SUPPORTED"            value="Not Available"/>
                                        
                                        
     <item name="AUDIO"                    value="Audio On"/>
