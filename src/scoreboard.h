@@ -8,6 +8,7 @@ class Vector;
 class ScoreMessage;
 class ComboMessage;
 class Messages;
+class Player;
 
 struct Account
 {
@@ -36,7 +37,7 @@ class ScoreBoard : NoCopy
 {
 public:
     ScoreBoard(Messages* messages);
-    void registerPlayer(const string& name, const Vector& color);
+    void registerPlayers(const vector<Player*> players);
     int addTotalPoints(const string& name);
     int addPoint(const string& name);
     void incrementCombo(const string& name, const Vector& position);

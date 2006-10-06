@@ -125,7 +125,6 @@ void World::init()
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
-    m_referee->registerPlayer(human->m_name, human);
     m_ball->addBodyToFilter(human->m_body);
 
     int i = 0;
@@ -145,12 +144,12 @@ void World::init()
                 ai->setDisplacement(pos, Vector::Zero);
                 m_localPlayers.push_back(ai);
 
-                m_referee->registerPlayer(ai->m_name, m_localPlayers.back());
                 m_ball->addBodyToFilter(ai->m_body);
                 i++;
             }
         }
     }
+    m_referee->registerPlayers(m_localPlayers);
 
     Network* net = Network::instance;
     for each_const(BodiesMap, m_level->m_bodies, iter)

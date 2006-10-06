@@ -11,7 +11,7 @@ class Ball;
 class Messages;
 class ScoreBoard;
 
-typedef map<const Body*, std::pair<string, Player*> > BodyToPlayerDataMap;
+typedef map<const Body*, Player*> BodyToPlayerDataMap;
 
 class Referee : NoCopy
 {
@@ -30,7 +30,7 @@ public:
     void processBallPlayer(const Body* otherBody);
     void processBallGround();
     void registerBall(Ball* ball);
-    void registerPlayer(const string& name, Player* player);
+    void registerPlayers(const vector<Player*> players);
     void process(const Body* body1, const Body* body2);
     void manageGame();
     void initEvents();

@@ -28,7 +28,7 @@ bool isBallInField(const Vector& position,
     int quadrant = getQuadrant(center);
 
     //TODO: make universaly proportional to field size?
-    float lineWeight = 0.2f;
+    float lineWeight = 0.15f;
 
     //adjust the field size to take middle line into account
     switch(quadrant)
@@ -138,7 +138,7 @@ void Referee::resetBall()
             //ball has left game field from middle line one of players fields
             //also happens when player touches twice
             //reset from last owner (m_lastFieldOwner)
-            Vector center = m_players.find(m_lastFieldOwner)->second.second->getFieldCenter();
+            Vector center = m_players.find(m_lastFieldOwner)->second->getFieldCenter();
             //set the reset position to center of players field
             resetPosition = Vector(center.x, resetPosition.y, center.z);
             velocity = (Vector::Zero - resetPosition) * 2;
@@ -147,7 +147,7 @@ void Referee::resetBall()
         {
             //ball has left game field from one of the players
             //reset from m_lastTouchedPlayer
-            Vector center = m_players.find(m_lastTouchedPlayer)->second.second->getFieldCenter();
+            Vector center = m_players.find(m_lastTouchedPlayer)->second->getFieldCenter();
             //set the reset position to center of players field
             resetPosition = Vector(center.x, resetPosition.y, center.z);
             velocity = (Vector::Zero - resetPosition) * 2;
@@ -207,11 +207,14 @@ void Referee::registerBall(Ball* ball)
     resetBall();
 }
 
-void Referee::registerPlayer(const string& name, Player* player)
+void Referee::registerPlayers(const vector<Player*> players)
 {
-    m_players[player->m_body] = make_pair(name, player);
-    m_scoreBoard->registerPlayer(name, player->m_color);
-    player->m_referee = this;
+    for each_const(vector<Player*>, players, iter)
+    {
+        m_players[(*iter)->m_body] = *iter;
+        (*iter)->m_referee = this;
+    }
+    m_scoreBoard->registerPlayers(players);
 }
 
 void Referee::process(const Body* body1, const Body* body2)
@@ -252,8 +255,8 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 void Referee::processPlayerGround(const Body* player)
 {
     Vector playerPos = player->getPosition();
-    string currentPlayerName = m_players.find(player)->second.first;
-    Player* currentPlayer = m_players[player].second;
+    string currentPlayerName = player->m_id;
+    Player* currentPlayer = m_players.find(player)->second;
     if (!isPointInRectangle(playerPos, currentPlayer->m_lowerLeft, currentPlayer->m_upperRight)
         && isPointInRectangle(playerPos, 
                               Vector(- FIELDLENGTH, 0 , - FIELDLENGTH),
@@ -280,10 +283,13 @@ void Referee::processBallGround()
             if (foundInMap(m_players, m_lastTouchedObject))
             {
                 //player has kicked the ball out
-                int points = m_scoreBoard->addSelfTotalPoints(m_players[m_lastTouchedObject].first);
+                int points = m_scoreBoard->addSelfTotalPoints(m_lastTouchedObject->m_id);
                 
                 m_messages->add3D(new FlowingMessage(
-                    Language::instance->get(TEXT_PLAYER_KICKS_OUT_BALL)(m_players[m_lastTouchedObject].first)(points),
+                    Language::instance->get(
+                                        TEXT_PLAYER_KICKS_OUT_BALL)
+                                        (m_lastTouchedObject->m_id)
+                                        (points),
                     m_lastTouchedObject->getPosition(),
                     Vector(1, 0, 0),
                     Font::Align_Center));
@@ -291,12 +297,12 @@ void Referee::processBallGround()
 
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
             {
-                string owner = m_players[m_lastFieldOwner].first;
+                string owner = m_lastFieldOwner->m_id;
                 int points;
 
                 if (m_lastTouchedPlayer != NULL)
                 {
-                    string lastPlayerName = m_players[m_lastTouchedPlayer].first;
+                    string lastPlayerName = m_lastTouchedPlayer->m_id;
                     if (m_lastFieldOwner == m_lastTouchedPlayer)
                     {
                         points = m_scoreBoard->addSelfTotalPoints(owner);
@@ -340,8 +346,8 @@ void Referee::processBallGround()
         {
             //field excluding middle line
             if (isBallInField(ballPos, 
-                              player->second.second->m_lowerLeft, 
-                              player->second.second->m_upperRight))
+                              player->second->m_lowerLeft, 
+                              player->second->m_upperRight))
             {
                m_lastFieldOwner =    player->first;
                m_lastTouchedObject = m_ground;
@@ -356,7 +362,7 @@ void Referee::processBallPlayer(const Body* player)
 {
     //ball + player
 
-    string playerName = m_players[player].first;
+    string playerName = player->m_id;
 
     if (m_lastTouchedObject == NULL) // last object is neither ground nor player,
     {
@@ -372,8 +378,8 @@ void Referee::processBallPlayer(const Body* player)
         if ((m_lastFieldOwner == player)
             && (m_lastTouchedPlayer == player)
             && (isBallInField(m_ball->getPosition(), 
-                              m_players[player].second->m_lowerLeft, 
-                              m_players[player].second->m_upperRight,
+                              m_players.find(player)->second->m_lowerLeft, 
+                              m_players.find(player)->second->m_upperRight,
                               true,
                               true)))
         {
