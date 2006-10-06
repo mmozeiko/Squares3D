@@ -4,9 +4,11 @@
 #include "body.h"
 #include "random.h"
 #include "geometry.h"
+#include "level.h"
+#include "character.h"
 
-AiPlayer::AiPlayer(const XMLnode& node, const Level* level) :
-    Player(node, level)
+AiPlayer::AiPlayer(const Character* character) :
+    Player(character)
 {
 }
 
@@ -19,7 +21,7 @@ void AiPlayer::control()
     Body* ball = World::instance->m_level->getBody("football");
 
     Vector ballPosition = ball->getPosition();
-    Vector selfPosition = m_body->getPosition();
+    Vector selfPosition = m_character->m_body->getPosition();
 
     bool move = true;
 
@@ -54,7 +56,7 @@ void AiPlayer::control()
         dir.norm();
     }
 
-    Vector rot = m_body->getRotation();
+    Vector rot = m_character->m_body->getRotation();
 
     Vector rotation;
     if (move)
@@ -75,7 +77,7 @@ void AiPlayer::control()
     direction.norm();
 
     // what does this if do?? a?
-    if (m_body->getPosition().y > 0.15f)
+    if (m_character->m_body->getPosition().y > 0.15f)
     {
         direction *= 1.5f;
     }

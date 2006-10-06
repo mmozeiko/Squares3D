@@ -415,6 +415,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\character.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\character.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\collision.cpp"
 					>
 				</File>

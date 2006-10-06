@@ -7,9 +7,7 @@
 #include "collision.h"
 #include "body.h"
 #include "properties.h"
-#include "player_local.h"
-#include "player_ai.h"
-#include "player.h"
+#include "character.h"
 
 Level::Level()
 {
@@ -97,14 +95,9 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "player")
                 {
-                    if (superNodeName == "players")
-                    {
-                        m_players[node.getAttribute("id")] = new LocalPlayer(node, this);
-                    }
-                    else
-                    {
-                        m_players[node.getAttribute("id")] = new AiPlayer(node, this);
-                    }
+                    Character* character = new Character(node, this);
+                    m_characters[character->m_name] = character;
+                    m_bodies[character->m_body->m_id] = character->m_body;
                 }
                 else
                 {
@@ -152,14 +145,18 @@ Level::~Level()
     {
         delete iter->second;
     }
-    for each_const(MaterialMap, m_materials, iter)
+    for each_const(MaterialsMap, m_materials, iter)
+    {
+        delete iter->second;
+    }
+    for each_const(CharactersMap, m_characters, iter)
     {
         delete iter->second;
     }
     delete m_properties;
 }
 
-Body* Level::getBody(const string id) const
+Body* Level::getBody(const string& id) const
 {
     BodiesMap::const_iterator body = m_bodies.find(id);
     if (body != m_bodies.end())
@@ -172,7 +169,7 @@ Body* Level::getBody(const string id) const
     }
 }
 
-Collision* Level::getCollision(const string id) const
+Collision* Level::getCollision(const string& id) const
 {
     CollisionsMap::const_iterator iter = m_collisions.find(id);
     if (iter != m_collisions.end())
@@ -184,16 +181,16 @@ Collision* Level::getCollision(const string id) const
         throw Exception("Could not find specified collision '" + id + "'");
     }
 }
-Player* Level::getPlayer(const string id) const
+Character* Level::getCharacter(const string& id) const
 {
-    PlayersMap::const_iterator iter = m_players.find(id);
-    if (iter != m_players.end())
+    CharactersMap::const_iterator iter = m_characters.find(id);
+    if (iter != m_characters.end())
     {
         return iter->second;
     }
     else
     {
-        throw Exception("Could not find specified player '" + id + "'");
+        throw Exception("Could not find specified character '" + id + "'");
     }
 }
 
@@ -211,10 +208,6 @@ void Level::render() const
     {
         (iter->second)->render();
     }    
-    for each_const(PlayersMap, m_players, iter)
-    {
-        (iter->second)->m_body->render();
-    }   
 }
 
 Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols)

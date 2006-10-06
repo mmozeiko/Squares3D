@@ -7,7 +7,7 @@
 class LocalPlayer : public Player
 {
 public:
-    LocalPlayer(const XMLnode& node, const Level* level);
+    LocalPlayer(const Character* character);
     ~LocalPlayer();
 
     void control();

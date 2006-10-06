@@ -2,18 +2,17 @@
 #define __PLAYER_H__
 
 #include "common.h"
-#include "level.h"
 #include "body.h"
-#include "level.h"
 
 class Referee;
+class Character;
 
 #define FIELDLENGTH 3.0f
 
 class Player : public Collideable
 {
 public:
-    Player(const XMLnode& node, const Level* level);
+    Player(const Character* character);
     virtual ~Player();
 
     void setDirection(const Vector& direction);
@@ -31,15 +30,11 @@ public:
     void onScratch(const Body* other, const Vector& position, const float speed);
     void onSetForceAndTorque();
     
-    Referee*     m_referee;
-    Body*        m_body;
+    Referee*          m_referee;
+    const Character*  m_character;
     //player must recognize his field
-    Vector       m_lowerLeft;
-    Vector       m_upperRight;
-    Vector       m_color;
-    float        m_speed;
-    float        m_accuracy;
-    string       m_name;
+    Vector            m_lowerLeft;
+    Vector            m_upperRight;
 
 protected:
     NewtonJoint* m_upVector;

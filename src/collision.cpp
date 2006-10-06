@@ -159,7 +159,7 @@ CollisionConvex::CollisionConvex(const XMLnode& node, const Level* level) :
     if (node.hasAttribute("material"))
     {
         string material = node.getAttribute("material");
-        MaterialMap::const_iterator iter = level->m_materials.find(material);
+        MaterialsMap::const_iterator iter = level->m_materials.find(material);
         if (iter == level->m_materials.end())
         {
             throw Exception("Couldn't find material '" + material + "'");
@@ -306,7 +306,7 @@ CollisionTree::CollisionTree(const XMLnode& node, Level* level) :
             }
             else
             {
-                MaterialMap::const_iterator iter = level->m_materials.find(material);
+                MaterialsMap::const_iterator iter = level->m_materials.find(material);
                 if (iter == level->m_materials.end())
                 {
                     throw Exception("Couldn't find material '" + material + "'");

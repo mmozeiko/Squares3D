@@ -6,8 +6,8 @@
 #include "packet.h"
 #include "xml.h"
 
-RemotePlayer::RemotePlayer(const string& id, const Vector& position, const Vector& rotation) :
-    Player(XMLnode(), NULL) //id, position, rotation)
+RemotePlayer::RemotePlayer(const Character* character) :
+    Player(character)
 {
 }
 

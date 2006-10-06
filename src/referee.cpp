@@ -8,6 +8,7 @@
 #include "scoreboard.h"
 #include "video.h"
 #include "language.h"
+#include "character.h"
 
 #define BALLRESETTIME 2.0f
 
@@ -211,7 +212,7 @@ void Referee::registerPlayers(const vector<Player*> players)
 {
     for each_const(vector<Player*>, players, iter)
     {
-        m_players[(*iter)->m_body] = *iter;
+        m_players[(*iter)->m_character->m_body] = *iter;
         (*iter)->m_referee = this;
     }
     m_scoreBoard->registerPlayers(players);

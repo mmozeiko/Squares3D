@@ -9,7 +9,7 @@ class ControlPacket;
 class RemotePlayer : public Player
 {
 public:
-    RemotePlayer(const string& id, const Vector& position, const Vector& rotation);
+    RemotePlayer(const Character* character);
     ~RemotePlayer();
 
     void control();

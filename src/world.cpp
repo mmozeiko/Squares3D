@@ -22,6 +22,7 @@
 #include "framebuffer.h"
 #include "grass.h"
 #include "network.h"
+#include "character.h"
 
 static const float OBJECT_BRIGHTNESS = 0.25f;
 static const float GRASS_BRIGHTNESS1 = 0.6f;
@@ -121,11 +122,11 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
-    Player* human = m_level->getPlayer("Dimitris");
+    Player* human = new LocalPlayer(m_level->getCharacter("Dimitris"));
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
-    m_ball->addBodyToFilter(human->m_body);
+    m_ball->addBodyToFilter(human->m_character->m_body);
 
     int i = 0;
     //todo: position ai players without such hacks
@@ -140,11 +141,11 @@ void World::init()
             if ((x != -1.5f) || (z != -1.5f))
             {
                 Vector pos(x, 1.0f, z);
-                Player* ai = m_level->getPlayer(playerNames[i]);
+                Player* ai = new AiPlayer(m_level->getCharacter(playerNames[i]));
                 ai->setDisplacement(pos, Vector::Zero);
                 m_localPlayers.push_back(ai);
 
-                m_ball->addBodyToFilter(ai->m_body);
+                m_ball->addBodyToFilter(ai->m_character->m_body);
                 i++;
             }
         }
@@ -179,9 +180,9 @@ World::~World()
     m_music->stop();
     Audio::instance->unloadMusic(m_music);
 
-    for each_const(PlayersMap, m_level->m_players, iter)
+    for each_const(vector<Player*>, m_localPlayers, iter)
     {
-        delete iter->second;
+        delete *iter;
     }
 
     delete m_ball;
@@ -240,10 +241,6 @@ void World::prepare()
 {
     m_camera->prepare();
     m_level->prepare();
-    for each_const(vector<Player*>, m_localPlayers, iter)
-    {
-        (*iter)->m_body->prepare();
-    }
 }
 
 void World::render() const
@@ -307,12 +304,6 @@ void World::render() const
 void World::renderScene() const
 {
     //Video::instance->renderAxes();   
-
-    for each_const(vector<Player*>, m_localPlayers, iter)
-    {
-        (*iter)->m_body->render();
-    }
-
     m_level->render();
 }
 

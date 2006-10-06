@@ -9,7 +9,7 @@ class Input;
 class AiPlayer : public Player
 {
 public:
-    AiPlayer(const XMLnode& node, const Level* level);
+    AiPlayer(const Character* character);
     ~AiPlayer();
 
     void control();
