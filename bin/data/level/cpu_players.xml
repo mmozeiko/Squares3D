@@ -1,0 +1,20 @@
+<xml>
+    <cpu_profiles>
+        <profile>
+            <name>Vitolds</name>
+            <character>fat</character>
+            <color r="0.6"  g="0.0" b="0.99" />
+        </profile>
+        <profile>
+            <name>Macgyver</name>
+            <character>normal</character>
+            <color  r="0.1"  g="0.99" b="0.1" />
+        </profile>
+        <profile>
+            <name>Chuck Norris</name>
+            <character>thin</character>
+            <color  r="0.1"  g="0.0" b="0.99" />
+        </profile>
+    </cpu_profiles>
+</xml>
+  
