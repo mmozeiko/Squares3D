@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "font.h"
 #include "fps.h"
-#include "users.h"
+#include "user.h"
 
 #include "vmath.h"
 
@@ -38,13 +38,13 @@ Game::Game() : m_fixedTimestep(true)
     m_input = new Input();
     //
 
-    m_users = new Users();
+    m_user = loadUserProfile();
 
     if (g_needsToReload)
     {
         g_needsToReload = false;
 
-        Menu* menu = new Menu();
+        Menu* menu = new Menu(m_user->m_name);
         menu->setSubmenu(g_optionsEntry);
         m_state = menu;
     }
@@ -65,13 +65,14 @@ Game::~Game()
     
     delete m_state;
 
+    saveUserProfile(m_user);
+
     delete m_input;
     delete m_network;
     delete m_audio;
     delete m_video;
     delete m_language;
     delete m_config;
-    delete m_users;
 }
 
 #ifdef MAKE_MOVIE
@@ -266,8 +267,8 @@ State* Game::switchState(const State::Type nextState)
     case State::Intro:
         m_fixedTimestep = false;
         return new Intro();
-    case State::Menu: return new Menu();
-    case State::World: return new World(m_users->m_usersList[m_users->m_active]);
+    case State::Menu: return new Menu(m_user->m_name);
+    case State::World: return new World(m_user);
     //TODO: implement these
     //case State_Lobby: return ..;
     default:

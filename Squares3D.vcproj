@@ -395,6 +395,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\user.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\user.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\world.cpp"
 					>
 				</File>
@@ -512,14 +520,6 @@
 				</File>
 				<File
 					RelativePath=".\src\timer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\users.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\users.h"
 					>
 				</File>
 				<Filter
@@ -648,7 +648,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\bin\users.xml"
+				RelativePath=".\bin\user.xml"
 				>
 			</File>
 			<Filter
@@ -671,6 +671,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\bin\data\level\characters.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\bin\data\level\collisions.xml"
 					>
 				</File>
@@ -688,10 +692,6 @@
 				</File>
 				<File
 					RelativePath=".\bin\data\level\materials.xml"
-					>
-				</File>
-				<File
-					RelativePath=".\bin\data\level\players.xml"
 					>
 				</File>
 				<File

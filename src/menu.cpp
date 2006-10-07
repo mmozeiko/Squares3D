@@ -12,6 +12,7 @@
 #include "config.h"
 
 typedef vector<wstring> Values;
+class Submenu;
 
 class Value
 {
@@ -139,6 +140,43 @@ public:
 
 };
 
+class WritableEntry : public Entry
+{
+public: 
+    WritableEntry(const wstring& label, string& binding, const Submenu* ownerSubmenu) :
+      Entry(label), m_binding(binding), m_ownerSubmenu(ownerSubmenu) {}
+    void render(const Font* font) const;
+    void click(int button);
+
+private:
+    const Submenu* m_ownerSubmenu;
+    string&        m_binding;
+};
+
+void WritableEntry::render(const Font* font) const
+{
+    wstring stringToRender = m_string + L": " + wcast<wstring>(m_binding);
+    if (m_ownerSubmenu->m_entries[m_ownerSubmenu->m_activeEntry] == this)
+    {
+        stringToRender.push_back('_');
+    }
+    font->render(stringToRender, Font::Align_Left);
+}
+
+void WritableEntry::click(int button) 
+{ 
+    if ((button > 31) && (button < 127) && ((m_string.size() + m_binding.size()) < 15))
+    {
+        m_binding.push_back(button);
+    }
+    else if (button == GLFW_KEY_BACKSPACE)
+    {
+        if (m_binding.size() > 0)
+        {
+             m_binding.resize(m_binding.size() - 1);
+        }
+    }
+}
 
 class OptionEntry : public Entry
 {
@@ -249,43 +287,6 @@ public:
     wstring getString() const  { return L""; }
     bool isEnabled() const     { return false; }
 };
-
-
-typedef vector<Entry*> Entries;
-
-class Submenu
-{
-public:
-
-    Entries m_entries;
-    size_t  m_activeEntry;
-    float   m_height;
-    Vector  m_centerPos;
-
-    Submenu(const Font* font, const Font* fontBig) : m_activeEntry(0), m_title(L""), m_font(font), m_fontBig(fontBig), m_height(0) {}
-    ~Submenu();
-
-    void addEntry(Entry* entry);
-    void center(const Vector& centerPos);
-    void render() const;
-    void control(int key);
-    void setTitle(const wstring& title, const Vector& position);
-    void activateNextEntry(bool moveDown);
-
-    Vector m_upper;
-    Vector m_lower;
-
-    wstring m_title;
-    Vector m_titlePos;
-
-private:
-    const Font* m_font;
-    const Font* m_fontBig;
-
-    Vector m_previousMousePos;
-};
-
-
 
 void OptionEntry::reset()
 {
@@ -670,7 +671,7 @@ void Submenu::render() const
     }
 }
 
-Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
+Menu::Menu(string& userName) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -689,13 +690,13 @@ Menu::Menu() : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_
     m_backGroundTexture = Video::instance->loadTexture("paradise", false);
     m_backGroundTexture->setFilter(Texture::Bilinear);
 
-    loadMenu();
+    loadMenu(userName);
     Input::instance->startButtonBuffer();
     Input::instance->startKeyBuffer();
     glfwEnable(GLFW_MOUSE_CURSOR);
 }
 
-void Menu::loadMenu()
+void Menu::loadMenu(string& userName)
 {
     Language* language = Language::instance;
 
@@ -713,6 +714,7 @@ void Menu::loadMenu()
     submenu->addEntry(new GameEntry(language->get(TEXT_START_GAME), this, State::World));
     
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_OPTIONS), this, "options"));
+    submenu->addEntry(new WritableEntry(language->get(TEXT_TRUE), userName, submenu));
 
     submenu->addEntry(new GameEntry(language->get(TEXT_QUIT_GAME), this, State::Quit));
 

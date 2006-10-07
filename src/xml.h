@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "file.h"
+#include "vmath.h"
 
 class XMLnode;
 
@@ -43,6 +44,8 @@ public:
     inline string getAttribute(const string& name, const string& defaultValue) const;
     
     inline void setAttribute(const string& name, const string& value);
+
+    inline Vector getAttributesInVector(const string& attributeSymbols) const;
 
 private:
     StringMap attributes;
@@ -105,6 +108,18 @@ string XMLnode::getAttribute(const string& name, const string& defaultValue) con
 void XMLnode::setAttribute(const string& name, const string& value)
 {
     attributes[name] = value;
+}
+
+Vector XMLnode::getAttributesInVector(const string& attributeSymbols) const
+{
+    assert(attributeSymbols.size() < 5);
+    Vector vector;
+    for (size_t i = 0; i < attributeSymbols.size(); i++)
+    {
+        string key(1, attributeSymbols[i]);
+        vector[i] = getAttribute<float>(key);
+    }
+    return vector;
 }
 
 #endif // __XML_H__

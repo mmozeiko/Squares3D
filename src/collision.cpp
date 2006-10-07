@@ -172,12 +172,12 @@ CollisionConvex::CollisionConvex(const XMLnode& node, const Level* level) :
         const XMLnode& node = *iter;
         if (node.name == "offset")
         {
-            offset = getAttributesInVector(node, "xyz");
+            offset = node.getAttributesInVector("xyz");
             m_hasOffset = true;
         }
         else if (node.name == "rotation")
         {
-            rotation = getAttributesInVector(node, "xyz") * DEG_IN_RAD;
+            rotation = node.getAttributesInVector("xyz") * DEG_IN_RAD;
             m_hasOffset = true;
         }
     }
@@ -200,7 +200,7 @@ CollisionBox::CollisionBox(const XMLnode& node, const Level* level) :
         const XMLnode& node = *iter;
         if (node.name == "size")
         {
-            m_size = getAttributesInVector(node, "xyz");
+            m_size = node.getAttributesInVector("xyz");
         }
         else if (node.name != "offset" && node.name != "rotation")
         {
@@ -250,7 +250,7 @@ CollisionSphere::CollisionSphere(const XMLnode& node, const Level* level) :
         const XMLnode& node = *iter;
         if (node.name == "radius")
         {
-            m_radius = getAttributesInVector(node, "xyz");
+            m_radius = node.getAttributesInVector("xyz");
         }
         else if (node.name != "offset" && node.name != "rotation")
         {
@@ -327,7 +327,7 @@ CollisionTree::CollisionTree(const XMLnode& node, Level* level) :
                 const XMLnode& node = *iter;
                 if (node.name == "vertex")
                 {
-                    face.vertexes.push_back(getAttributesInVector(node, "xyz"));
+                    face.vertexes.push_back(node.getAttributesInVector("xyz"));
                     face.uv.push_back(UV(node.getAttribute<float>("u"), node.getAttribute<float>("v")));
                 }
                 else

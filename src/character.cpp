@@ -7,31 +7,33 @@
 
 
 Character::Character(const XMLnode& node, const Level* level) : 
-    m_color(Vector::One),
     m_speed(0.1f),
     m_accuracy(0.1f)
 {
-    m_name = node.getAttribute("id");
+    m_type = node.getAttribute("type");
 
-    Collision* collision = level->getCollision(node.getAttribute("collisionID"));
+    m_collisionID = node.getAttribute("collisionID");
     
-    m_body = new Body(m_name, collision);
+    
 
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
-        if (node.name == "color")
-        {
-            m_color = getAttributesInVector(node, "rgb");
-        }
-        else if (node.name == "char")
+        if (node.name == "properties")
         {
             m_speed = node.getAttribute<float>("speed");
             m_accuracy = node.getAttribute<float>("accuracy");
         }
         else
         {
-            throw Exception("Invalid player, unknown node - " + node.name);
+            throw Exception("Invalid character, unknown node - " + node.name);
         }
     }
+}
+
+void Character::loadBody(Level* level)
+{
+    Collision* collision = level->getCollision(m_collisionID);
+    m_body = new Body(m_name, collision);
+    level->m_bodies[m_name] = m_body;
 }

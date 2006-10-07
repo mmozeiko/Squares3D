@@ -8,6 +8,7 @@
 #include "body.h"
 #include "properties.h"
 #include "character.h"
+#include "user.h"
 
 Level::Level()
 {
@@ -87,17 +88,33 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 }
             }
         }
-        else if ((node.name == "players") || (node.name == "cpu_players"))
+        else if (node.name == "characters")
         {
             string superNodeName = node.name;
             for each_const(XMLnodes, node.childs, iter)
             {
                 const XMLnode& node = *iter;
-                if (node.name == "player")
+                if (node.name == "character")
                 {
                     Character* character = new Character(node, this);
-                    m_characters[character->m_name] = character;
-                    m_bodies[character->m_body->m_id] = character->m_body;
+                    m_characters[character->m_type] = character;
+                }
+                else
+                {
+                    throw Exception("Invalid " + superNodeName + ", unknown node - " + node.name);
+                }
+            }
+        }
+        else if (node.name == "cpu_profiles")
+        {
+            string superNodeName = node.name;
+            for each_const(XMLnodes, node.childs, iter)
+            {
+                const XMLnode& node = *iter;
+                if (node.name == "profile")
+                {
+                    Profile* profile = new Profile(node);
+                    m_cpuProfiles[profile->m_name] = profile;
                 }
                 else
                 {
@@ -153,6 +170,10 @@ Level::~Level()
     {
         delete iter->second;
     }
+    for each_const(ProfilesMap, m_cpuProfiles, iter)
+    {
+        delete iter->second;
+    }
     delete m_properties;
 }
 
@@ -181,16 +202,16 @@ Collision* Level::getCollision(const string& id) const
         throw Exception("Could not find specified collision '" + id + "'");
     }
 }
-Character* Level::getCharacter(const string& id) const
+Character* Level::getCharacter(const string& type) const
 {
-    CharactersMap::const_iterator iter = m_characters.find(id);
+    CharactersMap::const_iterator iter = m_characters.find(type);
     if (iter != m_characters.end())
     {
         return iter->second;
     }
     else
     {
-        throw Exception("Could not find specified character '" + id + "'");
+        throw Exception("Could not find specified character '" + type + "'");
     }
 }
 
@@ -208,15 +229,4 @@ void Level::render() const
     {
         (iter->second)->render();
     }    
-}
-
-Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols)
-{
-    Vector vector;
-    for (size_t i = 0; i < attributeSymbols.size(); i++)
-    {
-        string key(1, attributeSymbols[i]);
-        vector[i] = node.getAttribute<float>(key);
-    }
-    return vector;
 }

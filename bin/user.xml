@@ -1,8 +1,5 @@
-<users>
-    <user>
-        <name>trez0r</name>
-    </user>
-    <user>
-        <name>bubu</name>
-    </user>
-</users>
+<profile>
+    <name>tres^</name>
+    <character>other</character>
+    <color b="0" g="0" r="0.6" />
+</profile>

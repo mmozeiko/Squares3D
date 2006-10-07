@@ -31,7 +31,7 @@ public:
     void onSetForceAndTorque();
     
     Referee*          m_referee;
-    const Character*  m_character;
+    const Character*        m_character;
     //player must recognize his field
     Vector            m_lowerLeft;
     Vector            m_upperRight;

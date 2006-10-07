@@ -38,11 +38,11 @@ Body::Body(const XMLnode& node):
         const XMLnode& node = *iter;
         if (node.name == "position")
         {
-            position = getAttributesInVector(node, "xyz");
+            position = node.getAttributesInVector("xyz");
         }
         else if (node.name == "rotation")
         {
-            rotation = getAttributesInVector(node, "xyz") * DEG_IN_RAD;
+            rotation = node.getAttributesInVector("xyz") * DEG_IN_RAD;
         }
         else if (node.name == "collision")
         { 

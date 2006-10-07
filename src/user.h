@@ -1,19 +1,23 @@
-#ifndef __USERS_H__
-#define __USERS_H__
+#ifndef __USER_H__
+#define __USER_H__
 
 #include "common.h"
+#include "vmath.h"
 
-class Users : NoCopy
+class XMLnode;
+
+class Profile : NoCopy
 {
 public:
-    Users();
-    ~Users();
+    Profile(const XMLnode& node);
+    ~Profile();
 
-    StringVector m_usersList;
-    size_t       m_active;
-
-private:
-    static const string USERS_FILE;
+    string m_name;
+    string m_characterType;
+    Vector m_color;
 };
+
+Profile* loadUserProfile();
+void saveUserProfile(const Profile* userProfile);
 
 #endif

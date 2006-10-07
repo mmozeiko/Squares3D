@@ -77,6 +77,12 @@ inline To cast(const wstring& from)
     return string(from.begin(), from.end());
 }
 
+template <typename To>
+inline To wcast(const string& from)
+{
+    return wstring(from.begin(), from.end());
+}
+
 template <typename ValueType>
 inline bool foundInVector(const vector<ValueType>& Vector,
                           ValueType                Value)

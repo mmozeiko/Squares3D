@@ -19,12 +19,12 @@ class Message;
 class ScoreBoard;
 class FrameBuffer;
 class Grass;
-class Users;
+class Profile;
 
 class World : public State, public System<World>
 {
 public:
-    World(const string& currentUser);
+    World(const Profile* userProfile);
     ~World();
 
     void init();
@@ -49,9 +49,9 @@ public:
     ScoreBoard*      m_scoreBoard;
 
 private:
-    bool         m_freeze;
-    const string m_currentUser;
-    Message* escMessage;
+    bool           m_freeze;
+    const Profile* m_userProfile;
+    Message*       escMessage;
 
     void renderScene() const;
 

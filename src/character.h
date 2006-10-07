@@ -12,19 +12,17 @@ class Body;
 class Character
 {
 public:
-    //there probably will be a need to make another constructor for Character
-    //which initializes the object with character data recieved from network
-    //and makes the copies (and appends them to level) of m_body,
-    //collision of this body and tells Newton to create them
-    //like Character(const Character* character) {..do these things..}
-
     Character(const XMLnode& node, const Level* level);
+    void setNameAndColor(const string& name, const Vector& color) { m_name = name; m_color = color; }
+    void loadBody(Level* level);
 
     Body*   m_body;
-    Vector  m_color;
     float   m_speed;
     float   m_accuracy;
+    string  m_type;
+    string  m_collisionID;
     string  m_name;
+    Vector  m_color;
 };
 
 

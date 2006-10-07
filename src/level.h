@@ -11,15 +11,15 @@ class Properties;
 class Collision;
 class Body;
 class Character;
+class Profile;
 struct Face;
 
 typedef map<string, Material*>       MaterialsMap;
 typedef map<string, Collision*>      CollisionsMap;
 typedef map<string, Body*>           BodiesMap;
 typedef map<string, Character*>      CharactersMap;
+typedef map<string, Profile*>        ProfilesMap;
 typedef set<pair<Face*, Material*> > FaceSet;
-
-Vector getAttributesInVector(const XMLnode& node, const string& attributeSymbols);
 
 class Level : NoCopy
 {
@@ -31,13 +31,14 @@ public:
     void  prepare();
     Body* getBody(const string& id) const;
     Collision* getCollision(const string& id) const;
-    Character* getCharacter(const string& id) const;
+    Character* getCharacter(const string& type) const;
 
     BodiesMap     m_bodies;
     CollisionsMap m_collisions;
     FaceSet       m_faces;
-    MaterialsMap   m_materials;
+    MaterialsMap  m_materials;
     CharactersMap m_characters;
+    ProfilesMap   m_cpuProfiles;
     Properties*   m_properties;
 };
 

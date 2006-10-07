@@ -39,12 +39,12 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     m_messages->add2D(m_comboMessage);
 }
 
-void ScoreBoard::registerPlayers(const vector<Player*> players)
+void ScoreBoard::registerPlayers(const vector<Player*>& players)
 {
     float fontSize = 32;
     for (size_t i = 0; i < players.size(); i++)
     {
-        string name = players[i]->m_character->m_body->m_id;
+        string name = players[i]->m_character->m_name;
         m_scores[name] = Account();
         m_playerOrder.push_back(name);
         ScoreMessage* msg = new ScoreMessage(Language::instance->get(TEXT_SCORE_MESSAGE)(m_playerOrder[i]),

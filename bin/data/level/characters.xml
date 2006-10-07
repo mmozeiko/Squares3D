@@ -1,17 +1,16 @@
 <xml>
-    <cpu_players>
-        <player id="Vitolds" collisionID="player_small">
-            <color  r="0.6"  g="0.0" b="0.99" />
-            <char   speed="0.7" accuracy="0.5" somethingelse="1.0" />
-        </player>
-        <player id="Macgyver" collisionID="player_thin">
-            <color  r="0.1"  g="0.99" b="0.1" />
-            <char   speed="0.8" accuracy="0.6" somethingelse="1.0" />
-        </player>
-        <player id="Chuck Norris" collisionID="player_small">
-            <color  r="0.1"  g="0.0" b="0.99" />
-            <char   speed="1.0" accuracy="1.0" somethingelse="1.0" />
-        </player>
-
-    </cpu_players>
+    <characters>
+        <character type="fat" collisionID="Dmitry">
+            <properties   speed="0.6" accuracy="0.9" somethingelse="1.0" />
+        </character>
+        <character type="thin" collisionID="player_thin">
+            <properties   speed="0.8" accuracy="0.8" somethingelse="1.0" />
+        </character>
+        <character type="normal" collisionID="player_small">
+            <properties   speed="0.9" accuracy="0.7" somethingelse="1.0" />
+        </character>
+        <character type="other" collisionID="player_small">
+            <properties   speed="0.9" accuracy="0.7" somethingelse="1.0" />
+        </character>
+    </characters>
 </xml>

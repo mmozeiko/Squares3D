@@ -23,6 +23,7 @@
 #include "grass.h"
 #include "network.h"
 #include "character.h"
+#include "user.h"
 
 static const float OBJECT_BRIGHTNESS = 0.25f;
 static const float GRASS_BRIGHTNESS1 = 0.6f;
@@ -70,7 +71,7 @@ State::Type World::progress()
     return State::Current;
 }
 
-World::World(const string& currentUser) : 
+World::World(const Profile* userProfile) : 
     m_freeze(false),
     escMessage(NULL),
     m_music(NULL),
@@ -84,7 +85,7 @@ World::World(const string& currentUser) :
     m_scoreBoard(NULL),
     m_framebuffer(NULL),
     m_grass(NULL),
-    m_currentUser(currentUser)
+    m_userProfile(userProfile)
 {
     setInstance(this); // MUST go first
 
@@ -123,7 +124,10 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
-    Player* human = new LocalPlayer(m_level->getCharacter(m_currentUser));
+    Character* character = m_level->getCharacter(m_userProfile->m_characterType);
+    character->setNameAndColor(m_userProfile->m_name, m_userProfile->m_color);
+    character->loadBody(m_level);
+    Player* human = new LocalPlayer(character);
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
@@ -131,10 +135,8 @@ void World::init()
 
     int i = 0;
     //todo: position ai players without such hacks
-    StringVector playerNames;
-    playerNames.push_back("Vitolds");
-    playerNames.push_back("Macgyver");
-    playerNames.push_back("Chuck Norris");
+
+    ProfilesMap::const_iterator iter = m_level->m_cpuProfiles.begin();
     for (float x = -1.5f; x <= 1.5f; x += 3.0f)
     { 
         for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
@@ -142,11 +144,17 @@ void World::init()
             if ((x != -1.5f) || (z != -1.5f))
             {
                 Vector pos(x, 1.0f, z);
-                Player* ai = new AiPlayer(m_level->getCharacter(playerNames[i]));
+
+                Character* character = m_level->getCharacter(iter->second->m_characterType);
+                character->setNameAndColor(iter->second->m_name, iter->second->m_color);
+                character->loadBody(m_level);
+
+                Player* ai = new AiPlayer(character);
                 ai->setDisplacement(pos, Vector::Zero);
                 m_localPlayers.push_back(ai);
 
                 m_ball->addBodyToFilter(ai->m_character->m_body);
+                iter++;
                 i++;
             }
         }

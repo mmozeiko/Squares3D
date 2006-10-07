@@ -32,15 +32,15 @@ Material::Material(const XMLnode& node) :
                 const XMLnode& node = *iter;
                 if (node.name == "ambient")
                 {
-                    m_cAmbient = getAttributesInVector(node, "rgb");
+                    m_cAmbient = node.getAttributesInVector("rgb");
                 }
                 else if (node.name == "specular")
                 {
-                    m_cSpecular = getAttributesInVector(node, "rgb");
+                    m_cSpecular = node.getAttributesInVector("rgb");
                 }
                 else if (node.name == "emission")
                 {
-                    m_cEmission = getAttributesInVector(node, "rgb");
+                    m_cEmission = node.getAttributesInVector("rgb");
                 }
                 else if (node.name == "shine")
                 {
