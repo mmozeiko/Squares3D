@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "font.h"
 #include "fps.h"
+#include "users.h"
 
 #include "vmath.h"
 
@@ -36,6 +37,8 @@ Game::Game() : m_fixedTimestep(true)
     m_network = new Network();
     m_input = new Input();
     //
+
+    m_users = new Users();
 
     if (g_needsToReload)
     {
@@ -68,6 +71,7 @@ Game::~Game()
     delete m_video;
     delete m_language;
     delete m_config;
+    delete m_users;
 }
 
 #ifdef MAKE_MOVIE
@@ -263,7 +267,7 @@ State* Game::switchState(const State::Type nextState)
         m_fixedTimestep = false;
         return new Intro();
     case State::Menu: return new Menu();
-    case State::World: return new World();
+    case State::World: return new World(m_users->m_usersList[m_users->m_active]);
     //TODO: implement these
     //case State_Lobby: return ..;
     default:

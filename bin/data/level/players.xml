@@ -1,8 +1,14 @@
 <xml>
     <players>
-        <player id="Dimitris" collisionID="Dmitry">
+        <player id="trez0r" collisionID="player_small">
             <color  r="0.99"  g="0.0" b="0.0" />
-            <char   speed="0.6" accuracy="0.7" somethingelse="1.0" />
+            <char   speed="1.6" accuracy="0.7" somethingelse="1.0" />
+        </player>
+    </players>
+    <players>
+        <player id="bubu" collisionID="player_small">
+            <color  r="0.99"  g="0.0" b="0.0" />
+            <char   speed="1.6" accuracy="0.7" somethingelse="1.0" />
         </player>
     </players>
 </xml>

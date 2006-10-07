@@ -514,6 +514,14 @@
 					RelativePath=".\src\timer.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\users.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\users.h"
+					>
+				</File>
 				<Filter
 					Name="Audio"
 					>
@@ -637,6 +645,10 @@
 			>
 			<File
 				RelativePath=".\bin\config.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\bin\users.xml"
 				>
 			</File>
 			<Filter

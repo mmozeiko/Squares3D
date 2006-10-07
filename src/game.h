@@ -14,6 +14,7 @@ class Audio;
 class Network;
 class Input;
 class FPS;
+class Users;
 
 const Vector gravityVec(0.0f, -9.81f, 0.0f);
 
@@ -36,6 +37,9 @@ public:
     Audio*    m_audio;
     Network*  m_network;
     Input*    m_input;
+    //
+    
+    Users*    m_users;
 
 
 private:

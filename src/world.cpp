@@ -70,7 +70,7 @@ State::Type World::progress()
     return State::Current;
 }
 
-World::World() : 
+World::World(const string& currentUser) : 
     m_freeze(false),
     escMessage(NULL),
     m_music(NULL),
@@ -83,7 +83,8 @@ World::World() :
     m_messages(NULL),
     m_scoreBoard(NULL),
     m_framebuffer(NULL),
-    m_grass(NULL)
+    m_grass(NULL),
+    m_currentUser(currentUser)
 {
     setInstance(this); // MUST go first
 
@@ -122,7 +123,7 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
-    Player* human = new LocalPlayer(m_level->getCharacter("Dimitris"));
+    Player* human = new LocalPlayer(m_level->getCharacter(m_currentUser));
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
