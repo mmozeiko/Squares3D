@@ -857,47 +857,30 @@ float CollisionHMap::getHeight(float x, float z) const
 
     x0 -= static_cast<float>(ix);
     z0 -= static_cast<float>(iz);
+  
+    Vector v1;
+    Vector v2;
+    Vector v3;
 
-    float y;
-    if (x0+z0<=1.0f)
+    if (x0+z0 <= 1.0f)
     {
         // lower triangle
-        const Vector& v1 = m_vertices[m_realCount * iz + ix].y;
-        const Vector& v2 = m_vertices[m_realCount * (iz+1) + ix].y;
-        const Vector& v3 = m_vertices[m_realCount * iz + ix+1].y;
-
-        const Vector s1 = v2 - v1;
-        const Vector s2 = v3 - v1;
-        const Vector n = s1 ^ s2;
-        float D = - (n % v1);
-        y = (n.x * x + n.z * z + D)/n.y;
+        v1 = m_vertices[m_realCount * iz + ix];
+        v2 = m_vertices[m_realCount * (iz+1) + ix];
+        v3 = m_vertices[m_realCount * iz + ix+1];
     }
     else
     {
-        // upper triangle;
-        const Vector& v1 = m_vertices[m_realCount * (iz+1) + (ix+1)].y;
-        const Vector& v2 = m_vertices[m_realCount * (iz+1) + ix].y;
-        const Vector& v3 = m_vertices[m_realCount * iz + ix+1].y;
-
-        const Vector s1 = v2 - v1;
-        const Vector s2 = v3 - v1;
-        const Vector n = s1 ^ s2;
-        float D = - (n % v1);
-        y = (n.x * x + n.z * z + D)/n.y;
+        // upper triangle
+        v1 = m_vertices[m_realCount * (iz+1) + (ix+1)];
+        v2 = m_vertices[m_realCount * (iz+1) + ix];
+        v3 = m_vertices[m_realCount * iz + ix+1];
     }
+   
+    const Vector s1 = v2 - v1;
+    const Vector s2 = v3 - v1;
+    const Vector n = s1 ^ s2;
+    const float D = - (n % v1);
 
-    /*
-    float f00 = m_vertices[m_realCount * iz + ix].y;
-    float f01 = m_vertices[m_realCount * (iz+1) + ix].y;
-    float f10 = m_vertices[m_realCount * iz + ix+1].y;
-    float f11 = m_vertices[m_realCount * (iz+1) + ix+1].y;
-
-    float t = f00*(1.0f-x0)*(1.0f-z0) + f10*x0*(1.0f-z0) + f01*(1.0f-x0)*z0 + f11*x0*z0;
-    //float t = std::max(std::max(f00, f10), std::max(f01, f11));
-    if (glfwGetKey('A'))
-    {
-        clog << f00 << ' ' << f01 << ' ' << f10 << ' ' << f11 << ' ' << t << endl;
-    }
-    */
-    return y;
+    return -(n.x * x + n.z * z + D)/n.y;
 }

@@ -8,6 +8,8 @@
 #include "video.h"
 #include "geometry.h"
 
+static const int CIRCLE_DIVISIONS = 12;
+
 TriggerFlags::TriggerFlags()
 {
     loadDefaults();
@@ -45,27 +47,13 @@ Ball::Ball(Body* body, const Collision* levelCollision) : m_body(body), m_levelC
     //NewtonReleaseCollision(hull);
     //NewtonReleaseCollision(newCollision);
 
-    m_shadowList = Video::instance->newList();
-    glNewList(m_shadowList, GL_COMPILE);
-
-    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
-
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_SRC_ALPHA);
-    glColor4f(0.2f, 0.2f, 0.2f, 0.1f);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    float radius = 0.2f;            // TODO: take ball radius from xml file
-    for (int i=16; i>=0; i--)
+    // TODO: take ball radius from xml file
+    const float radius = 0.2f;
+    for (int i=CIRCLE_DIVISIONS; i>=0; i--)
     {
-        glVertex3f(radius*cosf(i*2.0f*M_PI/16.0f), 0.0f, radius*sinf(i*2.0f*M_PI/16.0f));
+        m_circleSin.push_back(radius*sinf(i*2.0f*M_PI/CIRCLE_DIVISIONS));
+        m_circleCos.push_back(radius*cosf(i*2.0f*M_PI/CIRCLE_DIVISIONS));
     }
-    glEnd();
-    glPopAttrib();
-    glEndList();
 }
 
 Vector Ball::getPosition() const
@@ -160,14 +148,12 @@ void Ball::renderShadow(const Vector& lightPosition) const
     }
     else
     {
-        y = 0.01f; //m_levelCollision->getHeight(pos.x, pos.z) + 0.01f;
+        y = 0.01f;
         x = pos.x;
         z = pos.z;
     }
 
     glPushMatrix();
-//    glTranslatef(x, y, z);
-//    glCallList(m_shadowList);
 
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -179,12 +165,11 @@ void Ball::renderShadow(const Vector& lightPosition) const
     glBegin(GL_TRIANGLE_FAN);
     glColor4f(0.2f, 0.2f, 0.2f, 0.2f);
     glVertex3f(x, m_levelCollision->getHeight(x, z) + y, z);
-    float radius = 0.5f;            // TODO: take ball radius from xml file
     glColor4f(0.2f, 0.2f, 0.2f, 0.3f);
-    for (int i=16; i>=0; i--)
+    for (int i=0; i<=CIRCLE_DIVISIONS; i++)
     {
-        float xx = radius*cosf(i*2.0f*M_PI/16.0f);
-        float zz = radius*sinf(i*2.0f*M_PI/16.0f);
+        float xx = m_circleCos[i];
+        float zz = m_circleSin[i];
         float yy = m_levelCollision->getHeight(x+xx, z+zz) + y;
         glVertex3f(x + xx, yy, z + zz);
     }

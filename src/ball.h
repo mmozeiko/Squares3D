@@ -43,8 +43,9 @@ public:
 private:
     TriggerFilterMap m_filteredBodies;
     
-    unsigned int     m_shadowList;
     const Collision* m_levelCollision;
+    vector<float>    m_circleSin;
+    vector<float>    m_circleCos;
 };
 
 #endif
