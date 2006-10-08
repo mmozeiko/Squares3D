@@ -1,5 +1,5 @@
-#ifndef __USER_H__
-#define __USER_H__
+#ifndef __PROFILE_H__
+#define __PROFILE_H__
 
 #include "common.h"
 #include "vmath.h"

@@ -9,8 +9,5 @@
         <character id="normal" collisionID="player_small">
             <properties   speed="0.9" accuracy="0.7" somethingelse="1.0" />
         </character>
-        <character id="other" collisionID="player_small">
-            <properties   speed="0.9" accuracy="0.7" somethingelse="1.0" />
-        </character>
     </characters>
 </xml>

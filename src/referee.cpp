@@ -8,7 +8,7 @@
 #include "scoreboard.h"
 #include "video.h"
 #include "language.h"
-#include "character.h"
+#include "colors.h"
 
 #define BALLRESETTIME 2.0f
 
@@ -187,7 +187,7 @@ void Referee::processCriticalEvent()
                                0.0f);
         m_messages->add2D(new BlinkingMessage(Language::instance->get(TEXT_GAME_OVER), 
                                               center, 
-                                              Vector(1,0,0), 
+                                              Red, 
                                               Font::Align_Center,
                                               72,
                                               0.8f));
@@ -293,7 +293,7 @@ void Referee::processBallGround()
                                         (m_lastTouchedObject->m_id)
                                         (points),
                     m_lastTouchedObject->getPosition(),
-                    Vector(1, 0, 0),
+                    Red,
                     Font::Align_Center));
             }
 
@@ -323,7 +323,7 @@ void Referee::processBallGround()
                 m_messages->add3D(new FlowingMessage(
                     Language::instance->get(TEXT_OUT_FROM_FIELD)(owner)(points),
                     m_ball->getPosition(),
-                    Vector(1, 0, 0),
+                    Red,
                     Font::Align_Center));
             }
         }
@@ -332,7 +332,7 @@ void Referee::processBallGround()
             m_messages->add3D(new FlowingMessage(
                     Language::instance->get(TEXT_OUT_FROM_MIDDLE_LINE),
                     m_ball->getPosition(),
-                    Vector(1, 0, 0),
+                    Red,
                     Font::Align_Center));
         }
 
@@ -391,7 +391,7 @@ void Referee::processBallPlayer(const Body* player)
             m_messages->add3D(new FlowingMessage(
                 Language::instance->get(TEXT_PLAYER_TOUCHES_TWICE)(playerName)(points),
                 player->getPosition(),
-                Vector(1, 0, 0),
+                Red,
                 Font::Align_Center));
 
             processCriticalEvent();

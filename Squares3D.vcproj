@@ -275,6 +275,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath=".\src\colors.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\common.h"
 					>
 				</File>

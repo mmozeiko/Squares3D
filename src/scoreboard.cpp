@@ -5,7 +5,7 @@
 #include "video.h"
 #include "language.h"
 #include "player.h"
-#include "character.h"
+#include "colors.h"
 
 Account::Account() : 
     m_total(0),
@@ -32,7 +32,7 @@ ScoreBoard::ScoreBoard(Messages* messages) :
 
     m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO), 
                                       Vector(resX / 2, 50.0f, 0),
-                                      Vector(1,1,0),
+                                      Yellow,
                                       0,
                                       Font::Align_Center,
                                       32);
@@ -126,7 +126,7 @@ int ScoreBoard::addSelfTotalPoints(const string& name)
 
 void ScoreBoard::incrementCombo(const string& name, const Vector& position)
 {
-    m_messages->add3D(new FlowingMessage(L"+1", position, Vector(0.0f,0.8f,0.8f), Font::Align_Center, 1.0f));
+    m_messages->add3D(new FlowingMessage(L"+1", position, Cyan, Font::Align_Center, 1.0f));
     m_joinedCombo++;
     Account& acc = m_scores.find(name)->second;
     acc.m_combo++;

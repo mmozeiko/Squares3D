@@ -11,6 +11,7 @@
 #include "language.h"
 #include "config.h"
 #include "timer.h"
+#include "colors.h"
 
 typedef vector<wstring> Values;
 class Submenu;
@@ -657,17 +658,17 @@ void Submenu::render() const
         glTranslatef(upperPos.x, upperPos.y, upperPos.z);
         if (m_activeEntry == i)
         {
-            glColor3fv(Vector(1, 1, 0).v);              // active entry
+            glColor3fv(Yellow.v);              // active entry
         }
         else
         {
             if (entry->isEnabled())
             {
-                glColor3fv(Vector::One.v);              // normal entry
+                glColor3fv(White.v);              // normal entry
             }
             else
             {
-                glColor3fv(Vector(0.5f, 0.5f, 0.5f).v); // disabled entry
+                glColor3fv(Grey.v); // disabled entry
             }
         }
         entry->render(m_font);
@@ -681,7 +682,7 @@ void Submenu::render() const
         m_fontBig->begin();
         glPushMatrix();
         glTranslatef(m_titlePos.x, m_titlePos.y, 0);
-        glColor3fv(Vector(0, 0.7f, 0).v);
+        glColor3fv(darker(Green, 1.5f).v);
         m_fontBig->render(m_title, Font::Align_Center);
         glPopMatrix();
         m_fontBig->end();
