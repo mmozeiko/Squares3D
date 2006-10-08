@@ -12,6 +12,24 @@
 #include "config.h"
 #include "timer.h"
 #include "colors.h"
+#include "profile.h"
+
+const pair<wstring, Vector> namesToColors[] = { 
+      make_pair(L"Red", Red),
+      make_pair(L"Green", Green),
+      make_pair(L"Blue", Blue),
+      make_pair(L"Black", Black),
+      make_pair(L"White", White),
+      make_pair(L"Yellow", Yellow),
+      make_pair(L"Cyan", Cyan),
+      make_pair(L"Magenta", Magenta),
+      make_pair(L"Grey", Grey)
+      };
+
+typedef map<wstring, Vector> Colors;
+
+Colors colors(namesToColors, namesToColors + sizeOfArray(namesToColors));
+
 
 typedef vector<wstring> Values;
 class Submenu;
@@ -92,9 +110,45 @@ public:
         Value::add(Language::instance->get(TEXT_FALSE));
         Value::add(Language::instance->get(TEXT_TRUE));
     }
+};
 
-private:
-    void add(const wstring& string);
+class ColorValue : public Value
+{
+public:
+    ColorValue(const string& id) : Value(id)
+    {
+        for each_const(Colors, colors, iter)
+        {
+            Value::add(wcast<wstring>(iter->first));        
+        }
+    }
+    void setCurrent(const Vector& color)
+    {
+        wstring colorName = Language::instance->get(TEXT_CUSTOM);
+        bool wasInColorDict = false;
+        for each_const(Colors, colors, iter)
+        {
+            if (iter->second == color)
+            {
+                colorName = wcast<wstring>(iter->first);
+                wasInColorDict = true;
+                break;
+            }
+        }
+        if (!wasInColorDict)
+        {
+            m_values.push_back(colorName);
+            colors[colorName] = color;
+        }
+        for (size_t i = 0; i < m_values.size(); i++)
+        {
+            if (m_values[i] == colorName)
+            {
+                m_current = i;
+                break;
+            }
+        }
+    }
 };
 
 class Entry
@@ -143,6 +197,95 @@ public:
 
 };
 
+class OptionEntry : public Entry
+{
+public: 
+    OptionEntry(const wstring& stringIn, const Value& value) :
+        Entry(stringIn), m_value(value), m_enabled(true) {}
+
+    void click(int button);
+    wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
+    string getValueID() const                      { return m_value.m_id; }
+    wstring getValue() const                       { return m_value.getCurrent(); }
+    int getCurrentValueIdx() const                 { return static_cast<int>(m_value.m_current); }
+    bool isEnabled() const                         { return m_enabled; }
+    void reset();
+    
+    bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
+    
+    void render(const Font* font) const;
+    
+    virtual int getMaxLeftWidth(const Font* font) const
+    {
+        return font->getWidth(m_string) + font->getWidth(L":");
+    }
+
+    virtual int getMaxRightWidth(const Font* font) const
+    {
+        return  font->getWidth(L"  ") +  m_value.getMaxWidth(font);
+    }
+
+protected:
+    Value m_value;
+    bool m_enabled;
+};
+
+void OptionEntry::click(int button)
+{
+    if ((button == GLFW_MOUSE_BUTTON_LEFT)
+        || (button == GLFW_MOUSE_BUTTON_RIGHT)
+        || (button == GLFW_KEY_LEFT)
+        || (button == GLFW_KEY_RIGHT)
+        || (button == GLFW_KEY_ENTER))
+    {
+        if (m_enabled)
+        {
+            m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
+                                  || (button == GLFW_KEY_RIGHT)
+                                  || (button == GLFW_KEY_ENTER));
+        }
+    }
+}
+
+class ColorEntry : public Entry
+{
+public: 
+    ColorEntry(const wstring& label, Vector& binding, const ColorValue& value) :
+      Entry(label), m_value(value), m_binding(binding) 
+    {
+        m_value.setCurrent(binding); 
+    }
+    void render(const Font* font) const;
+    void click(int button);
+
+private:
+    Vector&    m_binding;
+    ColorValue m_value;
+};
+
+void ColorEntry::render(const Font* font) const
+{
+    wstring stringToRender = m_string + L": " + m_value.getCurrent();
+    Vector color = colors.find(m_value.getCurrent())->second;
+    glColor3f(color.x, color.y, color.z);
+    font->render(stringToRender, Font::Align_Left);
+}
+
+void ColorEntry::click(int button)
+{
+   if ((button == GLFW_MOUSE_BUTTON_LEFT)
+        || (button == GLFW_MOUSE_BUTTON_RIGHT)
+        || (button == GLFW_KEY_LEFT)
+        || (button == GLFW_KEY_RIGHT)
+        || (button == GLFW_KEY_ENTER))
+    {
+         m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
+                              || (button == GLFW_KEY_RIGHT)
+                              || (button == GLFW_KEY_ENTER));
+    }
+    m_binding = colors.find(m_value.getCurrent())->second;
+}
+
 class WritableEntry : public Entry
 {
 public: 
@@ -188,56 +331,6 @@ void WritableEntry::onChar(int ch)
     if (ch<=127 && m_ownerSubmenu->m_font->hasChar(ch) && ((m_string.size() + m_binding.size()) < 15))
     {
         m_binding.push_back(ch);
-    }
-}
-
-class OptionEntry : public Entry
-{
-public: 
-    OptionEntry(const wstring& stringIn, const Value& value) :
-        Entry(stringIn), m_value(value), m_enabled(true) {}
-
-    void click(int button);
-    wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
-    string getValueID() const                      { return m_value.m_id; }
-    wstring getValue() const                       { return m_value.getCurrent(); }
-    int getCurrentValueIdx() const                 { return static_cast<int>(m_value.m_current); }
-    bool isEnabled() const                         { return m_enabled; }
-    void reset();
-    
-    bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
-    
-    void render(const Font* font) const;
-    
-    virtual int getMaxLeftWidth(const Font* font) const
-    {
-        return font->getWidth(m_string) + font->getWidth(L":");
-    }
-
-    virtual int getMaxRightWidth(const Font* font) const
-    {
-        return  font->getWidth(L"  ") +  m_value.getMaxWidth(font);
-    }
-
-private:
-    Value m_value;
-    bool m_enabled;
-};
-
-void OptionEntry::click(int button)
-{
-    if ((button == GLFW_MOUSE_BUTTON_LEFT)
-        || (button == GLFW_MOUSE_BUTTON_RIGHT)
-        || (button == GLFW_KEY_LEFT)
-        || (button == GLFW_KEY_RIGHT)
-        || (button == GLFW_KEY_ENTER))
-    {
-        if (m_enabled)
-        {
-            m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
-                                  || (button == GLFW_KEY_RIGHT)
-                                  || (button == GLFW_KEY_ENTER));
-        }
     }
 }
 
@@ -697,7 +790,7 @@ void Submenu::render() const
     }
 }
 
-Menu::Menu(string& userName) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
+Menu::Menu(Profile* userProfile) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -716,14 +809,14 @@ Menu::Menu(string& userName) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(F
     m_backGroundTexture = Video::instance->loadTexture("paradise", false);
     m_backGroundTexture->setFilter(Texture::Bilinear);
 
-    loadMenu(userName);
+    loadMenu(userProfile);
     Input::instance->startButtonBuffer();
     Input::instance->startKeyBuffer();
     Input::instance->startCharBuffer();
     glfwEnable(GLFW_MOUSE_CURSOR);
 }
 
-void Menu::loadMenu(string& userName)
+void Menu::loadMenu(Profile* userProfile)
 {
     Language* language = Language::instance;
 
@@ -741,7 +834,10 @@ void Menu::loadMenu(string& userName)
     submenu->addEntry(new GameEntry(language->get(TEXT_START_GAME), this, State::World));
     
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_OPTIONS), this, "options"));
-    submenu->addEntry(new WritableEntry(language->get(TEXT_TRUE), userName, submenu));
+    submenu->addEntry(new WritableEntry(language->get(TEXT_NAME), userProfile->m_name, submenu));
+
+    ColorValue colorValue("color");
+    submenu->addEntry(new ColorEntry(language->get(TEXT_COLOR), userProfile->m_color, colorValue));
 
     submenu->addEntry(new GameEntry(language->get(TEXT_QUIT_GAME), this, State::Quit));
 

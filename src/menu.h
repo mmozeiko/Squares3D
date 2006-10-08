@@ -13,7 +13,7 @@ class Texture;
 class Menu;
 class Entry;
 class Submenu;
-class User;
+class Profile;
 
 typedef map<string, Submenu*> Submenus;
 
@@ -55,7 +55,7 @@ private:
 class Menu : public State
 {
 public:
-    Menu(string& userName);
+    Menu(Profile* userProfile);
     ~Menu();
 
     void control();
@@ -63,7 +63,7 @@ public:
     void updateStep(float delta) {} 
     void prepare() {}
     void render() const;
-    void loadMenu(string& userName);
+    void loadMenu(Profile* userProfile);
     void setState(State::Type state);
     void setSubmenu(const string& submenuToSwitchTo);
     State::Type progress();

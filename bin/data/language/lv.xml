@@ -34,7 +34,7 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     <item name="LOW"                      value="Zema"/>
     <item name="MEDIUM"                   value="Vidēja"/>
     <item name="HIGH"                     value="Augsta"/>
-    <item name="CUSTOM"                   value="Dažāda"/>
+    <item name="CUSTOM"                   value="Pēc Izvēles"/>
     <item name="NOT_SUPPORTED"            value="Nav Pieejama"/>
                                        
     <item name="RESOLUTION"               value="Izšķirtspēja"/>
@@ -50,4 +50,6 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     <item name="AUDIO"                    value="Skaņa Ieslēgta"/>
     <item name="LANGUAGE"                 value="Valoda"/>
     <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes Detalizācija"/>
+    <item name="NAME"                     value="Vārds"/>
+    <item name="COLOR"                    value="Krāsa"/>
 </xml>

@@ -55,5 +55,7 @@ Press ENTER to quit to main menu..
     <item name="SYSTEM_KEYS"              value="System Keys"/>
     <item name="LANGUAGE"                 value="Language"/>
     <item name="MOUSE_SENSITIVITY"        value="Mouse Sensitivity"/>
+    <item name="NAME"                     value="Name"/>
+    <item name="COLOR"                    value="Color"/>
 
 </xml>

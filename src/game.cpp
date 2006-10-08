@@ -44,7 +44,7 @@ Game::Game() : m_fixedTimestep(true)
     {
         g_needsToReload = false;
 
-        Menu* menu = new Menu(m_user->m_name);
+        Menu* menu = new Menu(m_user);
         menu->setSubmenu(g_optionsEntry);
         m_state = menu;
     }
@@ -268,7 +268,7 @@ State* Game::switchState(const State::Type nextState)
     case State::Intro:
         m_fixedTimestep = false;
         return new Intro();
-    case State::Menu: return new Menu(m_user->m_name);
+    case State::Menu: return new Menu(m_user);
     case State::World: return new World(m_user);
     //TODO: implement these
     //case State_Lobby: return ..;
