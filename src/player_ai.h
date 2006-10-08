@@ -9,7 +9,7 @@ class Input;
 class AiPlayer : public Player
 {
 public:
-    AiPlayer(const Character* character);
+    AiPlayer(const Profile* profile, const Character* character, Level* level);
     ~AiPlayer();
 
     void control();

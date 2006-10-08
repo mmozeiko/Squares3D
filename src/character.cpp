@@ -1,7 +1,4 @@
-#include <Newton.h>
 #include "character.h"
-#include "body.h"
-#include "collision.h"
 #include "xml.h"
 #include "level.h"
 
@@ -10,11 +7,7 @@ Character::Character(const XMLnode& node, const Level* level) :
     m_speed(0.1f),
     m_accuracy(0.1f)
 {
-    m_type = node.getAttribute("type");
-
     m_collisionID = node.getAttribute("collisionID");
-    
-    
 
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -29,11 +22,4 @@ Character::Character(const XMLnode& node, const Level* level) :
             throw Exception("Invalid character, unknown node - " + node.name);
         }
     }
-}
-
-void Character::loadBody(Level* level)
-{
-    Collision* collision = level->getCollision(m_collisionID);
-    m_body = new Body(m_name, collision);
-    level->m_bodies[m_name] = m_body;
 }

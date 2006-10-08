@@ -1,15 +1,15 @@
 <xml>
     <characters>
-        <character type="fat" collisionID="Dmitry">
+        <character id="fat" collisionID="Dmitry">
             <properties   speed="0.6" accuracy="0.9" somethingelse="1.0" />
         </character>
-        <character type="thin" collisionID="player_thin">
+        <character id="thin" collisionID="player_thin">
             <properties   speed="0.8" accuracy="0.8" somethingelse="1.0" />
         </character>
-        <character type="normal" collisionID="player_small">
+        <character id="normal" collisionID="player_small">
             <properties   speed="0.9" accuracy="0.7" somethingelse="1.0" />
         </character>
-        <character type="other" collisionID="player_small">
+        <character id="other" collisionID="player_small">
             <properties   speed="0.9" accuracy="0.7" somethingelse="1.0" />
         </character>
     </characters>

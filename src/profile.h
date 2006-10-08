@@ -9,15 +9,15 @@ class XMLnode;
 class Profile : NoCopy
 {
 public:
+    Profile();
     Profile(const XMLnode& node);
+    void extractNode(const XMLnode& node);
+    void saveUserProfile();
     ~Profile();
 
     string m_name;
-    string m_characterType;
+    string m_characterID;
     Vector m_color;
 };
-
-Profile* loadUserProfile();
-void saveUserProfile(const Profile* userProfile);
 
 #endif

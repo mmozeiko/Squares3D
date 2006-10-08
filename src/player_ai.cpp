@@ -5,10 +5,9 @@
 #include "random.h"
 #include "geometry.h"
 #include "level.h"
-#include "character.h"
 
-AiPlayer::AiPlayer(const Character* character) :
-    Player(character)
+AiPlayer::AiPlayer(const Profile* profile, const Character* character, Level* level) :
+    Player(profile, character, level)
 {
 }
 
@@ -21,7 +20,7 @@ void AiPlayer::control()
     Body* ball = World::instance->m_level->getBody("football");
 
     Vector ballPosition = ball->getPosition();
-    Vector selfPosition = m_character->m_body->getPosition();
+    Vector selfPosition = m_body->getPosition();
 
     bool move = true;
 
@@ -78,7 +77,7 @@ void AiPlayer::control()
         dir.norm();
     }
 
-    Vector rot = m_character->m_body->getRotation();
+    Vector rot = m_body->getRotation();
 
     Vector rotation;
     if (move)

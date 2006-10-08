@@ -8,7 +8,7 @@
 #include "body.h"
 #include "properties.h"
 #include "character.h"
-#include "user.h"
+#include "profile.h"
 
 Level::Level()
 {
@@ -97,7 +97,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 if (node.name == "character")
                 {
                     Character* character = new Character(node, this);
-                    m_characters[character->m_type] = character;
+                    m_characters[node.getAttribute("id")] = character;
                 }
                 else
                 {

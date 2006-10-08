@@ -6,8 +6,8 @@
 #include "packet.h"
 #include "xml.h"
 
-RemotePlayer::RemotePlayer(const Character* character) :
-    Player(character)
+RemotePlayer::RemotePlayer(const Profile* profile, const Character* character, Level* level) :
+    Player(profile, character, level)
 {
 }
 

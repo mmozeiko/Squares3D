@@ -23,7 +23,7 @@
 #include "grass.h"
 #include "network.h"
 #include "character.h"
-#include "user.h"
+#include "profile.h"
 
 static const float OBJECT_BRIGHTNESS = 0.25f;
 static const float GRASS_BRIGHTNESS1 = 0.6f;
@@ -124,14 +124,13 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
-    Character* character = m_level->getCharacter(m_userProfile->m_characterType);
-    character->setNameAndColor(m_userProfile->m_name, m_userProfile->m_color);
-    character->loadBody(m_level);
-    Player* human = new LocalPlayer(character);
+    Player* human = new LocalPlayer(m_userProfile, 
+                                    m_level->getCharacter(m_userProfile->m_characterID), 
+                                    m_level);
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
-    m_ball->addBodyToFilter(human->m_character->m_body);
+    m_ball->addBodyToFilter(human->m_body);
 
     int i = 0;
     //todo: position ai players without such hacks
@@ -145,15 +144,12 @@ void World::init()
             {
                 Vector pos(x, 1.0f, z);
 
-                Character* character = m_level->getCharacter(iter->second->m_characterType);
-                character->setNameAndColor(iter->second->m_name, iter->second->m_color);
-                character->loadBody(m_level);
-
-                Player* ai = new AiPlayer(character);
+                Character* character = m_level->getCharacter(iter->second->m_characterID);
+                Player* ai = new AiPlayer(iter->second, character, m_level);
                 ai->setDisplacement(pos, Vector::Zero);
                 m_localPlayers.push_back(ai);
 
-                m_ball->addBodyToFilter(ai->m_character->m_body);
+                m_ball->addBodyToFilter(ai->m_body);
                 iter++;
                 i++;
             }

@@ -7,7 +7,7 @@
 class LocalPlayer : public Player
 {
 public:
-    LocalPlayer(const Character* character);
+    LocalPlayer(const Profile* profile, const Character* character, Level* level);
     ~LocalPlayer();
 
     void control();

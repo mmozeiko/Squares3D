@@ -212,7 +212,7 @@ void Referee::registerPlayers(const vector<Player*> players)
 {
     for each_const(vector<Player*>, players, iter)
     {
-        m_players[(*iter)->m_character->m_body] = *iter;
+        m_players[(*iter)->m_body] = *iter;
         (*iter)->m_referee = this;
     }
     m_scoreBoard->registerPlayers(players);
@@ -258,6 +258,7 @@ void Referee::processPlayerGround(const Body* player)
     Vector playerPos = player->getPosition();
     string currentPlayerName = player->m_id;
     Player* currentPlayer = m_players.find(player)->second;
+
     if (!isPointInRectangle(playerPos, currentPlayer->m_lowerLeft, currentPlayer->m_upperRight)
         && isPointInRectangle(playerPos, 
                               Vector(- FIELDLENGTH, 0 , - FIELDLENGTH),
@@ -299,11 +300,11 @@ void Referee::processBallGround()
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
             {
                 string owner = m_lastFieldOwner->m_id;
+                
                 int points;
 
                 if (m_lastTouchedPlayer != NULL)
                 {
-                    string lastPlayerName = m_lastTouchedPlayer->m_id;
                     if (m_lastFieldOwner == m_lastTouchedPlayer)
                     {
                         points = m_scoreBoard->addSelfTotalPoints(owner);

@@ -1,10 +1,10 @@
-#include "user.h"
+#include "profile.h"
 #include "file.h"
 #include "xml.h"
 
 const static string USER_PROFILE_FILE = "/user.xml";
 
-Profile* loadUserProfile()
+Profile::Profile()
 {
     clog << "Reading user information." << endl;
     XMLnode xml;
@@ -14,7 +14,7 @@ Profile* loadUserProfile()
         xml.load(in);
         in.close();
     }
-    return new Profile(xml);
+    extractNode(xml);
 }
 
 
@@ -22,6 +22,11 @@ Profile::Profile(const XMLnode& node)
 {
     // TODO: maybe rewrite with map<string, variable&>
 
+    extractNode(node);
+}
+
+void Profile::extractNode(const XMLnode& node)
+{
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
@@ -31,7 +36,7 @@ Profile::Profile(const XMLnode& node)
         }
         else if (node.name == "character")
         {
-            m_characterType = node.value;
+            m_characterID = node.value;
         }
         else if (node.name == "color")
         {
@@ -49,17 +54,17 @@ Profile::~Profile()
 {
 }
 
-void saveUserProfile(const Profile* userProfile)
+void Profile::saveUserProfile()
 {
     clog << "Saving user data." << endl;
 
     XMLnode xml("profile");
-    xml.childs.push_back(XMLnode("name", userProfile->m_name));
-    xml.childs.push_back(XMLnode("character", userProfile->m_characterType));
+    xml.childs.push_back(XMLnode("name", m_name));
+    xml.childs.push_back(XMLnode("character", m_characterID));
     xml.childs.push_back(XMLnode("color"));
-    xml.childs.back().setAttribute("r", cast<string>(userProfile->m_color.x));
-    xml.childs.back().setAttribute("g", cast<string>(userProfile->m_color.y));
-    xml.childs.back().setAttribute("b", cast<string>(userProfile->m_color.z));
+    xml.childs.back().setAttribute("r", cast<string>(m_color.x));
+    xml.childs.back().setAttribute("g", cast<string>(m_color.y));
+    xml.childs.back().setAttribute("b", cast<string>(m_color.z));
 
     File::Writer out(USER_PROFILE_FILE);
     if (!out.is_open())
@@ -68,6 +73,4 @@ void saveUserProfile(const Profile* userProfile)
     }
     xml.save(out);
     out.close();
-    
-    delete userProfile;
 }

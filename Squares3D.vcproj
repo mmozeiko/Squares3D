@@ -391,15 +391,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\profile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\profile.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\state.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\user.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\user.h"
 					>
 				</File>
 				<File

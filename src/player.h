@@ -3,16 +3,18 @@
 
 #include "common.h"
 #include "body.h"
+#include "character.h"
+#include "profile.h"
+#include "level.h"
 
 class Referee;
-class Character;
 
 #define FIELDLENGTH 3.0f
 
 class Player : public Collideable
 {
 public:
-    Player(const Character* character);
+    Player(const Profile* profile, const Character* character, Level* level);
     virtual ~Player();
 
     void setDirection(const Vector& direction);
@@ -32,7 +34,9 @@ public:
     void onSetForceAndTorque();
     
     Referee*          m_referee;
-    const Character*        m_character;
+    Body*             m_body;
+    const Character*  m_character;
+    const Profile*    m_profile;
     //player must recognize his field
     Vector            m_lowerLeft;
     Vector            m_upperRight;

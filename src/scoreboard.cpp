@@ -44,12 +44,12 @@ void ScoreBoard::registerPlayers(const vector<Player*>& players)
     float fontSize = 32;
     for (size_t i = 0; i < players.size(); i++)
     {
-        string name = players[i]->m_character->m_name;
+        string name = players[i]->m_profile->m_name;
         m_scores[name] = Account();
         m_playerOrder.push_back(name);
         ScoreMessage* msg = new ScoreMessage(Language::instance->get(TEXT_SCORE_MESSAGE)(m_playerOrder[i]),
                                              m_boardPositions[i].m_position, 
-                                             players[i]->m_character->m_color, 
+                                             players[i]->m_profile->m_color, 
                                              m_scores[name].m_total, 
                                              m_boardPositions[i].m_alignement);
         m_messages->add2D(msg);
@@ -60,7 +60,7 @@ void ScoreBoard::registerPlayers(const vector<Player*>& players)
         
         ComboMessage* msg1 = new ComboMessage(Language::instance->get(TEXT_HITS),
                                               m_boardPositions[i].m_position + correctorPos, 
-                                              players[i]->m_character->m_color, 
+                                              players[i]->m_profile->m_color, 
                                               m_scores[name].m_combo, 
                                               m_boardPositions[i].m_alignement);
         m_messages->add2D(msg1);

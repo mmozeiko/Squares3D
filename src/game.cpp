@@ -15,7 +15,7 @@
 #include "camera.h"
 #include "font.h"
 #include "fps.h"
-#include "user.h"
+#include "profile.h"
 
 #include "vmath.h"
 
@@ -38,7 +38,7 @@ Game::Game() : m_fixedTimestep(true)
     m_input = new Input();
     //
 
-    m_user = loadUserProfile();
+    m_user = new Profile();
 
     if (g_needsToReload)
     {
@@ -65,8 +65,9 @@ Game::~Game()
     
     delete m_state;
 
-    saveUserProfile(m_user);
+    m_user->saveUserProfile();
 
+    delete m_user;
     delete m_input;
     delete m_network;
     delete m_audio;
