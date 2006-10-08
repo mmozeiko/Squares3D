@@ -17,6 +17,7 @@ public:
     static const Font* get(const string& name);
     static void unload();
 
+    bool hasChar(int ch) const;
     int getWidth(const wstring& text) const;
     int getHeight() const;
 

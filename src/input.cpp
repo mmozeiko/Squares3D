@@ -2,7 +2,7 @@
 
 Input* System<Input>::instance = NULL;
 
-Input::Input() : m_mouse(), m_keyBuffer(), m_buttonBuffer()
+Input::Input() : m_mouse(), m_keyBuffer(), m_buttonBuffer(), m_charBuffer()
 {
     clog << "Initializing input... " << endl;
 
@@ -36,7 +36,7 @@ const Mouse& Input::mouse() const
     return m_mouse;
 }
 
-void GLFWCALL keyFunc(int key, int action)
+static void GLFWCALL keyFunc(int key, int action)
 {
     if (action == GLFW_PRESS)
     {
@@ -44,7 +44,15 @@ void GLFWCALL keyFunc(int key, int action)
     }
 }
 
-void GLFWCALL buttonFunc(int button, int action)
+static void GLFWCALL charFunc(int ch, int action)
+{
+    if (action == GLFW_PRESS)
+    {
+        Input::instance->addChar(ch);
+    }
+}
+
+static void GLFWCALL buttonFunc(int button, int action)
 {
     if (action == GLFW_PRESS)
     {
@@ -68,6 +76,22 @@ void Input::addKey(int k)
     m_keyBuffer.push_back(k);
 }
 
+void Input::startCharBuffer()
+{
+    m_charBuffer.clear();
+    glfwSetCharCallback(charFunc);
+}
+
+void Input::endCharBuffer()
+{
+    glfwSetCharCallback(NULL);
+}
+
+void Input::addChar(int k)
+{
+    m_charBuffer.push_back(k);
+}
+
 int Input::popKey()
 {
     if (m_keyBuffer.size() == 0)
@@ -77,6 +101,17 @@ int Input::popKey()
     int key = m_keyBuffer.front();
     m_keyBuffer.pop_front();
     return key;
+}
+
+int Input::popChar()
+{
+    if (m_charBuffer.size() == 0)
+    {
+        return -1;
+    }
+    int ch = m_charBuffer.front();
+    m_charBuffer.pop_front();
+    return ch;
 }
 
 void Input::startButtonBuffer()

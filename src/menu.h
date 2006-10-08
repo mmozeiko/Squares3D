@@ -19,7 +19,7 @@ typedef map<string, Submenu*> Submenus;
 
 typedef vector<Entry*> Entries;
 
-class Submenu
+class Submenu : NoCopy
 {
 public:
 
@@ -35,6 +35,7 @@ public:
     void center(const Vector& centerPos);
     void render() const;
     void control(int key);
+    void onChar(int ch);
     void setTitle(const wstring& title, const Vector& position);
     void activateNextEntry(bool moveDown);
 
@@ -44,8 +45,8 @@ public:
     wstring m_title;
     Vector m_titlePos;
 
-private:
     const Font* m_font;
+private:
     const Font* m_fontBig;
 
     Vector m_previousMousePos;

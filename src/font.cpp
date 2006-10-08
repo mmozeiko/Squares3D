@@ -164,6 +164,11 @@ Font::~Font()
     glDeleteTextures(1, &m_texture);
 }
 
+bool Font::hasChar(int ch) const
+{
+    return ch>=0 && ch<=static_cast<int>(m_widths.size()) && m_widths[ch]>0;
+}
+
 void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
 {
     glPushAttrib(

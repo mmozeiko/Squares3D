@@ -10,6 +10,7 @@
 #include "input.h"
 #include "language.h"
 #include "config.h"
+#include "timer.h"
 
 typedef vector<wstring> Values;
 class Submenu;
@@ -106,6 +107,7 @@ public:
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
+    virtual void onChar(int ch) {}
     virtual wstring getString() const                    { return m_string; }
     virtual string getValueID() const                    { return "";       }
     virtual wstring getValue() const                     { return L"";      }
@@ -147,10 +149,12 @@ public:
       Entry(label), m_binding(binding), m_ownerSubmenu(ownerSubmenu) {}
     void render(const Font* font) const;
     void click(int button);
+    void onChar(int ch);
 
 private:
     const Submenu* m_ownerSubmenu;
     string&        m_binding;
+    Timer          m_timer;
 };
 
 void WritableEntry::render(const Font* font) const
@@ -158,23 +162,31 @@ void WritableEntry::render(const Font* font) const
     wstring stringToRender = m_string + L": " + wcast<wstring>(m_binding);
     if (m_ownerSubmenu->m_entries[m_ownerSubmenu->m_activeEntry] == this)
     {
-        stringToRender.push_back('_');
+        if (fmodf(m_timer.read(), 1.0f) > 0.5f)
+        {
+            stringToRender.push_back('_');
+        }
     }
     font->render(stringToRender, Font::Align_Left);
 }
 
-void WritableEntry::click(int button) 
+void WritableEntry::click(int key)
 { 
-    if ((button > 31) && (button < 127) && ((m_string.size() + m_binding.size()) < 15))
-    {
-        m_binding.push_back(button);
-    }
-    else if (button == GLFW_KEY_BACKSPACE)
+    if (key == GLFW_KEY_BACKSPACE)
     {
         if (m_binding.size() > 0)
         {
-             m_binding.resize(m_binding.size() - 1);
+            m_binding.erase(m_binding.end()-1);
         }
+    }
+}
+
+void WritableEntry::onChar(int ch)
+{ 
+    // if we want unicode text, then remove ch<=127, and change m_binding type to wstring
+    if (ch<=127 && m_ownerSubmenu->m_font->hasChar(ch) && ((m_string.size() + m_binding.size()) < 15))
+    {
+        m_binding.push_back(ch);
     }
 }
 
@@ -488,6 +500,11 @@ void ApplyOptionsEntry::click(int button)
     g_optionsEntry = m_submenuToSwitchTo;
 }
 
+void Submenu::onChar(int ch)
+{
+    m_entries[m_activeEntry]->onChar(ch);
+}
+
 void Submenu::control(int key)
 {
     int b;
@@ -693,6 +710,7 @@ Menu::Menu(string& userName) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(F
     loadMenu(userName);
     Input::instance->startButtonBuffer();
     Input::instance->startKeyBuffer();
+    Input::instance->startCharBuffer();
     glfwEnable(GLFW_MOUSE_CURSOR);
 }
 
@@ -883,6 +901,7 @@ Menu::~Menu()
 {
     glfwDisable(GLFW_MOUSE_CURSOR);
     Input::instance->endKeyBuffer();
+    Input::instance->endCharBuffer();
     Input::instance->endButtonBuffer();
 
     for each_const(Submenus, m_submenus, iter)
@@ -922,24 +941,36 @@ void Menu::setSubmenu(const string& submenuToSwitchTo)
 void Menu::control()
 {
     int key;
-    do
+    bool done = false;
+    while (!done)
     {
         key = Input::instance->popKey();
-        if (key == GLFW_KEY_ESC)
+        if (key < 32 || key >= 127)
         {
-            if (m_currentSubmenu == m_submenus["main"])
+            if (key == GLFW_KEY_ESC)
             {
-                m_state = State::Quit;
+                if (m_currentSubmenu == m_submenus["main"])
+                {
+                    m_state = State::Quit;
+                }
+                else
+                {
+                    // assume "back" is last entry
+                    m_currentSubmenu->m_entries.back()->click(GLFW_KEY_ENTER);
+                }
             }
-            else
-            {
-                // assume "back" is last entry
-                m_currentSubmenu->m_entries.back()->click(GLFW_KEY_ENTER);
-            }
+            m_currentSubmenu->control(key);
         }
-        m_currentSubmenu->control(key);
+        done = key==-1;
     }
-    while (Input::instance->popKey() != -1);
+
+    done = false;
+    while (!done)
+    {
+        int ch = Input::instance->popChar();
+        m_currentSubmenu->onChar(ch);
+        done = ch==-1;
+    }
 }
 
 void Menu::render() const
