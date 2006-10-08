@@ -50,7 +50,8 @@ void LocalPlayer::control()
     */
 
     Vector direction(static_cast<float>(dx), 0, static_cast<float>(-dy));
-    direction.norm();
+    direction /= 4.0f;
+    //direction.norm();
 
     /*if (Input::instance->key('D')) direction.x =  1.0f;
     if (Input::instance->key('A')) direction.x = -1.0f;
