@@ -99,5 +99,5 @@ void AiPlayer::control()
     }
     resultDir.norm();
 
-    //setDirection(0.5f * resultDir);
+    setDirection(0.5f * resultDir);
 }

@@ -137,7 +137,7 @@ public:
         }
         if (!wasInColorDict)
         {
-            m_values.push_back(colorName);
+            add(colorName);
             colors[colorName] = color;
         }
         for (size_t i = 0; i < m_values.size(); i++)
@@ -255,9 +255,10 @@ public:
     {
         m_value.setCurrent(binding); 
     }
+
     void render(const Font* font) const;
     void click(int button);
-
+    
 private:
     Vector&    m_binding;
     ColorValue m_value;
@@ -265,10 +266,20 @@ private:
 
 void ColorEntry::render(const Font* font) const
 {
-    wstring stringToRender = m_string + L": " + m_value.getCurrent();
+    wstring stringToRender = m_string + L": ";
     Vector color = colors.find(m_value.getCurrent())->second;
-    glColor3f(color.x, color.y, color.z);
     font->render(stringToRender, Font::Align_Left);
+    glPushMatrix();
+    glTranslatef(cast<float>(font->getWidth(stringToRender)), 0.0f, 0.0f);
+    glColor3f(color.x, color.y, color.z);
+    
+    Video::instance->renderRoundRect(
+                        Vector::Zero, 
+                        Vector(cast<float>(font->getHeight()) / 1.5f, 
+                               cast<float>(font->getHeight()) / 3.0f, 
+                               0.0f), 
+                        static_cast<float>(font->getHeight() / 2.0f));
+    glPopMatrix();
 }
 
 void ColorEntry::click(int button)
@@ -744,9 +755,8 @@ void Submenu::activateNextEntry(bool moveDown)
 
 void Submenu::render() const
 {
-    glDisable(GL_TEXTURE_2D);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
     Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_font->getHeight()/2));
-    glEnable(GL_TEXTURE_2D);
 
     Vector upperPos = m_centerPos;
     upperPos.y += m_height / 2 - m_font->getHeight() / 2;
@@ -832,13 +842,8 @@ void Menu::loadMenu(Profile* userProfile)
     Submenu* submenu = new Submenu(m_font, m_fontBig);
 
     submenu->addEntry(new GameEntry(language->get(TEXT_START_GAME), this, State::World));
-    
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_PLAYER_OPTIONS), this, "playerOptions"));
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_OPTIONS), this, "options"));
-    submenu->addEntry(new WritableEntry(language->get(TEXT_NAME), userProfile->m_name, submenu));
-
-    ColorValue colorValue("color");
-    submenu->addEntry(new ColorEntry(language->get(TEXT_COLOR), userProfile->m_color, colorValue));
-
     submenu->addEntry(new GameEntry(language->get(TEXT_QUIT_GAME), this, State::Quit));
 
     m_currentSubmenu = submenu;
@@ -846,12 +851,28 @@ void Menu::loadMenu(Profile* userProfile)
     m_submenus["main"] = submenu;
 
 
-    // Options Submenu
-    submenu = new Submenu(m_font, m_fontBig);
-    
     Vector titlePos = Vector(static_cast<float>(resX) / 2, 0, 0);
     float titleY = 0.0f;
 
+    // PLAYER Options Submenu
+    submenu = new Submenu(m_font, m_fontBig);
+    
+    submenu->setTitle(language->get(TEXT_PLAYER_OPTIONS), titlePos);
+
+    submenu->addEntry(new WritableEntry(language->get(TEXT_NAME), userProfile->m_name, submenu));
+
+    ColorValue colorValue("color");
+    submenu->addEntry(new ColorEntry(language->get(TEXT_COLOR), userProfile->m_color, colorValue));
+
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));    
+
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["playerOptions"] = submenu;
+
+    // Options Submenu
+    submenu = new Submenu(m_font, m_fontBig);
+    
     submenu->setTitle(language->get(TEXT_OPTIONS), titlePos);
 
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptionsEasy"));

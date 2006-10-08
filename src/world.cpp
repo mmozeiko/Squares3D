@@ -24,6 +24,7 @@
 #include "network.h"
 #include "character.h"
 #include "profile.h"
+#include "colors.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.25f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -55,7 +56,7 @@ State::Type World::progress()
                                 Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
                                        resY / 2 + resY / 4, 
                                        0.0f), 
-                                Vector(0.0f, 0.0f, 1.0f),
+                                Blue,
                                 Font::Align_Center);
                 m_messages->add2D(escMessage);
             }
@@ -302,9 +303,9 @@ void World::render() const
         upper.x += w/2;
         upper.y += h;
 
-        glDisable(GL_TEXTURE_2D);
+        glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
         Video::instance->renderRoundRect(lower, upper, static_cast<float>(h/2));
-        glEnable(GL_TEXTURE_2D);
+
         font->end();
     }
     m_messages->render();

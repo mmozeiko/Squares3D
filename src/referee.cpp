@@ -88,7 +88,7 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard):
     m_gameOver(false),
     m_messages(messages),
     m_scoreBoard(scoreBoard),
-    m_matchPoints(1),
+    m_matchPoints(21),
     m_mustResetBall(false),
     m_timer()
 {

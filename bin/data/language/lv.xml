@@ -18,6 +18,7 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
 
     <!-- Main menu -->
     <item name="START_GAME"               value="Sākt Spēli"/>
+    <item name="PLAYER_OPTIONS"           value="Spēlētāja Uzstādījumi"/>
     <item name="OPTIONS"                  value="Uzstādījumi"/>
     <item name="AUDIO_OPTIONS"            value="Skaņas Uzstādījumi"/>
     <item name="VIDEO_OPTIONS"            value="Attēla Uzstādījumi"/>
@@ -52,4 +53,14 @@ Nospiediet ENTER, lai izietu uz galveno izvēlni..
     <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes Detalizācija"/>
     <item name="NAME"                     value="Vārds"/>
     <item name="COLOR"                    value="Krāsa"/>
+
+    <item name="RED"                      value="Sarkana"/>
+    <item name="GREEN"                    value="Zaļa"/>
+    <item name="BLUE"                     value="Zila"/>
+    <item name="BLACK"                    value="Melna"/>
+    <item name="WHITE"                    value="Balta"/>
+    <item name="YELLOW"                   value="Dzeltena"/>
+    <item name="CYAN"                     value="Gaišzila"/>
+    <item name="MAGENTA"                  value="Violeta"/>
+    <item name="GREY"                     value="Pelēka"/>
 </xml>

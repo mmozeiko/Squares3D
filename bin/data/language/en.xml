@@ -18,6 +18,7 @@ Press ENTER to quit to main menu..
 
     <!-- Main menu -->
     <item name="START_GAME"               value="Start Game"/>
+    <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>
     <item name="AUDIO_OPTIONS"            value="Audio Options"/>
     <item name="VIDEO_OPTIONS"            value="Video Options"/>
@@ -57,5 +58,15 @@ Press ENTER to quit to main menu..
     <item name="MOUSE_SENSITIVITY"        value="Mouse Sensitivity"/>
     <item name="NAME"                     value="Name"/>
     <item name="COLOR"                    value="Color"/>
+    
+    <item name="RED"                      value="Red"/>
+    <item name="GREEN"                    value="Green"/>
+    <item name="BLUE"                     value="Blue"/>
+    <item name="BLACK"                    value="Black"/>
+    <item name="WHITE"                    value="White"/>
+    <item name="YELLOW"                   value="Yellow"/>
+    <item name="CYAN"                     value="Cyan"/>
+    <item name="MAGENTA"                  value="Magenta"/>
+    <item name="GREY"                     value="Grey"/>
 
 </xml>

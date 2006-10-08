@@ -661,7 +661,7 @@ void Video::unloadTextures()
 
 void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) const
 {
-    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+    glDisable(GL_TEXTURE_2D);
     glBegin(GL_POLYGON);
         for (int i=0; i<9; i++)
         {
@@ -680,4 +680,5 @@ void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) c
             glVertex2f(upper.x + r*std::sinf((8-i)*M_PI_2/8), lower.y - r*std::cosf((8-i)*M_PI_2/8));
         }
     glEnd();
+    glEnable(GL_TEXTURE_2D);
 }
