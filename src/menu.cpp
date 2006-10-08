@@ -14,7 +14,7 @@
 #include "colors.h"
 #include "profile.h"
 
-const pair<wstring, Vector> namesToColors[] = { 
+static const pair<wstring, Vector> namesToColors[] = { 
       make_pair(L"Red", Red),
       make_pair(L"Green", Green),
       make_pair(L"Blue", Blue),
@@ -28,7 +28,7 @@ const pair<wstring, Vector> namesToColors[] = {
 
 typedef map<wstring, Vector> Colors;
 
-Colors colors(namesToColors, namesToColors + sizeOfArray(namesToColors));
+static Colors colors(namesToColors, namesToColors + sizeOfArray(namesToColors));
 
 
 typedef vector<wstring> Values;
@@ -258,6 +258,11 @@ public:
 
     void render(const Font* font) const;
     void click(int button);
+
+    virtual int getMaxRightWidth(const Font* font) const
+    {
+        return 100 + font->getWidth(L" ");
+    }
     
 private:
     Vector&    m_binding;
@@ -266,20 +271,20 @@ private:
 
 void ColorEntry::render(const Font* font) const
 {
-    wstring stringToRender = m_string + L": ";
+    wstring stringToRender = m_string + L":  ";
     Vector color = colors.find(m_value.getCurrent())->second;
-    font->render(stringToRender, Font::Align_Left);
-    glPushMatrix();
-    glTranslatef(cast<float>(font->getWidth(stringToRender)), 0.0f, 0.0f);
+    font->render(stringToRender, Font::Align_Right);
+
     glColor3f(color.x, color.y, color.z);
     
+    const float h = static_cast<float>(font->getHeight());
+    const float d = static_cast<float>(font->getWidth(L" ")); 
+    
+    // uuber magic numbers
     Video::instance->renderRoundRect(
-                        Vector::Zero, 
-                        Vector(cast<float>(font->getHeight()) / 1.5f, 
-                               cast<float>(font->getHeight()) / 3.0f, 
-                               0.0f), 
-                        static_cast<float>(font->getHeight() / 2.0f));
-    glPopMatrix();
+        Vector(d, 3*h/8.0f),
+        Vector(d + 100.0f, 3*h/8.0f+h/4.0f),
+        h/4.0f);
 }
 
 void ColorEntry::click(int button)
@@ -302,9 +307,15 @@ class WritableEntry : public Entry
 public: 
     WritableEntry(const wstring& label, string& binding, const Submenu* ownerSubmenu) :
       Entry(label), m_binding(binding), m_ownerSubmenu(ownerSubmenu) {}
+
     void render(const Font* font) const;
     void click(int button);
     void onChar(int ch);
+    
+    int getMaxRightWidth(const Font* font) const
+    {
+        return font->getWidth(L"M")*(15 - static_cast<int>(m_string.size()));
+    }
 
 private:
     const Submenu* m_ownerSubmenu;
@@ -314,7 +325,9 @@ private:
 
 void WritableEntry::render(const Font* font) const
 {
-    wstring stringToRender = m_string + L": " + wcast<wstring>(m_binding);
+    font->render(m_string + L":  ", Font::Align_Right);
+
+    wstring stringToRender = wcast<wstring>(m_binding);
     if (m_ownerSubmenu->m_entries[m_ownerSubmenu->m_activeEntry] == this)
     {
         if (fmodf(m_timer.read(), 1.0f) > 0.5f)
