@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
-    <item name="GAME_OVER"             value="Game over!"/>
+    <item name="GAME_OVER"             value="Game has ended!"/>
     <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
     <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
     <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
@@ -15,7 +15,17 @@ Press ESCAPE to continue
 
 Press ENTER to quit to main menu..
     </item>
+    <item name="CONTINUE">
+Congratulations, You have cleared this round!
 
+Press ENTER to continue on next round..
+    </item>
+    <item name="RESTART">
+You`ve lost the game..
+
+Press ENTER to retry..
+    </item>
+    
     <!-- Main menu -->
     <item name="START_GAME"               value="Start Game"/>
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
