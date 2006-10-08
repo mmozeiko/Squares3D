@@ -9,7 +9,7 @@ LocalPlayer::LocalPlayer(const Profile* profile, const Character* character, Lev
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
-    m_lastMouse = make_pair(w/2, h/2);
+    m_lastMouse = Vector(static_cast<float>(w/2), static_cast<float>(h/2));
 
 }
 
@@ -20,44 +20,18 @@ LocalPlayer::~LocalPlayer()
 void LocalPlayer::control()
 {
     const Mouse& mouse = Input::instance->mouse();
-    int dx = mouse.x - m_lastMouse.first;
-    int dy = mouse.y - m_lastMouse.second;
+    Vector curMouse(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
 
-    m_lastMouse = make_pair(mouse.x, mouse.y);
+    const float alpha = 0.8f;
 
-    int w, h;
-    glfwGetWindowSize(&w, &h);
-    int w2 = w/2, h2 = h/2;
-    if (w2==0 || h2==0)
-    {
-        return;
-    }
+    Vector direction = curMouse - m_lastMouse;
+    direction.z = -direction.z;
+    direction /= 8.9f;
+
+    m_lastMouse = curMouse;
     
-    /*float t;
-    if (dx > 0)
-    {
-        t = 1.0f;
-    }
-    else if (dx < 0)
-    {
-        t = -1.0f;
-    }
-    else
-    {
-        t = 0.0f;
-    }
-    setRotation(Vector(0.0f, t, 0.0f));
-    */
-
-    Vector direction(static_cast<float>(dx), 0, static_cast<float>(-dy));
-    direction /= 4.0f;
+    //this disables acceleration
     //direction.norm();
-
-    /*if (Input::instance->key('D')) direction.x =  1.0f;
-    if (Input::instance->key('A')) direction.x = -1.0f;
-    if (Input::instance->key('W')) direction.z =  1.0f;
-    if (Input::instance->key('S')) direction.z = -1.0f;
-    */
 
     setDirection(Matrix::rotateY(World::instance->m_camera->angleY()) * direction);
     setJump(Input::instance->key(GLFW_KEY_SPACE));

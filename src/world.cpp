@@ -25,9 +25,10 @@
 #include "character.h"
 #include "profile.h"
 
-static const float OBJECT_BRIGHTNESS = 0.25f;
-static const float GRASS_BRIGHTNESS1 = 0.6f;
-static const float GRASS_BRIGHTNESS2 = 0.7f;
+static const float OBJECT_BRIGHTNESS_1 = 0.25f; // shadowed
+static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
+static const float GRASS_BRIGHTNESS_1 = 0.6f; // shadowed
+static const float GRASS_BRIGHTNESS_2 = 0.7f; // lit
 
 World* System<World>::instance = NULL;
 
@@ -228,6 +229,9 @@ void World::updateStep(float delta)
         m_ball->triggerBegin();
         NewtonUpdate(m_newtonWorld, delta);
         m_ball->triggerEnd();
+
+        // TODO: here must be check if all players is on map and also ball
+        // ...
     }
 }
 
@@ -254,7 +258,7 @@ void World::render() const
     if (shadow_type == 0)
     {
         glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS*Vector::One).v);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_2*Vector::One).v);
         glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
         glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
         glEnable(GL_LIGHT1);
@@ -268,7 +272,7 @@ void World::render() const
         m_ball->renderShadow(m_lightPosition);
         
         glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS2*Vector::One).v);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
 
         m_grass->render();
     }
@@ -445,11 +449,11 @@ void World::shadowMapPass1() const
     glColorMask(0, 0, 0, 0);
 
     //tommeer lieli HAKi. TODO.
-    glEnable(GL_POLYGON_OFFSET_FILL);
+    //glEnable(GL_POLYGON_OFFSET_FILL);
     //glPolygonOffset(-0.1f, -0.05f);
-    glPolygonOffset(2.0f, 4.0f);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    //glPolygonOffset(2.0f, 4.0f);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
     //glFrontFace(GL_CCW);
 
     //Draw the scene
@@ -493,8 +497,8 @@ void World::shadowMapPass2() const
 
     //Use dim light to represent shadowed areas
     glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS*Vector::One).v);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, (OBJECT_BRIGHTNESS*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_1*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, (OBJECT_BRIGHTNESS_1*Vector::One).v);
     glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::Zero.v);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
@@ -503,7 +507,7 @@ void World::shadowMapPass2() const
     renderScene();
 
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS1*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_1*Vector::One).v);
     m_grass->render();
 }
 
@@ -520,7 +524,7 @@ void World::shadowMapPass3() const
     glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
 
     //Set alpha test to discard false comparisons
-    glAlphaFunc(GL_GEQUAL, 0.99f);
+    glAlphaFunc(GL_GEQUAL, 0.95f);
     glEnable(GL_ALPHA_TEST);
 
     //Bind & enable shadow map texture
@@ -545,10 +549,11 @@ void World::shadowMapPass3() const
 
     Video::instance->m_shadowMap3ndPass = true;
 
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_1*Vector::One).v);
     renderScene();
 
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS2*Vector::One).v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
     m_grass->render();
 
     Video::instance->m_shadowMap3ndPass = false;

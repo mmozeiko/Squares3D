@@ -13,7 +13,7 @@ public:
     void control();
 
 private:
-    IntPair m_lastMouse;
+    Vector  m_lastMouse;
     float   m_mouseSens;
 
 };

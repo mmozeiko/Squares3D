@@ -80,14 +80,20 @@ void Player::onSetForceAndTorque()
 {
     float timestepInv = 1.0f / NewtonGetTimeStep(World::instance->m_newtonWorld);
 
-    Vector currentVel;
-    NewtonBodyGetVelocity(m_body->m_newtonBody, currentVel.v);
+    Vector currentVel = m_body->getVelocity();
       
     Vector targetVel = m_direction;
-    if (currentVel.y > 2.0f) // to avoid high jumps
+    
+    // to avoid high speed movemements
+    bool highY = false;
+    if (fabsf(currentVel.x) > 3.0f) targetVel.x = 0.0f; //-currentVel.x;
+    if (currentVel.y > 3.0f)
     {
-        targetVel.y = - currentVel.y;
+        highY = true;
+        targetVel.y = 0.0f; //-currentVel.y/4.0f;
     }
+    if (fabsf(currentVel.z) > 3.0f) targetVel.z = 0.0f; //-currentVel.z;
+
     Vector force = 0.5f * (targetVel - currentVel ) * timestepInv * m_body->getMass();
     
     if (m_jump && m_isOnGround)
@@ -101,7 +107,10 @@ void Player::onSetForceAndTorque()
     }
     else
     {
-        force.y = 0.0f;
+        if (!highY)
+        {
+            force.y = 0.0f;
+        }
     }
 
     NewtonBodyAddForce(m_body->m_newtonBody, force.v);
