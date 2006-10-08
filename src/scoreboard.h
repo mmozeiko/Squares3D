@@ -19,7 +19,7 @@ struct Account
 
 struct BoardInfo
 {
-    BoardInfo(const Vector& pos, const Font::AlignType alignement, const int nextDirY) :
+    BoardInfo(const Vector& pos, Font::AlignType alignement, int nextDirY) :
         m_position(pos), m_alignement(alignement), m_nextDirectionY(nextDirY) {}
     Vector          m_position;
     Font::AlignType m_alignement;

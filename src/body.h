@@ -18,8 +18,8 @@ public:
     // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
     virtual void onCollide(const Body* other, const NewtonMaterial* material) {}
     virtual void onCollideHull(const Body* other, const NewtonMaterial* material) {}
-    virtual void onImpact(const Body* other, const Vector& position, const float speed) {}
-    virtual void onScratch(const Body* other, const Vector& position, const float speed) {}
+    virtual void onImpact(const Body* other, const Vector& position, float speed) {}
+    virtual void onScratch(const Body* other, const Vector& position, float speed) {}
 
     virtual void onSetForceAndTorque() {}
 };
@@ -44,8 +44,8 @@ public:
 
     void onCollide(const Body* other, const NewtonMaterial* material);
     void onCollideHull(const Body* other, const NewtonMaterial* material);
-    void onImpact(const Body* other, const Vector& position, const float speed);
-    void onScratch(const Body* other, const Vector& position, const float speed);
+    void onImpact(const Body* other, const Vector& position, float speed);
+    void onScratch(const Body* other, const Vector& position, float speed);
 
     string              m_id;
     NewtonBody*         m_newtonBody;        

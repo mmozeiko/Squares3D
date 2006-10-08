@@ -9,7 +9,7 @@ const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1, true, 1, 1 };
 const AudioConfig Config::defaultAudio = { true };
-const MiscConfig Config::defaultMisc = { true, "en" };
+const MiscConfig Config::defaultMisc = { true, "en", 5.0f };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
 {
@@ -62,7 +62,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                     m_video.samples = cast<int>(node.value);
                     if (m_video.samples < 0 || m_video.samples > 8 || (m_video.samples&1) == 1)
                     {
-                        m_video.samples = 0;
+                        m_video.samples = Config::defaultVideo.samples;
                     }
                 }
                 else if (node.name == "use_shaders")
@@ -74,7 +74,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                     int shadow_type = cast<int>(node.value);
                     if (shadow_type < 0 || shadow_type > 1)
                     {
-                        shadow_type = 1;
+                        shadow_type = Config::defaultVideo.shadow_type;
                     }
                     m_video.shadow_type = shadow_type;
                 }
@@ -85,7 +85,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                         shadowmap_size != 1 &&
                         shadowmap_size != 2)
                     {
-                        shadowmap_size = 1;
+                        shadowmap_size = Config::defaultVideo.shadowmap_size;
                     }
                     m_video.shadowmap_size = shadowmap_size;
                 }
@@ -100,7 +100,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                         grass_density != 1 &&
                         grass_density != 2)
                     {
-                        grass_density = 1;
+                        grass_density = Config::defaultVideo.grass_density;
                     }
                     m_video.grass_density = grass_density;
                 }
@@ -111,7 +111,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                         terrain_detail != 1 &&
                         terrain_detail != 2)
                     {
-                        terrain_detail = 1;
+                        terrain_detail = Config::defaultVideo.terrain_detail;
                     }
                     m_video.terrain_detail = terrain_detail;
                 }
@@ -150,6 +150,16 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 else if (node.name == "language")
                 {
                     m_misc.language = node.value;
+                }
+                else if (node.name == "mouse_sensitivity")
+                {
+                    float mouse_sensitivity = cast<float>(node.value);
+                    if (mouse_sensitivity < 1.0f || mouse_sensitivity > 10.0f)
+                    {
+                        mouse_sensitivity = Config::defaultMisc.mouse_sensitivity;
+                    }
+                    mouse_sensitivity = static_cast<float>(static_cast<int>(2.0f * mouse_sensitivity)) / 2.0f;
+                    m_misc.mouse_sensitivity = mouse_sensitivity;
                 }
                 else
                 {
@@ -192,6 +202,7 @@ Config::~Config()
     xml.childs.push_back(XMLnode("misc"));
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("language", m_misc.language));
+    //xml.childs.back().childs.push_back(XMLnode("mouse_sensitivity", cast<string>(m_misc.mouse_sensitivity)));
 
     File::Writer out(CONFIG_FILE);
     if (!out.is_open())

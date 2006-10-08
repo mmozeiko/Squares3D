@@ -53,6 +53,8 @@ Language::Language()
     REGISTER_TEXT_TYPE(AUDIO);
     REGISTER_TEXT_TYPE(LANGUAGE);
     REGISTER_TEXT_TYPE(ENVIRONMENT_DETAILS);
+    REGISTER_TEXT_TYPE(MOUSE_SENSITIVITY);
+    REGISTER_TEXT_TYPE(SYSTEM_KEYS);
 
 #undef REGISTER_TEXT_TYPE
     
@@ -60,6 +62,10 @@ Language::Language()
 
     // load default texts
     int count = load("en");
+    if (count != m_texts.size())
+    {
+        throw Exception("Default language file (en.xml) has invalid count of messages");  
+    }
     
     // check if language is available
     StringVector available = getAvailable();

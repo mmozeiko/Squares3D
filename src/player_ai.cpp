@@ -20,7 +20,7 @@ void AiPlayer::control()
     Body* ball = World::instance->m_level->getBody("football");
 
     Vector ballPosition = ball->getPosition();
-    Vector selfPosition = m_body->getPosition();
+    const Vector selfPosition = m_body->getPosition();
 
     bool move = true;
 
@@ -44,7 +44,7 @@ void AiPlayer::control()
 
     Vector dir = ballPosition - selfPosition;
 
-    if (dir.magnitude() < 0.7f && !important)
+    if (dir.magnitude() < 0.7f && !important) // if inside players field center
     {
         move = false;
     }
@@ -60,7 +60,6 @@ void AiPlayer::control()
             )
         {
             setJump(true);
-            clog << "JUMP" << endl;
         }
         else
         {
@@ -80,25 +79,25 @@ void AiPlayer::control()
     Vector rot = m_body->getRotation();
 
     Vector rotation;
-    if (move)
+    if (!move)
     {
-        rotation.y = ( rot % dir );
+        dir = (ball->getPosition() - selfPosition);
+        dir.norm();
     }
-    else
-    {
-        Vector tmp = (ball->getPosition()-selfPosition);
-        tmp.norm();
-        rotation.y = ( rot % tmp );
+    rotation.y = ( rot % dir );
 
-    }
-    setRotation(5.0f*rotation);
+    setRotation(rotation);
     
+    Vector resultDir;
     if (move)
     {
-        setDirection(Vector(-rot.z, 0, rot.x));
+        resultDir = Vector(-rot.z, 0, rot.x);
     }
     else
     {
-        setDirection(getFieldCenter() - selfPosition); // i'm in position!
+        resultDir = getFieldCenter() - selfPosition;
     }
+    resultDir.norm();
+
+    setDirection(0.5f * resultDir);
 }

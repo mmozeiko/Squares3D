@@ -401,6 +401,10 @@ void OptionEntry::reset()
             }
         }
     }
+    else if (m_value.m_id == "mouse_sensitivity")
+    {
+        m_value.m_current = static_cast<int>(Config::instance->m_misc.mouse_sensitivity*2) - 2;
+    }
 }
 
 void OptionEntry::render(const Font* font) const
@@ -493,6 +497,10 @@ void ApplyOptionsEntry::click(int button)
         {
             StringVector languages = Language::instance->getAvailable();
             Config::instance->m_misc.language = languages[(*iter)->getCurrentValueIdx()];
+        }
+        else if (id == "mouse_sensitivity")
+        {
+            Config::instance->m_misc.mouse_sensitivity = 1.0f + static_cast<float>((*iter)->getCurrentValueIdx())/2.0f;
         }
     }
     
@@ -877,6 +885,24 @@ void Menu::loadMenu(string& userName)
     valLang.add(L"LAT");
     valLang.add(L"RUS");
     submenu->addEntry(new OptionEntry(language->get(TEXT_LANGUAGE), valLang));
+
+    BoolValue valSysK("system_keys");
+    submenu->addEntry(new OptionEntry(language->get(TEXT_SYSTEM_KEYS), valSysK));
+
+    /*
+    Value valMS("mouse_sensitivity");
+    for (int i=2; i<10*2; i++)
+    {
+        wstring ws = wcast<wstring>(static_cast<float>(i)/2.0f);
+        if (ws.find(L".") == wstring::npos)
+        {
+            ws.push_back(L'.');
+            ws.push_back(L'0');
+        }
+        valMS.add(ws);
+    }
+    submenu->addEntry(new OptionEntry(language->get(TEXT_MOUSE_SENSITIVITY), valMS));
+    */
 
     submenu->addEntry(new SpacerEntry());
     submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "otherOptions"));

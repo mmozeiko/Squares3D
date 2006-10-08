@@ -2,9 +2,10 @@
 #include "input.h"
 #include "camera.h"
 #include "world.h"
+#include "config.h"
 
 LocalPlayer::LocalPlayer(const Profile* profile, const Character* character, Level* level) :
-    Player(profile, character, level)
+    Player(profile, character, level) //Config::instance->m_misc.mouse_sensitivity)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
@@ -32,7 +33,7 @@ void LocalPlayer::control()
         return;
     }
     
-    float t;
+    /*float t;
     if (dx > 0)
     {
         t = 1.0f;
@@ -46,15 +47,29 @@ void LocalPlayer::control()
         t = 0.0f;
     }
     setRotation(Vector(0.0f, t, 0.0f));
+    */
 
-    Vector direction;
+    Vector direction(static_cast<float>(dx), 0, static_cast<float>(-dy));
+    direction.norm();
 
-    if (Input::instance->key('D')) direction.x =  1.0f;
+    /*if (Input::instance->key('D')) direction.x =  1.0f;
     if (Input::instance->key('A')) direction.x = -1.0f;
     if (Input::instance->key('W')) direction.z =  1.0f;
     if (Input::instance->key('S')) direction.z = -1.0f;
-    
-    setJump(Input::instance->key(GLFW_KEY_SPACE));
-    
+    */
+
     setDirection(Matrix::rotateY(World::instance->m_camera->angleY()) * direction);
+    setJump(Input::instance->key(GLFW_KEY_SPACE));
+
+    Body* ball = World::instance->m_level->getBody("football");
+
+    Vector ballPosition = ball->getPosition();
+    Vector selfPosition = m_body->getPosition();
+
+    Vector dir = ballPosition - selfPosition;
+    Vector rot = m_body->getRotation();
+    Vector rotation;
+    rotation.y = ( rot % dir );
+
+    setRotation(rotation);
 }

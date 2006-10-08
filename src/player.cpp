@@ -66,17 +66,14 @@ Vector Player::getFieldCenter() const
 
 void Player::setDirection(const Vector& direction)
 {
-    m_direction = direction;
-    m_direction.norm();
     // CHARACTER: move speed powaaaar
-    m_direction *= 2.2f;
+    m_direction = 5.0f * direction;
 }
 
 void Player::setRotation(const Vector& rotation)
 {
     // CHARACTER: rotate speed powaaar
-    m_rotation = rotation;
-    m_rotation *= 2.2f;
+    m_rotation = 11.0f * rotation;
 }
 
 void Player::onSetForceAndTorque()
@@ -86,13 +83,20 @@ void Player::onSetForceAndTorque()
     Vector currentVel;
     NewtonBodyGetVelocity(m_body->m_newtonBody, currentVel.v);
       
-    const Vector targetVel = m_direction;
+    Vector targetVel = m_direction;
+    if (currentVel.y > 2.0f) // to avoid high jumps
+    {
+        targetVel.y = - currentVel.y;
+    }
     Vector force = 0.5f * (targetVel - currentVel ) * timestepInv * m_body->getMass();
     
     if (m_jump && m_isOnGround)
     {
-        // CHARACTER: jump powaaar!! not higher that 1.5f
-        force.y = 1.0f * timestepInv * m_body->getMass();
+        if (currentVel.y < 2.0f) // to avoid n-jumps (n>2)
+        {
+            // CHARACTER: jump powaaar!! not higher that 1.5f
+            force.y = 1.0f * timestepInv * m_body->getMass();
+        }
         m_isOnGround = false;
     }
     else
@@ -120,13 +124,13 @@ void Player::onCollide(const Body* other, const NewtonMaterial* material)
     m_isOnGround = true;
 }
 
-void Player::onImpact(const Body* other, const Vector& position, const float speed)
+void Player::onImpact(const Body* other, const Vector& position, float speed)
 {
     Vector v;
     NewtonBodyGetVelocity(other->m_newtonBody, v.v);
 }
 
-void Player::onScratch(const Body* other, const Vector& position, const float speed)
+void Player::onScratch(const Body* other, const Vector& position, float speed)
 {
     onImpact(other, position, speed);
 }

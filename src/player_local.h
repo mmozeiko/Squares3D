@@ -14,6 +14,7 @@ public:
 
 private:
     IntPair m_lastMouse;
+    float   m_mouseSens;
 
 };
 

@@ -52,6 +52,8 @@ Press ENTER to quit to main menu..
                                        
                                        
     <item name="AUDIO"                    value="Audio On"/>
+    <item name="SYSTEM_KEYS"              value="System Keys"/>
     <item name="LANGUAGE"                 value="Language"/>
+    <item name="MOUSE_SENSITIVITY"        value="Mouse Sensitivity"/>
 
 </xml>

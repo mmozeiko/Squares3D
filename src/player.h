@@ -9,7 +9,7 @@
 
 class Referee;
 
-#define FIELDLENGTH 3.0f
+static const float FIELDLENGTH = 3.0f;
 
 class Player : public Collideable
 {
@@ -29,8 +29,8 @@ public:
 
     //todo: maybe private
     void onCollide(const Body* other, const NewtonMaterial* material);
-    void onImpact(const Body* other, const Vector& position, const float speed);
-    void onScratch(const Body* other, const Vector& position, const float speed);
+    void onImpact(const Body* other, const Vector& position, float speed);
+    void onScratch(const Body* other, const Vector& position, float speed);
     void onSetForceAndTorque();
     
     Referee*          m_referee;

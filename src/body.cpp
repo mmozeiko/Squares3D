@@ -229,7 +229,7 @@ void Body::onCollideHull(const Body* other, const NewtonMaterial* material)
     }
 }
 
-void Body::onImpact(const Body* other, const Vector& position, const float speed)
+void Body::onImpact(const Body* other, const Vector& position, float speed)
 {
     if (m_collideable != NULL)
     {
@@ -237,7 +237,7 @@ void Body::onImpact(const Body* other, const Vector& position, const float speed
     }
 }
 
-void Body::onScratch(const Body* other, const Vector& position, const float speed)
+void Body::onScratch(const Body* other, const Vector& position, float speed)
 {
     if (m_collideable != NULL)
     {

@@ -46,12 +46,12 @@ void Message::render(const Font* font) const
 }
 
 BlinkingMessage::BlinkingMessage(
-                const wstring&        message, 
-                const Vector&         position, 
-                const Vector&         color, 
-                const Font::AlignType align,
-                const int             fontSize,
-                const float           blinkIntensity) :
+        const wstring&  message, 
+        const Vector&   position, 
+        const Vector&   color, 
+        Font::AlignType align,
+        int             fontSize,
+        float           blinkIntensity) :
     Message(message, position, color, align, fontSize),
     m_visible(true),
     m_blinkCurrent(blinkIntensity),
@@ -89,11 +89,11 @@ bool BlinkingMessage::applyDelta(float delta)
 }
 
 FlowingMessage::FlowingMessage(
-                    const wstring&        message, 
-                    const Vector&         position, 
-                    const Vector&         color, 
-                    const Font::AlignType align,
-                    const float           timeToLive) : 
+                    const wstring&  message, 
+                    const Vector&   position, 
+                    const Vector&   color, 
+                    Font::AlignType align,
+                    float           timeToLive) : 
     Message(message, position, color, align),
     m_timeToLive(timeToLive)
 {
@@ -117,11 +117,11 @@ bool FlowingMessage::applyDelta(float delta)
     return m_timeToLive <= 0.0f;
 }
 
-ScoreMessage::ScoreMessage(const wstring&        message, 
-                           const Vector&         position, 
-                           const Vector&         color,
-                           const int             score,
-                           const Font::AlignType align) : 
+ScoreMessage::ScoreMessage(const wstring&  message, 
+                           const Vector&   position, 
+                           const Vector&   color,
+                           int             score,
+                           Font::AlignType align) : 
     Message(message, position, color, align),
     m_score(score)
 {
@@ -132,12 +132,12 @@ wstring ScoreMessage::getText() const
     return Formatter(m_text)(m_score);
 }
 
-ComboMessage::ComboMessage(const wstring&        message, 
-                           const Vector&         position, 
-                           const Vector&         color,
-                           const int             points,
-                           const Font::AlignType align,
-                           const int             fontSize) : 
+ComboMessage::ComboMessage(const wstring&  message, 
+                           const Vector&   position, 
+                           const Vector&   color,
+                           int             points,
+                           Font::AlignType align,
+                           int             fontSize) : 
     Message(message, position, color, align, fontSize),
     m_points(points),
     m_previousPoints(points)

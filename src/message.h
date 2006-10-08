@@ -13,11 +13,11 @@ class Message : NoCopy
     friend class Messages;
 public:
     Message(
-        const wstring&        message, 
-        const Vector&         position, 
-        const Vector&         color, 
-        const Font::AlignType align = Font::Align_Left,
-        const int             fontSize = 32);
+        const wstring&  message, 
+        const Vector&   position, 
+        const Vector&   color, 
+        Font::AlignType align = Font::Align_Left,
+        int             fontSize = 32);
 
     const Vector&   getPosition() const { return m_position; }
 
@@ -43,12 +43,12 @@ class BlinkingMessage : public Message
 {
 public:
     BlinkingMessage(
-        const wstring&        message, 
-        const Vector&         position, 
-        const Vector&         color, 
-        const Font::AlignType align = Font::Align_Left,
-        const int             fontSize = 32,
-        const float           blinkIntensity = 0.2f);
+        const wstring&  message, 
+        const Vector&   position, 
+        const Vector&   color, 
+        Font::AlignType align = Font::Align_Left,
+        int             fontSize = 32,
+        float           blinkIntensity = 0.2f);
 
 protected:
     bool  m_visible;
@@ -62,11 +62,11 @@ class FlowingMessage : public Message
 {
 public:
     FlowingMessage(
-        const wstring&        message, 
-        const Vector&         position, 
-        const Vector&         color, 
-        const Font::AlignType align = Font::Align_Left,
-        const float           timeToLive = 2.0f);
+        const wstring&  message, 
+        const Vector&   position, 
+        const Vector&   color, 
+        Font::AlignType align = Font::Align_Left,
+        float           timeToLive = 2.0f);
 
 protected:
 
@@ -82,11 +82,11 @@ class ScoreMessage : public Message
 {
 public:
     ScoreMessage(
-        const wstring&        message, 
-        const Vector&         position, 
-        const Vector&         color,
-        const int             score,
-        const Font::AlignType align = Font::Align_Left);
+        const wstring&  message, 
+        const Vector&   position, 
+        const Vector&   color,
+        int             score,
+        Font::AlignType align = Font::Align_Left);
 
     int m_score;
 
@@ -99,12 +99,12 @@ class ComboMessage : public Message
 {
 public:
     ComboMessage(
-        const wstring&        message, 
-        const Vector&         position, 
-        const Vector&         color,
-        const int             points,
-        const Font::AlignType align = Font::Align_Center,
-        const int             fontSize = 32);
+        const wstring&  message, 
+        const Vector&   position, 
+        const Vector&   color,
+        int             points,
+        Font::AlignType align = Font::Align_Center,
+        int             fontSize = 32);
     
     bool applyDelta(float delta);
     bool render();

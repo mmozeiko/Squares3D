@@ -28,6 +28,7 @@ struct MiscConfig
 {
     bool system_keys;
     string language;
+    float mouse_sensitivity;
 };
 
 
