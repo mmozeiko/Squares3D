@@ -32,8 +32,11 @@ public:
     void prepare();
     void render() const;
     void setTransform(const Vector& position, const Vector& rotation);
+
     Vector getPosition() const;
-    Vector getRotation();
+    Vector getRotation() const;
+    Vector getVelocity() const;
+
     void setCollideable(Collideable* collideable);
 
     Body(const string& id, const Collision* collision);
@@ -66,6 +69,7 @@ private:
     float           m_totalMass;
     Vector          m_totalInertia;
     Collideable*    m_collideable;
+    Vector          m_velocity;
 
     void onSetForceAndTorque();
     static void onSetForceAndTorque(const NewtonBody* newtonBody);

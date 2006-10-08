@@ -17,6 +17,7 @@ public:
 
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);
+    void setJump(bool needJump);
     void setDisplacement(const Vector& position, const Vector& rotation);
 
     virtual void control() = 0;
@@ -40,6 +41,8 @@ protected:
     NewtonJoint* m_upVector;
 
     bool         m_isOnGround; // TODO: rename, current name is incorrect
+    bool         m_jump;
+
     Vector       m_direction;
     Vector       m_rotation;
 };

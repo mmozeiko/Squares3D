@@ -73,6 +73,11 @@ Vector Ball::getPosition() const
     return m_body->getPosition();
 }
 
+Vector Ball::getVelocity() const
+{
+    return m_body->getVelocity();
+}
+
 void Ball::setPosition0()
 {
     return m_body->setTransform(Vector(0,2,0), Vector::Zero);
@@ -140,11 +145,12 @@ void Ball::triggerEnd()
 void Ball::renderShadow(const Vector& lightPosition) const
 {
     const Vector pos = m_body->getPosition();
-    const Vector delta = lightPosition - pos;
-    float t = lightPosition.y / delta.y;
+    const Vector lp(lightPosition.x, lightPosition.y*2.0f, lightPosition.z);
+    const Vector delta = lp - pos;
+    float t = lp.y / delta.y;
 
-    float x = lightPosition.x - t * delta.x;
-    float z = lightPosition.z - t * delta.z;
+    float x = lp.x - t * delta.x;
+    float z = lp.z - t * delta.z;
 
     float y;
 

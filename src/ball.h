@@ -25,6 +25,7 @@ public:
     Ball(Body* body, const Collision* levelCollision);
 
     Vector getPosition() const;
+    Vector getVelocity() const;
     void   setPosition0();
 
     // maybe private

@@ -13,6 +13,7 @@ Player::Player(const Character* character) :
     m_lowerLeft(Vector::Zero),
     m_upperRight(Vector::Zero),
     m_isOnGround(true),
+    m_jump(false),
     m_referee(NULL),
     m_character(character)
 {
@@ -61,11 +62,16 @@ Vector Player::getFieldCenter() const
 void Player::setDirection(const Vector& direction)
 {
     m_direction = direction;
+    m_direction.norm();
+    // CHARACTER: move speed powaaaar
+    m_direction *= 2.2f;
 }
 
 void Player::setRotation(const Vector& rotation)
 {
+    // CHARACTER: rotate speed powaaar
     m_rotation = rotation;
+    m_rotation *= 2.2f;
 }
 
 void Player::onSetForceAndTorque()
@@ -75,27 +81,28 @@ void Player::onSetForceAndTorque()
     Vector currentVel;
     NewtonBodyGetVelocity(m_character->m_body->m_newtonBody, currentVel.v);
       
-    Vector targetVel = m_direction;
-
-    //Vector Force = ( 0.5f * mass * ( ( desiredVel - currentVel ) / timeStep ) ); 
-    Vector force = (targetVel * 5.0f - currentVel ) * timestepInv * m_character->m_body->getMass();
-
-    m_isOnGround = fabs(currentVel.y) < 0.01f; // small speed magnitude
-    // TODO: move to player_local, at least KEY_SPACE part
-    if (!Input::instance->key(GLFW_KEY_SPACE) || !m_isOnGround)
+    const Vector targetVel = m_direction;
+    Vector force = 0.5f * (targetVel - currentVel ) * timestepInv * m_character->m_body->getMass();
+    
+    if (m_jump && m_isOnGround)
     {
-       force.y = 0.0f;
+        // CHARACTER: jump powaaar!! not higher that 1.5f
+        force.y = 1.0f * timestepInv * m_character->m_body->getMass();
+        m_isOnGround = false;
+    }
+    else
+    {
+        force.y = 0.0f;
     }
 
     NewtonBodyAddForce(m_character->m_body->m_newtonBody, force.v);
+ 
 
-    m_isOnGround = false;
-  
     Vector omega;
     NewtonBodyGetOmega(m_character->m_body->m_newtonBody, omega.v);
 
-    Vector torque = m_rotation;
-    torque = (10.0f * torque - omega) * timestepInv * m_character->m_body->getInertia().y;
+    const Vector targetOmega = m_rotation;
+    Vector torque = 0.5f * (targetOmega - omega) * timestepInv * m_character->m_body->getInertia().y;
     NewtonBodyAddTorque (m_character->m_body->m_newtonBody, torque.v);
 }
 
@@ -105,6 +112,7 @@ void Player::onCollide(const Body* other, const NewtonMaterial* material)
     {
         m_referee->process(m_character->m_body, other);
     }
+    m_isOnGround = true;
 }
 
 void Player::onImpact(const Body* other, const Vector& position, const float speed)
@@ -116,4 +124,9 @@ void Player::onImpact(const Body* other, const Vector& position, const float spe
 void Player::onScratch(const Body* other, const Vector& position, const float speed)
 {
     onImpact(other, position, speed);
+}
+
+void Player::setJump(bool needJump)
+{
+    m_jump = needJump;
 }

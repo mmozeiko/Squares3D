@@ -142,6 +142,7 @@ Body::~Body()
 void Body::prepare()
 {
     NewtonBodyGetMatrix(m_newtonBody, m_matrix.m);
+    NewtonBodyGetVelocity(m_newtonBody, m_velocity.v);
 }
 
 Vector Body::getPosition() const
@@ -149,11 +150,14 @@ Vector Body::getPosition() const
     return m_matrix.row(3);
 }
 
-Vector Body::getRotation()
+Vector Body::getRotation() const
 {
-    //Vector angles;
-    //NewtonGetEulerAngle(m_matrix.m, angles.v);
     return m_matrix.row(0);
+}
+
+Vector Body::getVelocity() const
+{
+    return m_velocity;
 }
 
 void Body::onSetForceAndTorque()

@@ -45,7 +45,7 @@ void LocalPlayer::control()
     {
         t = 0.0f;
     }
-    setRotation(Vector(0.0f, t/3.0f, 0.0f));
+    setRotation(Vector(0.0f, t, 0.0f));
 
     Vector direction;
 
@@ -54,10 +54,7 @@ void LocalPlayer::control()
     if (Input::instance->key('W')) direction.z =  1.0f;
     if (Input::instance->key('S')) direction.z = -1.0f;
     
-    if (Input::instance->key(GLFW_KEY_SPACE)) 
-    {
-        direction.y += 2.0f;
-    }
+    setJump(Input::instance->key(GLFW_KEY_SPACE));
     
-    setDirection(Matrix::rotateY(World::instance->m_camera->angleY()) * direction * 0.5f );
+    setDirection(Matrix::rotateY(World::instance->m_camera->angleY()) * direction);
 }

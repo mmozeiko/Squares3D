@@ -38,20 +38,42 @@ void AiPlayer::control()
             m_lowerLeft, 
             m_upperRight);
 
-        important = false;
+        important = (getFieldCenter() - ballPosition).magnitude() >= 1.0f;
     }
+
+    // important if going to hit ball, else going to center of players field
 
     Vector dir = ballPosition - selfPosition;
 
-    if (dir.magnitude() < 0.6f && !important)
+    if (dir.magnitude() < 0.7f && !important)
     {
         move = false;
     }
     else
     {
-        float r1 = static_cast<float>(rand())/RAND_MAX - 0.5f;
-        float r2 = static_cast<float>(rand())/RAND_MAX - 0.5f;
-        //dir += Vector(1.0f*r1, 0.0f, 1.0f*r2);
+        // CHARACTER: 0.75f - jump coeficient, recommended 1.0f (always jumpy) - 0.5f (1/2 jumpy)
+
+        if (important &&                    // if moving towars ball
+            dir.magnitude() < 0.7f &&       // and ball is nearby
+            ball->getVelocity().y > 0 &&    // and ball is going upwards
+            ball->getPosition().y > 0.4f && // and ball is flying 
+            Random::getFloat()<0.75f        // and very probable random
+            )
+        {
+            setJump(true);
+            clog << "JUMP" << endl;
+        }
+        else
+        {
+            setJump(false);
+        }
+
+        // CHARACTER: move acccuracy, recommended values 1.0f (precise) - 5.0f (random)
+        const float acc = 2.0f;
+
+        float r1 = acc*Random::getFloat() - acc/2.0f;
+        float r2 = acc*Random::getFloat() - acc/2.0f;
+        dir += Vector(r1, 0.0f, r2);
         dir.y = 0;
         dir.norm();
     }
@@ -68,28 +90,16 @@ void AiPlayer::control()
         Vector tmp = (ball->getPosition()-selfPosition);
         tmp.norm();
         rotation.y = ( rot % tmp );
+
     }
+    setRotation(5.0f*rotation);
     
-    rotation.y /= 1.0f; // rotation speed
-
-    Vector direction(-rot.z, 0, rot.x);
-
-    direction.norm();
-
-    // what does this if do?? a?
-    if (m_character->m_body->getPosition().y > 0.15f)
-    {
-        direction *= 1.5f;
-    }
-
     if (move)
     {
-        setDirection(direction / 3.5f); // move speed
+        setDirection(Vector(-rot.z, 0, rot.x));
     }
     else
     {
-        setDirection(Vector::Zero); // i'm in position!
+        setDirection(getFieldCenter() - selfPosition); // i'm in position!
     }
-
-    setRotation(rotation);
 }
