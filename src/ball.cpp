@@ -160,13 +160,36 @@ void Ball::renderShadow(const Vector& lightPosition) const
     }
     else
     {
-        y = m_levelCollision->getHeight(pos.x, pos.z) + 0.01f;
+        y = 0.01f; //m_levelCollision->getHeight(pos.x, pos.z) + 0.01f;
         x = pos.x;
         z = pos.z;
     }
 
     glPushMatrix();
-    glTranslatef(x, y, z);
-    glCallList(m_shadowList);
+//    glTranslatef(x, y, z);
+//    glCallList(m_shadowList);
+
+    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+
+    glBegin(GL_TRIANGLE_FAN);
+    glColor4f(0.2f, 0.2f, 0.2f, 0.2f);
+    glVertex3f(x, m_levelCollision->getHeight(x, z) + y, z);
+    float radius = 0.5f;            // TODO: take ball radius from xml file
+    glColor4f(0.2f, 0.2f, 0.2f, 0.3f);
+    for (int i=16; i>=0; i--)
+    {
+        float xx = radius*cosf(i*2.0f*M_PI/16.0f);
+        float zz = radius*sinf(i*2.0f*M_PI/16.0f);
+        float yy = m_levelCollision->getHeight(x+xx, z+zz) + y;
+        glVertex3f(x + xx, yy, z + zz);
+    }
+    glEnd();
+    glPopAttrib();
+
     glPopMatrix();
 }

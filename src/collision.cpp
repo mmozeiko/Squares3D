@@ -65,7 +65,6 @@ public:
     float getHeight(float x, float y) const;
 
 private:
-    vector<unsigned char>  m_hmap;
     int                    m_width;
     int                    m_height;
     float                  m_size;
@@ -75,6 +74,8 @@ private:
     vector<Vector>         m_vertices;
     vector<unsigned short> m_indices;
     vector<unsigned short> m_indices2;
+    
+    int                    m_realCount;
 
     Texture*     m_texture;
     unsigned int m_buffers[5];
@@ -544,6 +545,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         m_size = size;
         m_width = image.Width;
         m_height = image.Height;
+        
+        vector<unsigned char> m_hmap; // TODO: rename
         m_hmap.assign(image.Data, image.Data + m_width * m_height);
 
         float size2 = size/2.0f;
@@ -561,8 +564,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
             bool badMargin = false; // for normal
 
             float z2 = z + STEP;
-            int iz = static_cast<int>((z + size2) * image.Height / size);
-            int iz2 = static_cast<int>((z2 + size2) * image.Height / size);
+            int iz = static_cast<int>(std::floorf((z + size2) * image.Height / size));
+            int iz2 = static_cast<int>(std::floorf((z2 + size2) * image.Height / size));
             if (iz >= image.Height)
             {
                 z = size2;
@@ -579,8 +582,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
             while (true)
             {
                 float x2 = x + STEP;
-                int ix = static_cast<int>((x + size2) * image.Width / size);
-                int ix2 = static_cast<int>((x2 + size2) * image.Width / size);
+                int ix = static_cast<int>(std::floorf((x + size2) * image.Width / size));
+                int ix2 = static_cast<int>(std::floorf((x2 + size2) * image.Width / size));
                 if (ix >= image.Width)
                 {
                     x = size2;
@@ -616,15 +619,17 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
                 m_normals.push_back(normal);
                 m_uv.push_back(UV(x*2, z*2));
 
-                if (!maxIdxB) maxIdx++;
-
                 if (x == size2)
                 {
                     break;
                 }
                 x += STEP;
             }
-            if (!maxIdxB) maxIdxB = true;
+            if (!maxIdxB)
+            {
+                maxIdx = static_cast<int>(m_vertices.size());
+                maxIdxB = true;
+            }
 
             if (z == size2)
             {
@@ -634,6 +639,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         }
       
         glfwFreeImage(&image);
+
+        m_realCount = maxIdx;
 
         m_tmpFaces.resize(2*maxIdx*maxIdx);
         int cnt = 0;
@@ -839,10 +846,58 @@ CollisionHMap::~CollisionHMap()
 
 float CollisionHMap::getHeight(float x, float z) const
 {
-    int ix = static_cast<int>((x + m_size/2.0f) * m_width / m_size);
-    int iz = static_cast<int>((z + m_size/2.0f) * m_height / m_size);
-    ix = std::min(std::max(ix, 0), m_width-1);
-    iz = std::min(std::max(iz, 0), m_height-1);
+    float x0 = (x + m_size/2.0f) * m_realCount / m_size;
+    float z0 = (z + m_size/2.0f) * m_realCount / m_size;
     
-    return (m_hmap[m_width * iz + ix] - 128) / 20.0f;
+    x0 = std::min(std::max(x0, 0.0f), static_cast<float>(m_realCount-2));
+    z0 = std::min(std::max(z0, 0.0f), static_cast<float>(m_realCount-2));
+    
+    int ix = static_cast<int>(std::floorf(x0));
+    int iz = static_cast<int>(std::floorf(z0));
+
+    x0 -= static_cast<float>(ix);
+    z0 -= static_cast<float>(iz);
+
+    float y;
+    if (x0+z0<=1.0f)
+    {
+        // lower triangle
+        const Vector& v1 = m_vertices[m_realCount * iz + ix].y;
+        const Vector& v2 = m_vertices[m_realCount * (iz+1) + ix].y;
+        const Vector& v3 = m_vertices[m_realCount * iz + ix+1].y;
+
+        const Vector s1 = v2 - v1;
+        const Vector s2 = v3 - v1;
+        const Vector n = s1 ^ s2;
+        float D = - (n % v1);
+        y = (n.x * x + n.z * z + D)/n.y;
+    }
+    else
+    {
+        // upper triangle;
+        const Vector& v1 = m_vertices[m_realCount * (iz+1) + (ix+1)].y;
+        const Vector& v2 = m_vertices[m_realCount * (iz+1) + ix].y;
+        const Vector& v3 = m_vertices[m_realCount * iz + ix+1].y;
+
+        const Vector s1 = v2 - v1;
+        const Vector s2 = v3 - v1;
+        const Vector n = s1 ^ s2;
+        float D = - (n % v1);
+        y = (n.x * x + n.z * z + D)/n.y;
+    }
+
+    /*
+    float f00 = m_vertices[m_realCount * iz + ix].y;
+    float f01 = m_vertices[m_realCount * (iz+1) + ix].y;
+    float f10 = m_vertices[m_realCount * iz + ix+1].y;
+    float f11 = m_vertices[m_realCount * (iz+1) + ix+1].y;
+
+    float t = f00*(1.0f-x0)*(1.0f-z0) + f10*x0*(1.0f-z0) + f01*(1.0f-x0)*z0 + f11*x0*z0;
+    //float t = std::max(std::max(f00, f10), std::max(f01, f11));
+    if (glfwGetKey('A'))
+    {
+        clog << f00 << ' ' << f01 << ' ' << f10 << ' ' << f11 << ' ' << t << endl;
+    }
+    */
+    return y;
 }
