@@ -9,7 +9,7 @@ LocalPlayer::LocalPlayer(const Profile* profile, const Character* character, Lev
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
-    m_lastMouse = Vector(static_cast<float>(w/2), static_cast<float>(h/2));
+    m_lastMouse = Vector(static_cast<float>(w/2), 0.0f, static_cast<float>(h/2));
 
 }
 
@@ -28,6 +28,10 @@ void LocalPlayer::control()
     direction.z = -direction.z;
     direction /= 8.9f;
 
+    direction = 0.7f * direction + 0.2f * m_lastMove[1] + 0.1f * m_lastMove[0];
+
+    m_lastMove[0] = m_lastMove[1];
+    m_lastMove[1] = direction;
     m_lastMouse = curMouse;
     
     //this disables acceleration
@@ -46,5 +50,5 @@ void LocalPlayer::control()
     Vector rotation;
     rotation.y = ( rot % dir );
 
-    setRotation(rotation);
+    setRotation(rotation/5.0f);
 }

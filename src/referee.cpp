@@ -192,14 +192,23 @@ void Referee::processCriticalEvent()
                                               72,
                                               0.8f));
 
-        /*
-        if (m_scoreBoard->)
-        m_messages->add2D(new Message(Language::instance->get(TEXT_CONTINUE), 
+        
+        wstring overText;
+        if (maxScore.first == m_humanPlayer->m_profile->m_name)
+        {
+            overText = Language::instance->get(TEXT_RESTART);
+        }
+        else
+        {
+            overText = Language::instance->get(TEXT_CONTINUE);
+        }
+            
+            
+        m_messages->add2D(new Message(overText, 
                                       Vector(center.x, center.y - (72 + 32), center.z), 
-                                      Red, 
+                                      Grey, 
                                       Font::Align_Center,
-                                      32,
-                                      0.8f));*/
+                                      32));
         m_gameOver = true;
         m_scoreBoard->resetCombo();
     }

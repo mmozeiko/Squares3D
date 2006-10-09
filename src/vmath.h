@@ -42,7 +42,11 @@ public:
         };
     };
   
-    Vector(float x=0.0f, float y=0.0f, float z=0.0f, float w=1.0f) : x(x), y(y), z(z), w(w) 
+    Vector() : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
+    {
+    }
+
+    Vector(float x, float y, float z, float w=1.0f) : x(x), y(y), z(z), w(w) 
     {
     }
 

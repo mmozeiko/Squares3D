@@ -24,6 +24,8 @@ public:
     const Body*              m_lastFieldOwner;
     const Body*              m_lastTouchedObject;
     const Body*              m_lastTouchedPlayer;
+    const Player*            m_humanPlayer;
+    bool                     m_gameOver;
 
     Referee(Messages* messages, ScoreBoard* scoreBoard);
 
@@ -52,7 +54,6 @@ private:
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;
     int         m_matchPoints;
-    bool        m_gameOver;
 };
 
 #endif

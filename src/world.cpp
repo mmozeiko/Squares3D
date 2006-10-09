@@ -62,10 +62,18 @@ State::Type World::progress()
             }
         }
 
-        if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && m_freeze) 
+        if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)) 
         {
-            Input::instance->endKeyBuffer();
-            return State::Menu;
+            if (m_freeze)
+            {
+                Input::instance->endKeyBuffer();
+                return State::Menu;
+            }
+            else if (m_referee->m_gameOver)
+            {
+                Input::instance->endKeyBuffer();
+                return State::World;
+            }
         }
     }
     while (key != -1);
@@ -129,6 +137,7 @@ void World::init()
     Player* human = new LocalPlayer(m_userProfile, 
                                     m_level->getCharacter(m_userProfile->m_characterID), 
                                     m_level);
+    m_referee->m_humanPlayer = human;
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 

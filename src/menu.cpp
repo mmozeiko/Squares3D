@@ -282,8 +282,8 @@ void ColorEntry::render(const Font* font) const
     
     // uuber magic numbers
     Video::instance->renderRoundRect(
-        Vector(d, 3*h/8.0f),
-        Vector(d + 100.0f, 3*h/8.0f+h/4.0f),
+        Vector(d, 3*h/8.0f, 0.0f),
+        Vector(d + 100.0f, 3*h/8.0f+h/4.0f, 0.0f),
         h/4.0f);
 }
 
