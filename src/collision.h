@@ -35,5 +35,4 @@ private:
     float                  m_mass;
 };
 
-
 #endif

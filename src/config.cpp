@@ -3,7 +3,7 @@
 #include "xml.h"
 #include "version.h"
 
-Config* System<Config>::instance = NULL;
+template <class Config> Config* System<Config>::instance = NULL;
 
 const string Config::CONFIG_FILE = "/config.xml";
 

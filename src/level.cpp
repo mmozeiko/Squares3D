@@ -7,7 +7,6 @@
 #include "collision.h"
 #include "body.h"
 #include "properties.h"
-#include "character.h"
 #include "profile.h"
 
 Level::Level()
@@ -88,39 +87,56 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 }
             }
         }
-        else if (node.name == "characters")
-        {
-            string superNodeName = node.name;
-            for each_const(XMLnodes, node.childs, iter)
-            {
-                const XMLnode& node = *iter;
-                if (node.name == "character")
-                {
-                    Character* character = new Character(node, this);
-                    m_characters[node.getAttribute("id")] = character;
-                }
-                else
-                {
-                    throw Exception("Invalid " + superNodeName + ", unknown node - " + node.name);
-                }
-            }
-        }
         else if (node.name == "cpu_profiles")
         {
-            string superNodeName = node.name;
+            int checks[3] = {0,0,0};
             for each_const(XMLnodes, node.childs, iter)
             {
                 const XMLnode& node = *iter;
-                if (node.name == "profile")
+                if ((node.name == "easy") || (node.name == "normal") || (node.name == "hard"))
                 {
-                    Profile* profile = new Profile(node);
-                    m_cpuProfiles[profile->m_name] = profile;
+                    size_t idx;
+                    if (node.name == "easy")
+                    {
+                        idx = 0;
+                    }
+                    else if (node.name == "normal")
+                    {
+                        idx = 1;
+                    }
+                    else
+                    {
+                        idx = 2;
+                    }
+
+                    for each_const(XMLnodes, node.childs, iter)
+                    {
+                        const XMLnode& node = *iter;
+                        if (node.name == "profile")
+                        {
+                            Profile* profile = new Profile(node);
+                            m_cpuProfiles[idx][profile->m_name] = profile;
+                            checks[idx]++;
+                        }
+                        else
+                        {
+                            throw Exception("Invalid profile, unknown node - " + node.name);
+                        }
+                    }
                 }
                 else
                 {
-                    throw Exception("Invalid " + superNodeName + ", unknown node - " + node.name);
+                    throw Exception("Invalid cpu_profiles, unknown node - " + node.name);
                 }
             }
+            for (size_t i = 0; i < 3; i++)
+            {
+                if (checks[i] < 3)
+                {
+                    throw Exception("Invalid cpu_profiles, there should be at least 3 profiles in each difficulty");
+                }
+            }
+
         }
         else if (node.name == "joints")
         {
@@ -166,13 +182,12 @@ Level::~Level()
     {
         delete iter->second;
     }
-    for each_const(CharactersMap, m_characters, iter)
+    for (size_t i = 0; i < 3; i++)
     {
-        delete iter->second;
-    }
-    for each_const(ProfilesMap, m_cpuProfiles, iter)
-    {
-        delete iter->second;
+        for each_const(ProfilesMap, m_cpuProfiles[i], iter)
+        {
+            delete iter->second;
+        }
     }
     delete m_properties;
 }
@@ -200,18 +215,6 @@ Collision* Level::getCollision(const string& id) const
     else
     {
         throw Exception("Could not find specified collision '" + id + "'");
-    }
-}
-Character* Level::getCharacter(const string& type) const
-{
-    CharactersMap::const_iterator iter = m_characters.find(type);
-    if (iter != m_characters.end())
-    {
-        return iter->second;
-    }
-    else
-    {
-        throw Exception("Could not find specified character '" + type + "'");
     }
 }
 

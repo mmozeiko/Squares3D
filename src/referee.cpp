@@ -84,13 +84,19 @@ bool isBallInField(const Vector& position,
     return isPointInRectangle(position, _lowerLeft, _upperRight);
 }
 
-Referee::Referee(Messages* messages, ScoreBoard* scoreBoard): 
+Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
+    m_ball(NULL),
+    m_ground(NULL),
+    m_field(NULL),
+    m_lastFieldOwner(NULL),
+    m_lastTouchedPlayer(NULL),
+    m_humanPlayer(NULL),
     m_gameOver(false),
-    m_messages(messages),
-    m_scoreBoard(scoreBoard),
-    m_matchPoints(21),
     m_mustResetBall(false),
-    m_timer()
+    m_timer(),
+    m_scoreBoard(scoreBoard),
+    m_messages(messages),
+    m_matchPoints(21)
 {
     initEvents();
 }

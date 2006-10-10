@@ -5,7 +5,7 @@
 #include "config.h"
 #include "music.h"
 
-Audio* System<Audio>::instance = NULL;
+template <class Audio> Audio* System<Audio>::instance = NULL;
 
 Audio::Audio()
 {

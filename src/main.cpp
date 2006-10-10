@@ -59,7 +59,7 @@ int main(int, char* argv[])
 
     clog << "Finished: " << getDateTime() << endl;
 
-#ifndef NDEBUG    
+#if defined(_DEBUG) && !__MINGW32__
     m_dumpMemoryReport();
 #endif
     

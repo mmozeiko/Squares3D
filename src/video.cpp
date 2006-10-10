@@ -19,7 +19,7 @@ static void GLFWCALL sizeCb(int width, int height)
     glLoadIdentity();
 }
 
-Video* System<Video>::instance = NULL;
+template <class Video> Video* System<Video>::instance = NULL;
 
 Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false), m_haveVBO(false), m_shadowMap3ndPass(false)
 {
@@ -42,7 +42,8 @@ Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(fal
     int     depths[] = { 24, 16 };
     IntPair sizes[]  = { make_pair(width, height), make_pair(800, 600) };
 
-    bool fullscr, success = false;
+    bool fullscr = false;
+    bool success = false;
 
     glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, 1);
     if (Config::instance->m_video.samples > 0)
@@ -50,11 +51,11 @@ Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(fal
         glfwOpenWindowHint(GLFW_FSAA_SAMPLES, Config::instance->m_video.samples);
     }
 
-    for (int m=0; m<sizeOfArray(modes) && !success; m++)
+    for (size_t m=0; m<sizeOfArray(modes) && !success; m++)
     {
-        for (int d=0; d<sizeOfArray(depths) && !success; d++)
+        for (size_t d=0; d<sizeOfArray(depths) && !success; d++)
         {
-            for (int s=0; s<sizeOfArray(sizes) && !success; s++)
+            for (size_t s=0; s<sizeOfArray(sizes) && !success; s++)
             {
                 success = glfwOpenWindow(
                     sizes[s].first,
@@ -77,7 +78,7 @@ Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(fal
          << " * Vendor      : " << glGetString(GL_VENDOR) << endl
          << " * Renderer    : " << glGetString(GL_RENDERER) << endl;
     clog << " * Video modes : ";
-    IntPairVector m = getModes();
+    const IntPairVector& m = getModes();
     for each_const(IntPairVector, m, i)
     {
         clog << i->first << 'x' << i->second << ' ';
@@ -488,7 +489,7 @@ PFNGLBUFFERSUBDATAARBPROC           Video::glBufferSubDataARB = NULL;
 template <typename T>
 void Video::loadProcAddress(const char* name, T& proc) const
 {
-    proc = reinterpret_cast<T>(glfwGetProcAddress(name));
+    proc = (T)(glfwGetProcAddress(name));
     if (proc == NULL)
     {
         throw Exception("Address of '" + string(name) + "' not found");
@@ -621,11 +622,12 @@ unsigned int Video::newList()
     return list;
 }
 
-IntPairVector Video::getModes() const
+const IntPairVector& Video::getModes() const
 {
     static const int commonWidth[] = { 640, 800, 1024, 1280, 1440, 1600, 1680};
     static const IntSet commonWidthSet(commonWidth, commonWidth + sizeOfArray(commonWidth));
 
+    //TODO: ugly code!
     static IntPairVector modes;
     static bool first = true;
 
@@ -635,11 +637,15 @@ IntPairVector Video::getModes() const
         int count = glfwGetVideoModes(list, sizeOfArray(list));
         for (int i=0; i<count; i++)
         {
-            float aspect = static_cast<float>(list[i].Width) / static_cast<float>(list[i].Height);
-            if ( (aspect == 4.0f/3.0f || aspect == 5.0f/4.0f || aspect == 16.0f/9.0f || aspect == 16.0f/10.0f) &&
-                 (list[i].BlueBits + list[i].GreenBits + list[i].RedBits >= 24) &&
-                 list[i].Height >= 480 &&
-                 foundInSet(commonWidthSet, list[i].Width))
+            int bpp = list[i].BlueBits + list[i].GreenBits + list[i].RedBits;
+
+            bool aspectGood = (
+            	list[i].Height*4 == list[i].Width*3 ||
+            	list[i].Height*5 == list[i].Width*4 ||
+            	list[i].Height*16 == list[i].Width*9 ||
+            	list[i].Height*16 == list[i].Width*10);
+
+            if ( aspectGood && bpp >= 24 && list[i].Height >= 480 && foundInSet(commonWidthSet, list[i].Width))
             {
                 modes.push_back(make_pair(list[i].Width, list[i].Height));
             }
@@ -665,19 +671,19 @@ void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) c
     glBegin(GL_POLYGON);
         for (int i=0; i<9; i++)
         {
-            glVertex2f(lower.x - r*std::sinf(i*M_PI_2/8), lower.y - r*std::cosf(i*M_PI_2/8));
+            glVertex2f(lower.x - r*std::sin(i*M_PI_2/8), lower.y - r*std::cos(i*M_PI_2/8));
         }
         for (int i=0; i<9; i++)
         {
-            glVertex2f(lower.x - r*std::sinf((8-i)*M_PI_2/8), upper.y + r*std::cosf((8-i)*M_PI_2/8));
+            glVertex2f(lower.x - r*std::sin((8-i)*M_PI_2/8), upper.y + r*std::cos((8-i)*M_PI_2/8));
         }
         for (int i=0; i<9; i++)
         {
-            glVertex2f(upper.x + r*std::sinf(i*M_PI_2/8), upper.y + r*std::cosf(i*M_PI_2/8));
+            glVertex2f(upper.x + r*std::sin(i*M_PI_2/8), upper.y + r*std::cos(i*M_PI_2/8));
         }
         for (int i=0; i<9; i++)
         {
-            glVertex2f(upper.x + r*std::sinf((8-i)*M_PI_2/8), lower.y - r*std::cosf((8-i)*M_PI_2/8));
+            glVertex2f(upper.x + r*std::sin((8-i)*M_PI_2/8), lower.y - r*std::cos((8-i)*M_PI_2/8));
         }
     glEnd();
     glEnable(GL_TEXTURE_2D);

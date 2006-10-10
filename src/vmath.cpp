@@ -20,8 +20,8 @@ Vector lerp(const Vector& v1, const Vector& v2, float alpha)
 
 void Matrix::rotation(float angle, const Vector& vec)
 {
-    float s = std::sinf(angle);
-    float c = std::cosf(angle);
+    float s = std::sin(angle);
+    float c = std::cos(angle);
     float c1 = 1-c;
     float x = vec.x;
     float y = vec.y;

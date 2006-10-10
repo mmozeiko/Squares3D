@@ -4,16 +4,19 @@
 
 const int SQUARES_PORT = 12321;
 
-Network* System<Network>::instance = NULL;
+template <class Network> Network* System<Network>::instance = NULL;
 
 static const ENetCallbacks callbacks = { 
     NULL, NULL,                                                     // malloc, free
     reinterpret_cast<int (ENET_CALLBACK*)(void)>(Random::getInt)    // rand
 };
 
-Network::Network()
-    : m_host(NULL), m_server(NULL), 
-    m_isServer(false), m_needDisconnect(false), m_disconnected(false)
+Network::Network() :
+    m_needDisconnect(false),
+    m_disconnected(false),
+    m_isServer(false),
+    m_host(NULL),
+    m_server(NULL)
 {
     clog << "Initializing network." << endl;
 

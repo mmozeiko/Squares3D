@@ -1,6 +1,6 @@
 #include "packet.h"
 
-Packet::Packet() : m_data(), m_size(0), m_pos(0)
+Packet::Packet() : m_data(), m_pos(0), m_size(0)
 {
 }
 

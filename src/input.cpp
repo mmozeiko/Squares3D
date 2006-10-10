@@ -1,8 +1,8 @@
 #include "input.h"
 
-Input* System<Input>::instance = NULL;
+template <class Input> Input* System<Input>::instance = NULL;
 
-Input::Input() : m_mouse(), m_keyBuffer(), m_buttonBuffer(), m_charBuffer()
+Input::Input() : m_mouse(), m_keyBuffer(), m_charBuffer(), m_buttonBuffer()
 {
     clog << "Initializing input... " << endl;
 

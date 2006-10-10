@@ -18,6 +18,7 @@ public:
         const Vector&   color, 
         Font::AlignType align = Font::Align_Left,
         int             fontSize = 32);
+    virtual ~Message() {}
 
     const Vector&   getPosition() const { return m_position; }
 
@@ -49,6 +50,7 @@ public:
         Font::AlignType align = Font::Align_Left,
         int             fontSize = 32,
         float           blinkIntensity = 0.2f);
+    virtual ~BlinkingMessage() {}
 
 protected:
     bool  m_visible;
@@ -67,6 +69,7 @@ public:
         const Vector&   color, 
         Font::AlignType align = Font::Align_Left,
         float           timeToLive = 2.0f);
+    virtual ~FlowingMessage() {}
 
 protected:
 
@@ -87,6 +90,7 @@ public:
         const Vector&   color,
         int             score,
         Font::AlignType align = Font::Align_Left);
+    virtual ~ScoreMessage() {}
 
     int m_score;
 
@@ -105,7 +109,8 @@ public:
         int             points,
         Font::AlignType align = Font::Align_Center,
         int             fontSize = 32);
-    
+    virtual ~ComboMessage() {}
+
     bool applyDelta(float delta);
     bool render();
 

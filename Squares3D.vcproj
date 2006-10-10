@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gdi32.lib winmm.lib opengl32.lib glu32.lib ws2_32.lib"
 				OutputFile="bin\$(ProjectName)_d.exe"
 				LinkIncremental="0"
 				GenerateManifest="false"
@@ -145,6 +146,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gdi32.lib winmm.lib opengl32.lib glu32.lib ws2_32.lib"
 				OutputFile="bin\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateManifest="false"
@@ -371,6 +373,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\difficulty.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\difficulty.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\game.cpp"
 					>
 				</File>
@@ -424,14 +434,6 @@
 				</File>
 				<File
 					RelativePath=".\src\body.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\character.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\character.h"
 					>
 				</File>
 				<File
@@ -672,10 +674,6 @@
 				>
 				<File
 					RelativePath=".\bin\data\level\bodies.xml"
-					>
-				</File>
-				<File
-					RelativePath=".\bin\data\level\characters.xml"
 					>
 				</File>
 				<File
@@ -933,7 +931,7 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\resource.rc"
+			RelativePath=".\src\resource.rc"
 			>
 		</File>
 		<File

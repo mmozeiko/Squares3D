@@ -4,7 +4,7 @@
 #include "config.h"
 #include <physfs.h>
 
-Language* System<Language>::instance = NULL;
+template <class Language> Language* System<Language>::instance = NULL;
 
 Language::Language()
 {
@@ -76,7 +76,7 @@ Language::Language()
 
     // load default texts
     int count = load("en");
-    if (count != m_texts.size())
+    if (count != static_cast<int>(m_texts.size()))
     {
         throw Exception("Default language file (en.xml) has invalid count of messages");  
     }
@@ -210,10 +210,11 @@ static bool isLegalUTF8(const string& source, size_t start, size_t length)
             }
 
         case 1:
-            if (source[start] >= 0x80 && source[start] < 0xC2) return false;
+            if (static_cast<unsigned char>(source[start]) >= 0x80 && 
+                static_cast<unsigned char>(source[start]) < 0xC2) return false;
     }
     
-    if (source[start] > 0xF4) return false;
+    if (static_cast<unsigned char>(source[start]) > 0xF4) return false;
     return true;
 }
 

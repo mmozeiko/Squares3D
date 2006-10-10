@@ -23,7 +23,8 @@ static const pair<wstring, Vector> namesToColors[] = {
       make_pair(L"Yellow", Yellow),
       make_pair(L"Cyan", Cyan),
       make_pair(L"Magenta", Magenta),
-      make_pair(L"Grey", Grey)
+      make_pair(L"Grey", Grey),
+      make_pair(L"Pink", Pink)
       };
 
 typedef map<wstring, Vector> Colors;
@@ -251,7 +252,7 @@ class ColorEntry : public Entry
 {
 public: 
     ColorEntry(const wstring& label, Vector& binding, const ColorValue& value) :
-      Entry(label), m_value(value), m_binding(binding) 
+      Entry(label), m_binding(binding), m_value(value)
     {
         m_value.setCurrent(binding); 
     }
@@ -306,7 +307,7 @@ class WritableEntry : public Entry
 {
 public: 
     WritableEntry(const wstring& label, string& binding, const Submenu* ownerSubmenu) :
-      Entry(label), m_binding(binding), m_ownerSubmenu(ownerSubmenu) {}
+      Entry(label), m_ownerSubmenu(ownerSubmenu),  m_binding(binding) {}
 
     void render(const Font* font) const;
     void click(int button);

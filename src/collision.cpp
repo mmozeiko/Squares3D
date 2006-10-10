@@ -83,7 +83,10 @@ private:
     vector<Face> m_tmpFaces;
 };
 
-Collision::Collision(const XMLnode& node) : m_inertia(), m_mass(0.0f), m_origin()
+Collision::Collision(const XMLnode& node) :
+    m_origin(),
+    m_inertia(),
+    m_mass(0.0f)
 {
 }
 
@@ -439,7 +442,7 @@ CollisionTree::~CollisionTree()
 CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node), m_texture(NULL)
 {
     string hmap;
-    float size;
+    float size = 0.0f;
 
     for each_const(XMLnodes, node.childs, iter)
     {
@@ -564,8 +567,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
             bool badMargin = false; // for normal
 
             float z2 = z + STEP;
-            int iz = static_cast<int>(std::floorf((z + size2) * image.Height / size));
-            int iz2 = static_cast<int>(std::floorf((z2 + size2) * image.Height / size));
+            int iz = static_cast<int>(std::floor((z + size2) * image.Height / size));
+            int iz2 = static_cast<int>(std::floor((z2 + size2) * image.Height / size));
             if (iz >= image.Height)
             {
                 z = size2;
@@ -582,8 +585,8 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
             while (true)
             {
                 float x2 = x + STEP;
-                int ix = static_cast<int>(std::floorf((x + size2) * image.Width / size));
-                int ix2 = static_cast<int>(std::floorf((x2 + size2) * image.Width / size));
+                int ix = static_cast<int>(std::floor((x + size2) * image.Width / size));
+                int ix2 = static_cast<int>(std::floor((x2 + size2) * image.Width / size));
                 if (ix >= image.Width)
                 {
                     x = size2;
@@ -852,8 +855,8 @@ float CollisionHMap::getHeight(float x, float z) const
     x0 = std::min(std::max(x0, 0.0f), static_cast<float>(m_realCount-2));
     z0 = std::min(std::max(z0, 0.0f), static_cast<float>(m_realCount-2));
     
-    int ix = static_cast<int>(std::floorf(x0));
-    int iz = static_cast<int>(std::floorf(z0));
+    int ix = static_cast<int>(std::floor(x0));
+    int iz = static_cast<int>(std::floor(z0));
 
     x0 -= static_cast<float>(ix);
     z0 -= static_cast<float>(iz);

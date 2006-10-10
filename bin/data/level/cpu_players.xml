@@ -1,20 +1,62 @@
 <xml>
     <cpu_profiles>
-        <profile>
-            <name>Vitolds</name>
-            <character>fat</character>
-            <color r="0.6"  g="0.0" b="0.99" />
-        </profile>
-        <profile>
-            <name>Macgyver</name>
-            <character>normal</character>
-            <color  r="0.1"  g="0.99" b="0.1" />
-        </profile>
-        <profile>
-            <name>Chuck Norris</name>
-            <character>thin</character>
-            <color  r="0.1"  g="0.0" b="0.99" />
-        </profile>
+        <easy>  
+            <profile>
+                <name>Vitolds</name>
+                <collision>Dmitry</collision>
+                <properties   speed="0.2" accuracy="0.4" jump="0.3" />
+                <color r="0.6"  g="0.0" b="0.99" />
+              </profile>
+              <profile>
+                <name>Macgyver</name>
+                <collision>player_small</collision>
+                <properties   speed="0.3" accuracy="0.3" jump="0.3" />
+                <color  r="0.1"  g="0.99" b="0.1" />
+              </profile>
+              <profile>
+                <name>Chuck Norris</name>
+                <collision>player_thin</collision>
+                <properties   speed="0.4" accuracy="0.3" jump="0.2" />
+            </profile>
+        </easy>
+        <normal>
+            <profile>
+                <name>Vitolds_n</name>
+                <collision>Dmitry</collision>
+                <properties   speed="0.5" accuracy="0.6" jump="0.4" />
+                <color r="0.6"  g="0.0" b="0.99" />
+            </profile>
+            <profile>
+                <name>Macgyver_n</name>
+                <collision>player_small</collision>
+                <properties   speed="0.5" accuracy="0.5" jump="0.5" />
+                <color  r="0.1"  g="0.99" b="0.1" />
+            </profile>
+            <profile>
+                <name>Chuck Norris_n</name>
+                <collision>player_thin</collision>
+                <properties   speed="0.6" accuracy="0.6" jump="0.3" />
+            </profile>
+        </normal>
+        <hard>
+            <profile>
+                <name>Vitolds_h</name>
+                <collision>Dmitry</collision>
+                <properties   speed="0.6" accuracy="1.0" jump="0.4" />
+                <color r="0.6"  g="0.0" b="0.99" />
+            </profile>
+            <profile>
+                <name>Macgyver_h</name>
+                <collision>player_small</collision>
+                <properties   speed="0.8" accuracy="0.8" jump="0.4" />
+                <color  r="0.1"  g="0.99" b="0.1" />
+            </profile>
+            <profile>
+                <name>Chuck Norris_h</name>
+                <collision>player_thin</collision>
+                <properties   speed="1.0" accuracy="0.7" jump="0.3" />
+            </profile>
+        </hard>
     </cpu_profiles>
 </xml>
   

@@ -22,7 +22,6 @@
 #include "framebuffer.h"
 #include "grass.h"
 #include "network.h"
-#include "character.h"
 #include "profile.h"
 #include "colors.h"
 
@@ -31,7 +30,7 @@ static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
 static const float GRASS_BRIGHTNESS_1 = 0.6f; // shadowed
 static const float GRASS_BRIGHTNESS_2 = 0.7f; // lit
 
-World* System<World>::instance = NULL;
+template <class World> World* System<World>::instance = NULL;
 
 State::Type World::progress()
 {
@@ -82,20 +81,20 @@ State::Type World::progress()
 }
 
 World::World(const Profile* userProfile) : 
-    m_freeze(false),
-    escMessage(NULL),
     m_music(NULL),
     m_camera(NULL),
     m_skybox(NULL),
+    m_grass(NULL),
     m_newtonWorld(NULL),
     m_level(NULL),
     m_ball(NULL),
     m_referee(NULL),
     m_messages(NULL),
     m_scoreBoard(NULL),
-    m_framebuffer(NULL),
-    m_grass(NULL),
-    m_userProfile(userProfile)
+    m_freeze(false),
+    m_userProfile(userProfile),
+    escMessage(NULL),
+    m_framebuffer(NULL)
 {
     setInstance(this); // MUST go first
 
@@ -122,7 +121,8 @@ World::World(const Profile* userProfile) :
 
 void World::init()
 {
-    m_level->load("level.xml");
+    StringSet tmp;
+    m_level->load("level.xml", tmp);
     m_grass = new Grass(m_level);
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
@@ -134,9 +134,8 @@ void World::init()
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
 
-    Player* human = new LocalPlayer(m_userProfile, 
-                                    m_level->getCharacter(m_userProfile->m_characterID), 
-                                    m_level);
+    Player* human = new LocalPlayer(m_userProfile, m_level);
+    m_referee->m_humanPlayer = human;
     m_referee->m_humanPlayer = human;
     human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
@@ -146,7 +145,7 @@ void World::init()
     int i = 0;
     //todo: position ai players without such hacks
 
-    ProfilesMap::const_iterator iter = m_level->m_cpuProfiles.begin();
+    ProfilesMap::const_iterator iter = m_level->m_cpuProfiles[2].begin();
     for (float x = -1.5f; x <= 1.5f; x += 3.0f)
     { 
         for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
@@ -155,8 +154,7 @@ void World::init()
             {
                 Vector pos(x, 1.0f, z);
 
-                Character* character = m_level->getCharacter(iter->second->m_characterID);
-                Player* ai = new AiPlayer(iter->second, character, m_level);
+                Player* ai = new AiPlayer(iter->second, m_level);
                 ai->setDisplacement(pos, Vector::Zero);
                 m_localPlayers.push_back(ai);
 

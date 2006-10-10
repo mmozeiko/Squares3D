@@ -40,7 +40,7 @@ public:
     void setCollideable(Collideable* collideable);
 
     Body(const string& id, const Collision* collision);
-    ~Body();
+    virtual ~Body();
 
     void onCollide(const Body* other, const NewtonMaterial* material);
     void onCollideHull(const Body* other, const NewtonMaterial* material);

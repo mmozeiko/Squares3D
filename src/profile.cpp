@@ -1,10 +1,14 @@
 #include "profile.h"
 #include "file.h"
+#include "colors.h"
 #include "xml.h"
 
 const static string USER_PROFILE_FILE = "/user.xml";
 
-Profile::Profile()
+Profile::Profile() :
+    m_speed(0.1f),
+    m_accuracy(0.1f),
+    m_jump(0.1f)
 {
     clog << "Reading user information." << endl;
     XMLnode xml;
@@ -13,20 +17,36 @@ Profile::Profile()
     {
         xml.load(in);
         in.close();
+        extractNode(xml);
     }
-    extractNode(xml);
+    else
+    {
+        loadProfileWithDefaultValues();
+    }
+    
 }
 
-
-Profile::Profile(const XMLnode& node)
+void Profile::loadProfileWithDefaultValues()
 {
-    // TODO: maybe rewrite with map<string, variable&>
+    m_name = "UnamedPlayer";
+    m_collisionID = "player_small";
+    m_color = Pink;
+    m_speed = 0.5f;
+    m_accuracy = 0.5f;
+    m_jump = 0.5f;
+}
 
+Profile::Profile(const XMLnode& node) :
+    m_speed(0.1f),
+    m_accuracy(0.1f),
+    m_jump(0.1f)
+{
     extractNode(node);
 }
 
 void Profile::extractNode(const XMLnode& node)
 {
+    // TODO: maybe rewrite with map<string, variable&>
     for each_const(XMLnodes, node.childs, iter)
     {
         const XMLnode& node = *iter;
@@ -34,13 +54,19 @@ void Profile::extractNode(const XMLnode& node)
         {
             m_name = node.value;
         }
-        else if (node.name == "character")
+        else if (node.name == "collision")
         {
-            m_characterID = node.value;
+            m_collisionID = node.value;
         }
         else if (node.name == "color")
         {
             m_color = node.getAttributesInVector("rgb");
+        }
+        else if (node.name == "properties")
+        {
+            m_speed = cast<float>(node.getAttribute("speed"));
+            m_jump = cast<float>(node.getAttribute("jump"));
+            m_accuracy = cast<float>(node.getAttribute("accuracy"));
         }
         else
         {
@@ -60,7 +86,11 @@ void Profile::saveUserProfile()
 
     XMLnode xml("profile");
     xml.childs.push_back(XMLnode("name", m_name));
-    xml.childs.push_back(XMLnode("character", m_characterID));
+    xml.childs.push_back(XMLnode("collision", m_collisionID));
+    xml.childs.push_back(XMLnode("properties"));
+    xml.childs.back().setAttribute("speed", cast<string>(m_speed));
+    xml.childs.back().setAttribute("accuracy", cast<string>(m_accuracy));
+    xml.childs.back().setAttribute("jump", cast<string>(m_jump));
     xml.childs.push_back(XMLnode("color"));
     xml.childs.back().setAttribute("r", cast<string>(m_color.x));
     xml.childs.back().setAttribute("g", cast<string>(m_color.y));

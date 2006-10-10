@@ -28,7 +28,9 @@ public:
     float   m_height;
     Vector  m_centerPos;
 
-    Submenu(const Font* font, const Font* fontBig) : m_activeEntry(0), m_title(L""), m_font(font), m_fontBig(fontBig), m_height(0) {}
+    Submenu(const Font* font, const Font* fontBig) :
+        m_activeEntry(0), m_height(0), m_title(L""),
+        m_font(font), m_fontBig(fontBig) {}
     ~Submenu();
 
     void addEntry(Entry* entry);

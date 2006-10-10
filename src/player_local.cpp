@@ -4,8 +4,8 @@
 #include "world.h"
 #include "config.h"
 
-LocalPlayer::LocalPlayer(const Profile* profile, const Character* character, Level* level) :
-    Player(profile, character, level) //Config::instance->m_misc.mouse_sensitivity)
+LocalPlayer::LocalPlayer(const Profile* profile, Level* level) :
+    Player(profile, level) //Config::instance->m_misc.mouse_sensitivity)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
@@ -21,8 +21,6 @@ void LocalPlayer::control()
 {
     const Mouse& mouse = Input::instance->mouse();
     Vector curMouse(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
-
-    const float alpha = 0.8f;
 
     Vector direction = curMouse - m_lastMouse;
     direction.z = -direction.z;

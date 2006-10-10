@@ -9,16 +9,17 @@
 #include "xml.h"
 #include "collision.h"
 
-Player::Player(const Profile* profile, const Character* character, Level* level) :
+Player::Player(const Profile* profile, Level* level) :
+    m_referee(NULL),
+    m_body(NULL),
+    m_profile(profile),
     m_lowerLeft(Vector::Zero),
     m_upperRight(Vector::Zero),
+    m_upVector(NULL),
     m_isOnGround(true),
-    m_jump(false),
-    m_referee(NULL),
-    m_profile(profile),
-    m_character(character)
+    m_jump(false)
 {
-    Collision* collision = level->getCollision(m_character->m_collisionID);
+    Collision* collision = level->getCollision(m_profile->m_collisionID);
     m_body = new Body(m_profile->m_name, collision);
     level->m_bodies[m_profile->m_name] = m_body;
     

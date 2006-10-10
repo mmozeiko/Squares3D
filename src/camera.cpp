@@ -100,8 +100,8 @@ bool userControlled = false;
 void Camera::control()
 {
     const Mouse& mouse = Input::instance->mouse();
-    int dx = mouse.x - m_lastMouse.first;
-    int dy = mouse.y - m_lastMouse.second;
+    //int dx = mouse.x - m_lastMouse.first;
+    //int dy = mouse.y - m_lastMouse.second;
 
     m_lastMouse = make_pair(mouse.x, mouse.y);
 
@@ -146,14 +146,14 @@ void Camera::update(float delta)
         Vector d = ballPos - m_pos;
         /*
 
-        m_angleY = std::atan2f(d.z, d.x) + M_PI;
+        m_angleY = std::atan2(d.z, d.x) + M_PI;
 
         Vector t = Vector(d.x, 0.0f, d.y);
-        m_angleX = std::atan2f(d.y,  t.len());
+        m_angleX = std::atan2(d.y,  t.len());
         */
         d.y = 0;
-        m_angleY = std::atan2f(ballPos.x, ballPos.z);
-        m_angleX = -std::atan2f(m_pos.y,  d.magnitude());
+        m_angleY = std::atan2(ballPos.x, ballPos.z);
+        m_angleX = -std::atan2(m_pos.y,  d.magnitude());
     //        Vector rot = m_body->getRotation();
     //    Vector dir = ball->getPosition() - m_body->getPosition();
     }

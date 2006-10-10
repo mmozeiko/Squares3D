@@ -140,7 +140,6 @@ void Game::run()
 
     float accum = 0.0f;
     float currentTime = timer.read();
-    float startTime = currentTime;
 
     while (running)
     {

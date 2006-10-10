@@ -58,7 +58,7 @@ public:
     void enableMaterial(const Material* material) const;
     void disableMaterial(const Material* material) const;
     IntPair getResolution() const;
-    IntPairVector getModes() const;
+    const IntPairVector& getModes() const;
 
     unsigned int newList();
     Texture* loadTexture(const string& name, bool mipmap = true);

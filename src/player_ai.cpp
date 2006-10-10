@@ -6,8 +6,8 @@
 #include "geometry.h"
 #include "level.h"
 
-AiPlayer::AiPlayer(const Profile* profile, const Character* character, Level* level) :
-    Player(profile, character, level)
+AiPlayer::AiPlayer(const Profile* profile, Level* level) :
+    Player(profile, level)
 {
 }
 

@@ -313,8 +313,8 @@ public:
   
     void rotationX(float angle)
     {
-        float s = std::sinf(angle);
-        float c = std::cosf(angle);
+        float s = std::sin(angle);
+        float c = std::cos(angle);
         std::fill_n(m, 16, 0.0f);
         m00 = m33 = 1.0f;
         m11 = m22 = c;
@@ -331,8 +331,8 @@ public:
 
     void rotationY(float angle)
     {
-        float s = std::sinf(angle);
-        float c = std::cosf(angle);
+        float s = std::sin(angle);
+        float c = std::cos(angle);
         std::fill_n(m, 16, 0.0f);
         m11 = m33 = 1.0f;
         m00 = m22 = c;
@@ -349,8 +349,8 @@ public:
 
     void rotationZ(float angle)
     {
-        float s = std::sinf(angle);
-        float c = std::cosf(angle);
+        float s = std::sin(angle);
+        float c = std::cos(angle);
         std::fill_n(m, 16, 0.0f);
         m22 = m33 = 1.0f;
         m00 = m11 = c;

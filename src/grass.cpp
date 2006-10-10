@@ -6,7 +6,7 @@
 #include "geometry.h"
 #include "config.h"
 
-Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
+Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_grassTex(NULL)
 {
     // 1.0f, 2.0f, 4.0f
     float grass_density = static_cast<float>(1 << Config::instance->m_video.grass_density);
@@ -36,8 +36,6 @@ Grass::Grass(const Level* level) : m_grassTex(NULL), m_count(0), m_time(0.0f)
         {
             for (int n = 0; n < count; n++)
             {
-                float sum = 0.0f;
-
                 float s = Random::getFloat();
                 float t = Random::getFloat();
                 

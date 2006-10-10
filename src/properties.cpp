@@ -105,8 +105,6 @@ bool Properties::hasPropertyID(int id) const
 
 void Properties::load(const XMLnode& node)
 {
-    NewtonWorld* world = World::instance->m_newtonWorld;
-
     string prop0 = node.getAttribute("property0");
     string prop1 = node.getAttribute("property1");
     
@@ -266,6 +264,8 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
         assert(false);
         // TODO: what to do?
         //return 1;
+        m0 = self->properties->getDefault();
+        m1 = self->properties->getDefault();
     }
     
     const Property* prop = self->properties->get(m0, m1);

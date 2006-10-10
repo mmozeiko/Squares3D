@@ -75,7 +75,6 @@ Font::Font(const string& filename) : m_texture(0)
     m_count = head.maxid;
     m_height = head.height;
 
-    int x = sizeof(Char);
     vector<Char> chars(head.count);
     in.read(&chars[0], sizeof(Char)*head.count);
     in.close();

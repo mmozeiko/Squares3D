@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="src/glfw;src/glfw/win32"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -108,6 +109,7 @@
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="src/glfw;src/glfw/win32"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_GLFW_NO_DLOAD_GDI32;_GLFW_NO_DLOAD_WINMM;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -186,7 +188,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\platform.h"
+			RelativePath=".\src\glfw\win32\platform.h"
 			>
 		</File>
 		<File
@@ -202,35 +204,35 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_enable.c"
+			RelativePath=".\src\glfw\win32\win32_enable.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_fullscreen.c"
+			RelativePath=".\src\glfw\win32\win32_fullscreen.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_glext.c"
+			RelativePath=".\src\glfw\win32\win32_glext.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_init.c"
+			RelativePath=".\src\glfw\win32\win32_init.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_joystick.c"
+			RelativePath=".\src\glfw\win32\win32_joystick.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_thread.c"
+			RelativePath=".\src\glfw\win32\win32_thread.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_time.c"
+			RelativePath=".\src\glfw\win32\win32_time.c"
 			>
 		</File>
 		<File
-			RelativePath=".\src\glfw\win32_window.c"
+			RelativePath=".\src\glfw\win32\win32_window.c"
 			>
 		</File>
 		<File

@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "body.h"
-#include "character.h"
 #include "profile.h"
 #include "level.h"
 
@@ -14,7 +13,7 @@ static const float FIELDLENGTH = 3.0f;
 class Player : public Collideable
 {
 public:
-    Player(const Profile* profile, const Character* character, Level* level);
+    Player(const Profile* profile, Level* level);
     virtual ~Player();
 
     void setDirection(const Vector& direction);
@@ -35,7 +34,6 @@ public:
     
     Referee*          m_referee;
     Body*             m_body;
-    const Character*  m_character;
     const Profile*    m_profile;
     //player must recognize his field
     Vector            m_lowerLeft;

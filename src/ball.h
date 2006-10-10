@@ -23,6 +23,7 @@ class Ball : public Collideable
 {
 public:
     Ball(Body* body, const Collision* levelCollision);
+    virtual ~Ball() {}
 
     Vector getPosition() const;
     Vector getVelocity() const;

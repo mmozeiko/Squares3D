@@ -11,13 +11,20 @@ class Profile : NoCopy
 public:
     Profile();
     Profile(const XMLnode& node);
-    void extractNode(const XMLnode& node);
+
     void saveUserProfile();
     ~Profile();
 
     string m_name;
-    string m_characterID;
+    string m_collisionID;
     Vector m_color;
+    float  m_speed;
+    float  m_accuracy;
+    float  m_jump;
+
+private:
+    void loadProfileWithDefaultValues();
+    void extractNode(const XMLnode& node);
 };
 
 #endif

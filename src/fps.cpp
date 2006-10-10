@@ -8,8 +8,8 @@
 #include "language.h"
 
 FPS::FPS(const Timer& timer, const Font* font, const Vector& color)
-    : m_time(timer.read()), m_frames(0), m_totalFrames(0), m_timer(timer), m_font(font), m_fps(),
-    m_color(color), m_nextTime(m_time + 1.0f)
+    : m_time(timer.read()), m_nextTime(m_time + 1.0f), m_frames(0), m_totalFrames(0),
+      m_timer(timer), m_font(font), m_fps(), m_width(0), m_color(color)
 {
 }
 

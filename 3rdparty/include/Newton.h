@@ -9,6 +9,7 @@
 #ifndef NEWTON_H__736495_6495_076__INCLUDED_
 #define NEWTON_H__736495_6495_076__INCLUDED_
 
+#include <stdlib.h>
 // force all not visual studio platform to be in library form
 #ifndef _MSC_VER
 	#ifndef _NEWTON_USE_LIB

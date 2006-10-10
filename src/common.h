@@ -12,7 +12,7 @@
 #include <iostream>
 #include <algorithm>
 
-#ifndef NDEBUG
+#if defined(_DEBUG) && !__MINGW32__
 #include "mmgr.h"
 #endif
 
@@ -71,14 +71,14 @@ inline To wcast(const From& from)
     return to;
 }
 
-template <typename To>
-inline To cast(const wstring& from)
+template <>
+inline string cast(const wstring& from)
 {
     return string(from.begin(), from.end());
 }
 
-template <typename To>
-inline To wcast(const string& from)
+template <>
+inline wstring wcast(const string& from)
 {
     return wstring(from.begin(), from.end());
 }
@@ -123,12 +123,17 @@ inline bool foundInSet(const set<KeyType>& Set,
         Iterator != (Container).end(); \
         Iterator++)
 
+#define each_constT(Class, Container, Iterator) \
+        (typename Class::const_iterator Iterator = (Container).begin(); \
+        Iterator != (Container).end(); \
+        Iterator++)
+
 template <typename KeyType, typename ValueType>
 inline bool foundInMapValues(const map<KeyType, ValueType>& Map,
                              const ValueType&               Value)
 {
     typedef map<KeyType, ValueType> MapType;
-    for each_const(MapType, Map, iter)
+    for each_constT(MapType, Map, iter)
     {
         if (iter->second == Value)
         {
@@ -146,7 +151,7 @@ class NoCopy
 {
 public:
     NoCopy() {}
-private:
+protected:
     NoCopy(const NoCopy&);
     NoCopy& operator = (const NoCopy&);
 };
