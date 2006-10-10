@@ -7,6 +7,12 @@
 #include "level.h"
 #include "material.h"
 #include "texture.h"
+#include "geometry.h"
+#include "collision.h"
+
+static const int CIRCLE_DIVISIONS = 12;
+
+template <class Video> Video* System<Video>::instance = NULL;
 
 static void GLFWCALL sizeCb(int width, int height)
 {
@@ -18,8 +24,6 @@ static void GLFWCALL sizeCb(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
-
-template <class Video> Video* System<Video>::instance = NULL;
 
 Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false), m_haveVBO(false), m_shadowMap3ndPass(false)
 {
@@ -123,6 +127,12 @@ Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(fal
     gluQuadricTexture(m_quadricSphereHiQ, GLU_TRUE);
     gluQuadricNormals(m_quadricSphereHiQ, GLU_TRUE);
     m_resolution = make_pair(width, height);
+
+    for (int i=CIRCLE_DIVISIONS; i>=0; i--)
+    {
+        m_circleSin.push_back(std::sin(i*2.0f*M_PI/CIRCLE_DIVISIONS));
+        m_circleCos.push_back(std::cos(i*2.0f*M_PI/CIRCLE_DIVISIONS));
+    }
 }
 
 Video::~Video()
@@ -687,4 +697,42 @@ void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) c
         }
     glEnd();
     glEnable(GL_TEXTURE_2D);
+}
+
+void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* level, const Vector& color) const
+{
+    float y = 0.01f;
+
+    if (isPointInRectangle(pos, Vector(-3, 0, -3), Vector(3, 0, 3)))
+    {
+        y += 0.005f;
+    }
+
+    glPushMatrix();
+
+    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBegin(GL_TRIANGLE_FAN);
+    
+    glColor4fv(color.v);
+    glVertex3f(pos.x, level->getHeight(pos.x, pos.z) + y, pos.z);
+
+    glColor4fv(Vector(color.x, color.y, color.z, color.w-0.1f).v);
+    for (int i=0; i<=CIRCLE_DIVISIONS; i++)
+    {
+        float xx = r * m_circleCos[i];
+        float zz = r * m_circleSin[i];
+        float yy = level->getHeight(pos.x+xx, pos.z+zz) + y;
+        glVertex3f(pos.x + xx, yy, pos.z + zz);
+    }
+
+    glEnd();
+    glPopAttrib();
+
+    glPopMatrix();
 }

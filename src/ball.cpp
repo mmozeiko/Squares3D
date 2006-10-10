@@ -8,8 +8,6 @@
 #include "video.h"
 #include "geometry.h"
 
-static const int CIRCLE_DIVISIONS = 12;
-
 TriggerFlags::TriggerFlags()
 {
     loadDefaults();
@@ -46,14 +44,6 @@ Ball::Ball(Body* body, const Collision* levelCollision) : m_body(body), m_levelC
     // TODO: hmm?
     //NewtonReleaseCollision(hull);
     //NewtonReleaseCollision(newCollision);
-
-    // TODO: take ball radius from xml file
-    const float radius = 0.2f;
-    for (int i=CIRCLE_DIVISIONS; i>=0; i--)
-    {
-        m_circleSin.push_back(radius*sinf(i*2.0f*M_PI/CIRCLE_DIVISIONS));
-        m_circleCos.push_back(radius*cosf(i*2.0f*M_PI/CIRCLE_DIVISIONS));
-    }
 }
 
 Vector Ball::getPosition() const
@@ -132,49 +122,17 @@ void Ball::triggerEnd()
 
 void Ball::renderShadow(const Vector& lightPosition) const
 {
-    const Vector pos = m_body->getPosition();
-    const Vector lp(lightPosition.x, lightPosition.y*2.0f, lightPosition.z);
-    const Vector delta = lp - pos;
-    float t = lp.y / delta.y;
-
-    float x = lp.x - t * delta.x;
-    float z = lp.z - t * delta.z;
-
-    float y;
+    Vector pos = m_body->getPosition();
 
     if (isPointInRectangle(pos, Vector(-3, 0, -3), Vector(3, 0, 3)))
     {
-        y = 0.0105f;
+        const Vector lp(lightPosition.x, lightPosition.y*2.0f, lightPosition.z);
+        const Vector delta = lp - pos;
+        const float t = lp.y / delta.y;
+
+        pos.x = lp.x - t * delta.x;
+        pos.z = lp.z - t * delta.z;
     }
-    else
-    {
-        y = 0.01f;
-        x = pos.x;
-        z = pos.z;
-    }
 
-    glPushMatrix();
-
-    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
-
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_SRC_ALPHA);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glColor4f(0.2f, 0.2f, 0.2f, 0.2f);
-    glVertex3f(x, m_levelCollision->getHeight(x, z) + y, z);
-    glColor4f(0.2f, 0.2f, 0.2f, 0.3f);
-    for (int i=0; i<=CIRCLE_DIVISIONS; i++)
-    {
-        float xx = m_circleCos[i];
-        float zz = m_circleSin[i];
-        float yy = m_levelCollision->getHeight(x+xx, z+zz) + y;
-        glVertex3f(x + xx, yy, z + zz);
-    }
-    glEnd();
-    glPopAttrib();
-
-    glPopMatrix();
+    Video::instance->renderSimpleShadow(0.2f, pos, m_levelCollision, Vector(0.2f, 0.2f, 0.2f, 0.7f));
 }

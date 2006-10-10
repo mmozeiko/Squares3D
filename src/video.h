@@ -11,6 +11,7 @@
 class Shader;
 class Material;
 class Texture;
+class Collision;
 
 static const Vector g_fieldLower(-25.0f, 0.0f, -25.0f);
 static const Vector g_fieldUpper(25.0f, 0.0f, 25.0f);
@@ -47,6 +48,7 @@ public:
     void renderSphereHiQ(float radius = 1.0f) const;
     void renderAxes(float size = 5.0f) const;
     void renderRoundRect(const Vector& lower, const Vector& upper, float r) const;
+    void renderSimpleShadow(float r, const Vector& pos, const Collision* level, const Vector& color) const;
 
     void begin() const;
     void begin(const Matrix& matrix) const;
@@ -137,6 +139,9 @@ private:
     UIntSet       m_lists;
 
     unsigned int  m_cubeList;
+
+    vector<float>    m_circleSin;
+    vector<float>    m_circleCos;
 };
 
 #endif

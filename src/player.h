@@ -7,6 +7,7 @@
 #include "level.h"
 
 class Referee;
+class Collision;
 
 static const float FIELDLENGTH = 3.0f;
 
@@ -25,6 +26,8 @@ public:
 
     Vector getPosition() const;
     Vector getFieldCenter() const;
+
+    void renderColor() const;
 
     //todo: maybe private
     void onCollide(const Body* other, const NewtonMaterial* material);
@@ -47,6 +50,8 @@ protected:
 
     Vector       m_direction;
     Vector       m_rotation;
+
+    const Collision* m_levelCollision;
 };
 
 #endif

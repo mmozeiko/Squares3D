@@ -45,8 +45,6 @@ private:
     TriggerFilterMap m_filteredBodies;
     
     const Collision* m_levelCollision;
-    vector<float>    m_circleSin;
-    vector<float>    m_circleCos;
 };
 
 #endif

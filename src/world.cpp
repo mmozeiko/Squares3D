@@ -278,6 +278,10 @@ void World::render() const
         renderScene();
 
         m_ball->renderShadow(m_lightPosition);
+        for each_const(vector<Player*>, m_localPlayers, iter)
+        {
+            (*iter)->renderColor();
+        }
         
         glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
@@ -514,6 +518,11 @@ void World::shadowMapPass2() const
     //Draw the scene
     renderScene();
 
+    for each_const(vector<Player*>, m_localPlayers, iter)
+    {
+        (*iter)->renderColor();
+    }
+
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_1*Vector::One).v);
     m_grass->render();
@@ -532,7 +541,7 @@ void World::shadowMapPass3() const
     glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
 
     //Set alpha test to discard false comparisons
-    glAlphaFunc(GL_GEQUAL, 0.95f);
+    glAlphaFunc(GL_GEQUAL, 0.99f);
     glEnable(GL_ALPHA_TEST);
 
     //Bind & enable shadow map texture
@@ -559,6 +568,13 @@ void World::shadowMapPass3() const
 
     glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_1*Vector::One).v);
     renderScene();
+ 
+    glDisable(GL_ALPHA_TEST);
+
+    for each_const(vector<Player*>, m_localPlayers, iter)
+    {
+        (*iter)->renderColor();
+    }
 
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);

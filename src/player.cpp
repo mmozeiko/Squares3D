@@ -17,7 +17,8 @@ Player::Player(const Profile* profile, Level* level) :
     m_upperRight(Vector::Zero),
     m_upVector(NULL),
     m_isOnGround(true),
-    m_jump(false)
+    m_jump(false),
+    m_levelCollision(level->getCollision("level"))
 {
     Collision* collision = level->getCollision(m_profile->m_collisionID);
     m_body = new Body(m_profile->m_name, collision);
@@ -149,4 +150,11 @@ void Player::onScratch(const Body* other, const Vector& position, float speed)
 void Player::setJump(bool needJump)
 {
     m_jump = needJump;
+}
+
+void Player::renderColor() const
+{
+    Vector c(m_profile->m_color);
+    c.w = 0.3f;
+    Video::instance->renderSimpleShadow(0.3f, m_body->getPosition(), m_levelCollision, c);
 }
