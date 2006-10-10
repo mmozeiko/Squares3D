@@ -1,8 +1,0 @@
-<xml>
-    <players>
-        <player id="Dimitris" collisionID="Dmitry">
-            <color  r="0.99"  g="0.0" b="0.0" />
-            <char   speed="0.6" accuracy="0.7" somethingelse="1.0" />
-        </player>
-    </players>
-</xml>
