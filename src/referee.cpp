@@ -10,7 +10,7 @@
 #include "language.h"
 #include "colors.h"
 
-#define BALLRESETTIME 2.0f
+static const float BALL_RESET_TIME = 2.0f;
 
 bool isBallInField(const Vector& position, 
                    const Vector& lowerLeft, 
@@ -120,7 +120,7 @@ void Referee::update()
 {
     if (m_mustResetBall && !m_gameOver)
     {
-        if (m_timer.read() > BALLRESETTIME)
+        if (m_timer.read() > BALL_RESET_TIME)
         {
             resetBall();
             m_mustResetBall = false;

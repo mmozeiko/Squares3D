@@ -1,7 +1,8 @@
 #include "packet.h"
 
-Packet::Packet() : m_data(), m_pos(0), m_size(0)
+Packet::Packet(int type) : m_data(), m_pos(0), m_size(0)
 {
+    writeByte(type);
 }
 
 Packet::Packet(const bytes& data) : m_data(data), m_size(data.size()), m_pos(0)
@@ -103,7 +104,7 @@ ControlPacket::ControlPacket(const bytes& data) : Packet(data)
     m_control = readInt();
 }
 
-ControlPacket::ControlPacket(int control) : Packet()
+ControlPacket::ControlPacket(int control) : Packet(ID_CONTROL)
 {
     writeInt(control);
 }

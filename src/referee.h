@@ -45,12 +45,13 @@ public:
     void processPlayerGround(const Body* player);
     string getLoserName() const;
 
+    bool        m_mustResetBall;
+
 private:
     bool isGroundObject(const Body* body);
     
     Vector      m_ballResetPosition; 
     Vector      m_ballResetVelocity;
-    bool        m_mustResetBall;
     Timer       m_timer;
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;

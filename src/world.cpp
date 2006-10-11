@@ -270,8 +270,21 @@ void World::updateStep(float delta)
         NewtonUpdate(m_newtonWorld, delta);
         m_ball->triggerEnd();
 
-        // TODO: here must be check if all players is on map and also ball
-        // ...
+        for (size_t i=0; i<m_localPlayers.size(); i++)
+        {
+            if (m_localPlayers[i]->getPosition().y < -2.0f)
+            {
+                m_localPlayers[i]->setPositionRotation(playerPositions[i], Vector::Zero);
+            }
+        }
+
+        if (m_ball->getPosition().y < -2.0f)
+        {
+            m_referee->registerBallEvent(m_ball->m_body, m_level->getBody("level")); 
+            m_referee->resetBall();
+            m_referee->m_mustResetBall = false;
+        }
+
     }
 }
 
