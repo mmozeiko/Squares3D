@@ -11,6 +11,12 @@ AiPlayer::AiPlayer(const Profile* profile, Level* level) :
 {
 }
 
+void AiPlayer::halt()
+{
+    //halt those englander bastards!
+    m_halt = true;
+}
+
 AiPlayer::~AiPlayer()
 {
 }
@@ -22,7 +28,7 @@ void AiPlayer::control()
     Vector ballPosition = ball->getPosition();
     const Vector selfPosition = m_body->getPosition();
 
-    bool move = true;
+    bool move = !m_halt;
 
     bool important = true;
 

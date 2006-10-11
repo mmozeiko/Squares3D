@@ -96,7 +96,7 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_timer(),
     m_scoreBoard(scoreBoard),
     m_messages(messages),
-    m_matchPoints(1)
+    m_matchPoints(21)
 {
     initEvents();
 }
@@ -221,6 +221,11 @@ void Referee::processCriticalEvent()
                                       32));
         m_gameOver = true;
         m_scoreBoard->resetCombo();
+
+        for each_const(BodyToPlayerDataMap, m_players, iter)
+        {
+            iter->second->halt();
+        }
     }
     else
     {

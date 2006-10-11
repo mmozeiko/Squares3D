@@ -6,7 +6,6 @@ Hight priority:
 Look for CHARACTER: comments in player.cpp/player_ai.cpp files and move to character property fiele (xml i guess).
 Look for TODOs, FIXMEs.
 Allow players to kick ball not only forward but to sides also and later backwards.
-Stop those penguins when game has ended (they are very nervous).
 Add sounds to collision events in world.
 Fix camera movement speed.
 
@@ -41,6 +40,8 @@ Implement basic tournament gameplay.
 
 Done:
 =====
+2006-10-11 Implemented Easy/Normal/Hard system, made singleplayer consist of 1 round.
+2006-10-11 Stop those penguins when game has ended (they are very nervous).
 2006-10-08 Make AI players move more randomly.
            Make AI players smarter.
 2006-10-01 Remove Combo message when game has ended (all message removing implement with alpha fading).

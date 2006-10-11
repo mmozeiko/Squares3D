@@ -18,6 +18,7 @@ Player::Player(const Profile* profile, Level* level) :
     m_upVector(NULL),
     m_isOnGround(true),
     m_jump(false),
+    m_halt(false),
     m_levelCollision(level->getCollision("level"))
 {
     Collision* collision = level->getCollision(m_profile->m_collisionID);

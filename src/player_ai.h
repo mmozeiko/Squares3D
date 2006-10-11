@@ -12,6 +12,8 @@ public:
     AiPlayer(const Profile* profile, Level* level);
     ~AiPlayer();
 
+    void halt();
+
     void control();
 };
 

@@ -17,6 +17,7 @@ public:
     Player(const Profile* profile, Level* level);
     virtual ~Player();
 
+    virtual void halt() {}
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);
     void setJump(bool needJump);
@@ -47,6 +48,7 @@ protected:
 
     bool         m_isOnGround; // TODO: rename, current name is incorrect
     bool         m_jump;
+    bool         m_halt;
 
     Vector       m_direction;
     Vector       m_rotation;
