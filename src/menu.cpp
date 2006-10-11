@@ -372,7 +372,6 @@ public:
 private:
     Menu* m_menu;
     State::Type m_stateToSwitchTo;
-
 };
 
 void GameEntry::click(int button) 
@@ -816,7 +815,7 @@ void Submenu::render() const
     }
 }
 
-Menu::Menu(Profile* userProfile) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
+Menu::Menu(Profile* userProfile, Unlockables* unlockables) : m_font(Font::get("Arial_32pt_bold")), m_fontBig(Font::get("Arial_72pt_bold")), m_state(State::Current)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -835,14 +834,14 @@ Menu::Menu(Profile* userProfile) : m_font(Font::get("Arial_32pt_bold")), m_fontB
     m_backGroundTexture = Video::instance->loadTexture("paradise", false);
     m_backGroundTexture->setFilter(Texture::Bilinear);
 
-    loadMenu(userProfile);
+    loadMenu(userProfile, unlockables);
     Input::instance->startButtonBuffer();
     Input::instance->startKeyBuffer();
     Input::instance->startCharBuffer();
     glfwEnable(GLFW_MOUSE_CURSOR);
 }
 
-void Menu::loadMenu(Profile* userProfile)
+void Menu::loadMenu(Profile* userProfile, Unlockables* unlockables)
 {
     Language* language = Language::instance;
 
@@ -878,11 +877,17 @@ void Menu::loadMenu(Profile* userProfile)
 
     submenu->setTitle(language->get(TEXT_START_SINGLEPLAYER), titlePos);
 
-    submenu->addEntry(new GameEntry(language->get(TEXT_EASY), this, State::World));
-    submenu->addEntry(new GameEntry(language->get(TEXT_NORMAL), this, State::World));
-    submenu->m_entries.back()->disable();
-    submenu->addEntry(new GameEntry(language->get(TEXT_HARD), this, State::World));
-    submenu->m_entries.back()->disable();
+    submenu->addEntry(new GameEntry(language->get(TEXT_EASY), this, State::WorldEasy));
+    submenu->addEntry(new GameEntry(language->get(TEXT_NORMAL), this, State::WorldNormal));
+    if (unlockables->m_difficulty < 1)
+    {
+        submenu->m_entries.back()->disable();
+    }
+    submenu->addEntry(new GameEntry(language->get(TEXT_HARD), this, State::WorldHard));
+    if (unlockables->m_difficulty < 2)
+    {
+        submenu->m_entries.back()->disable();
+    }
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));
 
     submenu->center(submenuPosition);

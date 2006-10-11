@@ -43,6 +43,7 @@ public:
     void registerBallEvent(const Body* ground, const Body* otherBody);
     void registerPlayerEvent(const Body* player, const Body* other);
     void processPlayerGround(const Body* player);
+    string getLoserName() const;
 
 private:
     bool isGroundObject(const Body* body);

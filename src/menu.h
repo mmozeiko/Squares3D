@@ -14,6 +14,7 @@ class Menu;
 class Entry;
 class Submenu;
 class Profile;
+struct Unlockables;
 
 typedef map<string, Submenu*> Submenus;
 
@@ -57,7 +58,7 @@ private:
 class Menu : public State
 {
 public:
-    Menu(Profile* userProfile);
+    Menu(Profile* userProfile, Unlockables* unlockables);
     ~Menu();
 
     void control();
@@ -65,7 +66,7 @@ public:
     void updateStep(float delta) {} 
     void prepare() {}
     void render() const;
-    void loadMenu(Profile* userProfile);
+    void loadMenu(Profile* userProfile, Unlockables* unlockables);
     void setState(State::Type state);
     void setSubmenu(const string& submenuToSwitchTo);
     State::Type progress();
@@ -74,8 +75,8 @@ public:
     const Font* m_font;
     const Font* m_fontBig;
     Submenu*    m_currentSubmenu;
+    Submenus    m_submenus;
 
-    Submenus     m_submenus;
 private:
     State::Type  m_state;
     Face*        m_backGround;

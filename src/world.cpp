@@ -69,16 +69,59 @@ State::Type World::progress()
 
         if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)) 
         {
-            if (m_freeze)
+            State::Type returnState;
+            if (m_referee->m_gameOver)
             {
+                if (m_referee->getLoserName() != m_userProfile->m_name) 
+                {
+                    //if the player didn`t lose, we unlock next difficulty if not unlocked already
+                    switch (m_difficulty)
+                    {
+                    case 0: returnState = State::MenuNormal;
+                            break;
+                    case 1: returnState = State::MenuHard;
+                            break;
+                    case 2: //completed on hard unlock maybe a special level here..
+                            //for now just return MenuEasy (or could as well be Normal or Hard)
+                            // - still nothing to unlock anymore
+                            returnState = State::MenuEasy;
+                            break;
+                    default: //something is a miss
+                            throw ("difficulty > 2");
+                    }
+                }
+                else
+                {
+                    //here we don`t change the unlockable
+                    if (m_freeze)
+                    {
+                        //user wants to leave to menu and doesn`t want to retry - return State::MenuEasy
+                        returnState = State::MenuEasy;
+                    }
+                    else
+                    {
+                        //if none from above - we return State::m_current to retry (reload the same level)
+                        returnState = m_current;
+                    }
+                }
                 Input::instance->endKeyBuffer();
-                return State::Menu;
             }
-            else if (m_referee->m_gameOver)
+            else
             {
-                Input::instance->endKeyBuffer();
-                return State::World;
+                if (m_freeze)
+                {
+                    //user just wants to leave to menu in the middle of game - return State::MenuEasy
+                    //it DOESN`T change the unlockable level
+                    returnState = State::MenuEasy;
+                    Input::instance->endKeyBuffer();
+                }
+                else
+                {
+                    //don`t change anything
+                    returnState = State::Current;
+                }
             }
+            return returnState;            
         }
     }
     while (key != -1);
@@ -145,7 +188,7 @@ void World::init()
     m_referee->m_humanPlayer = human;
     m_localPlayers.push_back(human);
 
-    addShuffledCpuProfiles(m_level->m_cpuProfiles, 3);
+    addShuffledCpuProfiles(&m_level->m_cpuProfiles[m_difficulty], 3);
     
     for (size_t i = 0; i < m_localPlayers.size(); i++)
     {

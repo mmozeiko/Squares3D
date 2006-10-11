@@ -12,12 +12,20 @@ public:
         Current,
 
         Intro,
-        Menu,
+        MenuEasy,
+        MenuNormal,
+        MenuHard,
         Lobby,
         World,
-
+        WorldEasy,
+        WorldNormal,
+        WorldHard,
         Quit,
     };
+
+    Type m_current;
+
+    State() : m_current(Current) {}
     virtual ~State() {}
 
     virtual void init() {}

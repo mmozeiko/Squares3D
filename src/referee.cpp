@@ -96,11 +96,15 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_timer(),
     m_scoreBoard(scoreBoard),
     m_messages(messages),
-    m_matchPoints(21)
+    m_matchPoints(1)
 {
     initEvents();
 }
 
+string Referee::getLoserName() const
+{
+    return m_scoreBoard->getMostScoreData().first;
+}
 bool Referee::isGroundObject(const Body* body)
 {
     return ((body == m_ground) || (body == m_field));

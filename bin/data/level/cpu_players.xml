@@ -59,6 +59,12 @@
                 <properties   speed="1.0" accuracy="0.7" jump="0.3" />
                 <color r="0.5"  g="0.2" b="0.1" />
             </profile>
+            <profile>
+                <name>Bad Santa</name>
+                <collision>Dmitry</collision>
+                <properties   speed="1.0" accuracy="1.0" jump="0.0" />
+                <color r="1.0"  g="0.0" b="0.0" />
+            </profile>
         </hard>
     </cpu_profiles>
 </xml>

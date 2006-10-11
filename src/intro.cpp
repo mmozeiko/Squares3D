@@ -352,7 +352,7 @@ State::Type Intro::progress()
 {
     if (m_nextState)
     {
-        return State::Menu;
+        return State::MenuEasy;
     }
     return State::Current;
 }

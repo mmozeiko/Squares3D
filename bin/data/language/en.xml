@@ -16,14 +16,14 @@ Press ESCAPE to continue
 Press ENTER to quit to main menu..
     </item>
     <item name="CONTINUE">
-Congratulations, You have cleared this round!
+Congratulations, You have cleared this difficulty level!
 
-Press ENTER to continue on next round..
+Press ENTER to return to Main Menu..
     </item>
     <item name="RESTART">
 You`ve lost the game..
 
-Press ENTER to retry..
+Press ENTER to return to retry..
     </item>
     
     <!-- Main menu -->
