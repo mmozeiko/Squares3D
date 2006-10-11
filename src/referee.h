@@ -54,6 +54,8 @@ private:
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;
     int         m_matchPoints;
+
+    Vector      m_lastTouchedPosition;
 };
 
 #endif

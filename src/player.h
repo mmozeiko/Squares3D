@@ -20,7 +20,7 @@ public:
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);
     void setJump(bool needJump);
-    void setDisplacement(const Vector& position, const Vector& rotation);
+    void setPositionRotation(const Vector& position, const Vector& rotation);
 
     virtual void control() = 0;
 

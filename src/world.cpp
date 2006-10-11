@@ -30,6 +30,12 @@ static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
 static const float GRASS_BRIGHTNESS_1 = 0.6f; // shadowed
 static const float GRASS_BRIGHTNESS_2 = 0.7f; // lit
 
+static const Vector playerPositions[4] = {Vector(- FIELDLENGTH / 2, 1.5f, - FIELDLENGTH / 2),
+                                          Vector(- FIELDLENGTH / 2, 1.5f,   FIELDLENGTH / 2),
+                                          Vector(  FIELDLENGTH / 2, 1.5f,   FIELDLENGTH / 2),
+                                          Vector(  FIELDLENGTH / 2, 1.5f, - FIELDLENGTH / 2)
+                                          };
+
 template <class World> World* System<World>::instance = NULL;
 
 State::Type World::progress()
@@ -80,7 +86,7 @@ State::Type World::progress()
     return State::Current;
 }
 
-World::World(const Profile* userProfile) : 
+World::World(const Profile* userProfile, int difficulty) : 
     m_music(NULL),
     m_camera(NULL),
     m_skybox(NULL),
@@ -94,7 +100,8 @@ World::World(const Profile* userProfile) :
     m_freeze(false),
     m_userProfile(userProfile),
     escMessage(NULL),
-    m_framebuffer(NULL)
+    m_framebuffer(NULL),
+    m_difficulty(difficulty)
 {
     setInstance(this); // MUST go first
 
@@ -136,34 +143,16 @@ void World::init()
 
     Player* human = new LocalPlayer(m_userProfile, m_level);
     m_referee->m_humanPlayer = human;
-    m_referee->m_humanPlayer = human;
-    human->setDisplacement(Vector(-1.5f, 1.0f, -1.5f), Vector::Zero);
     m_localPlayers.push_back(human);
 
-    m_ball->addBodyToFilter(human->m_body);
-
-    int i = 0;
-    //todo: position ai players without such hacks
-
-    ProfilesMap::const_iterator iter = m_level->m_cpuProfiles[2].begin();
-    for (float x = -1.5f; x <= 1.5f; x += 3.0f)
-    { 
-        for (float z = 1.5f; z >= -1.5f; z -= 3.0f)
-        { 
-            if ((x != -1.5f) || (z != -1.5f))
-            {
-                Vector pos(x, 1.0f, z);
-
-                Player* ai = new AiPlayer(iter->second, m_level);
-                ai->setDisplacement(pos, Vector::Zero);
-                m_localPlayers.push_back(ai);
-
-                m_ball->addBodyToFilter(ai->m_body);
-                iter++;
-                i++;
-            }
-        }
+    addShuffledCpuProfiles(m_level->m_cpuProfiles, 3);
+    
+    for (size_t i = 0; i < m_localPlayers.size(); i++)
+    {
+        m_localPlayers[i]->setPositionRotation(playerPositions[i], Vector::Zero);
+        m_ball->addBodyToFilter(m_localPlayers[i]->m_body);
     }
+
     m_referee->registerPlayers(m_localPlayers);
 
     Network* net = Network::instance;
@@ -588,4 +577,16 @@ void World::shadowMapPass3() const
     glPopAttrib();
 
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+}
+
+void World::addShuffledCpuProfiles(const ProfilesVector* profiles, size_t count)
+{
+    vector<Profile*> temp;
+    temp.assign(profiles->begin(), profiles->end());
+
+    std::random_shuffle(temp.begin(), temp.end());
+    for (size_t i = 0; i < count; i++)
+    {
+        m_localPlayers.push_back(new AiPlayer(temp[i], m_level));
+    }
 }

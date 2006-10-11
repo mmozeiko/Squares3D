@@ -31,22 +31,24 @@ public:
     void saveScreenshot(const FPS& fps) const;
 
     // Singletons
-    Config*   m_config;
-    Language* m_language;
-    Video*    m_video;
-    Audio*    m_audio;
-    Network*  m_network;
-    Input*    m_input;
+    Config*     m_config;
+    Language*   m_language;
+    Video*      m_video;
+    Audio*      m_audio;
+    Network*    m_network;
+    Input*      m_input;
     //
     
-    Profile*  m_user;
-
-
 private:
-    State*    m_state;
+    State*      m_state;
+    Profile*    m_userProfile;
+    int         m_difficulty;
+    int         m_unlockedDifficulty;
+    bool        m_fixedTimestep;
 
-    bool      m_fixedTimestep;
     State* switchState(const State::Type newState);
+    void saveUserData();
+    void loadUserData();
 };
 
 #endif

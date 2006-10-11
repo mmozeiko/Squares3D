@@ -27,7 +27,11 @@ Press ENTER to retry..
     </item>
     
     <!-- Main menu -->
-    <item name="START_GAME"               value="Start Game"/>
+    <item name="MAIN_MENU"                value="Main Menu"/>
+    <item name="START_SINGLEPLAYER"       value="Start Singleplayer Game"/>
+    <item name="EASY"                     value="Easy Level"/>
+    <item name="NORMAL"                   value="Normal Level"/>
+    <item name="HARD"                     value="Hard Level"/>
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>
     <item name="AUDIO_OPTIONS"            value="Audio Options"/>

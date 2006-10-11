@@ -114,7 +114,6 @@ void Referee::registerFaultTime()
 
 void Referee::update()
 {
-
     if (m_mustResetBall && !m_gameOver)
     {
         if (m_timer.read() > BALLRESETTIME)
@@ -180,6 +179,7 @@ void Referee::initEvents()
     m_lastFieldOwner    = NULL;
     m_lastTouchedObject = NULL;
     m_lastTouchedPlayer = NULL;
+    m_lastTouchedPosition = Vector::Zero;
     m_scoreBoard->resetCombo();
 }
 
@@ -403,11 +403,20 @@ void Referee::processBallPlayer(const Body* player)
 
         if ((m_lastFieldOwner == player)
             && (m_lastTouchedPlayer == player)
-            && (isBallInField(m_ball->getPosition(), 
+            
+            && isBallInField(m_ball->getPosition(), 
                               m_players.find(player)->second->m_lowerLeft, 
                               m_players.find(player)->second->m_upperRight,
-                              true,
-                              true)))
+                              true, true)
+
+            && isPointInRectangle(player->getPosition(), 
+                              m_players.find(player)->second->m_lowerLeft, 
+                              m_players.find(player)->second->m_upperRight)
+
+            && isPointInRectangle(m_lastTouchedPosition,
+                              m_players.find(player)->second->m_lowerLeft, 
+                              m_players.find(player)->second->m_upperRight)
+            )
         {
             //critical event. double-touched -> fault
 
@@ -434,6 +443,7 @@ void Referee::processBallPlayer(const Body* player)
     
     m_lastTouchedObject = player;
     m_lastTouchedPlayer = player;
+    m_lastTouchedPosition = player->getPosition();
 end:;
     
 }

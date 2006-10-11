@@ -26,6 +26,7 @@ Jūs zaudējāt šo spēli..
 Piespiediet ENTER, lai mēģinātu vēlreiz..
     </item>
     <!-- Main menu -->
+    <item name="MAIN_MENU"                value="Galvenā Izvēlne"/>
     <item name="START_GAME"               value="Sākt Spēli"/>
     <item name="PLAYER_OPTIONS"           value="Spēlētāja Uzstādījumi"/>
     <item name="OPTIONS"                  value="Uzstādījumi"/>

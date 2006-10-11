@@ -8,7 +8,11 @@
 // remember to update in Language constructor
 enum TextType
 {
-    TEXT_START_GAME,
+    TEXT_START_SINGLEPLAYER,
+    TEXT_EASY,
+    TEXT_NORMAL,
+    TEXT_HARD,
+    TEXT_MAIN_MENU,
     TEXT_OPTIONS,
     TEXT_AUDIO_OPTIONS,
     TEXT_VIDEO_OPTIONS,

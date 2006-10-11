@@ -9,11 +9,8 @@ class XMLnode;
 class Profile : NoCopy
 {
 public:
-    Profile();
     Profile(const XMLnode& node);
-
-    void saveUserProfile();
-    ~Profile();
+    Profile();
 
     string m_name;
     string m_collisionID;
@@ -21,10 +18,6 @@ public:
     float  m_speed;
     float  m_accuracy;
     float  m_jump;
-
-private:
-    void loadProfileWithDefaultValues();
-    void extractNode(const XMLnode& node);
 };
 
 #endif

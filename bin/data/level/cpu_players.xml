@@ -17,6 +17,7 @@
                 <name>Chuck Norris</name>
                 <collision>player_thin</collision>
                 <properties   speed="0.4" accuracy="0.3" jump="0.2" />
+                <color r="0.5"  g="0.2" b="0.1" />
             </profile>
         </easy>
         <normal>
@@ -36,6 +37,7 @@
                 <name>Chuck Norris_n</name>
                 <collision>player_thin</collision>
                 <properties   speed="0.6" accuracy="0.6" jump="0.3" />
+                <color r="0.5"  g="0.2" b="0.1" />
             </profile>
         </normal>
         <hard>
@@ -55,6 +57,7 @@
                 <name>Chuck Norris_h</name>
                 <collision>player_thin</collision>
                 <properties   speed="1.0" accuracy="0.7" jump="0.3" />
+                <color r="0.5"  g="0.2" b="0.1" />
             </profile>
         </hard>
     </cpu_profiles>

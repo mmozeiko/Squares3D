@@ -115,7 +115,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                         if (node.name == "profile")
                         {
                             Profile* profile = new Profile(node);
-                            m_cpuProfiles[idx][profile->m_name] = profile;
+                            m_cpuProfiles[idx].push_back(profile);
                             checks[idx]++;
                         }
                         else
@@ -184,9 +184,9 @@ Level::~Level()
     }
     for (size_t i = 0; i < 3; i++)
     {
-        for each_const(ProfilesMap, m_cpuProfiles[i], iter)
+        for each_const(ProfilesVector, m_cpuProfiles[i], iter)
         {
-            delete iter->second;
+            delete *iter;
         }
     }
     delete m_properties;

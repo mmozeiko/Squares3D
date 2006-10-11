@@ -373,14 +373,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\difficulty.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\difficulty.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\game.cpp"
 					>
 				</File>

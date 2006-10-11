@@ -36,7 +36,7 @@ Player::Player(const Profile* profile, Level* level) :
     m_body->setCollideable(this);
 }
 
-void Player::setDisplacement(const Vector& position, const Vector& rotation)
+void Player::setPositionRotation(const Vector& position, const Vector& rotation)
 {
     m_body->setTransform(position, rotation);
 

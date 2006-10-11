@@ -637,7 +637,6 @@ const IntPairVector& Video::getModes() const
     static const int commonWidth[] = { 640, 800, 1024, 1280, 1440, 1600, 1680};
     static const IntSet commonWidthSet(commonWidth, commonWidth + sizeOfArray(commonWidth));
 
-    //TODO: ugly code!
     static IntPairVector modes;
     static bool first = true;
 
@@ -720,14 +719,15 @@ void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* leve
     glBegin(GL_TRIANGLE_FAN);
     
     glColor4fv(color.v);
-    glVertex3f(pos.x, level->getHeight(pos.x, pos.z) + y, pos.z);
+    float yy = level->getHeight(pos.x, pos.z) + y;
+    glVertex3f(pos.x, yy, pos.z);
 
     glColor4fv(Vector(color.x, color.y, color.z, color.w-0.1f).v);
     for (int i=0; i<=CIRCLE_DIVISIONS; i++)
     {
         float xx = r * m_circleCos[i];
         float zz = r * m_circleSin[i];
-        float yy = level->getHeight(pos.x+xx, pos.z+zz) + y;
+        //float yy = level->getHeight(pos.x+xx, pos.z+zz) + y;
         glVertex3f(pos.x + xx, yy, pos.z + zz);
     }
 

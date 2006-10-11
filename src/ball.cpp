@@ -68,7 +68,7 @@ void Ball::addBodyToFilter(const Body* body)
 
 void Ball::onCollide(const Body* other, const NewtonMaterial* material)
 {
-    if (!foundInMap(m_filteredBodies, other))
+    if (other->m_id == "level" || other->m_id == "field")
     {
         m_referee->process(m_body, other);
     }

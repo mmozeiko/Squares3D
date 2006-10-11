@@ -16,8 +16,12 @@
 #include "font.h"
 #include "fps.h"
 #include "profile.h"
-
 #include "vmath.h"
+#include "colors.h"
+#include "xml.h"
+
+const static string USER_PROFILE_FILE = "/user.xml";
+
 
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
@@ -26,7 +30,11 @@
 bool   g_needsToReload = false;
 string g_optionsEntry;
 
-Game::Game() : m_fixedTimestep(true)
+Game::Game() : 
+    m_fixedTimestep(true),
+    m_difficulty(0),
+    m_unlockedDifficulty(0),
+    m_userProfile(NULL)
 {
     // these and only these objects are singletons,
     // they all have public static instance attribute
@@ -38,13 +46,13 @@ Game::Game() : m_fixedTimestep(true)
     m_input = new Input();
     //
 
-    m_user = new Profile();
+    loadUserData();
 
     if (g_needsToReload)
     {
         g_needsToReload = false;
 
-        Menu* menu = new Menu(m_user);
+        Menu* menu = new Menu(m_userProfile);
         menu->setSubmenu(g_optionsEntry);
         m_state = menu;
     }
@@ -65,9 +73,8 @@ Game::~Game()
     
     delete m_state;
 
-    m_user->saveUserProfile();
+    saveUserData();
 
-    delete m_user;
     delete m_input;
     delete m_network;
     delete m_audio;
@@ -267,12 +274,102 @@ State* Game::switchState(const State::Type nextState)
     case State::Intro:
         m_fixedTimestep = false;
         return new Intro();
-    case State::Menu: return new Menu(m_user);
-    case State::World: return new World(m_user);
+    case State::Menu: return new Menu(m_userProfile);
+    case State::World: return new World(m_userProfile, m_difficulty);
     //TODO: implement these
     //case State_Lobby: return ..;
     default:
         assert(false);
         return NULL;
     }
+}
+
+void Game::loadUserData()
+{
+    clog << "Reading user information." << endl;
+    XMLnode xml;
+    File::Reader in(USER_PROFILE_FILE);
+    if (in.is_open())
+    {
+        xml.load(in);
+        in.close();
+        for each_const(XMLnodes, xml.childs, iter)
+        {
+            const XMLnode& node = *iter;
+            if (node.name == "profile")
+            {
+                if (m_userProfile != NULL)
+                {
+                    throw Exception("User profile should not be initialized twice!");
+                }
+                else
+                {
+                    m_userProfile = new Profile(node);
+                }
+            }
+            else if (node.name == "other_data")
+            {
+                for each_const(XMLnodes, node.childs, iter)
+                {
+                    const XMLnode& node = *iter;
+                    if (node.name == "difficulty")
+                    {
+                        m_unlockedDifficulty = cast<int>(node.getAttribute("unlocked"));
+                    }
+                    else
+                    {
+                        string line = cast<string>(node.line);
+                        throw Exception("Invalid profile file, unknown profile parameter '" + node.name + "' at line " + line);
+                    }
+                }
+            }
+            else
+            {
+                string line = cast<string>(node.line);
+                throw Exception("Invalid profile file, unknown profile parameter '" + node.name + "' at line " + line);
+            }
+        }
+        if ((m_difficulty == -1) || (m_userProfile == NULL))
+        {
+            throw Exception("Corrupted user profile file!");
+        }
+    }
+    else
+    {
+        m_userProfile = new Profile();
+        m_difficulty = 0;
+    }
+}
+
+void Game::saveUserData()
+{
+    clog << "Saving user data." << endl;
+
+    XMLnode xml("xml");
+    xml.childs.push_back(XMLnode("profile"));
+    XMLnode& profile = xml.childs.back();
+    profile.childs.push_back(XMLnode("name", m_userProfile->m_name));
+    profile.childs.push_back(XMLnode("collision", m_userProfile->m_collisionID));
+    profile.childs.push_back(XMLnode("properties"));
+    profile.childs.back().setAttribute("speed", cast<string>(m_userProfile->m_speed));
+    profile.childs.back().setAttribute("accuracy", cast<string>(m_userProfile->m_accuracy));
+    profile.childs.back().setAttribute("jump", cast<string>(m_userProfile->m_jump));
+    profile.childs.push_back(XMLnode("color"));
+    profile.childs.back().setAttribute("r", cast<string>(m_userProfile->m_color.x));
+    profile.childs.back().setAttribute("g", cast<string>(m_userProfile->m_color.y));
+    profile.childs.back().setAttribute("b", cast<string>(m_userProfile->m_color.z));
+    
+    xml.childs.push_back(XMLnode("other_data"));
+    XMLnode& other_data = xml.childs.back();
+    other_data.childs.push_back(XMLnode("difficulty"));
+    other_data.childs.back().setAttribute("unlocked", cast<string>(m_unlockedDifficulty));
+
+    File::Writer out(USER_PROFILE_FILE);
+    if (!out.is_open())
+    {
+        throw Exception("Failed to open " + USER_PROFILE_FILE + " for writing");
+    }
+    xml.save(out);
+    out.close();
+    delete m_userProfile;
 }

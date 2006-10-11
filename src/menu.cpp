@@ -159,7 +159,7 @@ public:
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(const wstring& stringIn) : m_string(stringIn) {}
+    Entry(const wstring& stringIn) : m_string(stringIn), m_enabled(true) {}
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
@@ -168,8 +168,10 @@ public:
     virtual string getValueID() const                    { return "";       }
     virtual wstring getValue() const                     { return L"";      }
     virtual int getCurrentValueIdx() const               { return -1;       }
-    virtual bool isEnabled() const                       { return true;     }
     virtual void reset()                                 {}
+    bool isEnabled() const                               { return m_enabled;}
+    void disable()                                       { m_enabled = false;}
+    void enable()                                        { m_enabled = true;}
 
     bool isMouseOver(const Vector& mousePos) const       { return isPointInRectangle(mousePos, m_lowerLeft, m_upperRight); }
 
@@ -195,6 +197,8 @@ public:
     {
         return font->getWidth(m_string)/2;
     }
+protected:
+    bool m_enabled;
 
 };
 
@@ -202,14 +206,13 @@ class OptionEntry : public Entry
 {
 public: 
     OptionEntry(const wstring& stringIn, const Value& value) :
-        Entry(stringIn), m_value(value), m_enabled(true) {}
+        Entry(stringIn), m_value(value) {}
 
     void click(int button);
     wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
     string getValueID() const                      { return m_value.m_id; }
     wstring getValue() const                       { return m_value.getCurrent(); }
     int getCurrentValueIdx() const                 { return static_cast<int>(m_value.m_current); }
-    bool isEnabled() const                         { return m_enabled; }
     void reset();
     
     bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
@@ -228,7 +231,6 @@ public:
 
 protected:
     Value m_value;
-    bool m_enabled;
 };
 
 void OptionEntry::click(int button)
@@ -851,11 +853,16 @@ void Menu::loadMenu(Profile* userProfile)
                                     static_cast<float>(resY) / 4 * 3 / 2, 
                                     0);
 
+    Vector titlePos = Vector(static_cast<float>(resX) / 2, 0, 0);
+    float titleY = 0.0f;
+
     // Main Submenu
 
     Submenu* submenu = new Submenu(m_font, m_fontBig);
 
-    submenu->addEntry(new GameEntry(language->get(TEXT_START_GAME), this, State::World));
+    submenu->setTitle(language->get(TEXT_MAIN_MENU), titlePos);
+
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_START_SINGLEPLAYER), this, "startSingle"));
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_PLAYER_OPTIONS), this, "playerOptions"));
     submenu->addEntry(new SubmenuEntry(language->get(TEXT_OPTIONS), this, "options"));
     submenu->addEntry(new GameEntry(language->get(TEXT_QUIT_GAME), this, State::Quit));
@@ -865,8 +872,23 @@ void Menu::loadMenu(Profile* userProfile)
     m_submenus["main"] = submenu;
 
 
-    Vector titlePos = Vector(static_cast<float>(resX) / 2, 0, 0);
-    float titleY = 0.0f;
+    // Start Game Submenu
+
+    submenu = new Submenu(m_font, m_fontBig);
+
+    submenu->setTitle(language->get(TEXT_START_SINGLEPLAYER), titlePos);
+
+    submenu->addEntry(new GameEntry(language->get(TEXT_EASY), this, State::World));
+    submenu->addEntry(new GameEntry(language->get(TEXT_NORMAL), this, State::World));
+    submenu->m_entries.back()->disable();
+    submenu->addEntry(new GameEntry(language->get(TEXT_HARD), this, State::World));
+    submenu->m_entries.back()->disable();
+    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));
+
+    submenu->center(submenuPosition);
+    m_submenus["startSingle"] = submenu;
+
+
 
     // PLAYER Options Submenu
     submenu = new Submenu(m_font, m_fontBig);
