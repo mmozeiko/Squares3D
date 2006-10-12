@@ -8,6 +8,7 @@
 #include "input.h"
 #include "xml.h"
 #include "collision.h"
+#include "profile.h"
 
 Player::Player(const Profile* profile, Level* level) :
     m_referee(NULL),
@@ -19,7 +20,8 @@ Player::Player(const Profile* profile, Level* level) :
     m_isOnGround(true),
     m_jump(false),
     m_halt(false),
-    m_levelCollision(level->getCollision("level"))
+    m_levelCollision(level->getCollision("level")),
+    m_ballBody(level->getBody("football"))
 {
     Collision* collision = level->getCollision(m_profile->m_collisionID);
     m_body = new Body(m_profile->m_name, collision);
@@ -54,6 +56,25 @@ void Player::setPositionRotation(const Vector& position, const Vector& rotation)
 Player::~Player()
 {
     NewtonDestroyJoint(World::instance->m_newtonWorld, m_upVector);
+}
+
+void Player::setKick(const Vector& kick)
+{
+    Vector dist = m_ballBody->getPosition() - m_body->getPosition();
+    
+    if (m_timer.read() > 1.0f && dist.magnitude2() < 0.6f*0.6f) // TODO: (gurkja resnums + bumbas_raadiuss)^2
+    {
+        Vector tmp = kick;
+        tmp.norm();
+        
+        // CHARACTER: kick powaaar!
+        tmp *= 500.0f;
+
+        m_ballBody->setKickForce(tmp);
+        // TODO: pazinjot referrijam par tachu
+
+        m_timer.reset();
+    }
 }
 
 Vector Player::getPosition() const

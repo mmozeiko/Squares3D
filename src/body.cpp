@@ -97,6 +97,11 @@ Body::Body(const XMLnode& node):
     createNewtonBody(newtonCollision, totalOrigin, position, rotation);
 }
 
+void Body::setKickForce(const Vector& force)
+{
+    m_kickForce = force;
+}
+
 void Body::setTransform(const Vector& position, const Vector& rotation)
 {
     NewtonSetEulerAngle(rotation.v, m_matrix.m);
@@ -164,6 +169,9 @@ void Body::onSetForceAndTorque()
 {
     Vector force = gravityVec * m_totalMass;
     NewtonBodySetForce(m_newtonBody, force.v);
+    NewtonBodyAddForce(m_newtonBody, m_kickForce.v);
+    m_kickForce = Vector::Zero;
+
     if (m_collideable != NULL)
     {
         m_collideable->onSetForceAndTorque();

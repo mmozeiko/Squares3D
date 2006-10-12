@@ -7,10 +7,8 @@
 LocalPlayer::LocalPlayer(const Profile* profile, Level* level) :
     Player(profile, level) //Config::instance->m_misc.mouse_sensitivity)
 {
-    int w, h; 
-    glfwGetWindowSize(&w, &h);
-    m_lastMouse = Vector(static_cast<float>(w/2), 0.0f, static_cast<float>(h/2));
-
+    const Mouse& mouse = Input::instance->mouse();
+    m_lastMouse = Vector(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
 }
 
 LocalPlayer::~LocalPlayer()
@@ -23,6 +21,7 @@ void LocalPlayer::control()
     Vector curMouse(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
 
     Vector direction = curMouse - m_lastMouse;
+
     direction.z = -direction.z;
     direction /= 8.9f;
 
@@ -35,7 +34,9 @@ void LocalPlayer::control()
     //this disables acceleration
     //direction.norm();
 
-    setDirection(Matrix::rotateY(World::instance->m_camera->angleY()) * direction);
+    Vector finalDirection = Matrix::rotateY(World::instance->m_camera->angleY()) * direction;
+
+    setDirection(finalDirection);
     setJump(Input::instance->key(GLFW_KEY_SPACE));
 
     Body* ball = World::instance->m_level->getBody("football");
@@ -49,4 +50,10 @@ void LocalPlayer::control()
     rotation.y = ( rot % dir );
 
     setRotation(rotation/5.0f);
+
+    if (mouse.b & 1)
+    {
+        // .. kick
+        setKick(finalDirection);
+    }
 }

@@ -69,26 +69,16 @@ State::Type World::progress()
 
         if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)) 
         {
-            State::Type returnState;
+            State::Type returnState = State::Current;
             if (m_referee->m_gameOver)
             {
                 if (m_referee->getLoserName() != m_userProfile->m_name) 
                 {
-                    //if the player didn`t lose, we unlock next difficulty if not unlocked already
-                    switch (m_difficulty)
+                    if ((m_current == m_unlockable) && (m_unlockable < 4))
                     {
-                    case 0: returnState = State::MenuNormal;
-                            break;
-                    case 1: returnState = State::MenuHard;
-                            break;
-                    case 2: //completed on hard unlock maybe a special level here..
-                            //for now just return MenuEasy (or could as well be Normal or Hard)
-                            // - still nothing to unlock anymore
-                            returnState = State::MenuEasy;
-                            break;
-                    default: //something is a miss
-                            throw ("difficulty > 2");
+                        m_unlockable++;
                     }
+                    returnState = State::Menu;
                 }
                 else
                 {
@@ -96,15 +86,14 @@ State::Type World::progress()
                     if (m_freeze)
                     {
                         //user wants to leave to menu and doesn`t want to retry - return State::MenuEasy
-                        returnState = State::MenuEasy;
+                        returnState = State::Menu;
                     }
                     else
                     {
                         //if none from above - we return State::m_current to retry (reload the same level)
-                        returnState = m_current;
+                        init();
                     }
                 }
-                Input::instance->endKeyBuffer();
             }
             else
             {
@@ -112,8 +101,7 @@ State::Type World::progress()
                 {
                     //user just wants to leave to menu in the middle of game - return State::MenuEasy
                     //it DOESN`T change the unlockable level
-                    returnState = State::MenuEasy;
-                    Input::instance->endKeyBuffer();
+                    returnState = State::Menu;
                 }
                 else
                 {
@@ -129,7 +117,7 @@ State::Type World::progress()
     return State::Current;
 }
 
-World::World(const Profile* userProfile, int difficulty) : 
+World::World(const Profile* userProfile, int& unlockable, int current) :
     m_music(NULL),
     m_camera(NULL),
     m_skybox(NULL),
@@ -144,7 +132,8 @@ World::World(const Profile* userProfile, int difficulty) :
     m_userProfile(userProfile),
     escMessage(NULL),
     m_framebuffer(NULL),
-    m_difficulty(difficulty)
+    m_unlockable(unlockable),
+    m_current(current)
 {
     setInstance(this); // MUST go first
 
@@ -155,6 +144,41 @@ World::World(const Profile* userProfile, int difficulty) :
     //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
     m_camera = new Camera(Vector(0.0f, 9.0f, 14.0f), 30.0f, 0.0f);
     m_skybox = new SkyBox();
+}
+
+void World::init()
+{
+    if (m_newtonWorld != NULL)
+    {
+        delete m_messages;
+        delete m_scoreBoard;
+
+        m_music->stop();
+        Audio::instance->unloadMusic(m_music);
+
+        for each_const(vector<Player*>, m_localPlayers, iter)
+        {
+            delete *iter;
+        }
+        m_localPlayers.clear();
+       
+        delete m_ball;
+        delete m_referee;
+        delete m_level;
+
+        NewtonDestroyAllBodies(m_newtonWorld);
+        NewtonDestroy(m_newtonWorld);
+
+        m_messages = NULL;
+        m_scoreBoard = NULL;
+
+        m_music = NULL;
+        m_ball = NULL;
+        m_referee = NULL;
+        m_level = NULL;
+        m_newtonWorld = NULL;
+    }
+
     m_messages = new Messages();
     m_scoreBoard = new ScoreBoard(m_messages);
 
@@ -167,10 +191,7 @@ World::World(const Profile* userProfile, int difficulty) :
     //m_music->play();
 
     m_level = new Level();
-}
 
-void World::init()
-{
     StringSet tmp;
     m_level->load("level.xml", tmp);
     m_grass = new Grass(m_level);
@@ -181,22 +202,22 @@ void World::init()
     m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
     m_referee->m_ground = m_level->getBody("level"); //referee now can recognize ground outside
 
-    m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
-    m_referee->registerBall(m_ball);
-
     Player* human = new LocalPlayer(m_userProfile, m_level);
     m_referee->m_humanPlayer = human;
     m_localPlayers.push_back(human);
 
-    addShuffledCpuProfiles(&m_level->m_cpuProfiles[m_difficulty], 3);
-    
+    addShuffledCpuProfiles(&m_level->m_cpuProfiles[m_current], 3);
+
+    m_referee->registerPlayers(m_localPlayers);
+
+    m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
+    m_referee->registerBall(m_ball);
+
     for (size_t i = 0; i < m_localPlayers.size(); i++)
     {
         m_localPlayers[i]->setPositionRotation(playerPositions[i], Vector::Zero);
         m_ball->addBodyToFilter(m_localPlayers[i]->m_body);
     }
-
-    m_referee->registerPlayers(m_localPlayers);
 
     Network* net = Network::instance;
     for each_const(BodiesMap, m_level->m_bodies, iter)
@@ -272,17 +293,26 @@ void World::updateStep(float delta)
 
         for (size_t i=0; i<m_localPlayers.size(); i++)
         {
-            if (m_localPlayers[i]->getPosition().y < -2.0f)
+            if (m_localPlayers[i]->getPosition().y < -5.0f)
             {
                 m_localPlayers[i]->setPositionRotation(playerPositions[i], Vector::Zero);
             }
         }
 
-        if (m_ball->getPosition().y < -2.0f)
+        if (m_ball->getPosition().y < -5.0f)
         {
-            m_referee->registerBallEvent(m_ball->m_body, m_level->getBody("level")); 
-            m_referee->resetBall();
-            m_referee->m_mustResetBall = false;
+            if (m_referee->m_gameOver)
+            {
+                m_ball->setPosition0();
+                NewtonBodySetVelocity(m_ball->m_body->m_newtonBody, Vector::Zero.v);
+                NewtonBodySetOmega(m_ball->m_body->m_newtonBody, Vector::Zero.v);
+            }
+            else
+            {
+                m_referee->registerBallEvent(m_ball->m_body, m_level->getBody("level")); 
+                m_referee->resetBall();
+                m_referee->m_mustResetBall = false;
+            }
         }
 
     }

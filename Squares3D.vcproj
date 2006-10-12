@@ -389,14 +389,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\menu.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\menu.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\profile.cpp"
 					>
 				</File>
@@ -416,6 +408,42 @@
 					RelativePath=".\src\world.h"
 					>
 				</File>
+				<Filter
+					Name="Menu"
+					>
+					<File
+						RelativePath=".\src\menu.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu_entries.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu_entries.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu_options.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu_options.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu_submenu.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\menu_submenu.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Level"

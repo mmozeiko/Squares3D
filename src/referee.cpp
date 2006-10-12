@@ -9,6 +9,7 @@
 #include "video.h"
 #include "language.h"
 #include "colors.h"
+#include "profile.h"
 
 static const float BALL_RESET_TIME = 2.0f;
 
@@ -96,6 +97,8 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_timer(),
     m_scoreBoard(scoreBoard),
     m_messages(messages),
+    m_waitForGround(3),
+    m_waitForDiagonalPlayerOrGround(false),
     m_matchPoints(21)
 {
     initEvents();
@@ -128,10 +131,19 @@ void Referee::update()
     }
 }
 
+void Referee::haltCpuPlayers()
+{
+    for each_const(BodyToPlayerMap, m_players, iter)
+    {
+        iter->second->halt();
+    }
+}
+
 void Referee::resetBall()
 {
     Vector resetPosition = Vector(0, 1.5f, 0);
     Vector velocity = Vector::Zero;
+    m_waitForGround = 1;
 
     if ((m_lastTouchedObject != NULL) 
      || (m_lastTouchedPlayer != NULL)
@@ -143,24 +155,26 @@ void Referee::resetBall()
             //middle line -> reset coords in center
             resetPosition = Vector(0, resetPosition.y * 3, 0);
         }
-        else if (isGroundObject(m_lastTouchedObject))
+        else 
         {
-            //ball has left game field from middle line one of players fields
-            //also happens when player touches twice
-            //reset from last owner (m_lastFieldOwner)
-            Vector center = m_players.find(m_lastFieldOwner)->second->getFieldCenter();
+            Vector center;
+            if (isGroundObject(m_lastTouchedObject))
+            {
+                //ball has left game field from one of players fields
+                //also happens when player touches twice
+                //reset from last owner (m_lastFieldOwner)
+                center = m_players.find(m_lastFieldOwner)->second->getFieldCenter();
+            }
+            else
+            {
+                //ball has left game field from one of the players
+                //reset from m_lastTouchedPlayer
+                center = m_players.find(m_lastTouchedPlayer)->second->getFieldCenter();
+            }
             //set the reset position to center of players field
             resetPosition = Vector(center.x, resetPosition.y, center.z);
             velocity = (Vector::Zero - resetPosition) * 2;
-        }
-        else
-        {
-            //ball has left game field from one of the players
-            //reset from m_lastTouchedPlayer
-            Vector center = m_players.find(m_lastTouchedPlayer)->second->getFieldCenter();
-            //set the reset position to center of players field
-            resetPosition = Vector(center.x, resetPosition.y, center.z);
-            velocity = (Vector::Zero - resetPosition) * 2;
+            m_waitForDiagonalPlayerOrGround = true;
         }
     }
     else
@@ -168,7 +182,9 @@ void Referee::resetBall()
         //the game has just begun
         //reset coords in center and ball must hit the ground 3 times (TODO)
         //before it can be touched by players
+        m_waitForGround = 3;
         resetPosition = Vector(0, resetPosition.y * 3, 0);
+        //haltCpuPlayers();
     }
 
     //m_ball->set
@@ -222,7 +238,7 @@ void Referee::processCriticalEvent()
         m_gameOver = true;
         m_scoreBoard->resetCombo();
 
-        for each_const(BodyToPlayerDataMap, m_players, iter)
+        for each_const(BodyToPlayerMap, m_players, iter)
         {
             iter->second->halt();
         }
@@ -377,7 +393,7 @@ void Referee::processBallGround()
         //non critical event - update events status
         //BALL HAS HIT THE FIELD INSIDE
         //save the touched field
-        for each_const(BodyToPlayerDataMap, m_players, player)
+        for each_const(BodyToPlayerMap, m_players, player)
         {
             //field excluding middle line
             if (isBallInField(ballPos, 

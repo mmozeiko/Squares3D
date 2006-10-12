@@ -6,6 +6,7 @@
 #include "language.h"
 #include "player.h"
 #include "colors.h"
+#include "profile.h"
 
 Account::Account() : 
     m_total(0),

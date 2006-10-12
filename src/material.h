@@ -21,8 +21,8 @@ public:
     Vector  m_cEmission; // (0.0f, 0.0f, 0.0f, 1.0f)
     float   m_cShine;    // 0.0f
 
-    void enable() const;
-    void disable() const;
+    void bind() const;
+    //void unbind() const;
 private: 
     Material(const XMLnode& node);
 

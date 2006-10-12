@@ -25,7 +25,13 @@ static void GLFWCALL sizeCb(int width, int height)
     glLoadIdentity();
 }
 
-Video::Video() : m_haveShaders(false), m_haveShadows(false), m_haveShadowsFB(false), m_haveVBO(false), m_shadowMap3ndPass(false)
+Video::Video() :
+    m_haveShaders(false),
+    m_haveShadows(false),
+    m_haveShadowsFB(false),
+    m_haveVBO(false),
+    m_shadowMap3ndPass(false),
+    m_lastBound(NULL)
 {
     setInstance(this);
 
@@ -281,7 +287,31 @@ void Video::renderSphere(float radius) const
 {
     gluSphere(m_quadricSphere, radius, 16, 16);
 }
+
+void Video::renderCylinder(float radius, float height) const
+{
+    gluCylinder(m_quadricSphere, radius, radius, height, 16, 16);
     
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, height);
+    gluDisk(m_quadricSphere, 0.0, radius, 16, 16);
+    glPopMatrix();
+
+    glPushMatrix();
+    glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
+    gluDisk(m_quadricSphere, 0.0, radius, 16, 16);
+    glPopMatrix();
+}
+
+void Video::renderCone(float radius, float height) const
+{
+    gluCylinder(m_quadricSphere, radius, 0.0f, height, 16, 16);
+    glPushMatrix();
+    glRotatef(180.0, 1.0, 0.0, 0.0);
+    gluDisk(m_quadricSphere, 0.0, radius, 16, 16);
+    glPopMatrix();
+}
+
 void Video::renderSphereHiQ(float radius) const
 {
     gluSphere(m_quadricSphereHiQ, radius, 64, 64);
@@ -374,20 +404,24 @@ void Video::end(const Shader* shader) const
     }
 }
 
-void Video::enableMaterial(const Material* material) const
+void Video::bind(const Material* material) const
 {
-    if (material != NULL)
+    if (m_lastBound == material)
     {
-        material->enable();
+        return;
     }
-}
 
-void Video::disableMaterial(const Material* material) const
-{
+    if (m_lastBound != NULL)
+    {
+        //m_lastBound->unbind();
+    }
+
     if (material != NULL)
     {
-        material->disable();
+        material->bind();
     }
+
+    m_lastBound = material;
 }
 
 Texture* Video::loadTexture(const string& name, bool mipmap)

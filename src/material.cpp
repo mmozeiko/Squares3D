@@ -64,7 +64,7 @@ Material::Material(const XMLnode& node) :
         //}
 }
 
-void Material::enable() const
+void Material::bind() const
 {
     //Video::glActiveTextureARB(GL_TEXTURE0_ARB);
     m_texture->bind();
@@ -84,16 +84,16 @@ void Material::enable() const
     */
 }
 
-void Material::disable() const
+/*
+void Material::unbind() const
 {
-    /*
     if (Video::instance->m_haveShaders && (m_shader != NULL))
     {
         Video::instance->end(m_shader);
         Video::glActiveTextureARB(GL_TEXTURE1_ARB);
         m_textureBump->end();
     }
-    */
 
-    //Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
 }
+*/

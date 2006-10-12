@@ -152,6 +152,11 @@ public:
         return std::sqrt(x*x + y*y + z*z);
     }
 
+    float magnitude2() const
+    {
+        return x*x + y*y + z*z;
+    }
+
     void norm()
     {
         float L = std::sqrt(x*x + y*y + z*z);

@@ -24,6 +24,10 @@ void Input::update()
 {
     glfwGetMousePos(&m_mouse.x, &m_mouse.y);
     m_mouse.z = glfwGetMouseWheel();
+    
+    m_mouse.b = 0;
+    m_mouse.b |= 1 & glfwGetMouseButton(GLFW_MOUSE_BUTTON_1);
+    m_mouse.b |= 2 & glfwGetMouseButton(GLFW_MOUSE_BUTTON_2);
 }
 
 bool Input::key(int key) const

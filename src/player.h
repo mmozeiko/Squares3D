@@ -3,8 +3,8 @@
 
 #include "common.h"
 #include "body.h"
-#include "profile.h"
 #include "level.h"
+#include "timer.h"
 
 class Referee;
 class Collision;
@@ -18,9 +18,12 @@ public:
     virtual ~Player();
 
     virtual void halt() {}
+    
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);
     void setJump(bool needJump);
+    void setKick(const Vector& kick);
+
     void setPositionRotation(const Vector& position, const Vector& rotation);
 
     virtual void control() = 0;
@@ -52,8 +55,10 @@ protected:
 
     Vector       m_direction;
     Vector       m_rotation;
+    Timer        m_timer;
 
     const Collision* m_levelCollision;
+    Body*            m_ballBody;
 };
 
 #endif

@@ -19,6 +19,7 @@
 #include "vmath.h"
 #include "colors.h"
 #include "xml.h"
+#include "random.h"
 
 const static string USER_PROFILE_FILE = "/user.xml";
 
@@ -32,8 +33,8 @@ string g_optionsEntry;
 
 Game::Game() : 
     m_fixedTimestep(true),
-    m_difficulty(0),
-    m_unlockedDifficulty(0),
+    m_unlockable(-1),
+    m_current(0),
     m_userProfile(NULL)
 {
     // these and only these objects are singletons,
@@ -52,7 +53,7 @@ Game::Game() :
     {
         g_needsToReload = false;
 
-        Menu* menu = new Menu(m_userProfile, &m_unlockables);
+        Menu* menu = new Menu(m_userProfile, m_unlockable, m_current);
         menu->setSubmenu(g_optionsEntry);
         m_state = menu;
     }
@@ -60,7 +61,7 @@ Game::Game() :
     {
         m_state = new Intro();
         m_fixedTimestep = false;
-    }
+    }    
     m_state->init();
 
     m_network->createClient();
@@ -223,7 +224,6 @@ void Game::run()
         {
             delete m_state;
             m_state = switchState(newState);
-            m_state->m_current = newState;
             m_state->init();
 
             timer.reset();
@@ -275,17 +275,8 @@ State* Game::switchState(const State::Type nextState)
     case State::Intro:
         m_fixedTimestep = false;
         return new Intro();
-    case State::MenuEasy   : 
-    case State::MenuNormal : 
-    case State::MenuHard   : if (m_unlockables.m_difficulty < (nextState - State::MenuEasy))
-                             {
-                                 //user has cleared higher level than before - unlock next difficulty
-                                 m_unlockables.m_difficulty = nextState - State::MenuEasy;
-                             }
-                             return new Menu(m_userProfile, &m_unlockables);
-    case State::WorldEasy  :
-    case State::WorldNormal:
-    case State::WorldHard  : return new World(m_userProfile, nextState - State::WorldEasy);
+    case State::Menu  : return new Menu(m_userProfile, m_unlockable, m_current);
+    case State::World : return new World(m_userProfile, m_unlockable, m_current);
     default:
         assert(false);
         return NULL;
@@ -320,9 +311,19 @@ void Game::loadUserData()
                 for each_const(XMLnodes, node.childs, iter)
                 {
                     const XMLnode& node = *iter;
-                    if (node.name == "difficulty")
+                    if (node.name == "magic")
                     {
-                        m_unlockables.m_difficulty = cast<int>(node.getAttribute("unlocked"));
+                        unsigned int magic1 = node.getAttribute<unsigned int>("magic1");
+                        unsigned int magic2 = node.getAttribute<unsigned int>("magic2");
+                        unsigned int magic3 = node.getAttribute<unsigned int>("magic3");
+                        unsigned int magic4 = node.getAttribute<unsigned int>("magic4");
+                        
+                        m_unlockable = ((magic1 + magic2) ^ magic4) - magic3;
+
+                        if (m_unlockable < 0 || m_unlockable > 2)
+                        {
+                            m_unlockable = 0;
+                        }
                     }
                     else
                     {
@@ -337,7 +338,7 @@ void Game::loadUserData()
                 throw Exception("Invalid profile file, unknown profile parameter '" + node.name + "' at line " + line);
             }
         }
-        if ((m_difficulty == -1) || (m_userProfile == NULL))
+        if ((m_unlockable == -1) || (m_userProfile == NULL))
         {
             throw Exception("Corrupted user profile file!");
         }
@@ -345,7 +346,7 @@ void Game::loadUserData()
     else
     {
         m_userProfile = new Profile();
-        m_difficulty = 0;
+        m_unlockable = 0;
     }
 }
 
@@ -369,8 +370,16 @@ void Game::saveUserData()
     
     xml.childs.push_back(XMLnode("other_data"));
     XMLnode& other_data = xml.childs.back();
-    other_data.childs.push_back(XMLnode("difficulty"));
-    other_data.childs.back().setAttribute("unlocked", cast<string>(m_unlockables.m_difficulty));
+    other_data.childs.push_back(XMLnode("magic"));
+    
+    unsigned int magic1 = Random::getInt();
+    unsigned int magic2 = Random::getInt();
+    unsigned int magic3 = Random::getInt();
+    unsigned int magic4 = (magic1 + magic2) ^ (magic3 + static_cast<unsigned int>(m_unlockable));
+    other_data.childs.back().setAttribute("magic1", cast<string>(magic1));
+    other_data.childs.back().setAttribute("magic2", cast<string>(magic2));
+    other_data.childs.back().setAttribute("magic3", cast<string>(magic3));
+    other_data.childs.back().setAttribute("magic4", cast<string>(magic4));
 
     File::Writer out(USER_PROFILE_FILE);
     if (!out.is_open())

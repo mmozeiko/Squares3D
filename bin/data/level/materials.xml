@@ -2,80 +2,49 @@
     <materials>
         <material id="grass">
             <texture2D name="grass"/>
-            <colors>
-                <ambient r="0.8" g="0.8" b="0.8" />
-            </colors>
         </material>
+
+        <material id="fir_bark">
+            <texture2D name="fir_bark"/>
+        </material>
+
 
         <material id="penguin">
             <texture2D name="player"/>
-            <colors>
-                <ambient r="0.8" g="0.8" b="0.8" />
-            </colors>
         </material>
 
         <material id="football">
             <texture2D name="ball"/>
-            <colors>
-                <ambient r="0.8" g="0.8" b="0.8" />
-            </colors>
         </material>
 
         <material id="pavement">
             <texture2D name="pavement"/>
-            <colors>
-                <ambient r="0.8" g="0.8" b="0.8" />
-            </colors>
-        </material>
-
-        <material id="rock">
-            <texture2D name="rock"/>
-            <colors>
-                <ambient r="0.5" g="0.5" b="0.5" />
-                <shine>1.0</shine>
-            </colors>
         </material>
 
         <material id="brick">
             <texture2D name="brick"/>
-            <colors>
-                <ambient r="0.5" g="0.5" b="0.5" />
-                <shine>1.0</shine>
-            </colors>
         </material>
 
         <material id="window">
             <texture2D name="window"/>
-            <colors>
-                <ambient r="0.5" g="0.5" b="0.5" />
-                <shine>1.0</shine>
-            </colors>
         </material>
 
         <material id="door">
             <texture2D name="door"/>
-            <colors>
-                <ambient r="0.5" g="0.5" b="0.5" />
-                <shine>1.0</shine>
-            </colors>
         </material>
         
         <material id="roof">
             <texture2D name="roof"/>
-            <colors>
+            <!--colors>
                 <ambient r="0.5" g="0.5" b="0.5" />
+                <specular r="0.5" g="0.5" b="0.5" />
+                <diffuse r="0.5" g="0.5" b="0.5" />
                 <shine>1.0</shine>
-            </colors>
+            </colors-->
         </material>
         
         <material id="wood">
             <texture2D name="wood"/>
-            <colors>
-                <ambient r="0.5" g="0.5" b="0.5" />
-                <!--specular r="1.0" g="1.0" b="1.0" /-->
-                <!--emission r="0.0" g="0.0" b="0.0" /-->
-                <shine>1.0</shine>
-            </colors>
         </material>
 
     </materials>

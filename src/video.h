@@ -46,6 +46,8 @@ public:
     void renderFace(const Face& face) const;
     void renderSphere(float radius = 1.0f) const;
     void renderSphereHiQ(float radius = 1.0f) const;
+    void renderCylinder(float radius, float height) const;
+    void renderCone(float radius, float height) const;
     void renderAxes(float size = 5.0f) const;
     void renderRoundRect(const Vector& lower, const Vector& upper, float r) const;
     void renderSimpleShadow(float r, const Vector& pos, const Collision* level, const Vector& color) const;
@@ -57,8 +59,8 @@ public:
     void begin(const Shader* shader) const;
     void end(const Shader* shader) const;
 
-    void enableMaterial(const Material* material) const;
-    void disableMaterial(const Material* material) const;
+    void bind(const Material* material) const;
+
     IntPair getResolution() const;
     const IntPairVector& getModes() const;
 
@@ -140,8 +142,10 @@ private:
 
     unsigned int  m_cubeList;
 
-    vector<float>    m_circleSin;
-    vector<float>    m_circleCos;
+    vector<float> m_circleSin;
+    vector<float> m_circleCos;
+
+    mutable const Material* m_lastBound;
 };
 
 #endif

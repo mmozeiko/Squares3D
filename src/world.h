@@ -26,7 +26,7 @@ typedef vector<Profile*> ProfilesVector;
 class World : public State, public System<World>
 {
 public:
-    World(const Profile* userProfile, int difficulty);
+    World(const Profile* userProfile, int& unlockable, int current);
     ~World();
 
     void init();
@@ -51,9 +51,11 @@ public:
     ScoreBoard*      m_scoreBoard;
 
 private:
+    int&           m_unlockable;
+    int            m_current;
+
     bool           m_freeze;
     const Profile* m_userProfile;
-    int            m_difficulty;
     Message*       escMessage;
 
     void addShuffledCpuProfiles(const ProfilesVector* profiles, size_t count);

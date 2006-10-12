@@ -21,13 +21,6 @@ const Vector gravityVec(0.0f, -9.81f, 0.0f);
 extern bool   g_needsToReload;
 extern string g_optionsEntry;
 
-struct Unlockables
-{
-    Unlockables() : m_difficulty(0), m_extraLevel(false) {}
-    int m_difficulty;
-    bool m_extraLevel;
-};
-
 class Game : NoCopy
 {
 public:
@@ -49,10 +42,9 @@ public:
 private:
     State*      m_state;
     Profile*    m_userProfile;
-    int         m_difficulty;
-    int         m_unlockedDifficulty;
     bool        m_fixedTimestep;
-    Unlockables m_unlockables;
+    int         m_unlockable;
+    int         m_current;
 
     State* switchState(const State::Type newState);
     void saveUserData();

@@ -38,9 +38,9 @@ Profile::Profile(const XMLnode& node) :
         }
         else if (node.name == "properties")
         {
-            m_speed = cast<float>(node.getAttribute("speed"));
-            m_jump = cast<float>(node.getAttribute("jump"));
-            m_accuracy = cast<float>(node.getAttribute("accuracy"));
+            m_speed = node.getAttribute<float>("speed");
+            m_jump = node.getAttribute<float>("jump");
+            m_accuracy = node.getAttribute<float>("accuracy");
         }
         else
         {

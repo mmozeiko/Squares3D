@@ -14,8 +14,8 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_gras
     //size of grass face
     static const float SIZE = 0.4f;
 
-    const Vector lower(-2.99f, 0.0f, -2.99f);
-    const Vector upper(2.99f, 0.0f, 2.99f);
+    const Vector lower(-3.2f, 0.0f, -3.2f);
+    const Vector upper(3.2f, 0.0f, 3.2f);
   
     for each_const(FaceSet, level->m_faces, iter)
     {
@@ -99,7 +99,7 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_gras
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 
-    m_grassTex = Video::instance->loadTexture("grassWalpha");
+    m_grassTex = Video::instance->loadTexture("grassThingy");
     m_grassTex->setWrap(Texture::Clamp);
 }
 

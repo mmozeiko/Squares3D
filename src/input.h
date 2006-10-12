@@ -7,7 +7,7 @@
 
 struct Mouse
 {
-    int x, y, z;
+    int x, y, z, b;
 };
 
 class Input : public System<Input>, NoCopy

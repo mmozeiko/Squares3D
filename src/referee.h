@@ -11,13 +11,13 @@ class Ball;
 class Messages;
 class ScoreBoard;
 
-typedef map<const Body*, Player*> BodyToPlayerDataMap;
+typedef map<const Body*, Player*> BodyToPlayerMap;
 
 class Referee : NoCopy
 {
 public:
 
-    BodyToPlayerDataMap      m_players;
+    BodyToPlayerMap          m_players;
     Body*                    m_ball;
     const Body*              m_ground;
     const Body*              m_field;
@@ -29,33 +29,37 @@ public:
 
     Referee(Messages* messages, ScoreBoard* scoreBoard);
 
-    void processBallPlayer(const Body* otherBody);
-    void processBallGround();
     void registerBall(Ball* ball);
     void registerPlayers(const vector<Player*> players);
     void process(const Body* body1, const Body* body2);
-    void manageGame();
-    void initEvents();
     void update();
     void resetBall();
-    void registerFaultTime();
-    void processCriticalEvent();
     void registerBallEvent(const Body* ground, const Body* otherBody);
-    void registerPlayerEvent(const Body* player, const Body* other);
-    void processPlayerGround(const Body* player);
+
     string getLoserName() const;
 
-    bool        m_mustResetBall;
+    bool m_mustResetBall;
 
 private:
+    void initEvents();
+    void haltCpuPlayers();
     bool isGroundObject(const Body* body);
-    
+    void processBallPlayer(const Body* otherBody);
+    void processBallGround();
+    void registerFaultTime();
+    void processCriticalEvent();
+    void registerPlayerEvent(const Body* player, const Body* other);
+    void processPlayerGround(const Body* player);
+
+
     Vector      m_ballResetPosition; 
     Vector      m_ballResetVelocity;
     Timer       m_timer;
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;
     int         m_matchPoints;
+    int         m_waitForGround;
+    bool        m_waitForDiagonalPlayerOrGround;
 
     Vector      m_lastTouchedPosition;
 };

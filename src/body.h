@@ -31,7 +31,9 @@ class Body : public Collideable
 public:
     void prepare();
     void render() const;
+    
     void setTransform(const Vector& position, const Vector& rotation);
+    void setKickForce(const Vector& force);
 
     Vector getPosition() const;
     Vector getRotation() const;
@@ -66,10 +68,11 @@ protected:
 
 private:
 
-    float           m_totalMass;
-    Vector          m_totalInertia;
-    Collideable*    m_collideable;
-    Vector          m_velocity;
+    float        m_totalMass;
+    Vector       m_totalInertia;
+    Collideable* m_collideable;
+    Vector       m_velocity;
+    Vector       m_kickForce;
 
     void onSetForceAndTorque();
     static void onSetForceAndTorque(const NewtonBody* newtonBody);
