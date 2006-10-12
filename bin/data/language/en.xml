@@ -9,6 +9,7 @@
     <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
     <item name="HITS"                  value="$1 Hits!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
+    <item name="PLAYER_UNALLOWED"      value="$1 touched the ball preliminary!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
 Press ESCAPE to continue

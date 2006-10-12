@@ -17,6 +17,12 @@ void AiPlayer::halt()
     m_halt = true;
 }
 
+void AiPlayer::release() 
+{
+    //ok you can go..
+    m_halt = false;
+}
+
 AiPlayer::~AiPlayer()
 {
 }

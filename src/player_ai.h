@@ -13,6 +13,7 @@ public:
     ~AiPlayer();
 
     void halt();
+    void release();
 
     void control();
 };

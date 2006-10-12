@@ -18,6 +18,7 @@ public:
     virtual ~Player();
 
     virtual void halt() {}
+    virtual void release() {}
     
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);

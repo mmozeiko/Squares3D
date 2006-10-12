@@ -738,7 +738,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
                 m_vertices.push_back(v0);
                 m_normals.push_back(normal);
-                m_uv.push_back(UV(x/2, z/2));
+                m_uv.push_back(UV(x*1.5f, z*1.5f));
 
                 if (x == size2)
                 {

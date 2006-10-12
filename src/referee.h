@@ -42,7 +42,9 @@ public:
 
 private:
     void initEvents();
-    void haltCpuPlayers();
+    void haltCpuPlayers(const Player* except = NULL) const;
+    void releaseCpuPlayers() const;
+    Player* getDiagonalPlayer(const Player* player) const;
     bool isGroundObject(const Body* body);
     void processBallPlayer(const Body* otherBody);
     void processBallGround();
@@ -58,8 +60,9 @@ private:
     ScoreBoard* m_scoreBoard;
     Messages*   m_messages;
     int         m_matchPoints;
-    int         m_waitForGround;
-    bool        m_waitForDiagonalPlayerOrGround;
+    int         m_haltWait;
+    bool        m_playersAreHalted;
+    Player*     m_lastWhoGotPoint;
 
     Vector      m_lastTouchedPosition;
 };

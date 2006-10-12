@@ -10,8 +10,11 @@
 #include "language.h"
 #include "colors.h"
 #include "profile.h"
+#include "random.h"
 
 static const float BALL_RESET_TIME = 2.0f;
+//TODO: make universaly proportional to field size?
+static const float lineWeight = 0.15f;
 
 bool isBallInField(const Vector& position, 
                    const Vector& lowerLeft, 
@@ -28,9 +31,6 @@ bool isBallInField(const Vector& position,
     Vector center = getSquareCenter(_lowerLeft, _upperRight);
 
     int quadrant = getQuadrant(center);
-
-    //TODO: make universaly proportional to field size?
-    float lineWeight = 0.15f;
 
     //adjust the field size to take middle line into account
     switch(quadrant)
@@ -91,14 +91,15 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_field(NULL),
     m_lastFieldOwner(NULL),
     m_lastTouchedPlayer(NULL),
+    m_lastWhoGotPoint(NULL),
     m_humanPlayer(NULL),
     m_gameOver(false),
     m_mustResetBall(false),
     m_timer(),
     m_scoreBoard(scoreBoard),
     m_messages(messages),
-    m_waitForGround(3),
-    m_waitForDiagonalPlayerOrGround(false),
+    m_haltWait(3),
+    m_playersAreHalted(false),
     m_matchPoints(21)
 {
     initEvents();
@@ -131,29 +132,58 @@ void Referee::update()
     }
 }
 
-void Referee::haltCpuPlayers()
+Player* Referee::getDiagonalPlayer(const Player* player) const
+{
+    Vector dFieldCenter;
+    Player* returnPtr = NULL;
+    dFieldCenter.x = player->getFieldCenter().x * -1;
+    dFieldCenter.z = player->getFieldCenter().z * -1;
+    for each_const(BodyToPlayerMap, m_players, iter)
+    {
+        if (iter->second->getFieldCenter() == dFieldCenter)
+        {
+            returnPtr = iter->second;
+            break;
+        }
+    }
+    assert(returnPtr != NULL);
+    return returnPtr;
+}
+
+void Referee::haltCpuPlayers(const Player* except) const
 {
     for each_const(BodyToPlayerMap, m_players, iter)
     {
-        iter->second->halt();
+        if (iter->second != except)
+        {
+            iter->second->halt();
+        }
+    }
+}
+
+void Referee::releaseCpuPlayers() const
+{
+    for each_const(BodyToPlayerMap, m_players, iter)
+    {
+        iter->second->release();
     }
 }
 
 void Referee::resetBall()
 {
-    Vector resetPosition = Vector(0, 1.5f, 0);
+    float random = static_cast<float>(Random::getIntN(2) + 1) / 50;
+    Vector resetPosition(random, 1.8f, random);
     Vector velocity = Vector::Zero;
-    m_waitForGround = 1;
 
-    if ((m_lastTouchedObject != NULL) 
-     || (m_lastTouchedPlayer != NULL)
-     || (m_lastFieldOwner != NULL))
+    if (m_lastWhoGotPoint != NULL)
     {
         //the game was in progress
         if (m_lastTouchedObject == NULL)
         {
             //middle line -> reset coords in center
-            resetPosition = Vector(0, resetPosition.y * 3, 0);
+            resetPosition.y *= 3;
+            haltCpuPlayers();
+            m_haltWait = 1;
         }
         else 
         {
@@ -163,28 +193,31 @@ void Referee::resetBall()
                 //ball has left game field from one of players fields
                 //also happens when player touches twice
                 //reset from last owner (m_lastFieldOwner)
-                center = m_players.find(m_lastFieldOwner)->second->getFieldCenter();
+                center = m_lastWhoGotPoint->getFieldCenter();
             }
             else
             {
                 //ball has left game field from one of the players
                 //reset from m_lastTouchedPlayer
-                center = m_players.find(m_lastTouchedPlayer)->second->getFieldCenter();
+                center = m_lastWhoGotPoint->getFieldCenter();
             }
             //set the reset position to center of players field
             resetPosition = Vector(center.x, resetPosition.y, center.z);
             velocity = (Vector::Zero - resetPosition) * 2;
-            m_waitForDiagonalPlayerOrGround = true;
+            haltCpuPlayers(getDiagonalPlayer(m_lastWhoGotPoint));
+            m_haltWait = 2;
         }
+        m_playersAreHalted = true;
     }
     else
     {
         //the game has just begun
         //reset coords in center and ball must hit the ground 3 times (TODO)
         //before it can be touched by players
-        m_waitForGround = 3;
-        resetPosition = Vector(0, resetPosition.y * 3, 0);
-        //haltCpuPlayers();
+        resetPosition.y *= 3;
+        m_haltWait = 3;
+        m_playersAreHalted = true;
+        haltCpuPlayers();
     }
 
     //m_ball->set
@@ -319,6 +352,18 @@ void Referee::processPlayerGround(const Body* player)
 
 void Referee::processBallGround()
 {
+    if (m_playersAreHalted)
+    {
+        clog << ">>>dadadadadadad" << endl;
+        m_haltWait--;
+        if (m_haltWait == 0)
+        {
+            m_playersAreHalted = false;
+            releaseCpuPlayers();
+        }
+    }
+
+
     Vector ballPos(m_ball->getPosition());
 
     if (!isPointInRectangle(ballPos, 
@@ -344,6 +389,7 @@ void Referee::processBallGround()
                     m_lastTouchedObject->getPosition(),
                     Red,
                     Font::Align_Center));
+                m_lastWhoGotPoint = m_players.find(m_lastTouchedObject)->second;
             }
 
             else if (m_lastFieldOwner != NULL) //if ground was touched in one of the players field last add points to owner
@@ -374,6 +420,7 @@ void Referee::processBallGround()
                     m_ball->getPosition(),
                     Red,
                     Font::Align_Center));
+                m_lastWhoGotPoint = m_players.find(m_lastFieldOwner)->second;
             }
         }
         else
@@ -415,6 +462,39 @@ void Referee::processBallPlayer(const Body* player)
 
     string playerName = player->m_id;
 
+    //look if players are obeying rules after the ball reset
+    if (m_playersAreHalted)
+    {
+        if ((m_lastTouchedObject == NULL) 
+            || (m_players.find(player)->second != getDiagonalPlayer(m_lastWhoGotPoint)))
+        {
+            //unnallowed action allowed - critical event
+            //either player touched the ball after the throw in middle line,
+            //but the ball hasn`t touched the ground enough times
+            //or player was not allowed to touch the ball after the fault throw-in
+
+            int points = m_scoreBoard->addPoint(playerName);
+            m_messages->add3D(new FlowingMessage(
+                                    Language::instance->get(TEXT_PLAYER_UNALLOWED)(playerName)(points),
+                                    player->getPosition(),
+                                    Red,
+                                    Font::Align_Center));
+
+            m_lastTouchedObject = player;
+            m_lastTouchedPlayer = player;
+            m_lastTouchedPosition = player->getPosition();
+            m_lastWhoGotPoint = m_players.find(player)->second;
+            processCriticalEvent();
+            goto end;
+        }
+        else
+        {
+            //all ok - player was on diagonal and was allowed to touch
+            releaseCpuPlayers();
+        }
+    }
+
+
     if (m_lastTouchedObject == NULL) // last object is neither ground nor player,
     {
         m_scoreBoard->resetCombo(); //resetting combo in case picked from middle line
@@ -452,6 +532,7 @@ void Referee::processBallPlayer(const Body* player)
                 Red,
                 Font::Align_Center));
 
+            m_lastWhoGotPoint = m_players.find(player)->second;
             processCriticalEvent();
             //TODO: restructure ifs?
             goto end;
