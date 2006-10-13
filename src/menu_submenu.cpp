@@ -9,6 +9,7 @@
 #include "input.h"
 #include "font.h"
 #include "colors.h"
+#include "sound.h"
 
 void Submenu::onChar(int ch)
 {
@@ -33,6 +34,7 @@ void Submenu::control(int key)
     if ((key == GLFW_KEY_DOWN) || (key == GLFW_KEY_UP))
     {
         activateNextEntry(key == GLFW_KEY_DOWN);
+        m_menu->m_sound->play(m_menu->m_soundOver);
     }
 
     //adjust active entry depending on mouse position
@@ -43,6 +45,10 @@ void Submenu::control(int key)
             && currentEntry->isMouseOver(mousePos)
             && (currentEntry->isEnabled()))
         {
+            if (m_activeEntry != i)
+            {
+                m_menu->m_sound->play(m_menu->m_soundOver);
+            }
             m_activeEntry = i;
             break;
         }
@@ -147,6 +153,7 @@ void Submenu::activateNextEntry(bool moveDown)
         {
             activateNextEntry(moveDown);
         }
+
     }
 }
 

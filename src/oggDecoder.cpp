@@ -117,3 +117,9 @@ size_t OggDecoder::decode(char* buffer, const size_t bufferSize)
     }
     return written;
 }
+
+void OggDecoder::reset()
+{
+    ov_raw_seek(&m_oggFile, 0);
+}
+

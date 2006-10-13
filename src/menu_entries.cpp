@@ -10,6 +10,7 @@
 #include "video.h"
 #include "colors.h"
 #include "geometry.h"
+#include "sound.h"
 
 /*** COLORVALUE ***/
 
@@ -183,9 +184,10 @@ void ColorEntry::click(int button)
         || (button == GLFW_KEY_RIGHT)
         || (button == GLFW_KEY_ENTER))
     {
-         m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
+        m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
                               || (button == GLFW_KEY_RIGHT)
                               || (button == GLFW_KEY_ENTER));
+        m_menu->m_sound->play(m_menu->m_soundChange);
     }
     m_binding = colors.find(m_value.getCurrent())->second;
 }
@@ -245,6 +247,9 @@ void WorldEntry::click(int button)
     {
         m_current = m_switchTo;
         m_menu->setState(State::World);
+
+        // TODO: world entry sound
+        //m_menu->m_sound->play(m_menu->m_soundChange);
     }
 }
 
@@ -255,6 +260,8 @@ void QuitEntry::click(int button)
     if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         m_menu->setState(State::Quit);
+        // TODO: quit entry sound
+        //m_menu->m_sound->play(m_menu->m_soundChange);
     }
 }
 
@@ -263,5 +270,6 @@ void SubmenuEntry::click(int button)
     if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         m_menu->setSubmenu(m_submenuToSwitchTo); 
+        m_menu->m_sound->play(m_menu->m_soundClick);
     }
 }

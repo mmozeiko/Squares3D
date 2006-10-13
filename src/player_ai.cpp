@@ -62,13 +62,13 @@ void AiPlayer::control()
     }
     else
     {
-        // CHARACTER: 0.75f - jump coeficient, recommended 1.0f (always jumpy) - 0.5f (1/2 jumpy)
+        // CHARACTER: 0.75f - jump coeficient, recommended 1.0f (always jumpy) - 0.8f
 
-        if (important &&                    // if moving towars ball
-            dir.magnitude() < 0.7f &&       // and ball is nearby
+        if (important &&                    // if moving towards ball
+            dir.magnitude() < 1.0f &&       // and ball is nearby
             ball->getVelocity().y > 0 &&    // and ball is going upwards
-            ball->getPosition().y > 0.4f && // and ball is flying 
-            Random::getFloat()<0.75f        // and very probable random
+            ball->getPosition().y > 0.3f && // and ball is flying 
+            Random::getFloat() < m_jumpCoefficient // and very probable random
             )
         {
             setJump(true);
@@ -79,7 +79,7 @@ void AiPlayer::control()
         }
 
         // CHARACTER: move acccuracy, recommended values 1.0f (precise) - 5.0f (random)
-        const float acc = 2.0f;
+        const float acc = 1.0f / m_accuracyCoefficient;
 
         float r1 = acc*Random::getFloat() - acc/2.0f;
         float r2 = acc*Random::getFloat() - acc/2.0f;
@@ -111,5 +111,5 @@ void AiPlayer::control()
     }
     resultDir.norm();
 
-    setDirection(0.5f * resultDir);
+    setDirection(resultDir);
 }

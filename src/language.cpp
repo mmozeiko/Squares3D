@@ -75,6 +75,9 @@ Language::Language()
     REGISTER_TEXT_TYPE(MAGENTA);
     REGISTER_TEXT_TYPE(GREY);
 
+    REGISTER_TEXT_TYPE(SOUND_VOL);
+    REGISTER_TEXT_TYPE(MUSIC_VOL);
+
 #undef REGISTER_TEXT_TYPE
     
     assert(m_texts.size() == static_cast<int>(TEXT_LAST_ONE));

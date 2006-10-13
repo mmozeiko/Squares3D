@@ -139,6 +139,10 @@ Video::Video() :
         m_circleSin.push_back(std::sin(i*2.0f*M_PI/CIRCLE_DIVISIONS));
         m_circleCos.push_back(std::cos(i*2.0f*M_PI/CIRCLE_DIVISIONS));
     }
+
+    //int i;
+    //glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &i);
+    //clog << i << endl;
 }
 
 Video::~Video()

@@ -5,7 +5,7 @@
 #include "file.h"
 #include "vmath.h"
 
-Texture::Texture(const string& name, bool mipmaps)
+Texture::Texture(const string& name, bool mipmaps) : m_size(0)
 {
     glGenTextures(1, &m_handle);
     glBindTexture(GL_TEXTURE_2D, m_handle);
@@ -13,6 +13,7 @@ Texture::Texture(const string& name, bool mipmaps)
     GLFWimage image;
     loadImage("/data/textures/" + name + ".tga", 0, &image);
     upload(&image, mipmaps);
+    m_size = image.Width;
     glfwFreeImage(&image);
 
     setFilter(Trilinear);

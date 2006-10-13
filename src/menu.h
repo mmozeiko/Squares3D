@@ -14,6 +14,8 @@ class Menu;
 class Entry;
 class Submenu;
 class Profile;
+class Sound;
+class SoundBuffer;
 
 typedef map<string, Submenu*> Submenus;
 
@@ -39,11 +41,15 @@ public:
     Submenu*    m_currentSubmenu;
     Submenus    m_submenus;
 
+    Sound*       m_sound;
+    SoundBuffer* m_soundOver;
+    SoundBuffer* m_soundClick;
+    SoundBuffer* m_soundChange;
+
 private:
     State::Type  m_state;
     Face*        m_backGround;
     Texture*     m_backGroundTexture;
-
 };
 
 #endif

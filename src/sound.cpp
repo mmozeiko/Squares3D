@@ -1,36 +1,28 @@
 #include <AL/al.h>
 
 #include "sound.h"
+#include "sound_buffer.h"
+#include "config.h"
 
-Sound::Sound(const string& filename) : OggDecoder("/data/sound/"+filename)
+Sound::Sound()
 {
-    size_t bufferSize = totalSize();
-
-    char* buffer = new char [bufferSize];
-
-    alGenBuffers(1, &m_buffer);
     alGenSources(1, &m_source);
-
-    size_t written = decode(buffer, bufferSize);
-    if (written != 0)
-    {
-        alBufferData(m_buffer, m_format, buffer, static_cast<int>(written), m_frequency);
-        alSourcei(m_source, AL_BUFFER, m_buffer);
-    }
-    delete [] buffer;
 }
 
 Sound::~Sound()
 {
     stop();
-    alDeleteBuffers(1, &m_buffer);
     alDeleteSources(1, &m_source);
 }
 
-void Sound::play()
+void Sound::play(const SoundBuffer* buffer)
 {
-    alSourceRewind(m_source);
-    alSourcePlay(m_source);
+    alSourceStop(m_source);
+    alSourcei(m_source, AL_BUFFER, buffer->m_buffer);
+    if (Config::instance->m_audio.enabled)
+    {
+        alSourcePlay(m_source);
+    }
 }
 
 void Sound::stop()

@@ -21,8 +21,10 @@
 #include "xml.h"
 #include "random.h"
 
-const static string USER_PROFILE_FILE = "/user.xml";
+static const string USER_PROFILE_FILE = "/user.xml";
 
+static const unsigned int M1 = 0x0BADC0DE;
+static const unsigned int M2 = 0xDEADBEEF;
 
 //#define MAKE_MOVIE
 #define MOVIE_WIDTH 640
@@ -35,7 +37,8 @@ Game::Game() :
     m_fixedTimestep(true),
     m_unlockable(-1),
     m_current(0),
-    m_userProfile(NULL)
+    m_userProfile(NULL),
+    m_state(NULL)
 {
     // these and only these objects are singletons,
     // they all have public static instance attribute
@@ -72,7 +75,10 @@ Game::~Game()
 {
     Font::unload();
     
-    delete m_state;
+    if (m_state != NULL)
+    {
+        delete m_state;
+    }
 
     saveUserData();
 
@@ -318,7 +324,7 @@ void Game::loadUserData()
                         unsigned int magic3 = node.getAttribute<unsigned int>("magic3");
                         unsigned int magic4 = node.getAttribute<unsigned int>("magic4");
                         
-                        m_unlockable = ((magic1 + magic2) ^ magic4) - magic3;
+                        m_unlockable = ((magic1 + magic2 + M1) ^ magic4) - magic3 - M2;
 
                         if (m_unlockable < 0 || m_unlockable > 2)
                         {
@@ -375,7 +381,7 @@ void Game::saveUserData()
     unsigned int magic1 = Random::getInt();
     unsigned int magic2 = Random::getInt();
     unsigned int magic3 = Random::getInt();
-    unsigned int magic4 = (magic1 + magic2) ^ (magic3 + static_cast<unsigned int>(m_unlockable));
+    unsigned int magic4 = (magic1 + magic2 + M1) ^ (magic3 + static_cast<unsigned int>(m_unlockable) + M2);
     other_data.childs.back().setAttribute("magic1", cast<string>(magic1));
     other_data.childs.back().setAttribute("magic2", cast<string>(magic2));
     other_data.childs.back().setAttribute("magic3", cast<string>(magic3));

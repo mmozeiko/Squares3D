@@ -3,14 +3,22 @@ Available:
 
 Hight priority:
 
-Look for CHARACTER: comments in player.cpp/player_ai.cpp files and move to character property fiele (xml i guess).
+Add sounds to collision events in world.
+Build some nice scenery around game field (like houses, some roads, etc.).
+Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
+Main menu background image.
+Add fence in game - something that can be pushed and destroyed.
+Show "game loading..." when starting game?
+Create different players for different difficulty levels.
+
+Look for CHARACTER: comments in player.cpp/player_ai.cpp files and move to profile xml file.
 Look for TODOs, FIXMEs.
 Allow players to kick ball not only forward but to sides also and later backwards.
-Add sounds to collision events in world.
-Fix camera movement speed.
+Fix camera movement speed. // done?
 
 Low priority:
 
+Anisotropic filtering.
 Understand how NewtonReleaseCollision works and release collisions in right places.
 Fix shader lighting position.
 Cleanup Material class, move to video.
@@ -23,14 +31,11 @@ Cleanup begin/end, enable/disable methods in video, make it somehow simplier.
 Split large polygon rendering (ex. cubes) into smaller polygons. May need restructuring collision type="tree" face loading. Needed for correct lightning.
 Network?? (vajag precîzâku tâskiòu ðeit).
 Fill menu system with Options/Multiplayer/Credits/Rules and some other menus you can think of (which are reasonable).
-Build some nice scenery around game field (like houses, some roads, etc.).
 Implement model loading.
-Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
 Implement model animation.
 Implement basic moves for player, kicking the ball, joggling the ball in air, hitting it with head..
 Upgrade the ball control to be more submissive to player actions.
 Add a referee model who whistles when a fault is detected. (optional task)
-
 
 
 Construction:

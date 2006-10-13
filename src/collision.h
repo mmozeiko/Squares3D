@@ -18,6 +18,7 @@ public:
     
     virtual void render() const = 0;
     virtual float getHeight(float x, float z) const;
+    virtual float getRadius() const { return 0.0f; }
 
     NewtonCollision*  m_newtonCollision;
 

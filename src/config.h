@@ -22,6 +22,8 @@ struct VideoConfig
 struct AudioConfig
 {
     bool enabled;
+    int  music_vol;
+    int  sound_vol;
 };
 
 struct MiscConfig

@@ -1,8 +1,9 @@
 #include <AL/al.h>
 
 #include "music.h"
+#include "config.h"
 
-Music::Music(const string& filename) : OggDecoder("/data/music/"+filename)
+Music::Music(const string& filename) : OggDecoder("/data/music/" + filename + ".ogg")
 {
     // m_bufferSize is for 250ms
 
@@ -48,7 +49,10 @@ Music::~Music()
 
 void Music::play(bool looping)
 {
-    alSourcePlay(m_source);
+    if (Config::instance->m_audio.enabled)
+    {
+        alSourcePlay(m_source);
+    }
     m_looping = looping;
 }
 
@@ -68,6 +72,11 @@ void Music::update()
         alSourceUnqueueBuffers(m_source, 1, &buffer);
 
         size_t written = decode(m_buffer, m_bufferSize);
+        if (written == 0 && m_looping)
+        {
+            reset();
+            written = decode(m_buffer, m_bufferSize);
+        }
         if (written > 0)
         {
             alBufferData(buffer, m_format, m_buffer, static_cast<int>(written), m_frequency);
@@ -76,6 +85,7 @@ void Music::update()
         
         processed--;
     }
+
 
     /*
     int state = 0;

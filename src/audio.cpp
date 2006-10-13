@@ -4,6 +4,8 @@
 #include "audio.h"
 #include "config.h"
 #include "music.h"
+#include "sound_buffer.h"
+#include "sound.h"
 
 template <class Audio> Audio* System<Audio>::instance = NULL;
 
@@ -34,11 +36,6 @@ Audio::Audio()
          << " * Vendor   : " << alGetString(AL_VENDOR) << endl
          << " * Renderer : " << alGetString(AL_RENDERER) << endl
          << " * Device   : " << alcGetString(m_device, ALC_DEVICE_SPECIFIER) << endl;
-
-    if (Config::instance->m_audio.enabled == false)
-    {
-        alcSuspendContext(m_context);
-    }
 }
 
 Audio::~Audio()
@@ -51,14 +48,33 @@ Audio::~Audio()
 
 Music* Audio::loadMusic(const string& filename)
 {
-    return *m_music.insert(new Music(filename)).first;
+    Music* music = *m_music.insert(new Music(filename)).first;
+    alSourcef(music->m_source, AL_GAIN, Config::instance->m_audio.music_vol/10.0f);
+    return music;
 }
 
 void Audio::unloadMusic(Music* music)
 {
     m_music.erase(music);
     delete music;
+}
 
+SoundBuffer* Audio::loadSound(const string& filename)
+{
+    return *m_soundBuf.insert(new SoundBuffer(filename)).first;
+}
+
+void Audio::unloadSound(SoundBuffer* soundBuf)
+{
+    m_soundBuf.erase(soundBuf);
+    delete soundBuf;
+}
+
+Sound* Audio::newSound()
+{
+    Sound* sound = *m_sound.insert(new Sound()).first;
+    alSourcef(sound->m_source, AL_GAIN, Config::instance->m_audio.sound_vol/10.0f);
+    return sound;
 }
 
 void Audio::update()
@@ -68,3 +84,12 @@ void Audio::update()
         (*iter)->update();
     }
 }
+
+void Audio::updateVolume(int soundVol, int musicVol)
+{
+    for each_(SoundSet, m_sound, iter)
+    {
+        alSourcef((*iter)->m_source, AL_GAIN, soundVol/10.0f);
+    }
+}
+

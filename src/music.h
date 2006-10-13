@@ -4,7 +4,7 @@
 #include "common.h"
 #include "oggDecoder.h"
 
-#define BUFFER_COUNT 4
+static const int BUFFER_COUNT = 4;
 
 class Music : public OggDecoder
 {

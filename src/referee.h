@@ -35,19 +35,20 @@ public:
     void update();
     void resetBall();
     void registerBallEvent(const Body* ground, const Body* otherBody);
+    bool isGroundObject(const Body* body) const;
 
     string getLoserName() const;
 
     bool m_mustResetBall;
+    bool m_playersAreHalted;
 
 private:
     void initEvents();
-    void haltCpuPlayers(const Player* except = NULL) const;
-    void releaseCpuPlayers() const;
+    void haltCpuPlayers(const Player* except = NULL);
+    void releaseCpuPlayers();
     Player* getDiagonalPlayer(const Player* player) const;
-    bool isGroundObject(const Body* body);
     void processBallPlayer(const Body* otherBody);
-    void processBallGround();
+    void processBallGround(const Body* groundObject);
     void registerFaultTime();
     void processCriticalEvent();
     void registerPlayerEvent(const Body* player, const Body* other);
@@ -61,7 +62,6 @@ private:
     Messages*   m_messages;
     int         m_matchPoints;
     int         m_haltWait;
-    bool        m_playersAreHalted;
     Player*     m_lastWhoGotPoint;
 
     Vector      m_lastTouchedPosition;

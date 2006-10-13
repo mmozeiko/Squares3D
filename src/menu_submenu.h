@@ -6,6 +6,7 @@
 
 class Entry;
 class Font;
+class Menu;
 
 typedef vector<Entry*> Entries;
 
@@ -18,9 +19,9 @@ public:
     float   m_height;
     Vector  m_centerPos;
 
-    Submenu(const Font* font, const Font* fontBig) :
+    Submenu(Menu* menu, const Font* font, const Font* fontBig) :
         m_activeEntry(0), m_height(0), m_title(L""),
-        m_font(font), m_fontBig(fontBig) {}
+        m_font(font), m_fontBig(fontBig), m_menu(menu) {}
     ~Submenu();
 
     void addEntry(Entry* entry);
@@ -42,6 +43,8 @@ private:
     const Font* m_fontBig;
 
     Vector m_previousMousePos;
+
+    Menu* m_menu;
 };
 
 #endif

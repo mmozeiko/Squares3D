@@ -109,7 +109,7 @@ string Referee::getLoserName() const
 {
     return m_scoreBoard->getMostScoreData().first;
 }
-bool Referee::isGroundObject(const Body* body)
+bool Referee::isGroundObject(const Body* body) const
 {
     return ((body == m_ground) || (body == m_field));
 }
@@ -150,19 +150,27 @@ Player* Referee::getDiagonalPlayer(const Player* player) const
     return returnPtr;
 }
 
-void Referee::haltCpuPlayers(const Player* except) const
+void Referee::haltCpuPlayers(const Player* except)
 {
+    m_playersAreHalted = true;
     for each_const(BodyToPlayerMap, m_players, iter)
     {
         if (iter->second != except)
         {
             iter->second->halt();
         }
+        else
+        {
+            //except can go even if he was halted
+            iter->second->release();
+        }
     }
 }
 
-void Referee::releaseCpuPlayers() const
+void Referee::releaseCpuPlayers()
 {
+    m_haltWait = 0;
+    m_playersAreHalted = false;
     for each_const(BodyToPlayerMap, m_players, iter)
     {
         iter->second->release();
@@ -175,7 +183,10 @@ void Referee::resetBall()
     Vector resetPosition(random, 1.8f, random);
     Vector velocity = Vector::Zero;
 
-    if (m_lastWhoGotPoint != NULL)
+    if ((m_lastWhoGotPoint != NULL)
+        || (m_lastTouchedObject != NULL)
+        || (m_lastTouchedPlayer != NULL)
+        || (m_lastFieldOwner != NULL))
     {
         //the game was in progress
         if (m_lastTouchedObject == NULL)
@@ -198,25 +209,25 @@ void Referee::resetBall()
             else
             {
                 //ball has left game field from one of the players
+                //also happens on preliminary touches
                 //reset from m_lastTouchedPlayer
                 center = m_lastWhoGotPoint->getFieldCenter();
             }
             //set the reset position to center of players field
             resetPosition = Vector(center.x, resetPosition.y, center.z);
             velocity = (Vector::Zero - resetPosition) * 2;
-            haltCpuPlayers(getDiagonalPlayer(m_lastWhoGotPoint));
+            Player* exceptPlayer = getDiagonalPlayer(m_lastWhoGotPoint);
+            haltCpuPlayers(exceptPlayer);
             m_haltWait = 2;
         }
-        m_playersAreHalted = true;
     }
     else
     {
         //the game has just begun
-        //reset coords in center and ball must hit the ground 3 times (TODO)
+        //reset coords in center and ball must hit the ground 3 times
         //before it can be touched by players
         resetPosition.y *= 3;
         m_haltWait = 3;
-        m_playersAreHalted = true;
         haltCpuPlayers();
     }
 
@@ -325,9 +336,9 @@ void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 
 void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 {
-    if (isGroundObject(otherBody))
+   if (isGroundObject(otherBody))
     {
-        processBallGround();
+        processBallGround(otherBody);
     }
     else if (foundInMap(m_players, otherBody))
     {
@@ -350,15 +361,13 @@ void Referee::processPlayerGround(const Body* player)
     }
 }
 
-void Referee::processBallGround()
+void Referee::processBallGround(const Body* groundObject)
 {
-    if (m_playersAreHalted)
+    if (m_playersAreHalted && (groundObject == m_field))
     {
-        clog << ">>>dadadadadadad" << endl;
         m_haltWait--;
         if (m_haltWait == 0)
         {
-            m_playersAreHalted = false;
             releaseCpuPlayers();
         }
     }
@@ -468,7 +477,7 @@ void Referee::processBallPlayer(const Body* player)
         if ((m_lastTouchedObject == NULL) 
             || (m_players.find(player)->second != getDiagonalPlayer(m_lastWhoGotPoint)))
         {
-            //unnallowed action allowed - critical event
+            //unnallowed action - critical event
             //either player touched the ball after the throw in middle line,
             //but the ball hasn`t touched the ground enough times
             //or player was not allowed to touch the ball after the fault throw-in
@@ -482,7 +491,6 @@ void Referee::processBallPlayer(const Body* player)
 
             m_lastTouchedObject = player;
             m_lastTouchedPlayer = player;
-            m_lastTouchedPosition = player->getPosition();
             m_lastWhoGotPoint = m_players.find(player)->second;
             processCriticalEvent();
             goto end;

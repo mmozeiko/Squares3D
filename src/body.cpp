@@ -169,8 +169,13 @@ void Body::onSetForceAndTorque()
 {
     Vector force = gravityVec * m_totalMass;
     NewtonBodySetForce(m_newtonBody, force.v);
-    NewtonBodyAddForce(m_newtonBody, m_kickForce.v);
-    m_kickForce = Vector::Zero;
+    
+    if (m_kickForce != Vector::Zero)
+    {
+        NewtonBodySetVelocity(m_newtonBody, Vector::Zero.v);
+        NewtonBodyAddForce(m_newtonBody, m_kickForce.v);
+        m_kickForce = Vector::Zero;
+    }
 
     if (m_collideable != NULL)
     {

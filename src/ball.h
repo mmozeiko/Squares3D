@@ -19,6 +19,8 @@ struct TriggerFlags
 
 typedef map<const Body*, TriggerFlags> TriggerFilterMap;
 
+static const float BALL_RADIUS = 0.2f;
+
 class Ball : public Collideable
 {
 public:

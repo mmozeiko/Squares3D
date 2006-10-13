@@ -25,7 +25,7 @@
 #include "profile.h"
 #include "colors.h"
 
-static const float OBJECT_BRIGHTNESS_1 = 0.25f; // shadowed
+static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
 static const float GRASS_BRIGHTNESS_1 = 0.6f; // shadowed
 static const float GRASS_BRIGHTNESS_2 = 0.7f; // lit
@@ -187,7 +187,7 @@ void World::init()
     // enable some Newton optimization
     NewtonSetSolverModel(m_newtonWorld, 1);
     
-    m_music = Audio::instance->loadMusic("music.ogg");
+    m_music = Audio::instance->loadMusic("music");
     //m_music->play();
 
     m_level = new Level();
@@ -212,6 +212,11 @@ void World::init()
 
     m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
     m_referee->registerBall(m_ball);
+
+    //this is for correct registering when waiting for ball bounce in referee
+    //it is handled specifically in Ball OnCollide
+    m_ball->addBodyToFilter(m_referee->m_field);
+    m_ball->addBodyToFilter(m_referee->m_ground);
 
     for (size_t i = 0; i < m_localPlayers.size(); i++)
     {

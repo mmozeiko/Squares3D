@@ -47,16 +47,25 @@ public:
     Vector            m_lowerLeft;
     Vector            m_upperRight;
 
+    float             m_radius;
+
+    bool              m_halt;
+
 protected:
     NewtonJoint* m_upVector;
 
     bool         m_isOnGround; // TODO: rename, current name is incorrect
     bool         m_jump;
-    bool         m_halt;
 
     Vector       m_direction;
     Vector       m_rotation;
     Timer        m_timer;
+
+    float        m_speedCoefficient;
+    float        m_accuracyCoefficient;
+    float        m_jumpCoefficient;
+    float        m_rotateSpeedCoefficient;
+
 
     const Collision* m_levelCollision;
     Body*            m_ballBody;

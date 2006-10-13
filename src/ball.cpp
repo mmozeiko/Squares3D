@@ -68,9 +68,14 @@ void Ball::addBodyToFilter(const Body* body)
 
 void Ball::onCollide(const Body* other, const NewtonMaterial* material)
 {
-    if (other->m_id == "level" || other->m_id == "field")
+    if (m_referee->isGroundObject(other))
     {
-        m_referee->process(m_body, other);
+        if (!((other->m_id == "field") && m_referee->m_playersAreHalted))
+        {
+            //if it`s not the very special case when players wait for the
+            //ball bounce specified times - register
+            m_referee->process(m_body, other);
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 #include <GL/glfw.h>
+#include <AL/al.h>
 
 #include "menu.h"
 #include "menu_options.h"
@@ -18,6 +19,11 @@
 #include "profile.h"
 #include "colors.h"
 
+#include "audio.h"
+#include "sound.h"
+#include "music.h"
+#include "sound_buffer.h"
+
 class BoolValue : public Value
 {
 public:
@@ -31,7 +37,12 @@ public:
 Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_font(Font::get("Arial_32pt_bold")),
     m_fontBig(Font::get("Arial_72pt_bold")),
-    m_state(State::Current)
+    m_state(State::Current),
+    m_music(NULL),
+    m_sound(NULL),
+    m_soundOver(NULL),
+    m_soundClick(NULL),
+    m_soundChange(NULL)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -55,6 +66,16 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     Input::instance->startKeyBuffer();
     Input::instance->startCharBuffer();
     glfwEnable(GLFW_MOUSE_CURSOR);
+
+    m_sound = Audio::instance->newSound();
+    m_soundOver = Audio::instance->loadSound("menu_over");
+    m_soundClick = Audio::instance->loadSound("menu_click");
+    m_soundChange =Audio::instance->loadSound("menu_change");
+
+    m_music = Audio::instance->loadMusic("menu");
+    m_music->play();
+
+    //alDistanceModel(AL_NONE);
 }
 
 void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
@@ -73,14 +94,14 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     // Main Submenu
 
-    Submenu* submenu = new Submenu(m_font, m_fontBig);
+    Submenu* submenu = new Submenu(this, m_font, m_fontBig);
 
     submenu->setTitle(language->get(TEXT_MAIN_MENU), titlePos);
 
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_START_SINGLEPLAYER), this, "startSingle"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_PLAYER_OPTIONS), this, "playerOptions"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_OPTIONS), this, "options"));
-    submenu->addEntry(new QuitEntry(language->get(TEXT_QUIT_GAME), this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_SINGLEPLAYER), "startSingle"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), "playerOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), "options"));
+    submenu->addEntry(new QuitEntry(this, language->get(TEXT_QUIT_GAME)));
 
     m_currentSubmenu = submenu;
     submenu->center(submenuPosition);
@@ -89,22 +110,22 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     // Start Game Submenu
 
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
 
     submenu->setTitle(language->get(TEXT_START_SINGLEPLAYER), titlePos);
 
-    submenu->addEntry(new WorldEntry(language->get(TEXT_EASY), this, 0, current));
-    submenu->addEntry(new WorldEntry(language->get(TEXT_NORMAL), this, 1, current));
+    submenu->addEntry(new WorldEntry(this, language->get(TEXT_EASY), 0, current));
+    submenu->addEntry(new WorldEntry(this, language->get(TEXT_NORMAL), 1, current));
     if (unlockable < 1)
     {
         submenu->m_entries.back()->disable();
     }
-    submenu->addEntry(new WorldEntry(language->get(TEXT_HARD), this, 2, current));
+    submenu->addEntry(new WorldEntry(this, language->get(TEXT_HARD), 2, current));
     if (unlockable < 2)
     {
         submenu->m_entries.back()->disable();
     }
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
 
     submenu->center(submenuPosition);
     m_submenus["startSingle"] = submenu;
@@ -112,32 +133,32 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
 
     // PLAYER Options Submenu
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_PLAYER_OPTIONS), titlePos);
 
-    submenu->addEntry(new WritableEntry(language->get(TEXT_NAME), userProfile->m_name, submenu));
+    submenu->addEntry(new WritableEntry(this, language->get(TEXT_NAME), userProfile->m_name, submenu));
 
     ColorValue colorValue("color");
-    submenu->addEntry(new ColorEntry(language->get(TEXT_COLOR), userProfile->m_color, colorValue));
+    submenu->addEntry(new ColorEntry(this, language->get(TEXT_COLOR), userProfile->m_color, colorValue));
 
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
 
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["playerOptions"] = submenu;
 
     // Options Submenu
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_OPTIONS), titlePos);
 
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS), this, "videoOptionsEasy"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_AUDIO_OPTIONS), this, "audioOptions"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_OTHER_OPTIONS), this, "otherOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_VIDEO_OPTIONS), "videoOptionsEasy"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_AUDIO_OPTIONS), "audioOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OTHER_OPTIONS), "otherOptions"));
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "main"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
 
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -145,7 +166,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
 
     // VIDEO Options NOOBS Submenu
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS), titlePos);
 
@@ -156,35 +177,35 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
         valueRes.add(wcast<wstring>(resolutions[i].first) 
                             + L"x" + wcast<wstring>(resolutions[i].second));
     }
-    submenu->addEntry(new OptionEntry(language->get(TEXT_RESOLUTION), valueRes));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_RESOLUTION), valueRes));
 
     BoolValue valFS("fullscreen");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_FULLSCREEN), valFS));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_FULLSCREEN), valFS));
 
     Value valEnvDet("environment_details");
     valEnvDet.add(language->get(TEXT_LOW));
     valEnvDet.add(language->get(TEXT_MEDIUM));
     valEnvDet.add(language->get(TEXT_HIGH));
     valEnvDet.add(language->get(TEXT_CUSTOM));
-    submenu->addEntry(new OptionEntry(language->get(TEXT_ENVIRONMENT_DETAILS), valEnvDet));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_ENVIRONMENT_DETAILS), valEnvDet));
 
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_VIDEO_OPTIONS_ADVANCED), this, "videoOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_VIDEO_OPTIONS_ADVANCED), "videoOptions"));
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptionsEasy"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
+    submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "videoOptionsEasy"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
     
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["videoOptionsEasy"] = submenu;
 
     // VIDEO Options ADVANCED Submenu
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_VIDEO_OPTIONS_ADVANCED), titlePos);
 
     BoolValue valVS("vsync");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_VSYNC), valVS));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_VSYNC), valVS));
 
     Value valFSAA("fsaa_samples");
     valFSAA.add(L"0");
@@ -192,39 +213,39 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     valFSAA.add(L"4");
     valFSAA.add(L"6");
     valFSAA.add(L"8");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_FSAA), valFSAA));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_FSAA), valFSAA));
 
     BoolValue valSh("use_shaders");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADERS), valSh));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADERS), valSh));
 
     BoolValue valShad("shadow_type");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOW_TYPE), valShad));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADOW_TYPE), valShad));
 
     Value valShadS("shadowmap_size");
     valShadS.add(language->get(TEXT_LOW));
     valShadS.add(language->get(TEXT_MEDIUM));
     valShadS.add(language->get(TEXT_HIGH));
     valShadS.add(language->get(TEXT_NOT_SUPPORTED));
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHADOWMAP_SIZE), valShadS));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADOWMAP_SIZE), valShadS));
 
     Value valGD("grass_density");
     valGD.add(language->get(TEXT_LOW));
     valGD.add(language->get(TEXT_MEDIUM));
     valGD.add(language->get(TEXT_HIGH));
-    submenu->addEntry(new OptionEntry(language->get(TEXT_GRASS_DENSITY), valGD));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_GRASS_DENSITY), valGD));
 
     Value valTD("terrain_detail");
     valTD.add(language->get(TEXT_LOW));
     valTD.add(language->get(TEXT_MEDIUM));
     valTD.add(language->get(TEXT_HIGH));
-    submenu->addEntry(new OptionEntry(language->get(TEXT_TERRAIN_DETAIL), valTD));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_TERRAIN_DETAIL), valTD));
 
     BoolValue valFPS("show_fps");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SHOW_FPS), valFPS));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHOW_FPS), valFPS));
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "videoOptions"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "videoOptionsEasy"));    
+    submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "videoOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "videoOptionsEasy"));    
     
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -232,16 +253,30 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
 
     // AUDIO Options Submenu
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_AUDIO_OPTIONS), titlePos);
 
     BoolValue valAud("audio");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_AUDIO), valAud));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_AUDIO), valAud));
+
+    Value valMV("music_vol");
+    for (int i=0; i<10; i++)
+    {
+        valMV.add(wcast<wstring>(i));
+    }
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_MUSIC_VOL), valMV));
+
+    Value valSV("sound_vol");
+    for (int i=0; i<10; i++)
+    {
+        valSV.add(wcast<wstring>(i));
+    }
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SOUND_VOL), valSV));
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "audioOptions"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
+    submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "audioOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
     
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -250,7 +285,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     
     // OTHER Options Submenu
-    submenu = new Submenu(m_font, m_fontBig);
+    submenu = new Submenu(this, m_font, m_fontBig);
     
     submenu->setTitle(language->get(TEXT_OTHER_OPTIONS), titlePos);
 
@@ -258,10 +293,10 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     valLang.add(L"ENG");
     valLang.add(L"LAT");
     valLang.add(L"RUS");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_LANGUAGE), valLang));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_LANGUAGE), valLang));
 
     BoolValue valSysK("system_keys");
-    submenu->addEntry(new OptionEntry(language->get(TEXT_SYSTEM_KEYS), valSysK));
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SYSTEM_KEYS), valSysK));
 
     /*
     Value valMS("mouse_sensitivity");
@@ -279,8 +314,8 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     */
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new ApplyOptionsEntry(language->get(TEXT_SAVE), this, "otherOptions"));
-    submenu->addEntry(new SubmenuEntry(language->get(TEXT_BACK), this, "options"));    
+    submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "otherOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
 
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -300,6 +335,12 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
 Menu::~Menu()
 {
+    delete m_sound;
+    Audio::instance->unloadSound(m_soundOver);
+    Audio::instance->unloadSound(m_soundClick);
+    Audio::instance->unloadSound(m_soundChange);
+    Audio::instance->unloadMusic(m_music);
+
     glfwDisable(GLFW_MOUSE_CURSOR);
     Input::instance->endKeyBuffer();
     Input::instance->endCharBuffer();

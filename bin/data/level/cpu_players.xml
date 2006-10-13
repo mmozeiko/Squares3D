@@ -16,7 +16,7 @@
               <profile>
                 <name>Chuck Norris</name>
                 <collision>player_thin</collision>
-                <properties   speed="0.4" accuracy="0.3" jump="0.2" />
+                <properties   speed="0.9" accuracy="0.3" jump="0.2" />
                 <color r="0.5"  g="0.2" b="0.1" />
             </profile>
         </easy>

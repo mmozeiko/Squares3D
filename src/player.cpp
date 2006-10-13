@@ -9,6 +9,18 @@
 #include "xml.h"
 #include "collision.h"
 #include "profile.h"
+#include "ball.h"
+
+static const pair<float, float> jumpMinMax = make_pair(0.2f, 1.0f);
+static const pair<float, float> speedMinMax = make_pair(3.5f, 6.5f);
+static const pair<float, float> rotateSpeedMinMax = make_pair(8.0f, 14.0f);
+static const pair<float, float> accuracyMinMax = make_pair(0.2f, 1.0f);
+
+float _applyCoefficient(const pair<float, float> minMax, float const coefficient)
+{
+    return (minMax.second - minMax.first) * coefficient + minMax.first;
+}
+
 
 Player::Player(const Profile* profile, Level* level) :
     m_referee(NULL),
@@ -27,6 +39,8 @@ Player::Player(const Profile* profile, Level* level) :
     m_body = new Body(m_profile->m_name, collision);
     level->m_bodies[m_profile->m_name] = m_body;
     
+    m_radius = (*m_body->m_collisions.begin())->getRadius();
+    
     // set the viscous damping the minimum
     NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);
     NewtonBodySetAngularDamping(m_body->m_newtonBody, Vector::Zero.v);
@@ -37,6 +51,13 @@ Player::Player(const Profile* profile, Level* level) :
                                                 m_body->m_newtonBody); 
 
     m_body->setCollideable(this);
+
+    //extract the player coefficients
+
+    m_speedCoefficient = _applyCoefficient(speedMinMax, m_profile->m_speed);
+    m_rotateSpeedCoefficient = _applyCoefficient(rotateSpeedMinMax, m_profile->m_speed);
+    m_accuracyCoefficient = _applyCoefficient(accuracyMinMax, m_profile->m_accuracy);
+    m_jumpCoefficient = _applyCoefficient(jumpMinMax, m_profile->m_jump);
 }
 
 void Player::setPositionRotation(const Vector& position, const Vector& rotation)
@@ -62,16 +83,12 @@ void Player::setKick(const Vector& kick)
 {
     Vector dist = m_ballBody->getPosition() - m_body->getPosition();
     
-    if (m_timer.read() > 1.0f && dist.magnitude2() < 0.6f*0.6f) // TODO: (gurkja resnums + bumbas_raadiuss)^2
+    if ( m_timer.read() > 0.4f && dist.magnitude2() < (0.2f+BALL_RADIUS+m_radius)*(0.2f+BALL_RADIUS+m_radius) ) // TODO: (gurkja resnums + bumbas_raadiuss)^2
     {
-        Vector tmp = kick;
-        tmp.norm();
-        
-        // CHARACTER: kick powaaar!
-        tmp *= 500.0f;
+        m_referee->process(m_ballBody, m_body);
 
-        m_ballBody->setKickForce(tmp);
-        // TODO: pazinjot referrijam par tachu
+        // CHARACTER: kick powaaar!
+        m_ballBody->setKickForce(Vector(0, 500, 0)); // 400-700
 
         m_timer.reset();
     }
@@ -90,14 +107,14 @@ Vector Player::getFieldCenter() const
 
 void Player::setDirection(const Vector& direction)
 {
-    // CHARACTER: move speed powaaaar
-    m_direction = 5.0f * direction;
+    // CHARACTER: 5.0f=m_speedCoefficient  = move speed powaaaar
+    m_direction = 0.8f * m_speedCoefficient * direction + 0.2f*m_direction;
 }
 
 void Player::setRotation(const Vector& rotation)
 {
-    // CHARACTER: rotate speed powaaar
-    m_rotation = 11.0f * rotation;
+    // CHARACTER: 11.0f = rotate speed powaaar
+    m_rotation = 0.8f * m_rotateSpeedCoefficient * rotation + 0.2f * m_rotation;
 }
 
 void Player::onSetForceAndTorque()
@@ -123,10 +140,10 @@ void Player::onSetForceAndTorque()
     
     if (m_jump && m_isOnGround)
     {
-        if (currentVel.y < 2.0f) // to avoid n-jumps (n>2)
+        if (currentVel.y < 3.0f) // to avoid n-jumps (n>2)
         {
-            // CHARACTER: jump powaaar!! not higher that 1.5f
-            force.y = 1.0f * timestepInv * m_body->getMass();
+            // CHARACTER: jump powaaar!! not higher that 1.5f - 2.5f
+            force.y = 2.0f * timestepInv * m_body->getMass();
         }
         m_isOnGround = false;
     }

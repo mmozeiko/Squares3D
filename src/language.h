@@ -72,6 +72,9 @@ enum TextType
     TEXT_MAGENTA,
     TEXT_GREY,
 
+    TEXT_SOUND_VOL,
+    TEXT_MUSIC_VOL,
+
     TEXT_LAST_ONE, // THIS MUST BE TEH LAST ONE
 };
 

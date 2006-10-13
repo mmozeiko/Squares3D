@@ -6,12 +6,13 @@
 #include "menu_entries.h"
 
 class Font;
+class Menu;
 
 class OptionEntry : public Entry
 {
 public: 
-    OptionEntry(const wstring& stringIn, const Value& value) :
-        Entry(stringIn), m_value(value) {}
+    OptionEntry(Menu* menu, const wstring& stringIn, const Value& value) :
+        Entry(menu, stringIn), m_value(value) {}
 
     void click(int button);
     wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
@@ -34,8 +35,9 @@ protected:
 class ApplyOptionsEntry : public SubmenuEntry
 {
 public: 
-    ApplyOptionsEntry(const wstring& stringIn, Menu* menu, const string&  submenuToSwitchTo) :
-      SubmenuEntry(stringIn, menu, submenuToSwitchTo) {}
+    ApplyOptionsEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo) :
+      SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+
     void click(int button);
 };
 

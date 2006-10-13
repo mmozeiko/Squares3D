@@ -8,7 +8,7 @@ template <class Config> Config* System<Config>::instance = NULL;
 const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1, true, 1, 1 };
-const AudioConfig Config::defaultAudio = { true };
+const AudioConfig Config::defaultAudio = { true, 5, 5 };
 const MiscConfig Config::defaultMisc = { true, "en", 5.0f };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
@@ -131,6 +131,24 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 {
                     m_audio.enabled = cast<int>(node.value)==1;
                 }
+                else if (node.name == "music_vol")
+                {
+                    int music_vol = cast<int>(node.value);
+                    if (music_vol < 0 || music_vol > 9)
+                    {
+                        music_vol = 5;
+                    }
+                    m_audio.music_vol = music_vol;
+                }
+                else if (node.name == "sound_vol")
+                {
+                    int sound_vol = cast<int>(node.value);
+                    if (sound_vol < 0 || sound_vol > 9)
+                    {
+                        sound_vol = 5;
+                    }
+                    m_audio.sound_vol = sound_vol;
+                }
                 else
                 {
                     string line = cast<string>(node.line);
@@ -198,6 +216,8 @@ Config::~Config()
 
     xml.childs.push_back(XMLnode("audio"));
     xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("music_vol", cast<string>(m_audio.music_vol)));
+    xml.childs.back().childs.push_back(XMLnode("sound_vol", cast<string>(m_audio.sound_vol)));
 
     xml.childs.push_back(XMLnode("misc"));
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));

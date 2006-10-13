@@ -84,4 +84,6 @@ Press ENTER to return to retry..
     <item name="MAGENTA"                  value="Magenta"/>
     <item name="GREY"                     value="Grey"/>
 
+    <item name="MUSIC_VOL"                value="Music volume"/>
+    <item name="SOUND_VOL"                value="Sound volume"/>
 </xml>

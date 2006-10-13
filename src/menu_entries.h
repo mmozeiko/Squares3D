@@ -44,7 +44,7 @@ public:
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(const wstring& stringIn) : m_string(stringIn), m_enabled(true) {}
+    Entry(Menu* menu, const wstring& stringIn) : m_string(stringIn), m_enabled(true), m_menu(menu) {}
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
@@ -67,26 +67,26 @@ public:
 
 protected:
     bool m_enabled;
+    Menu* m_menu;
 };
 
 class SubmenuEntry : public Entry
 {
 public: 
-    SubmenuEntry(const wstring& stringIn, Menu* menu, const string&  submenuToSwitchTo) :
-        Entry(stringIn), m_menu(menu), m_submenuToSwitchTo(submenuToSwitchTo) {}
+    SubmenuEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo) :
+        Entry(menu, stringIn), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
     void click(int button); 
 
 protected:
-    Menu*  m_menu;
     string m_submenuToSwitchTo;
 };
 
 class ColorEntry : public Entry
 {
 public: 
-    ColorEntry(const wstring& label, Vector& binding, const ColorValue& value) :
-      Entry(label), m_binding(binding), m_value(value)
+    ColorEntry(Menu* menu, const wstring& label, Vector& binding, const ColorValue& value) :
+      Entry(menu, label), m_binding(binding), m_value(value)
     {
         m_value.setCurrent(binding); 
     }
@@ -104,8 +104,8 @@ private:
 class WritableEntry : public Entry
 {
 public: 
-    WritableEntry(const wstring& label, string& binding, const Submenu* ownerSubmenu) :
-      Entry(label), m_ownerSubmenu(ownerSubmenu),  m_binding(binding) {}
+    WritableEntry(Menu* menu, const wstring& label, string& binding, const Submenu* ownerSubmenu) :
+      Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding) {}
 
     void render(const Font* font) const;
     void click(int button);
@@ -122,9 +122,8 @@ private:
 class WorldEntry : public Entry
 {
 public: 
-    WorldEntry(const wstring& stringIn, Menu* menu, int switchTo, int& current) :
-        Entry(stringIn),
-        m_menu(menu),
+    WorldEntry(Menu* menu, const wstring& stringIn, int switchTo, int& current) :
+        Entry(menu, stringIn),
         m_switchTo(switchTo),
         m_current(current)
    {}
@@ -134,24 +133,20 @@ public:
 private:
     int   m_switchTo;
     int&  m_current;
-    Menu* m_menu;
 };
 
 class QuitEntry : public Entry
 {
 public: 
-    QuitEntry(const wstring& stringIn, Menu* menu) : Entry(stringIn), m_menu(menu) {}
+    QuitEntry(Menu* menu, const wstring& stringIn) : Entry(menu, stringIn) {}
     
     void click(int button);
-
-private:
-    Menu* m_menu;
 };
 
 class SpacerEntry : public Entry
 {
 public: 
-    SpacerEntry() : Entry(L"") {}
+    SpacerEntry() : Entry(NULL, L"") { disable(); }
     void click(int button)     {}
     wstring getString() const  { return L""; }
     bool isEnabled() const     { return false; }

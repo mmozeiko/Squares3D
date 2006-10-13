@@ -6,8 +6,8 @@
 #include "level.h"
 #include "body.h"
 
-static const float LOOK_SPEED = 3.0f;
-static const float MOVE_SPEED = 20.0f;
+static const float LOOK_SPEED = 1.0f;
+static const float MOVE_SPEED = 5.0f;
 
 /*
 Translate(Camera.Position);
@@ -162,13 +162,23 @@ void Camera::update(float delta)
         m_targetRotation *= delta;
         m_targetDirection *= delta;
 
-        m_angleY += LOOK_SPEED * m_targetRotation.y;
-        m_angleX += LOOK_SPEED * m_targetRotation.x;
+        float s = LOOK_SPEED;
+        if (Input::instance->key(GLFW_KEY_LSHIFT))
+        {
+            s *= 3.0f;
+        }
+        m_angleY += s * m_targetRotation.y;
+        m_angleX += s * m_targetRotation.x;
 
         Matrix moveMatrix = Matrix::rotateY(-m_angleY) * Matrix::rotateX(-m_angleX);
         Matrix strafeMatrix = moveMatrix * m_strafeRotation;
 
         Vector deltaPos = m_targetDirection.z * moveMatrix.row(2) + m_targetDirection.x * strafeMatrix.row(2);
+
+        if (Input::instance->key(GLFW_KEY_LSHIFT))
+        {
+            deltaPos *= 3.0f;
+        }
         m_pos += MOVE_SPEED * deltaPos;
     }
 }
@@ -176,7 +186,6 @@ void Camera::update(float delta)
 void Camera::prepare()
 {
     Vector p = m_pos;
-    //p.z = -p.z;
     m_matrix = Matrix::rotateX(m_angleX) * Matrix::rotateY(m_angleY) * 
                Matrix::translate(p) * m_scaleMatrix;
     glPopMatrix();

@@ -11,6 +11,7 @@
 #include "font.h"
 #include "game.h"
 #include "config.h"
+#include "sound.h"
 
 void OptionEntry::click(int button)
 {
@@ -25,6 +26,8 @@ void OptionEntry::click(int button)
             m_value.activateNext((button == GLFW_MOUSE_BUTTON_LEFT) 
                                   || (button == GLFW_KEY_RIGHT)
                                   || (button == GLFW_KEY_ENTER));
+            
+            m_menu->m_sound->play(m_menu->m_soundChange);
         }
     }
 }
@@ -133,6 +136,14 @@ void OptionEntry::reset()
     {
         m_value.m_current = static_cast<int>(Config::instance->m_misc.mouse_sensitivity*2) - 2;
     }
+    else if (m_value.m_id == "music_vol")
+    {
+        m_value.m_current = Config::instance->m_audio.music_vol;
+    }
+    else if (m_value.m_id == "sound_vol")
+    {
+        m_value.m_current = Config::instance->m_audio.sound_vol;
+    }
 }
 
 void OptionEntry::render(const Font* font) const
@@ -229,6 +240,14 @@ void ApplyOptionsEntry::click(int button)
         else if (id == "mouse_sensitivity")
         {
             Config::instance->m_misc.mouse_sensitivity = 1.0f + static_cast<float>((*iter)->getCurrentValueIdx())/2.0f;
+        }
+        else if (id == "music_vol")
+        {
+            Config::instance->m_audio.music_vol = (*iter)->getCurrentValueIdx();
+        }
+        else if (id == "sound_vol")
+        {
+            Config::instance->m_audio.sound_vol = (*iter)->getCurrentValueIdx();
         }
     }
     

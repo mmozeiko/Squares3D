@@ -19,6 +19,8 @@ public:
     Texture(const string& name, bool mipmaps = false);
     ~Texture();
 
+    int m_size;
+
     void setFilter(const FilterType filter);
     void setWrap(const WrapType wrap);
 

@@ -11,6 +11,8 @@ public:
     OggDecoder(const string& filename);
     ~OggDecoder();
 
+    void reset();
+
 protected:
     unsigned int m_frequency;
     unsigned int m_channels;
