@@ -871,7 +871,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
     
     if (Video::instance->m_haveVBO)
     {
-        Video::glGenBuffersARB(5, &m_buffers[0]);
+        Video::glGenBuffersARB(5, (GLuint*)&m_buffers[0]);
 
         Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
         Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_uv.size() * sizeof(UV), &m_uv[0], GL_STATIC_DRAW_ARB);
@@ -982,7 +982,7 @@ CollisionHMap::~CollisionHMap()
 {
     if (Video::instance->m_haveVBO)
     {
-        Video::glDeleteBuffersARB(5, &m_buffers[0]);
+        Video::glDeleteBuffersARB(5, (GLuint*)&m_buffers[0]);
     }
 }
 

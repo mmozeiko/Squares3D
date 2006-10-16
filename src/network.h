@@ -15,6 +15,9 @@
 #include "system.h"
 
 class Body;
+class Profile;
+class Level;
+class Player;
 
 struct ActiveBody
 {
@@ -43,7 +46,7 @@ public:
     void createServer();
     void createClient();
 
-    void connect(const string& host);
+    bool connect(const string& host);
     void sendDisconnect();
     void close();
 
@@ -51,8 +54,20 @@ public:
 
     void add(Body* body);
 
+    void setPlayerProfile(Profile* player);
+    void setCpuProfiles(const vector<Profile*>* profiles, int level);
+    const vector<Profile*>& getCurrentProfiles() const;
+    const vector<Player*>& createPlayers(Level* level);
+    int getLocalIdx() const;
+    void changeCpu(int idx, bool forward);
+    bool isLocal(int idx) const;
+
     bool m_needDisconnect;
     bool m_disconnected;
+
+    bool m_isSingle;
+    bool m_connecting;
+    bool m_cancelConnection;
 
 private:
     bool m_isServer;
@@ -63,6 +78,11 @@ private:
     ActiveBodySet m_activeBodies;
     ClientMap     m_clients;
 
+    vector<Profile*> m_allProfiles[3];
+    vector<Profile*> m_profiles;
+    int              m_localIdx;
+    vector<int>      m_aiIdx;
+    vector<Player*>  m_players;
 };
 
 #endif

@@ -4,8 +4,11 @@
 #include "common.h"
 #include "body.h"
 
+class Sound;
+class SoundBuffer;
 class Referee;
 class Collision;
+
 
 struct TriggerFlags
 {
@@ -34,6 +37,8 @@ public:
     // maybe private
     void onCollide(const Body* other, const NewtonMaterial* material);
     void onCollideHull(const Body* other, const NewtonMaterial* material);
+    void onImpact(const Body* other, const Vector& position, float speed);
+    void onScratch(const Body* other, const Vector& position, float speed);
     void triggerBegin();
     void triggerEnd();
     void addBodyToFilter(const Body* body);
@@ -42,6 +47,8 @@ public:
 
     Referee*            m_referee;
     Body*               m_body;
+    Sound*              m_sound;
+    SoundBuffer*        m_soundBallGround;
 
 private:
     TriggerFilterMap m_filteredBodies;

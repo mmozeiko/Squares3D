@@ -10,6 +10,8 @@ class Player;
 class Ball;
 class Messages;
 class ScoreBoard;
+class Sound;
+class SoundBuffer;
 
 typedef map<const Body*, Player*> BodyToPlayerMap;
 
@@ -18,7 +20,7 @@ class Referee : NoCopy
 public:
 
     BodyToPlayerMap          m_players;
-    Body*                    m_ball;
+    Ball*                    m_ball;
     const Body*              m_ground;
     const Body*              m_field;
     const Body*              m_lastFieldOwner;
@@ -55,14 +57,22 @@ private:
     void processPlayerGround(const Body* player);
 
 
-    Vector      m_ballResetPosition; 
-    Vector      m_ballResetVelocity;
-    Timer       m_timer;
-    ScoreBoard* m_scoreBoard;
-    Messages*   m_messages;
-    int         m_matchPoints;
-    int         m_haltWait;
-    Player*     m_lastWhoGotPoint;
+    Vector       m_ballResetPosition; 
+    Vector       m_ballResetVelocity;
+    Timer        m_timer;
+    ScoreBoard*  m_scoreBoard;
+    Messages*    m_messages;
+    int          m_matchPoints;
+    int          m_haltWait;
+    Player*      m_lastWhoGotPoint;
+    Sound*       m_sound; //for gameover and other sounds exclusive to referee
+    SoundBuffer* m_soundBallPlayer;
+    SoundBuffer* m_soundBallGround;
+    SoundBuffer* m_soundPlayerPlayer;
+    SoundBuffer* m_soundGameOver;
+    SoundBuffer* m_soundGameStart;
+    SoundBuffer* m_soundFault;
+
 
     Vector      m_lastTouchedPosition;
 };

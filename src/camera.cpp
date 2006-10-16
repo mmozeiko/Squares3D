@@ -6,89 +6,20 @@
 #include "level.h"
 #include "body.h"
 
-static const float LOOK_SPEED = 1.0f;
+static const float LOOK_SPEED = 0.2f;
 static const float MOVE_SPEED = 5.0f;
-
-/*
-Translate(Camera.Position);
-Rotate(0, 0, Camera.Yaw);
-Rotate(0, Camera.Pitch, 0);
-Rotate(Camera.Roll, 0, 0);
-
-
-
-1. The forward view vector depends on yaw and pitch and can be calculated using a spherical coordinate conversion
-2. The forward movement vector depends on yaw only and is calculated as usual using sin() and cos()
-3. The side movement and view vectors are the same and are perpendicular to the forward movement vector in the ground plane
-4. The view up vector is the cross product of the view forward and side vectors
-5. The movement up vector (e.g. for jumping or spectator mode) is the world up vector
-
-
-First of all, since people use different axes for the up axis (usually y or z), the code is set up generically to handle any up axis. So we start with this:
-
-size_t i = m_upAxis;
-size_t j = (i + 1) % 3;
-size_t k = (j + 1) % 3;
-
-Where m_upAxis is 0, 1 or 2 (your choice). We'll of course need the sine and cosine of our angles (remember to convert from degrees if needed):
-
-float sy = sin(m_yaw);
-float cy = cos(m_yaw);
-float sp = sin(m_pitch);
-float cp = cos(m_pitch);
-
-The forward view and movement vectors are constructed like this:
-
-m_forwardView[i] = sp;
-m_forwardView[j] = cp * cy;
-m_forwardView[k] = cp * sy;
-
-m_forwardMove[i] = 0.0f;
-m_forwardMove[j] = cy;
-m_forwardMove[k] = sy;
-
-As mentioned before, the side view and movement vectors are the same, and are perpendicular to the forward movement vector in the ground plane:
-
-m_sideView[i] = 0.0f;
-m_sideView[j] = -sy;
-m_sideView[k] = cy;
-
-m_sideMove = m_sideView;
-
-The up view and movement vectors are constructed as described previously:
-
-m_upView = m_forwardView.Cross(m_sideView);
-
-m_upMove[i] = 1.0f;
-m_upMove[j] = 0.0f;
-m_upMove[k] = 0.0f;
-
-And that's it. You can now use the three move vectors to respond to movement commands. The view vectors can be used for, say, firing projectiles, and can also be loaded into a matrix along with the position and submitted to the API of your choice. Just to make it really easy, to set up the camera in OpenGL, you can do this:
-
-gluLookAt(
-    m_pos[0],
-    m_pos[1],
-    m_pos[2],
-    m_pos[0] + m_forwardView[0],
-    m_pos[1] + m_forwardView[1],
-    m_pos[2] + m_forwardView[2],
-    m_upView[0],
-    m_upView[1],
-    m_upView[2]
-);
-*/
-
 
 Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_pos(-pos), 
     m_angleX(angleX * DEG_IN_RAD), 
     m_angleY(angleY * DEG_IN_RAD),
     m_strafeRotation(Matrix::rotateY(-M_PI/2)),
-    m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f)))
+    m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f))),
+    m_lastDown(false)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
-    m_lastMouse = make_pair(w/2, h/2);
+    m_lastMouse = Vector(static_cast<float>(w/2), static_cast<float>(h/2), static_cast<float>(glfwGetMouseWheel()));
 }
 
 Camera::~Camera()
@@ -100,95 +31,79 @@ bool userControlled = false;
 void Camera::control()
 {
     const Mouse& mouse = Input::instance->mouse();
-    //int dx = mouse.x - m_lastMouse.first;
-    //int dy = mouse.y - m_lastMouse.second;
+    m_targetRotation = Vector::Zero;
+    //m_targetDirection = Vector::Zero;
 
-    m_lastMouse = make_pair(mouse.x, mouse.y);
-
-    int w, h;
-    glfwGetWindowSize(&w, &h);
-    int w2 = w/2, h2 = h/2;
-    if (w2==0 || h2==0)
+    if (m_lastDown == false && (mouse.b & 2) == 2)
     {
-        return;
+        m_lastMouse = Vector(static_cast<float>(mouse.x/2), static_cast<float>(mouse.y/2), static_cast<float>(mouse.z/2));
+        m_lastDown = true;
+    }
+    if (m_lastDown == true && (mouse.b & 2) == 0)
+    {
+        m_lastDown = false;
     }
 
-    if (glfwGetWindowParam(GLFW_ACTIVE) == GL_FALSE)
+    if ((mouse.b & 2) == 2)
     {
-        return;
+        Vector newMouse(static_cast<float>(mouse.x/2), static_cast<float>(mouse.y/2), static_cast<float>(mouse.z/2));
+
+        Vector delta  = newMouse - m_lastMouse;
+
+        m_targetRotation.y = delta.x;
+        m_targetRotation.x = delta.y;
+        //m_targetDirection.z = delta.z;
+
+        m_lastMouse = newMouse;
+
     }
-
-    //m_targetRotation = Vector(static_cast<float>(dy)/h2, static_cast<float>(dx)/w2, 0.0f);
-    
-    m_targetDirection = Vector();
-    m_targetRotation = Vector();
-
-    if (Input::instance->key(GLFW_KEY_UP)) m_targetDirection.z = +1.0f;
-    if (Input::instance->key(GLFW_KEY_DOWN))  m_targetDirection.z = -1.0f;
-    if (Input::instance->key(GLFW_KEY_RIGHT))  m_targetDirection.x = +1.0f;
-    if (Input::instance->key(GLFW_KEY_LEFT)) m_targetDirection.x = -1.0f;
-
-    if (Input::instance->key(GLFW_KEY_HOME)) m_targetRotation.x = -1.0f;
-    if (Input::instance->key(GLFW_KEY_END))  m_targetRotation.x = +1.0f;
-    if (Input::instance->key(GLFW_KEY_DEL))  m_targetRotation.y = -1.0f;
-    if (Input::instance->key(GLFW_KEY_PAGEDOWN)) m_targetRotation.y = +1.0f;
-
-    m_targetDirection.norm();
 }
 
 void Camera::update(float delta)
 {
-    if (userControlled)
+    m_targetRotation *= delta;
+    m_targetDirection *= delta;
+
+    m_angleY += LOOK_SPEED * m_targetRotation.y;
+    m_angleX += LOOK_SPEED * m_targetRotation.x;
+    
+    if (m_angleX < 10.0f * DEG_IN_RAD)
     {
-        Body* ball = World::instance->m_level->getBody("football");
-        Vector ballPos = ball->getPosition();
-
-        Vector d = ballPos - m_pos;
-        /*
-
-        m_angleY = std::atan2(d.z, d.x) + M_PI;
-
-        Vector t = Vector(d.x, 0.0f, d.y);
-        m_angleX = std::atan2(d.y,  t.len());
-        */
-        d.y = 0;
-        m_angleY = std::atan2(ballPos.x, ballPos.z);
-        m_angleX = -std::atan2(m_pos.y,  d.magnitude());
-    //        Vector rot = m_body->getRotation();
-    //    Vector dir = ball->getPosition() - m_body->getPosition();
+        m_angleX = 10.0f * DEG_IN_RAD;
     }
-    else
+    else if (m_angleX > 60.0f * DEG_IN_RAD)
     {
-        m_targetRotation *= delta;
-        m_targetDirection *= delta;
-
-        float s = LOOK_SPEED;
-        if (Input::instance->key(GLFW_KEY_LSHIFT))
-        {
-            s *= 3.0f;
-        }
-        m_angleY += s * m_targetRotation.y;
-        m_angleX += s * m_targetRotation.x;
-
-        Matrix moveMatrix = Matrix::rotateY(-m_angleY) * Matrix::rotateX(-m_angleX);
-        Matrix strafeMatrix = moveMatrix * m_strafeRotation;
-
-        Vector deltaPos = m_targetDirection.z * moveMatrix.row(2) + m_targetDirection.x * strafeMatrix.row(2);
-
-        if (Input::instance->key(GLFW_KEY_LSHIFT))
-        {
-            deltaPos *= 3.0f;
-        }
-        m_pos += MOVE_SPEED * deltaPos;
+        m_angleX = 60.0f * DEG_IN_RAD;
     }
+
+/*
+    Matrix moveMatrix = Matrix::rotateX(m_angleX) * Matrix::rotateY(m_angleY);
+    //Matrix strafeMatrix = moveMatrix * m_strafeRotation;
+
+    Vector deltaPos = m_targetDirection.z * moveMatrix.row(2); // + m_targetDirection.x * strafeMatrix.row(2);
+
+    m_pos += MOVE_SPEED * deltaPos;
+
+    float m = m_pos.magnitude();
+    if (m < 3.0f)
+    {
+        m_pos.norm();
+        m_pos *= 3.0f;
+    }
+    else if (m > 10.0f)
+    {
+        m_pos.norm();
+        m_pos *= 10.0f;
+    }
+*/
 }
 
 void Camera::prepare()
 {
-    Vector p = m_pos;
-    m_matrix = Matrix::rotateX(m_angleX) * Matrix::rotateY(m_angleY) * 
-               Matrix::translate(p) * m_scaleMatrix;
-    glPopMatrix();
+    m_matrix = Matrix::translate(m_pos)  * 
+               Matrix::rotateX(m_angleX) *
+               Matrix::rotateY(m_angleY) *
+               m_scaleMatrix;
 }
 
 void Camera::render() const

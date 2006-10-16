@@ -156,15 +156,15 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\src\enet\callbacks.c"
-			>
-		</File>
-		<File
 			RelativePath=".\src\enet\host.c"
 			>
 		</File>
 		<File
 			RelativePath=".\src\enet\list.c"
+			>
+		</File>
+		<File
+			RelativePath=".\src\enet\memory.c"
 			>
 		</File>
 		<File

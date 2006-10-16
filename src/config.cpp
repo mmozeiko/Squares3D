@@ -9,7 +9,7 @@ const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1, true, 1, 1 };
 const AudioConfig Config::defaultAudio = { true, 5, 5 };
-const MiscConfig Config::defaultMisc = { true, "en", 5.0f };
+const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "" };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
 {
@@ -179,6 +179,10 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                     mouse_sensitivity = static_cast<float>(static_cast<int>(2.0f * mouse_sensitivity)) / 2.0f;
                     m_misc.mouse_sensitivity = mouse_sensitivity;
                 }
+                else if (node.name == "last_address")
+                {
+                    m_misc.last_address = node.value;
+                }
                 else
                 {
                     string line = cast<string>(node.line);
@@ -222,6 +226,7 @@ Config::~Config()
     xml.childs.push_back(XMLnode("misc"));
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("language", m_misc.language));
+    xml.childs.back().childs.push_back(XMLnode("last_address", m_misc.last_address));
     //xml.childs.back().childs.push_back(XMLnode("mouse_sensitivity", cast<string>(m_misc.mouse_sensitivity)));
 
     File::Writer out(CONFIG_FILE);

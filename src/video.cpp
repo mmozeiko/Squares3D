@@ -484,55 +484,49 @@ Shader* Video::loadShader(const string& vp, const string& fp)
     //throw Exception("Shaders not supported, GENA HAUZE!");
 }
 
-PFNGLACTIVETEXTUREARBPROC           Video::glActiveTextureARB = NULL;
+FNGLACTIVETEXTUREARBPROC           Video::glActiveTextureARB = NULL;
 
 /*
-PFNGLGENPROGRAMSARBPROC     Video::glGenProgramsARB = NULL;
-PFNGLPROGRAMSTRINGARBPROC   Video::glProgramStringARB = NULL;
-PFNGLGETPROGRAMIVARBPROC    Video::glGetProgramivARB = NULL;
-PFNGLDELETEPROGRAMPROC      Video::glDeleteProgramsARB = NULL;
-PFNGLBINDPROGRAMARBPROC     Video::glBindProgramARB = NULL;
+FNGLGENPROGRAMSARBPROC     Video::glGenProgramsARB = NULL;
+FNGLPROGRAMSTRINGARBPROC   Video::glProgramStringARB = NULL;
+FNGLGETPROGRAMIVARBPROC    Video::glGetProgramivARB = NULL;
+FNGLDELETEPROGRAMPROC      Video::glDeleteProgramsARB = NULL;
+FNGLBINDPROGRAMARBPROC     Video::glBindProgramARB = NULL;
 */
 
-PFNGLCREATESHADEROBJECTARBPROC      Video::glCreateShaderObjectARB = NULL;
-PFNGLSHADERSOURCEARBPROC            Video::glShaderSourceARB = NULL;
-PFNGLCOMPILESHADERARBPROC           Video::glCompileShaderARB = NULL;
+FNGLCREATESHADEROBJECTARBPROC      Video::glCreateShaderObjectARB = NULL;
+FNGLSHADERSOURCEARBPROC            Video::glShaderSourceARB = NULL;
+FNGLCOMPILESHADERARBPROC           Video::glCompileShaderARB = NULL;
 
-PFNGLCREATEPROGRAMOBJECTARBPROC     Video::glCreateProgramObjectARB = NULL;
-PFNGLATTACHOBJECTARBPROC            Video::glAttachObjectARB = NULL;
-PFNGLLINKPROGRAMARBPROC             Video::glLinkProgramARB = NULL;
-PFNGLUSEPROGRAMOBJECTARBPROC        Video::glUseProgramObjectARB = NULL;
+FNGLCREATEPROGRAMOBJECTARBPROC     Video::glCreateProgramObjectARB = NULL;
+FNGLATTACHOBJECTARBPROC            Video::glAttachObjectARB = NULL;
+FNGLLINKPROGRAMARBPROC             Video::glLinkProgramARB = NULL;
+FNGLUSEPROGRAMOBJECTARBPROC        Video::glUseProgramObjectARB = NULL;
 
-PFNGLGETOBJECTPARAMETERIVARBPROC    Video::glGetObjectParameterivARB = NULL;
-PFNGLGETINFOLOGARBPROC              Video::glGetInfoLogARB = NULL;
+FNGLGETOBJECTPARAMETERIVARBPROC    Video::glGetObjectParameterivARB = NULL;
+FNGLGETINFOLOGARBPROC              Video::glGetInfoLogARB = NULL;
 
-PFNGLDETACHOBJECTARBPROC            Video::glDetachObjectARB = NULL;
-PFNGLDELETEOBJECTARBPROC            Video::glDeleteObjectARB = NULL;
+FNGLDETACHOBJECTARBPROC            Video::glDetachObjectARB = NULL;
+FNGLDELETEOBJECTARBPROC            Video::glDeleteObjectARB = NULL;
 
-PFNGLGETUNIFORMLOCATIONARBPROC      Video::glGetUniformLocationARB = NULL;
-PFNGLUNIFORM1IARBPROC               Video::glUniform1iARB = NULL;
-PFNGLUNIFORM3FARBPROC               Video::glUniform3fARB = NULL;
-PFNGLUNIFORMMATRIX4FVARBPROC        Video::glUniformMatrix4fvARB = NULL;
-PFNGLVERTEXATTRIB2FARBPROC          Video::glVertexAttrib2fARB = NULL;
-PFNGLVERTEXATTRIB3FVARBPROC         Video::glVertexAttrib3fvARB = NULL;
+FNGLGETUNIFORMLOCATIONARBPROC      Video::glGetUniformLocationARB = NULL;
+FNGLUNIFORM1IARBPROC               Video::glUniform1iARB = NULL;
+FNGLUNIFORM3FARBPROC               Video::glUniform3fARB = NULL;
+FNGLUNIFORMMATRIX4FVARBPROC        Video::glUniformMatrix4fvARB = NULL;
+FNGLVERTEXATTRIB2FARBPROC          Video::glVertexAttrib2fARB = NULL;
+FNGLVERTEXATTRIB3FVARBPROC         Video::glVertexAttrib3fvARB = NULL;
 
-PFNGLGENFRAMEBUFFERSEXTPROC         Video::glGenFramebuffersEXT = NULL;
-PFNGLBINDFRAMEBUFFEREXTPROC         Video::glBindFramebufferEXT = NULL;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    Video::glFramebufferTexture2DEXT = NULL;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  Video::glCheckFramebufferStatusEXT = NULL;
-PFNGLDELETEFRAMEBUFFERSEXTPROC      Video::glDeleteFramebuffersEXT = NULL;
+FNGLGENFRAMEBUFFERSEXTPROC         Video::glGenFramebuffersEXT = NULL;
+FNGLBINDFRAMEBUFFEREXTPROC         Video::glBindFramebufferEXT = NULL;
+FNGLFRAMEBUFFERTEXTURE2DEXTPROC    Video::glFramebufferTexture2DEXT = NULL;
+FNGLCHECKFRAMEBUFFERSTATUSEXTPROC  Video::glCheckFramebufferStatusEXT = NULL;
+FNGLDELETEFRAMEBUFFERSEXTPROC      Video::glDeleteFramebuffersEXT = NULL;
 
-PFNGLGENRENDERBUFFERSEXTPROC        Video::glGenRenderbuffersEXT = NULL;
-PFNGLRENDERBUFFERSTORAGEEXTPROC     Video::glRenderbufferStorageEXT = NULL;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC Video::glFramebufferRenderbufferEXT = NULL;
-PFNGLDELETERENDERBUFFERSEXTPROC     Video::glDeleteRenderbuffersEXT = NULL;
-PFNGLBINDRENDERBUFFEREXTPROC        Video::glBindRenderbufferEXT = NULL;
-
-PFNGLGENBUFFERSARBPROC              Video::glGenBuffersARB = NULL;
-PFNGLBINDBUFFERARBPROC              Video::glBindBufferARB = NULL;
-PFNGLBUFFERDATAARBPROC              Video::glBufferDataARB = NULL;
-PFNGLDELETEBUFFERSARBPROC           Video::glDeleteBuffersARB = NULL;
-PFNGLBUFFERSUBDATAARBPROC           Video::glBufferSubDataARB = NULL;
+FNGLGENBUFFERSARBPROC              Video::glGenBuffersARB = NULL;
+FNGLBINDBUFFERARBPROC              Video::glBindBufferARB = NULL;
+FNGLBUFFERDATAARBPROC              Video::glBufferDataARB = NULL;
+FNGLDELETEBUFFERSARBPROC           Video::glDeleteBuffersARB = NULL;
+FNGLBUFFERSUBDATAARBPROC           Video::glBufferSubDataARB = NULL;
 
 template <typename T>
 void Video::loadProcAddress(const char* name, T& proc) const
@@ -614,12 +608,6 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glFramebufferTexture2DEXT);
         loadProc(glCheckFramebufferStatusEXT);
         loadProc(glDeleteFramebuffersEXT);
-
-        loadProc(glGenRenderbuffersEXT);
-        loadProc(glRenderbufferStorageEXT);
-        loadProc(glFramebufferRenderbufferEXT);
-        loadProc(glDeleteRenderbuffersEXT);
-        loadProc(glBindRenderbufferEXT);
     }
 
     if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))

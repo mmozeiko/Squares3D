@@ -26,8 +26,14 @@ void Input::update()
     m_mouse.z = glfwGetMouseWheel();
     
     m_mouse.b = 0;
-    m_mouse.b |= 1 & glfwGetMouseButton(GLFW_MOUSE_BUTTON_1);
-    m_mouse.b |= 2 & glfwGetMouseButton(GLFW_MOUSE_BUTTON_2);
+    if (glfwGetMouseButton(GLFW_MOUSE_BUTTON_1))
+    {
+        m_mouse.b |= 1;
+    }
+    if (glfwGetMouseButton(GLFW_MOUSE_BUTTON_2))
+    {
+        m_mouse.b |= 2;
+    }
 }
 
 bool Input::key(int key) const

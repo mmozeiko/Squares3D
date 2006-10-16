@@ -1,6 +1,8 @@
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
+#include <GL/glfw.h>
+#include <GL/glext.h>
 #include "common.h"
 
 class Video;
@@ -16,13 +18,14 @@ private:
     void begin() const;
     void end() const;
 
-    void checkShaderStatus(unsigned int handle, int status);
 
-    unsigned int m_vhandle;
-    unsigned int m_fhandle;
+    void checkShaderStatus(GLhandleARB handle, int status);
+
+    GLhandleARB m_vhandle;
+    GLhandleARB m_fhandle;
 
 public:
-    unsigned int m_program;
+    GLhandleARB m_program;
 };
 
 #endif

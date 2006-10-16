@@ -8,6 +8,7 @@
 
 class Referee;
 class Collision;
+class Sound;
 
 static const float FIELDLENGTH = 3.0f;
 
@@ -43,6 +44,7 @@ public:
     Referee*          m_referee;
     Body*             m_body;
     const Profile*    m_profile;
+
     //player must recognize his field
     Vector            m_lowerLeft;
     Vector            m_upperRight;
@@ -50,6 +52,7 @@ public:
     float             m_radius;
 
     bool              m_halt;
+    Sound*            m_sound;
 
 protected:
     NewtonJoint* m_upVector;

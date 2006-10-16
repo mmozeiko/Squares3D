@@ -87,57 +87,6 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 }
             }
         }
-        else if (node.name == "cpu_profiles")
-        {
-            int checks[3] = {0,0,0};
-            for each_const(XMLnodes, node.childs, iter)
-            {
-                const XMLnode& node = *iter;
-                if ((node.name == "easy") || (node.name == "normal") || (node.name == "hard"))
-                {
-                    size_t idx;
-                    if (node.name == "easy")
-                    {
-                        idx = 0;
-                    }
-                    else if (node.name == "normal")
-                    {
-                        idx = 1;
-                    }
-                    else
-                    {
-                        idx = 2;
-                    }
-
-                    for each_const(XMLnodes, node.childs, iter)
-                    {
-                        const XMLnode& node = *iter;
-                        if (node.name == "profile")
-                        {
-                            Profile* profile = new Profile(node);
-                            m_cpuProfiles[idx].push_back(profile);
-                            checks[idx]++;
-                        }
-                        else
-                        {
-                            throw Exception("Invalid profile, unknown node - " + node.name);
-                        }
-                    }
-                }
-                else
-                {
-                    throw Exception("Invalid cpu_profiles, unknown node - " + node.name);
-                }
-            }
-            for (size_t i = 0; i < 3; i++)
-            {
-                if (checks[i] < 3)
-                {
-                    throw Exception("Invalid cpu_profiles, there should be at least 3 profiles in each difficulty");
-                }
-            }
-
-        }
         else if (node.name == "joints")
         {
             for each_const(XMLnodes, node.childs, iter)
@@ -181,13 +130,6 @@ Level::~Level()
     for each_const(MaterialsMap, m_materials, iter)
     {
         delete iter->second;
-    }
-    for (size_t i = 0; i < 3; i++)
-    {
-        for each_const(ProfilesVector, m_cpuProfiles[i], iter)
-        {
-            delete *iter;
-        }
     }
     delete m_properties;
 }

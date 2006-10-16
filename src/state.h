@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+class Game;
+
 class State : NoCopy
 {
 public:

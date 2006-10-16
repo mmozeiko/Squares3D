@@ -16,7 +16,6 @@ struct Face;
 typedef map<string, Material*>       MaterialsMap;
 typedef map<string, Collision*>      CollisionsMap;
 typedef map<string, Body*>           BodiesMap;
-typedef vector<Profile*>             ProfilesVector;
 typedef set<pair<Face*, Material*> > FaceSet;
 
 class Level : NoCopy
@@ -34,7 +33,6 @@ public:
     CollisionsMap   m_collisions;
     FaceSet         m_faces;
     MaterialsMap    m_materials;
-    ProfilesVector  m_cpuProfiles[3];
     Properties*     m_properties;
 };
 

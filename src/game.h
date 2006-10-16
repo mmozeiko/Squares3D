@@ -4,6 +4,7 @@
 #include "common.h"
 #include "vmath.h"
 #include "state.h"
+#include "system.h"
 
 const float DT = 0.01f;
 
@@ -21,7 +22,9 @@ const Vector gravityVec(0.0f, -9.81f, 0.0f);
 extern bool   g_needsToReload;
 extern string g_optionsEntry;
 
-class Game : NoCopy
+typedef vector<Profile*> ProfilesVector;
+
+class Game : public System<Game>, NoCopy
 {
 public:
     Game();
@@ -38,15 +41,19 @@ public:
     Network*    m_network;
     Input*      m_input;
     //
-    
+
+    ProfilesVector  m_cpuProfiles[3];
+    Profile*        m_userProfile;    
+
 private:
     State*      m_state;
-    Profile*    m_userProfile;
+
     bool        m_fixedTimestep;
     int         m_unlockable;
     int         m_current;
 
     State* switchState(const State::Type newState);
+    void loadCpuData();
     void saveUserData();
     void loadUserData();
 };

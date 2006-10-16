@@ -21,6 +21,8 @@
 #include "xml.h"
 #include "random.h"
 
+template <class Game> Game* System<Game>::instance = NULL;
+
 static const string USER_PROFILE_FILE = "/user.xml";
 
 static const unsigned int M1 = 0x0BADC0DE;
@@ -51,6 +53,7 @@ Game::Game() :
     //
 
     loadUserData();
+    loadCpuData();
 
     if (g_needsToReload)
     {
@@ -66,9 +69,6 @@ Game::Game() :
         m_fixedTimestep = false;
     }    
     m_state->init();
-
-    m_network->createClient();
-    m_network->connect("localhost");
 }
 
 Game::~Game()
@@ -81,6 +81,13 @@ Game::~Game()
     }
 
     saveUserData();
+    for (size_t i = 0; i < 3; i++)
+    {
+        for each_const(ProfilesVector, m_cpuProfiles[i], iter)
+        {
+            delete *iter;
+        }
+    }
 
     delete m_input;
     delete m_network;
@@ -395,4 +402,65 @@ void Game::saveUserData()
     xml.save(out);
     out.close();
     delete m_userProfile;
+}
+
+void Game::loadCpuData()
+{
+    XMLnode xml;
+    File::Reader in("/data/level/cpu_players.xml");
+    if (!in.is_open())
+    {
+        throw Exception("Level file '/data/level/cpu_players.xml' not found");  
+    }
+    xml.load(in);
+    in.close();
+    int checks[3] = {0,0,0};
+
+    for each_const(XMLnodes, xml.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if ((node.name == "easy") || (node.name == "normal") || (node.name == "hard"))
+        {
+            size_t idx;
+            if (node.name == "easy")
+            {
+                idx = 0;
+            }
+            else if (node.name == "normal")
+            {
+                idx = 1;
+            }
+            else
+            {
+                idx = 2;
+            }
+
+            for each_const(XMLnodes, node.childs, iter)
+            {
+                const XMLnode& node = *iter;
+                if (node.name == "profile")
+                {
+                    Profile* profile = new Profile(node);
+                    m_cpuProfiles[idx].push_back(profile);
+                    checks[idx]++;
+                }
+                else
+                {
+                    throw Exception("Invalid profile, unknown node - " + node.name);
+                }
+            }
+        }
+        else
+        {
+            throw Exception("Invalid cpu_profiles, unknown node - " + node.name);
+        }
+    }
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        if (checks[i] < 3)
+        {
+            throw Exception("Invalid cpu_profiles, there should be at least 3 profiles in each difficulty");
+        }
+    }
 }

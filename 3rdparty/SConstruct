@@ -1,0 +1,60 @@
+#
+import os
+
+#
+p = str( Platform() )
+
+isdebug = ARGUMENTS.get('debug', 0) # debug=1 ?
+
+if p == "win32":
+  env = Environment( tools = ["masm", "msvc", "msvs", "mslib", "mslink"] )
+  env.Append( CPPDEFINES = ["_CRT_SECURE_NO_DEPRECATE", "WIN32", "_LIB"] )
+
+  if isdebug:
+    env.Append( CCFLAGS    = ["/Od", "/MTd", "/EHsc", "/Z7"] )
+    env.Append( CPPDEFINES = ["_DEBUG"] )
+
+    postfix = "_d"
+    builddir = "Debug"
+
+  else:
+    env.Append( CCFLAGS    = ["/O2", "/Ot", "/GL", "/FD", "/MT", "/GS-"] )
+    env.Append( ARFLAGS    = ["/LTCG"] )
+    env.Append( CPPDEFINES = ["NDEBUG"] )
+
+    postfix = ""
+    builddir = "Release"
+
+elif p == "darwin":
+
+  env = Environment( tools = ["gcc", "ar", "link"], ENV = os.environ)
+  env.Append( CPPDEFINES = ["_LIB"] )
+
+  if isdebug:
+    env.Append( CCFLAGS   = ["-O0", "-g"] )
+    env.Append( CPPDEFINES = ["_DEBUG"] )
+
+    postfix = "_d"
+    builddir = "Debu4g"
+
+  else:
+    env.Append( CCFLAGS   = ["-Os", "-march=i686", "-fomit-frame-pointer", "-ffast-math"] )
+    env.Append( CPPDEFINES = ["NDEBUG"] )
+
+    postfix = ""
+    builddir = "Release"
+
+  additional = []
+
+else:
+  raise "Not Implemented!"
+
+env.Append( CPPPATH = ["#include"])
+
+lib = "#lib"
+
+for project in ["zlib", "physfs", "ogg", "vorbis", "vorbisfile", "expat", "glfw", "enet"]:
+  x = SConscript("src/" + project + "/SConscript", 
+             exports="env lib postfix", 
+             build_dir = builddir + "/" + project,
+             duplicate=0)

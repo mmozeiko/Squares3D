@@ -13,7 +13,9 @@
 #ifndef __PHYSICSFS_INTERNAL__
 #error Do not include this header from your applications.
 #endif
+#ifdef WIN32
 #include <malloc.h>
+#endif
 
 #include "physfs.h"
 

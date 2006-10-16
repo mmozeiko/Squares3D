@@ -29,10 +29,20 @@ Press ENTER to return to retry..
     
     <!-- Main menu -->
     <item name="MAIN_MENU"                value="Main Menu"/>
-    <item name="START_SINGLEPLAYER"       value="Start Singleplayer Game"/>
+    <item name="START_SINGLEPLAYER"       value="Start Singleplayer"/>
     <item name="EASY"                     value="Easy Level"/>
     <item name="NORMAL"                   value="Normal Level"/>
     <item name="HARD"                     value="Hard Level"/>
+
+    <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
+    <item name="START_HOST"               value="Host New Game"/>
+    <item name="START_JOIN"               value="Join Game"/>
+    <item name="BEGIN_GAME"               value="Start Game"/>
+    <item name="PLAYERS_LIST"             value="Players list:"/>
+    <item name="CONNECT_HOST"             value="Connect"/>
+    <item name="ADDRESS"                  value="Address"/>
+    <item name="CONNECTING"               value="Connecting..."/>
+
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>
     <item name="AUDIO_OPTIONS"            value="Audio Options"/>

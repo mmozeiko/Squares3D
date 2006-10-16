@@ -7,6 +7,7 @@
 #include "common.h"
 #include "vmath.h"
 #include "system.h"
+#include "video_ext.h"
 
 class Shader;
 class Material;
@@ -68,54 +69,48 @@ public:
     Texture* loadTexture(const string& name, bool mipmap = true);
     Shader*  loadShader(const string& vp, const string& fp);
 
-    static PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
+    static FNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
 
 /*
-    static PFNGLGENPROGRAMSARBPROC glGenProgramsARB;
-    static PFNGLPROGRAMSTRINGARBPROC glProgramStringARB;
-    static PFNGLGETPROGRAMIVARBPROC glGetProgramivARB;
-    static PFNGLDELETEPROGRAMPROC glDeleteProgramsARB;
-    static PFNGLBINDPROGRAMARBPROC glBindProgramARB;
+    static FNGLGENPROGRAMSARBPROC glGenProgramsARB;
+    static FNGLPROGRAMSTRINGARBPROC glProgramStringARB;
+    static FNGLGETPROGRAMIVARBPROC glGetProgramivARB;
+    static FNGLDELETEPROGRAMPROC glDeleteProgramsARB;
+    static FNGLBINDPROGRAMARBPROC glBindProgramARB;
 */
-    static PFNGLCREATESHADEROBJECTARBPROC      glCreateShaderObjectARB;
-    static PFNGLSHADERSOURCEARBPROC            glShaderSourceARB;
-    static PFNGLCOMPILESHADERARBPROC           glCompileShaderARB;
+    static FNGLCREATESHADEROBJECTARBPROC      glCreateShaderObjectARB;
+    static FNGLSHADERSOURCEARBPROC            glShaderSourceARB;
+    static FNGLCOMPILESHADERARBPROC           glCompileShaderARB;
 
-    static PFNGLCREATEPROGRAMOBJECTARBPROC     glCreateProgramObjectARB;
-    static PFNGLATTACHOBJECTARBPROC            glAttachObjectARB;
-    static PFNGLLINKPROGRAMARBPROC             glLinkProgramARB;
-    static PFNGLUSEPROGRAMOBJECTARBPROC        glUseProgramObjectARB;
+    static FNGLCREATEPROGRAMOBJECTARBPROC     glCreateProgramObjectARB;
+    static FNGLATTACHOBJECTARBPROC            glAttachObjectARB;
+    static FNGLLINKPROGRAMARBPROC             glLinkProgramARB;
+    static FNGLUSEPROGRAMOBJECTARBPROC        glUseProgramObjectARB;
 
-    static PFNGLGETOBJECTPARAMETERIVARBPROC    glGetObjectParameterivARB;
-    static PFNGLGETINFOLOGARBPROC              glGetInfoLogARB;
+    static FNGLGETOBJECTPARAMETERIVARBPROC    glGetObjectParameterivARB;
+    static FNGLGETINFOLOGARBPROC              glGetInfoLogARB;
 
-    static PFNGLDETACHOBJECTARBPROC            glDetachObjectARB;
-    static PFNGLDELETEOBJECTARBPROC            glDeleteObjectARB;
+    static FNGLDETACHOBJECTARBPROC            glDetachObjectARB;
+    static FNGLDELETEOBJECTARBPROC            glDeleteObjectARB;
 
-    static PFNGLGETUNIFORMLOCATIONARBPROC      glGetUniformLocationARB;
-    static PFNGLUNIFORM1IARBPROC               glUniform1iARB;
-    static PFNGLUNIFORM3FARBPROC               glUniform3fARB;
-    static PFNGLUNIFORMMATRIX4FVARBPROC        glUniformMatrix4fvARB;
-    static PFNGLVERTEXATTRIB2FARBPROC          glVertexAttrib2fARB;
-    static PFNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB;
+    static FNGLGETUNIFORMLOCATIONARBPROC      glGetUniformLocationARB;
+    static FNGLUNIFORM1IARBPROC               glUniform1iARB;
+    static FNGLUNIFORM3FARBPROC               glUniform3fARB;
+    static FNGLUNIFORMMATRIX4FVARBPROC        glUniformMatrix4fvARB;
+    static FNGLVERTEXATTRIB2FARBPROC          glVertexAttrib2fARB;
+    static FNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB;
 
-    static PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
-    static PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
-    static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
-    static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
-    static PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
+    static FNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
+    static FNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
+    static FNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
+    static FNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
+    static FNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
 
-    static PFNGLGENRENDERBUFFERSEXTPROC        glGenRenderbuffersEXT;
-    static PFNGLRENDERBUFFERSTORAGEEXTPROC     glRenderbufferStorageEXT;
-    static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-    static PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffersEXT;
-    static PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbufferEXT;
-
-    static PFNGLGENBUFFERSARBPROC              glGenBuffersARB;
-    static PFNGLBINDBUFFERARBPROC              glBindBufferARB;
-    static PFNGLBUFFERDATAARBPROC              glBufferDataARB;
-    static PFNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB;
-    static PFNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
+    static FNGLGENBUFFERSARBPROC              glGenBuffersARB;
+    static FNGLBINDBUFFERARBPROC              glBindBufferARB;
+    static FNGLBUFFERDATAARBPROC              glBufferDataARB;
+    static FNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB;
+    static FNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
 
     bool m_haveShaders;
     bool m_haveShadows;

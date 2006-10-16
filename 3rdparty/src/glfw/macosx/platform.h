@@ -175,6 +175,7 @@ struct _GLFWwin_struct {
 
     // Window status
     int       Width, Height;   // Window width and heigth
+    int       Samples;
 
     // Extensions & OpenGL version
     int       Has_GL_SGIS_generate_mipmap;

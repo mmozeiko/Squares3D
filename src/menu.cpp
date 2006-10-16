@@ -99,6 +99,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->setTitle(language->get(TEXT_MAIN_MENU), titlePos);
 
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_SINGLEPLAYER), "startSingle"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_MULTIPLAYER), "startMulti"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), "playerOptions"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), "options"));
     submenu->addEntry(new QuitEntry(this, language->get(TEXT_QUIT_GAME)));
@@ -129,6 +130,81 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->center(submenuPosition);
     m_submenus["startSingle"] = submenu;
+
+
+    // Start Multi Submenu
+
+    submenu = new Submenu(this, m_font, m_fontBig);
+
+    submenu->setTitle(language->get(TEXT_START_MULTIPLAYER), titlePos);
+
+    submenu->addEntry(new NewHostEntry(this, language->get(TEXT_START_HOST), "startMultiHost"));
+    submenu->addEntry(new JoinHostEntry(this, language->get(TEXT_START_JOIN), "startMultiJoinIP"));
+    
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
+
+    submenu->center(submenuPosition);
+    m_submenus["startMulti"] = submenu;
+
+
+    // Start Multi Host
+
+    submenu = new Submenu(this, m_font, m_fontBig);
+
+    submenu->setTitle(language->get(TEXT_START_HOST), titlePos);
+
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_PLAYERS_LIST)));
+    submenu->m_entries.back()->disable();
+    submenu->addEntry(new NetPlayerEntry(this, 0));
+    submenu->addEntry(new NetPlayerEntry(this, 1));
+    submenu->addEntry(new NetPlayerEntry(this, 2));
+    submenu->addEntry(new NetPlayerEntry(this, 3));
+
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new WorldEntry(this, language->get(TEXT_BEGIN_GAME), 0, current));
+    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
+
+    submenu->center(submenuPosition);
+    m_submenus["startMultiHost"] = submenu;
+
+
+
+    // Start Multi Join IP
+
+    submenu = new Submenu(this, m_font, m_fontBig);
+
+    submenu->setTitle(language->get(TEXT_START_JOIN), titlePos);
+
+    submenu->addEntry(new WritableEntry(this, language->get(TEXT_ADDRESS), Config::instance->m_misc.last_address, submenu, 15));
+    submenu->addEntry(new ConnectEntry(this, language->get(TEXT_CONNECT_HOST), "startMultiJoin", submenu));
+
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
+
+    submenu->center(submenuPosition);
+    m_submenus["startMultiJoinIP"] = submenu;
+
+
+
+    // Start Multi Join
+    submenu = new Submenu(this, m_font, m_fontBig);
+
+    submenu->setTitle(language->get(TEXT_START_JOIN), titlePos);
+
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_PLAYERS_LIST)));
+    submenu->m_entries.back()->disable();
+    submenu->addEntry(new NetRemotePlayerEntry(this, 0));
+    submenu->addEntry(new NetRemotePlayerEntry(this, 1));
+    submenu->addEntry(new NetRemotePlayerEntry(this, 2));
+    submenu->addEntry(new NetRemotePlayerEntry(this, 3));
+
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
+
+    submenu->center(submenuPosition);
+    m_submenus["startMultiJoin"] = submenu;
+
 
 
 
@@ -398,7 +474,12 @@ void Menu::control()
                 else
                 {
                     // assume "back" is last entry
-                    m_currentSubmenu->m_entries.back()->click(GLFW_KEY_ENTER);
+                    size_t i = m_currentSubmenu->m_entries.size()-1;
+                    while (m_currentSubmenu->m_entries[i]->isEnabled() == false)
+                    {
+                        i--;
+                    }
+                    m_currentSubmenu->m_entries[i]->click(GLFW_KEY_ENTER);
                 }
             }
             m_currentSubmenu->control(key);

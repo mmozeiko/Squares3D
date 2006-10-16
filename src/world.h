@@ -20,13 +20,14 @@ class ScoreBoard;
 class FrameBuffer;
 class Grass;
 class Profile;
+class Game;
 
 typedef vector<Profile*> ProfilesVector;
 
 class World : public State, public System<World>
 {
 public:
-    World(const Profile* userProfile, int& unlockable, int current);
+    World(Profile* userProfile, int& unlockable, int current);
     ~World();
 
     void init();
@@ -55,10 +56,9 @@ private:
     int            m_current;
 
     bool           m_freeze;
-    const Profile* m_userProfile;
+    Profile*       m_userProfile;
     Message*       escMessage;
 
-    void addShuffledCpuProfiles(const ProfilesVector* profiles, size_t count);
     void renderScene() const;
 
     // all below is shadow stuff
@@ -83,4 +83,3 @@ private:
 };
 
 #endif
-

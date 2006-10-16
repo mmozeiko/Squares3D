@@ -7,7 +7,7 @@
 
 Texture::Texture(const string& name, bool mipmaps) : m_size(0)
 {
-    glGenTextures(1, &m_handle);
+    glGenTextures(1, (GLuint*)&m_handle);
     glBindTexture(GL_TEXTURE_2D, m_handle);
 
     GLFWimage image;
@@ -22,7 +22,7 @@ Texture::Texture(const string& name, bool mipmaps) : m_size(0)
 
 Texture::~Texture()
 {
-    glDeleteTextures(1, &m_handle);
+    glDeleteTextures(1, (GLuint*)&m_handle);
 }
 
 void Texture::setFilter(const FilterType filter)

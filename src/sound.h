@@ -20,7 +20,8 @@ public:
     void update(const Vector& position, const Vector& velocity);
 
 private:
-    Sound();
+    Sound(bool interrupt);
+    bool         m_interrupt;
     unsigned int m_source;
 };
 

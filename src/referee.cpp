@@ -1,3 +1,5 @@
+#include <AL/al.h>
+
 #include "referee.h"
 #include "player.h"
 #include "body.h"
@@ -11,6 +13,8 @@
 #include "colors.h"
 #include "profile.h"
 #include "random.h"
+#include "audio.h"
+#include "sound.h"
 
 static const float BALL_RESET_TIME = 2.0f;
 //TODO: make universaly proportional to field size?
@@ -100,9 +104,17 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_messages(messages),
     m_haltWait(3),
     m_playersAreHalted(false),
-    m_matchPoints(21)
+    m_matchPoints(2)
 {
     initEvents();
+    m_soundBallPlayer = Audio::instance->loadSound("ball_player");
+    m_soundPlayerPlayer =Audio::instance->loadSound("player_player");
+    m_soundGameOver =Audio::instance->loadSound("referee_game_over");
+    m_soundGameStart =Audio::instance->loadSound("referee_game_start");
+    m_soundFault =Audio::instance->loadSound("referee_fault");
+
+    m_sound = Audio::instance->newSound();
+    m_sound->update(Vector::Zero, Vector::Zero);
 }
 
 string Referee::getLoserName() const
@@ -226,15 +238,18 @@ void Referee::resetBall()
         //the game has just begun
         //reset coords in center and ball must hit the ground 3 times
         //before it can be touched by players
+
+        m_sound->play(m_soundGameStart);
+
         resetPosition.y *= 3;
         m_haltWait = 3;
         haltCpuPlayers();
     }
 
     //m_ball->set
-    m_ball->setTransform(resetPosition, Vector::Zero);
-    NewtonBodySetOmega(m_ball->m_newtonBody, Vector::Zero.v);
-    NewtonBodySetVelocity(m_ball->m_newtonBody, velocity.v);
+    m_ball->m_body->setTransform(resetPosition, Vector::Zero);
+    NewtonBodySetOmega(m_ball->m_body->m_newtonBody, Vector::Zero.v);
+    NewtonBodySetVelocity(m_ball->m_body->m_newtonBody, velocity.v);
     initEvents();
 }
 
@@ -252,6 +267,8 @@ void Referee::processCriticalEvent()
     StringIntPair maxScore = m_scoreBoard->getMostScoreData();
     if (maxScore.second >= m_matchPoints)
     {
+        m_sound->play(m_soundGameOver);
+
         Vector center = Vector(static_cast<float>(Video::instance->getResolution().first) / 2,
                                static_cast<float>(Video::instance->getResolution().second) / 2,
                                0.0f);
@@ -289,6 +306,7 @@ void Referee::processCriticalEvent()
     }
     else
     {
+        m_sound->play(m_soundFault);
         registerFaultTime();
     }
 
@@ -297,7 +315,7 @@ void Referee::processCriticalEvent()
 void Referee::registerBall(Ball* ball)
 {
     ball->m_referee = this;
-    m_ball = ball->m_body;
+    m_ball = ball;
     resetBall();
 }
 
@@ -313,9 +331,7 @@ void Referee::registerPlayers(const vector<Player*> players)
 
 void Referee::process(const Body* body1, const Body* body2)
 {
-    if (!(m_gameOver || m_mustResetBall))
-    {
-        if (body1 == m_ball)
+        if (body1 == m_ball->m_body)
         {
             registerBallEvent(body1, body2);
         }
@@ -323,14 +339,21 @@ void Referee::process(const Body* body1, const Body* body2)
         {
             registerPlayerEvent(body1, body2);
         }
-    }
 }
 
 void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 {
     if (isGroundObject(otherBody))
     {
-        processPlayerGround(player);
+        //TODO: play some step sound here?
+        if (!(m_gameOver || m_mustResetBall))
+        {
+            processPlayerGround(player);
+        }
+    }
+    else if (foundInMap(m_players, otherBody))
+    {
+        m_players[otherBody]->m_sound->play(m_soundPlayerPlayer);
     }
 }
 
@@ -338,11 +361,18 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 {
    if (isGroundObject(otherBody))
     {
-        processBallGround(otherBody);
+        if (!(m_gameOver || m_mustResetBall))
+        {
+            processBallGround(otherBody);
+        }
     }
     else if (foundInMap(m_players, otherBody))
     {
-        processBallPlayer(otherBody);
+        m_ball->m_sound->play(m_soundBallPlayer);
+        if (!(m_gameOver || m_mustResetBall))
+        {
+            processBallPlayer(otherBody);
+        }
     }
 }
 

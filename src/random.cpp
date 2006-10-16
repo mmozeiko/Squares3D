@@ -2,10 +2,8 @@
     #define VC_EXTRALEAN
     #include <windows.h>
     #include <wincrypt.h>
-#elif LINUX
-    #include <cstdio>
 #else
-    #error Not implemented!
+    #include <cstdio>
 #endif
 
 #include <ctime>

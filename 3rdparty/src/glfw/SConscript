@@ -1,0 +1,33 @@
+#
+Import("env lib postfix")
+
+platformsrc = Split("""enable.c fullscreen.c glext.c init.c
+                       joystick.c thread.c time.c window.c""")
+
+headers = Split("internal.h ?!?platform.h")
+
+sources = platformsrc + Split("image.c input.c tga.c")
+
+p = str( Platform() )
+
+e = env.Copy()
+
+if p == "win32":
+  platformdir = "win32"
+  e.Append( CPPDEFINES = ["_GLFW_NO_DLOAD_GDI32", "_GLFW_NO_DLOAD_WINMM"] )
+
+elif p=="darwin":
+  platformdir = "macosx"
+  e.Append( CCFLAGS = ["-msse2"] )
+
+elif p=="posix":
+  platformdir = "x11"
+
+else:
+  raise "Unsupported platform!"
+
+e.Append( CPPPATH = [".", platformdir] )
+
+sources += [platformdir + "/" + platformdir + "_" + x for x in platformsrc]
+
+e.StaticLibrary(lib + "/glfw" + postfix, sources)

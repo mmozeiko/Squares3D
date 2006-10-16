@@ -44,22 +44,24 @@ public:
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(Menu* menu, const wstring& stringIn) : m_string(stringIn), m_enabled(true), m_menu(menu) {}
+    Entry(Menu* menu, const wstring& stringIn) : m_string(stringIn), m_enabled(true), m_menu(menu), m_forBounds(false) {}
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
     virtual void onChar(int ch) {}
-    virtual wstring getString() const                    { return m_string; }
-    virtual string getValueID() const                    { return "";       }
-    virtual wstring getValue() const                     { return L"";      }
-    virtual int getCurrentValueIdx() const               { return -1;       }
+    virtual wstring getString() const                    { return m_string;   }
+    virtual string getValueID() const                    { return "";         }
+    virtual wstring getValue() const                     { return L"";        }
+    virtual int getCurrentValueIdx() const               { return -1;         }
     virtual void reset()                                 {}
-    bool isEnabled() const                               { return m_enabled;}
-    void disable()                                       { m_enabled = false;}
-    void enable()                                        { m_enabled = true;}
+    virtual int  getHeight()                             { return 1;          }
+
+    bool isEnabled() const                               { return m_enabled;  }
+    void disable()                                       { m_enabled = false; }
+    virtual void enable()                                { m_enabled = true;  }
 
     bool isMouseOver(const Vector& mousePos) const;
-    void calculateBounds(const Vector& position, const Font* font);
+    virtual void calculateBounds(const Vector& position, const Font* font);
     void setXBound(float minX, float maxX);
     virtual void render(const Font* font) const;
     virtual int getMaxLeftWidth(const Font* font) const;
@@ -68,6 +70,7 @@ public:
 protected:
     bool m_enabled;
     Menu* m_menu;
+    bool m_forBounds;
 };
 
 class SubmenuEntry : public Entry
@@ -104,8 +107,8 @@ private:
 class WritableEntry : public Entry
 {
 public: 
-    WritableEntry(Menu* menu, const wstring& label, string& binding, const Submenu* ownerSubmenu) :
-      Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding) {}
+    WritableEntry(Menu* menu, const wstring& label, string& binding, const Submenu* ownerSubmenu, int maxBindingSize = -1) :
+      Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding), m_maxBindingSize(maxBindingSize) {}
 
     void render(const Font* font) const;
     void click(int button);
@@ -117,6 +120,7 @@ private:
     const Submenu* m_ownerSubmenu;
     string&        m_binding;
     Timer          m_timer;
+    int            m_maxBindingSize;
 };
 
 class WorldEntry : public Entry
@@ -150,6 +154,108 @@ public:
     void click(int button)     {}
     wstring getString() const  { return L""; }
     bool isEnabled() const     { return false; }
+    void enable()              { }
 };
 
+// TODO: make common super class for two following
+
+// used for displaying on server side
+class NetPlayerEntry : public Entry
+{
+public: 
+    NetPlayerEntry(Menu* menu, int idx) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_idx(idx), m_isRemote(false) {}
+
+    wstring getString() const;
+    void click(int button);
+    void render(const Font* font) const;
+
+private:
+    int    m_idx;
+    bool   m_isRemote;
+};
+
+// used for displaying on client side
+class NetRemotePlayerEntry : public Entry
+{
+public: 
+    NetRemotePlayerEntry(Menu* menu, int idx) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_idx(idx) { disable(); }
+
+    wstring getString() const;
+    void click(int button);
+    void render(const Font* font) const;
+
+private:
+    int    m_idx;
+};
+
+class LabelEntry : public Entry
+{
+public: 
+    LabelEntry(Menu* menu, const wstring& label) :
+      Entry(menu, label) {}
+
+    wstring getString() const;
+    void click(int button) {}
+};
+
+class NewHostEntry : public SubmenuEntry
+{
+public: 
+    NewHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
+        SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+
+    void click(int button); 
+};
+
+class JoinHostEntry : public SubmenuEntry
+{
+public: 
+    JoinHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
+        SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+
+    void click(int button); 
+};
+
+class CloseHostEntry : public SubmenuEntry
+{
+public: 
+    CloseHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
+        SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+
+    void click(int button); 
+};
+
+class ConnectEntry : public SubmenuEntry
+{
+public: 
+    ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner) :
+        SubmenuEntry(menu, label, submenuToSwitchTo), m_owner(owner) {}
+
+    void click(int button);
+
+private:
+    Submenu* m_owner;
+};
+
+/*
+TODO: no time now
+
+class NetChatEntry : public Entry
+{
+public: 
+    NetChatEntry(Menu* menu) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_font(Font::get("Arial_16pt_bold") {}
+
+    wstring getString() const;
+    void click(int button);
+    void render(const Font* font) const;
+    void onChar(int ch);
+
+private:
+    Font*  m_font;
+    string m_text;
+    Timer  m_timer;
+};
+*/
+
 #endif
+

@@ -83,7 +83,7 @@ Submenu::~Submenu()
 void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
-    m_height += m_font->getHeight() + 2;
+    m_height += entry->getHeight() * (m_font->getHeight() + 2);
 }
 
 void Submenu::center(const Vector& centerPos)
@@ -101,7 +101,7 @@ void Submenu::center(const Vector& centerPos)
     {      
         Entry* entry = m_entries[i];
         entry->calculateBounds(upperPos, m_font);
-        upperPos.y -= m_font->getHeight() - 2;
+        upperPos.y -= entry->getHeight() * (m_font->getHeight() - 2);
         
         int l = entry->getMaxLeftWidth(m_font);
         int r = entry->getMaxRightWidth(m_font);
@@ -188,7 +188,7 @@ void Submenu::render() const
         }
         entry->render(m_font);
         glPopMatrix();
-        upperPos.y -= m_font->getHeight() - 2;
+        upperPos.y -= entry->getHeight() * (m_font->getHeight() - 2);
     }
 
     if (!m_title.empty())

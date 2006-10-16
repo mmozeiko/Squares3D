@@ -15,6 +15,8 @@ typedef set<const Collision*> CollisionSet;
 class Collideable : NoCopy
 {
 public:
+    virtual ~Collideable() {}
+
     // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
     virtual void onCollide(const Body* other, const NewtonMaterial* material) {}
     virtual void onCollideHull(const Body* other, const NewtonMaterial* material) {}

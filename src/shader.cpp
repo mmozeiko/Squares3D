@@ -92,23 +92,23 @@ Shader::Shader(const string& vp, const string& fp)
     Video::glUseProgramObjectARB(0);
 }
 
-void Shader::checkShaderStatus(unsigned int handle, int status)
+void Shader::checkShaderStatus(GLhandleARB handle, int status)
 {
     int param;
-    Video::glGetObjectParameterivARB(handle, status, &param);
+    Video::glGetObjectParameterivARB(handle, status, (GLint*)&param);
     if (param == 1)
     {
         return;
     }
 
     int infologLength;
-    Video::glGetObjectParameterivARB(handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infologLength);
+    Video::glGetObjectParameterivARB(handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, (GLint*)&infologLength);
 
     if (infologLength > 0)
     {
         vector<char> infoLog(infologLength);
         int charsWritten;
-        Video::glGetInfoLogARB(handle, infologLength, &charsWritten, &infoLog[0]);
+        Video::glGetInfoLogARB(handle, infologLength, (GLsizei*)&charsWritten, &infoLog[0]);
         string error(infoLog.begin(), infoLog.end());
         throw Exception(error);
     }

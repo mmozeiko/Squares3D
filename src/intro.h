@@ -8,6 +8,7 @@
 #include "video.h"
 #include <Newton.h>
 
+class Game;
 class Texture;
 
 class Intro : public State

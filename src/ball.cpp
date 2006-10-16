@@ -7,6 +7,8 @@
 #include "world.h"
 #include "video.h"
 #include "geometry.h"
+#include "audio.h"
+#include "sound.h"
 
 TriggerFlags::TriggerFlags()
 {
@@ -44,6 +46,11 @@ Ball::Ball(Body* body, const Collision* levelCollision) : m_body(body), m_levelC
     // TODO: hmm?
     //NewtonReleaseCollision(hull);
     //NewtonReleaseCollision(newCollision);
+
+    m_sound = Audio::instance->newSound();
+    //TODO: later update regularly in world update perhaps
+    m_sound->update(Vector::Zero, Vector::Zero);
+    m_soundBallGround = Audio::instance->loadSound("ball_ground");
 }
 
 Vector Ball::getPosition() const
@@ -77,6 +84,18 @@ void Ball::onCollide(const Body* other, const NewtonMaterial* material)
             m_referee->process(m_body, other);
         }
     }
+}
+
+void Ball::onImpact(const Body* other, const Vector& position, float speed)
+{
+    if (speed > 0.5f)
+    {
+        m_sound->play(m_soundBallGround);
+    }
+}
+
+void Ball::onScratch(const Body* other, const Vector& position, float speed)
+{
 }
 
 void Ball::onCollideHull(const Body* other, const NewtonMaterial* material)

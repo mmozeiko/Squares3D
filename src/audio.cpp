@@ -70,9 +70,9 @@ void Audio::unloadSound(SoundBuffer* soundBuf)
     delete soundBuf;
 }
 
-Sound* Audio::newSound()
+Sound* Audio::newSound(bool interrupt)
 {
-    Sound* sound = *m_sound.insert(new Sound()).first;
+    Sound* sound = *m_sound.insert(new Sound(interrupt)).first;
     alSourcef(sound->m_source, AL_GAIN, Config::instance->m_audio.sound_vol/10.0f);
     return sound;
 }

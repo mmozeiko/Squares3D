@@ -10,6 +10,8 @@
 #include "collision.h"
 #include "profile.h"
 #include "ball.h"
+#include "audio.h"
+#include "sound.h"
 
 static const pair<float, float> jumpMinMax = make_pair(0.2f, 1.0f);
 static const pair<float, float> speedMinMax = make_pair(3.5f, 6.5f);
@@ -58,6 +60,10 @@ Player::Player(const Profile* profile, Level* level) :
     m_rotateSpeedCoefficient = _applyCoefficient(rotateSpeedMinMax, m_profile->m_speed);
     m_accuracyCoefficient = _applyCoefficient(accuracyMinMax, m_profile->m_accuracy);
     m_jumpCoefficient = _applyCoefficient(jumpMinMax, m_profile->m_jump);
+
+    m_sound = Audio::instance->newSound(false);
+    //TODO: later update regularly in world update perhaps
+    m_sound->update(Vector::Zero, Vector::Zero);
 }
 
 void Player::setPositionRotation(const Vector& position, const Vector& rotation)

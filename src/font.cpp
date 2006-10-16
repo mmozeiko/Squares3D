@@ -90,7 +90,7 @@ Font::Font(const string& filename) : m_texture(0)
     file.read(&data[0], filesize);
     file.close();
 
-    glGenTextures(1, &m_texture);
+    glGenTextures(1, (GLuint*)&m_texture);
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
     GLFWimage image;
@@ -160,7 +160,7 @@ Font::Font(const string& filename) : m_texture(0)
 Font::~Font()
 {
     glDeleteLists(m_listbase, m_count);
-    glDeleteTextures(1, &m_texture);
+    glDeleteTextures(1, (GLuint*)&m_texture);
 }
 
 bool Font::hasChar(int ch) const
@@ -181,7 +181,7 @@ void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
         GL_POLYGON_BIT);
 
     int viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetIntegerv(GL_VIEWPORT, (GLint*)viewport);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -212,7 +212,18 @@ void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
 void Font::renderPlain(const wstring& text) const
 {
     glPushMatrix();
-    glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
+    if (sizeof(wchar_t) == 2)
+    {
+        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
+    }
+    else if (sizeof(wchar_t) == 4)
+    {
+        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_INT, text.c_str());
+    }
+    else
+    {
+        assert(false);
+    }
     glPopMatrix();
 }
 

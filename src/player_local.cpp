@@ -19,6 +19,12 @@ void LocalPlayer::control()
 {
     const Mouse& mouse = Input::instance->mouse();
     Vector curMouse(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
+    if ((mouse.b & 2) == 2)
+    {
+        m_lastMouse = curMouse;
+        setDirection(Vector::Zero);
+        return;
+    }
 
     Vector direction = curMouse - m_lastMouse;
 

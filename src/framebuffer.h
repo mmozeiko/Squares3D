@@ -25,7 +25,6 @@ private:
     unsigned int m_colorTex;
     unsigned int m_shadowTex;
     unsigned int m_frameBuffer;
-    unsigned int m_renderBuffer;
 };
 
 #endif

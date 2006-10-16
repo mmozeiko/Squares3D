@@ -1,0 +1,24 @@
+#
+Import("env lib postfix")
+
+headers = Split("physfs_internal.h")
+
+sources = Split("zip.c dir.c physfs.c physfs_byteorder.c")
+
+p = str( Platform() )
+
+e = env.Copy()
+
+if p == "win32":
+  sources += ["win32.c"]
+
+elif p=="darwin":
+  sources += Split("unix.c posix.c")
+  e.Append( CCFLAGS = ["-msse2"] )
+
+else:
+  sources += Split("unix.c posix.c")
+
+e.Append( CPPDEFINES = ["PHYSFS_SUPPORTS_ZIP"] )
+
+e.StaticLibrary(lib + "/physfs" + postfix, sources)

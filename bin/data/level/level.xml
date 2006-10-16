@@ -4,5 +4,4 @@
     <link file="collisions.xml"/>
     <link file="bodies.xml"/>
     <link file="joints.xml"/>
-    <link file="cpu_players.xml"/>
 </xml>

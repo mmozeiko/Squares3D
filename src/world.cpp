@@ -24,6 +24,7 @@
 #include "network.h"
 #include "profile.h"
 #include "colors.h"
+#include "game.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -117,7 +118,7 @@ State::Type World::progress()
     return State::Current;
 }
 
-World::World(const Profile* userProfile, int& unlockable, int current) :
+World::World(Profile* userProfile, int& unlockable, int current) :
     m_music(NULL),
     m_camera(NULL),
     m_skybox(NULL),
@@ -141,8 +142,7 @@ World::World(const Profile* userProfile, int& unlockable, int current) :
     setupShadowStuff();
     setLight(Vector(-15.0f, 35.0f, 38.0f));
 
-    //m_camera = new Camera(Vector(0.0f, 25.0f, 0.0f), 90.0f, 0.0f);
-    m_camera = new Camera(Vector(0.0f, 9.0f, 14.0f), 30.0f, 0.0f);
+    m_camera = new Camera(Vector(0.0f, 1.0f, 12.0f), 20.0f, 0.0f);
     m_skybox = new SkyBox();
 }
 
@@ -202,11 +202,19 @@ void World::init()
     m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
     m_referee->m_ground = m_level->getBody("level"); //referee now can recognize ground outside
 
-    Player* human = new LocalPlayer(m_userProfile, m_level);
-    m_referee->m_humanPlayer = human;
-    m_localPlayers.push_back(human);
+    // NETWORK-
+    if (Network::instance->m_isSingle)
+    {
+        Network::instance->setPlayerProfile(m_userProfile);
+        Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, m_current);
+    }
+    // -NETWORK
 
-    addShuffledCpuProfiles(&m_level->m_cpuProfiles[m_current], 3);
+    const vector<Player*>& players = Network::instance->createPlayers(m_level);
+
+    m_localPlayers = players;
+
+    m_referee->m_humanPlayer = players[Network::instance->getLocalIdx()];
 
     m_referee->registerPlayers(m_localPlayers);
 
@@ -241,6 +249,12 @@ void World::init()
 World::~World()
 {
     Input::instance->endKeyBuffer();
+    
+    // NETWORK-
+    
+    Network::instance->close();
+    
+    // -NETWORK
 
     killShadowStuff();
     delete m_framebuffer;
@@ -482,7 +496,7 @@ void World::setupShadowStuff()
             m_shadowSize = 256;
         }
 
-        glGenTextures(1, &m_shadowTex);
+        glGenTextures(1, (GLuint*)&m_shadowTex);
         glBindTexture(GL_TEXTURE_2D, m_shadowTex);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowSize, m_shadowSize, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -510,7 +524,7 @@ void World::killShadowStuff()
 {
     if (!m_withFBO)
     {
-        glDeleteTextures(1, &m_shadowTex);
+        glDeleteTextures(1, (GLuint*)&m_shadowTex);
     }
 
     m_framebuffer->destroy();
@@ -668,16 +682,4 @@ void World::shadowMapPass3() const
     glPopAttrib();
 
     Video::glActiveTextureARB(GL_TEXTURE0_ARB);
-}
-
-void World::addShuffledCpuProfiles(const ProfilesVector* profiles, size_t count)
-{
-    vector<Profile*> temp;
-    temp.assign(profiles->begin(), profiles->end());
-
-    std::random_shuffle(temp.begin(), temp.end());
-    for (size_t i = 0; i < count; i++)
-    {
-        m_localPlayers.push_back(new AiPlayer(temp[i], m_level));
-    }
 }

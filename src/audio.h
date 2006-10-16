@@ -30,7 +30,7 @@ public:
     SoundBuffer* loadSound(const string& filename);
     void unloadSound(SoundBuffer* soundBuf);
 
-    Sound* newSound();
+    Sound* newSound(bool interrupt = true);
 
     void update();
 

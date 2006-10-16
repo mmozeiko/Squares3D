@@ -1,0 +1,6 @@
+#
+Import("env lib postfix")
+
+sources = Split("bitwise.c framing.c")
+
+env.StaticLibrary(lib + "/ogg" + postfix, sources)

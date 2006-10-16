@@ -62,7 +62,7 @@ void Messages::add3D(Message* message)
     
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview.m);
     glGetFloatv(GL_PROJECTION_MATRIX, projection.m);
-    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetIntegerv(GL_VIEWPORT, (GLint*)viewport);
     double m[16], p[16];
     std::copy(&modelview.m[0], &modelview.m[16], m);
     std::copy(&projection.m[0], &projection.m[16], p);
@@ -72,7 +72,7 @@ void Messages::add3D(Message* message)
         message->m_position.x,
         message->m_position.y,
         message->m_position.z,
-        m, p, viewport,
+        m, p, (GLint*)viewport,
         &vx, &vy, &vz);
 
     //correct positions to fit on screen

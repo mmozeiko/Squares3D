@@ -7,7 +7,7 @@
 class Camera : NoCopy
 {
 public:
-    Camera(const Vector& pos = Vector(15.0f, 20.0f, 15.0f), float angleX = 0, float angleY = 0);
+    Camera(const Vector& pos, float angleX, float angleY);
     ~Camera();  
 
     void control();
@@ -18,7 +18,7 @@ public:
     float angleY() const;
 
 private:
-    IntPair m_lastMouse;
+    Vector m_lastMouse;
 
     Vector m_targetRotation;
     Vector m_targetDirection;
@@ -30,6 +30,8 @@ private:
     const Matrix m_strafeRotation;
     const Matrix m_scaleMatrix;
     Matrix m_matrix;
+
+    bool   m_lastDown;
 };
 
 #endif

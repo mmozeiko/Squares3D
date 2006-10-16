@@ -82,7 +82,7 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_gras
 
     if (Video::instance->m_haveVBO)
     {
-        Video::glGenBuffersARB(2, &m_buffer[0]);
+        Video::glGenBuffersARB(2, (GLuint*)&m_buffer[0]);
 
         if (m_count > 0)
         {
@@ -107,7 +107,7 @@ Grass::~Grass()
 {
     if (Video::instance->m_haveVBO)
     {
-        Video::glDeleteBuffersARB(2, &m_buffer[0]);
+        Video::glDeleteBuffersARB(2, (GLuint*)&m_buffer[0]);
     }
 }
 

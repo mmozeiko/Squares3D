@@ -16,6 +16,7 @@ class Submenu;
 class Profile;
 class Sound;
 class SoundBuffer;
+class Game;
 
 typedef map<string, Submenu*> Submenus;
 
