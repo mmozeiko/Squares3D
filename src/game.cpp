@@ -75,18 +75,19 @@ Game::~Game()
 {
     Font::unload();
     
-    if (m_state != NULL)
-    {
-        delete m_state;
-    }
-
     saveUserData();
+ 
     for (size_t i = 0; i < 3; i++)
     {
         for each_const(ProfilesVector, m_cpuProfiles[i], iter)
         {
             delete *iter;
         }
+    }
+
+    if (m_state != NULL)
+    {
+        delete m_state;
     }
 
     delete m_input;
@@ -262,6 +263,7 @@ void Game::run()
 
     }
 
+    /*
     // disconnect network
     if (m_network->m_needDisconnect)
     {
@@ -275,6 +277,7 @@ void Game::run()
             m_network->update();
         }
     }
+    */
 
     clog << "Game finished... " << endl;
     clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;

@@ -8,7 +8,6 @@
 
 class Referee;
 class Collision;
-class Sound;
 
 static const float FIELDLENGTH = 3.0f;
 
@@ -36,9 +35,7 @@ public:
     void renderColor() const;
 
     //todo: maybe private
-    void onCollide(const Body* other, const NewtonMaterial* material);
-    void onImpact(const Body* other, const Vector& position, float speed);
-    void onScratch(const Body* other, const Vector& position, float speed);
+    void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
     void onSetForceAndTorque();
     
     Referee*          m_referee;
@@ -52,7 +49,6 @@ public:
     float             m_radius;
 
     bool              m_halt;
-    Sound*            m_sound;
 
 protected:
     NewtonJoint* m_upVector;

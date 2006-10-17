@@ -9,8 +9,8 @@ class SoundBuffer;
 
 class Sound : NoCopy
 {
-    friend class Audio;
 public:
+    Sound(bool interrupt);
     ~Sound();
     
     void play(const SoundBuffer* buffer);
@@ -20,7 +20,7 @@ public:
     void update(const Vector& position, const Vector& velocity);
 
 private:
-    Sound(bool interrupt);
+
     bool         m_interrupt;
     unsigned int m_source;
 };

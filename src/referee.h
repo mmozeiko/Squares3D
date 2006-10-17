@@ -30,6 +30,7 @@ public:
     bool                     m_gameOver;
 
     Referee(Messages* messages, ScoreBoard* scoreBoard);
+    ~Referee();
 
     void registerBall(Ball* ball);
     void registerPlayers(const vector<Player*> players);
@@ -66,9 +67,6 @@ private:
     int          m_haltWait;
     Player*      m_lastWhoGotPoint;
     Sound*       m_sound; //for gameover and other sounds exclusive to referee
-    SoundBuffer* m_soundBallPlayer;
-    SoundBuffer* m_soundBallGround;
-    SoundBuffer* m_soundPlayerPlayer;
     SoundBuffer* m_soundGameOver;
     SoundBuffer* m_soundGameStart;
     SoundBuffer* m_soundFault;

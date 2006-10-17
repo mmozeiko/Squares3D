@@ -141,7 +141,7 @@
             <collision>player_biggy</collision>
         </body-->
 
-        <body id="football">
+        <body id="football" soundable="1" important="1">
             <position x="0.0" y="0.5" z="0.0" />
             <rotation x="0.0" y="0.0" z="0.0" />
             <collision>football</collision>

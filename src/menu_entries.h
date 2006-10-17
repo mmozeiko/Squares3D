@@ -163,7 +163,7 @@ public:
 class NetPlayerEntry : public Entry
 {
 public: 
-    NetPlayerEntry(Menu* menu, int idx) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_idx(idx), m_isRemote(false) {}
+    NetPlayerEntry(Menu* menu, int idx) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_idx(idx) {}
 
     wstring getString() const;
     void click(int button);
@@ -171,7 +171,6 @@ public:
 
 private:
     int    m_idx;
-    bool   m_isRemote;
 };
 
 // used for displaying on client side
@@ -210,10 +209,12 @@ public:
 class JoinHostEntry : public SubmenuEntry
 {
 public: 
-    JoinHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
-        SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+    JoinHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo, Submenu* owner) :
+        SubmenuEntry(menu, stringIn, submenuToSwitchTo), m_owner(owner) {}
 
     void click(int button); 
+private:
+    Submenu* m_owner;
 };
 
 class CloseHostEntry : public SubmenuEntry
@@ -228,9 +229,7 @@ public:
 class ConnectEntry : public SubmenuEntry
 {
 public: 
-    ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner) :
-        SubmenuEntry(menu, label, submenuToSwitchTo), m_owner(owner) {}
-
+    ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner);
     void click(int button);
 
 private:

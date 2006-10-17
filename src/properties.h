@@ -3,12 +3,29 @@
 
 #include "common.h"
 #include "property.h"
+#include "vmath.h"
 
 class Property;
 class XMLnode;
+class Sound;
+class SoundBuffer;
+class Body;
 
 typedef long long pID;
 typedef map<pID, Property> PropertiesMap;
+
+struct Soundable
+{
+    Soundable(Sound* sound, bool important) : body(NULL), sound(sound), important(important) {}
+
+    Body*  body;
+    Sound* sound;
+    bool   important;
+};
+
+typedef list<Soundable>             SoundableList;
+typedef vector<SoundBuffer*>        SoundBufferVector;
+typedef map<pID, SoundBufferVector> SoundBufMap;
 
 class Properties : NoCopy
 {
@@ -17,9 +34,12 @@ public:
     Properties();
     ~Properties();
 
+    void update();
+
     void load(const XMLnode& node);
     void loadDefault(const XMLnode& node);
     const Property* get(int id0, int id1) const;
+    const SoundBuffer* getSB(int id0, int id1) const;
 
     int  getUndefined() const;              // 0
     int  getInvisible() const;              // 1
@@ -28,13 +48,19 @@ public:
     int  getPropertyID(const string& name) const; // >=3
     bool hasPropertyID(int id) const; // id>=3
 
+    void play(Body* body, const SoundBuffer* buffer, bool important, const Vector& position);
+
 private:
     int                 m_uniqueID;
     PropertiesMap       m_properties;
+    SoundBufMap         m_soundBufs;
     IntMap              m_propertiesID;
     MaterialContact*    m_materialContact;
 
     pID makepID(int id0, int id1) const;
+
+    SoundableList m_active;
+    SoundableList m_idle;
 };
 
 #endif

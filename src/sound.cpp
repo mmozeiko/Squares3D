@@ -4,10 +4,10 @@
 #include "sound_buffer.h"
 #include "config.h"
 
-Sound::Sound(bool interrupt) :
-    m_interrupt(interrupt)
+Sound::Sound(bool interrupt) : m_interrupt(interrupt)
 {
     alGenSources(1, &m_source);
+    alSourcef(m_source, AL_GAIN, Config::instance->m_audio.sound_vol/10.0f);
 }
 
 Sound::~Sound()
@@ -18,22 +18,21 @@ Sound::~Sound()
 
 void Sound::play(const SoundBuffer* buffer)
 {
+    if (! Config::instance->m_audio.enabled)
+    {
+        return;
+    }
+
     if (m_interrupt)
     {
         alSourceStop(m_source);
         alSourcei(m_source, AL_BUFFER, buffer->m_buffer);
-        if (Config::instance->m_audio.enabled)
-        {
-            alSourcePlay(m_source);
-        }
+        alSourcePlay(m_source);
     }
     else if (!is_playing())
     {
         alSourcei(m_source, AL_BUFFER, buffer->m_buffer);
-        if (Config::instance->m_audio.enabled)
-        {
-            alSourcePlay(m_source);
-        }
+        alSourcePlay(m_source);
     }
 }
 

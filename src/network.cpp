@@ -1,3 +1,5 @@
+#include <GL/glfw.h>
+
 #include "network.h"
 #include "random.h"
 #include "body.h"
@@ -5,6 +7,10 @@
 #include "player_ai.h"
 #include "player_local.h"
 #include "player_remote.h"
+#include "network.h"
+#include "packet.h"
+#include "menu.h"
+#include "game.h"
 
 const int SQUARES_PORT = 12321;
 
@@ -14,10 +20,12 @@ Network::Network() :
     m_needDisconnect(false),
     m_disconnected(false),
     m_isSingle(true),
+    m_inMenu(false),
     m_isServer(false),
-    m_connecting(false),
     m_host(NULL),
-    m_server(NULL)
+    m_server(NULL),
+    m_menu(NULL),
+    m_tmpProfile(NULL)
 {
     clog << "Initializing network." << endl;
 
@@ -27,11 +35,15 @@ Network::Network() :
     }
     
     m_profiles.resize(4);
+
+    m_tmpProfile = new Profile();
+    m_tmpProfile->m_name = "???";
 }
 
 Network::~Network()
 {
     clog << "Closing network." << endl;
+
     close();
     enet_deinitialize();
 
@@ -39,6 +51,7 @@ Network::~Network()
     {
         delete *iter;
     }
+    delete m_tmpProfile;
 }
 
 void Network::createServer()
@@ -54,6 +67,7 @@ void Network::createServer()
         throw Exception("enet_host_create failed");
     }
 
+    m_clients.clear();
     m_isServer = true;
     m_isSingle = false;
 }
@@ -89,18 +103,37 @@ bool Network::connect(const string& host)
         return false;
     }
 
-    m_connecting = true;
-    m_cancelConnection = false;
     return true;
-}
-
-void Network::sendDisconnect()
-{
-    enet_peer_disconnect(m_server);
 }
 
 void Network::close()
 {
+    if (!m_isServer && m_server != NULL)
+    {
+        // TODO: make asynchronous
+        send(m_server, QuitPacket(), true);
+        enet_host_flush(m_host);
+        enet_peer_disconnect(m_server);
+        enet_host_flush(m_host);
+    }
+    if (m_isServer && m_host != NULL)
+    {
+        // TODO: make asynchronous
+        for each_(PlayerMap, m_clients, client)
+        {
+            send(client->first, QuitPacket(), true);
+            enet_host_flush(m_host);
+            enet_peer_disconnect(client->first);
+            enet_host_flush(m_host);
+        }
+    }
+    
+    for each_const(set<Profile*>, m_garbage, iter)
+    {
+        delete *iter;
+    }
+    m_garbage.clear();
+
     if (m_server != NULL)
     {
         enet_peer_reset(m_server);
@@ -112,7 +145,6 @@ void Network::close()
         m_host = NULL;
     }
     m_isSingle = true;
-    m_connecting = false;
 }
 
 void Network::update()
@@ -130,25 +162,85 @@ void Network::update()
         switch (event.type)
         {
         case ENET_EVENT_TYPE_NONE:
-            type = "None";
+            //type = "None"; wtf?
             break;
+
         case ENET_EVENT_TYPE_CONNECT:
             type = "Connect"; // peer
-            if (!m_isServer) // connected to server
+            if (m_isServer)
             {
+                int freePlace = -1;
+                for (int i=0; i<4; i++)
+                {
+                    if (m_aiIdx[i] && freePlace == -1)
+                    {
+                        freePlace = i;
+                        m_aiIdx[freePlace] = false;
+                    }
+                    
+                    if (i != freePlace)
+                    {
+                        send(event.peer, JoinPacket(i, m_profiles[i]), true);
+                    }
+                }
+
+                if (freePlace == -1)
+                {
+                    send(event.peer, KickPacket("No free places!!"), true);
+                }
+                else
+                {
+                    send(event.peer, SetPlacePacket(freePlace), true);
+                    m_clients[event.peer] = freePlace;
+                }
+            }
+            else
+            {
+                m_server = event.peer;
+                // connected to server
                 m_needDisconnect = true;
+
+                // click the menu button!
+                m_menu->setSubmenu(m_lobbySubmenu);
             }
             break;
+
         case ENET_EVENT_TYPE_DISCONNECT:
             type = "Disconnect"; //peer, data
-            if (!m_isServer) // server disconnected
+            if (m_isServer)
             {
+                if (foundInMap(m_clients, event.peer))
+                {
+                    // client is quitting
+                    int idx = m_clients[event.peer];
+                    m_clients.erase(event.peer);
+                    m_aiIdx[idx] = true;
+                    m_profiles[idx] = getRandomAI();
+                
+                    for each_(PlayerMap, m_clients, client)
+                    {
+                        send(client->first, JoinPacket(idx, m_profiles[idx]), true);
+                    }
+                }
+            }
+            else
+            {
+                // server disconnected
                 m_needDisconnect = false;
                 m_disconnected = true;
+                m_server = NULL;
+                m_aiIdx[0] = m_aiIdx[1] = m_aiIdx[2] = m_aiIdx[3] = false;
+                m_profiles[0] = m_profiles[1] = m_profiles[2] = m_profiles[3] = m_tmpProfile;
+                if (m_inMenu)
+                {
+                    m_menu->setSubmenu(m_joinSubmenu);
+                }
             }
             break;
+
         case ENET_EVENT_TYPE_RECEIVE:
             type = "Recieve"; // peer, channelID, packer (must destroy)
+            processPacket(event.peer, bytes(event.packet->data, event.packet->data + event.packet->dataLength));
             enet_packet_destroy(event.packet);
             break;
         default:
@@ -175,6 +267,7 @@ void Network::setPlayerProfile(Profile* player)
 {
     m_profiles[0] = player;
     m_localIdx = 0;
+    m_aiIdx[0] = false;
 }
 
 void Network::setCpuProfiles(const vector<Profile*> profiles[], int level)
@@ -196,21 +289,45 @@ void Network::setCpuProfiles(const vector<Profile*> profiles[], int level)
     }
 
     std::random_shuffle(temp.begin(), temp.end());
-    m_aiIdx.clear();
     for (int i = 0; i < 3; i++)
     {
         m_profiles[1+i] = temp[i];
-        m_aiIdx.push_back(1+i);
+        m_aiIdx[1+i] = true;
+    }
+}
+
+Profile* Network::getRandomAI()
+{
+    bool found = true;
+    int i, k;
+    while (found)
+    {
+        i = Random::getIntN(3);
+        k = Random::getIntN(static_cast<int>(m_allProfiles[i].size()));
+        found = foundInVector(m_profiles, m_allProfiles[i][k]);
+    }
+    return m_allProfiles[i][k];
+}
+
+void Network::createRemoteProfiles()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        m_profiles[i] = m_tmpProfile;
+        m_aiIdx[i] = false;
     }
 }
 
 const vector<Player*>& Network::createPlayers(Level* level)
 {
     m_players.resize(4);
-    m_players[0] = new LocalPlayer(m_profiles[m_localIdx], level);
-    for (int i=1; i<4; i++)
+    for (int i=0; i<4; i++)
     {
-        if (foundInVector(m_aiIdx, i))
+        if (i == m_localIdx)
+        {
+            m_players[i] = new LocalPlayer(m_profiles[i], level);
+        }
+        else if (m_aiIdx[i])
         {
             m_players[i] = new AiPlayer(m_profiles[i], level);
         }
@@ -278,7 +395,7 @@ void Network::changeCpu(int idx, bool forward)
         ok = true;
         for (int k=0; k<4; k++)
         {
-            if (k != found && m_profiles[k] == m_allProfiles[i][found])
+            if (m_profiles[k] == m_allProfiles[i][found])
             {
                 ok = false;
                 break;
@@ -292,5 +409,198 @@ void Network::changeCpu(int idx, bool forward)
 
 bool Network::isLocal(int idx) const
 {
-    return idx == m_localIdx || foundInVector(m_aiIdx, idx);
+    return idx == m_localIdx || m_aiIdx[idx];
+}
+
+void Network::send(ENetPeer* peer, const Packet& packet, bool important)
+{
+    ENetPacket* p = enet_packet_create(&packet.data()[0], packet.data().size(), (important ? ENET_PACKET_FLAG_RELIABLE : 0));
+    enet_peer_send(peer, 0, p);
+}
+
+void Network::setMenuEntries(Menu* menu, const string& lobbySubmenu, const string& joinSubmenu)
+{
+    m_menu = menu;
+    m_lobbySubmenu = lobbySubmenu;
+    m_joinSubmenu = joinSubmenu;
+}
+
+void Network::processPacket(ENetPeer* peer, const bytes& packet)
+{
+    if (packet.size() < 1)
+    {
+        clog << "WARNING: " << Exception("Invalid packet size == 0") << endl;
+        return;
+    }
+
+    if (m_isServer)
+    {
+
+        const byte type = packet[0];
+        
+        if (type == Packet::ID_JOIN)
+        {
+            // client is telling its profile
+            JoinPacket p(packet);
+            for (int i=0; i<4; i++)
+            {
+                if (p.m_profile->m_name == m_profiles[i]->m_name)
+                {
+                    send(peer, KickPacket("player name already in use"), true);
+                    return;
+                }
+            }
+            m_aiIdx[p.m_idx] = false;
+            Profile* prof = new Profile(*p.m_profile);
+            m_profiles[p.m_idx] = prof;
+            m_garbage.insert(prof);
+
+            for each_(PlayerMap, m_clients, client)
+            {
+                if (client->first != peer)
+                {
+                    send(client->first, JoinPacket(p.m_idx, prof), true);
+                }
+            }
+        }
+        else if (type == Packet::ID_QUIT)
+        {
+            // client is quitting
+            if (foundInMap(m_clients, peer))
+            {
+                int idx = m_clients[peer];
+                m_clients.erase(peer);
+                m_aiIdx[idx] = true;
+                m_profiles[idx] = getRandomAI();
+
+                for each_(PlayerMap, m_clients, client)
+                {
+                    send(client->first, JoinPacket(idx, m_profiles[idx]), true);
+                }
+            }
+
+        }
+        else if (type == Packet::ID_PLACE)
+        {
+            // not possible
+            clog << "WARNING: " << Exception("invalid server packet type = ") << type << endl;
+        }
+        else if (type == Packet::ID_KICK)
+        {
+            // not possible
+            clog << "WARNING: " << Exception("invalid server packet type = ") << type << endl;
+        }
+        else if (type == Packet::ID_CHAT)
+        {
+            // not used
+        }
+        else if (type == Packet::ID_START)
+        {
+        }
+        else if (type == Packet::ID_READY)
+        {
+        }
+        else if (type == Packet::ID_UPDATE)
+        {
+        }
+        else if (type == Packet::ID_CONTROL)
+        {
+        }
+        else
+        {
+            clog << "WARNING: " << Exception("invalid packet type = ") << type << endl;
+        }
+
+    }
+    else
+    {
+
+        const byte type = packet[0];
+        
+        if (type == Packet::ID_JOIN)
+        {
+            // server is telling who is connected
+            JoinPacket p(packet);
+            m_aiIdx[p.m_idx] = false;
+            Profile* prof = new Profile(*p.m_profile);
+            m_profiles[p.m_idx] = prof;
+            m_garbage.insert(prof);
+        }
+        else if (type == Packet::ID_QUIT)
+        {
+            // server is quitting
+            if (m_inMenu)
+            {
+                m_menu->setSubmenu(m_joinSubmenu);
+            }
+        }
+        else if (type == Packet::ID_PLACE)
+        {
+            SetPlacePacket p(packet);
+            m_localIdx = p.m_idx;
+            m_profiles[m_localIdx] = Game::instance->m_userProfile;
+            send(m_server, JoinPacket(m_localIdx, m_profiles[m_localIdx]), true);
+        }
+        else if (type == Packet::ID_KICK)
+        {
+            // kick teh user
+            send(m_server, QuitPacket(), true);
+            if (m_inMenu)
+            {
+                m_menu->setSubmenu(m_joinSubmenu);
+            }
+        }
+        else if (type == Packet::ID_CHAT)
+        {
+            // not used
+        }
+        else if (type == Packet::ID_START)
+        {
+        }
+        else if (type == Packet::ID_READY)
+        {
+        }
+        else if (type == Packet::ID_UPDATE)
+        {
+        }
+        else if (type == Packet::ID_CONTROL)
+        {
+        }
+        else
+        {
+            clog << "WARNING: " << Exception("invalid packet type = ") << type << endl;
+        }
+    }
+}
+
+void Network::setAiProfile(int idx, Profile* ai)
+{
+    m_profiles[idx] = ai;
+}
+
+void Network::updateAiProfile(int idx)
+{
+    for each_(PlayerMap, m_clients, client)
+    {
+        send(client->first, JoinPacket(idx, m_profiles[idx]), true);
+    }
+}
+
+void Network::kickClient(int idx)
+{
+    ENetPeer* eraseable;
+    for each_(PlayerMap, m_clients, client)
+    {
+        if (client->second == idx)
+        {
+            eraseable = client->first;
+            send(client->first, KickPacket("server kick"), true);
+        }
+        else
+        {
+            send(client->first, JoinPacket(idx, m_profiles[idx]), true);
+        }
+    }
+    m_clients.erase(eraseable); 
+    m_aiIdx[idx] = true;
 }

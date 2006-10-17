@@ -99,7 +99,7 @@ private:
     
     int                    m_realCount;
 
-    Texture*     m_texture;
+    Material*    m_material;
     unsigned int m_buffers[5];
 
     vector<Face> m_tmpFaces;
@@ -559,11 +559,11 @@ CollisionTree::~CollisionTree()
 //    Video::glDeleteBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
 }
 
-CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node), m_texture(NULL)
+CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node), m_material(NULL)
 {
     string hmap;
     float size = 0.0f;
-    string texture;
+    string material;
     float repeat = 0.0f;
 
     for each_const(XMLnodes, node.childs, iter)
@@ -573,7 +573,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         {
             hmap = node.getAttribute("name");
             size = node.getAttribute<float>("size");
-            texture = node.getAttribute("texture");
+            material = node.getAttribute("material");
             repeat = node.getAttribute<float>("repeat");
         }
         else
@@ -586,16 +586,16 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
     {
         throw Exception("Invalid heightmap collision, heightmap name not specified");
     }
-    if (texture.empty())
+    if (material.empty())
     {
-        throw Exception("Invalid heightmap collision, texture name not specified");
+        throw Exception("Invalid heightmap collision, material name not specified");
     }
     if (repeat == 0.0f)
     {
         throw Exception("Invalid heightmap collision, repeat not specified");
     }
 
-    m_texture = Video::instance->loadTexture(texture);
+    m_material = level->m_materials.find(material)->second;
     const float c = repeat/size; //1.5f; //m_texture->m_size;//1.5f;
 
     int id = level->m_properties->getDefault();
@@ -779,13 +779,12 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
         m_realCount = maxIdx;
 
-        if (texture == "grass")
+        if (m_material->m_id == "grass")
         {
             m_tmpFaces.resize(2*maxIdx*maxIdx);
         }
 
         int cnt = 0;
-        Material* grass = level->m_materials["grass"];
 
         for (int z=0; z<maxIdx-1; z++)
         {
@@ -845,21 +844,21 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
                     NewtonTreeCollisionAddFace(collision, 3, arr[0].v, sizeof(Vector), id);
                 }
 
-                if (texture == "grass")
+                if (m_material->m_id == "grass")
                 {
                     Face* face = & m_tmpFaces[cnt++];
                     face->vertexes.resize(3);
                     face->vertexes[0] = v1;
                     face->vertexes[1] = v2;
                     face->vertexes[2] = v3;
-                    level->m_faces.insert(make_pair(face, grass));
+                    level->m_faces.insert(make_pair(face, m_material));
 
                     face = & m_tmpFaces[cnt++];
                     face->vertexes.resize(3);
                     face->vertexes[0] = v2;
                     face->vertexes[1] = v3;
                     face->vertexes[2] = v4;
-                    level->m_faces.insert(make_pair(face, grass));
+                    level->m_faces.insert(make_pair(face, m_material));
                 }
             }
         }
@@ -906,7 +905,7 @@ void CollisionHMap::render() const
         return;
     }
 
-    m_texture->bind();
+    m_material->bind();
 
     if (Video::instance->m_haveVBO)
     {

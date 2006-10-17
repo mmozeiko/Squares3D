@@ -29,6 +29,7 @@ public:
     Body* getBody(const string& id) const;
     Collision* getCollision(const string& id) const;
 
+    Vector          m_gravity;
     BodiesMap       m_bodies;
     CollisionsMap   m_collisions;
     FaceSet         m_faces;

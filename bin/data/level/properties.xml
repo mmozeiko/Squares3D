@@ -12,8 +12,9 @@
                 staticFriction       = "0.0"
                 kineticFriction      = "0.0"
                 elasticityCoefficient = "0.0"
-                softnessCoefficient   = "0.0"/>
-    />
+                softnessCoefficient   = "0.0">
+        <sound name="player_player"/>
+    </properties>
 
     <properties property0 = "player" 
                 property1 = "pavement" 
@@ -43,14 +44,20 @@
                 staticFriction       = "0.7"
                 kineticFriction      = "0.5"
                 elasticityCoefficient = "0.3"
-                softnessCoefficient   = "0.85"/>
+                softnessCoefficient   = "0.85">
+        <sound name="ball_player"/>
+    </properties>
+
 
     <properties property0 = "football" 
                 property1 = "pavement" 
                 staticFriction       = "0.7"
                 kineticFriction      = "0.5"
                 elasticityCoefficient = "0.7"
-                softnessCoefficient   = "0.2"/>
+                softnessCoefficient   = "0.2">
+        <sound name="ball_ground"/>
+        <sound name="ball_ground"/>
+    </properties>
 
     <properties property0 = "football" 
                 property1 = "grass" 

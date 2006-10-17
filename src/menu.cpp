@@ -18,6 +18,11 @@
 #include "timer.h"
 #include "profile.h"
 #include "colors.h"
+#include "network.h"
+
+// BUGBUG: ugly ugly windows.h include defines:
+#undef min
+#undef max
 
 #include "audio.h"
 #include "sound.h"
@@ -39,7 +44,7 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_fontBig(Font::get("Arial_72pt_bold")),
     m_state(State::Current),
     m_music(NULL),
-    m_sound(NULL),
+    m_sound(new Sound(true)),
     m_soundOver(NULL),
     m_soundClick(NULL),
     m_soundChange(NULL)
@@ -67,7 +72,6 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     Input::instance->startCharBuffer();
     glfwEnable(GLFW_MOUSE_CURSOR);
 
-    m_sound = Audio::instance->newSound();
     m_soundOver = Audio::instance->loadSound("menu_over");
     m_soundClick = Audio::instance->loadSound("menu_click");
     m_soundChange =Audio::instance->loadSound("menu_change");
@@ -75,7 +79,7 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_music = Audio::instance->loadMusic("menu");
     m_music->play();
 
-    //alDistanceModel(AL_NONE);
+    Network::instance->m_inMenu = true;
 }
 
 void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
@@ -132,20 +136,24 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     m_submenus["startSingle"] = submenu;
 
 
-    // Start Multi Submenu
 
-    submenu = new Submenu(this, m_font, m_fontBig);
+    // Start Multi Join IP
 
-    submenu->setTitle(language->get(TEXT_START_MULTIPLAYER), titlePos);
+    Submenu* submenuJ = new Submenu(this, m_font, m_fontBig);
 
-    submenu->addEntry(new NewHostEntry(this, language->get(TEXT_START_HOST), "startMultiHost"));
-    submenu->addEntry(new JoinHostEntry(this, language->get(TEXT_START_JOIN), "startMultiJoinIP"));
-    
-    submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
+    submenuJ->setTitle(language->get(TEXT_START_JOIN), titlePos);
 
-    submenu->center(submenuPosition);
-    m_submenus["startMulti"] = submenu;
+    submenuJ->addEntry(new WritableEntry(this, language->get(TEXT_ADDRESS), Config::instance->m_misc.last_address, submenuJ, 15));
+    submenuJ->addEntry(new ConnectEntry(this, language->get(TEXT_CONNECT_HOST), "startMultiJoin", submenuJ));
+
+    Network::instance->setMenuEntries(this, "startMultiJoin", "startMulti");
+
+    submenuJ->addEntry(new SpacerEntry());
+    submenuJ->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
+
+    submenuJ->center(submenuPosition);
+    m_submenus["startMultiJoinIP"] = submenuJ;
+
 
 
     // Start Multi Host
@@ -169,24 +177,6 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     m_submenus["startMultiHost"] = submenu;
 
 
-
-    // Start Multi Join IP
-
-    submenu = new Submenu(this, m_font, m_fontBig);
-
-    submenu->setTitle(language->get(TEXT_START_JOIN), titlePos);
-
-    submenu->addEntry(new WritableEntry(this, language->get(TEXT_ADDRESS), Config::instance->m_misc.last_address, submenu, 15));
-    submenu->addEntry(new ConnectEntry(this, language->get(TEXT_CONNECT_HOST), "startMultiJoin", submenu));
-
-    submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
-
-    submenu->center(submenuPosition);
-    m_submenus["startMultiJoinIP"] = submenu;
-
-
-
     // Start Multi Join
     submenu = new Submenu(this, m_font, m_fontBig);
 
@@ -200,11 +190,27 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new NetRemotePlayerEntry(this, 3));
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
+    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_DISCONNECT), "startMulti"));
 
     submenu->center(submenuPosition);
     m_submenus["startMultiJoin"] = submenu;
 
+
+
+    // Start Multi Submenu
+
+    submenu = new Submenu(this, m_font, m_fontBig);
+
+    submenu->setTitle(language->get(TEXT_START_MULTIPLAYER), titlePos);
+
+    submenu->addEntry(new NewHostEntry(this, language->get(TEXT_START_HOST), "startMultiHost"));
+    submenu->addEntry(new JoinHostEntry(this, language->get(TEXT_START_JOIN), "startMultiJoinIP", submenuJ));
+    
+    submenu->addEntry(new SpacerEntry());
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
+
+    submenu->center(submenuPosition);
+    m_submenus["startMulti"] = submenu;
 
 
 
@@ -411,6 +417,8 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
 Menu::~Menu()
 {
+    Network::instance->m_inMenu = false;
+
     delete m_sound;
     Audio::instance->unloadSound(m_soundOver);
     Audio::instance->unloadSound(m_soundClick);
@@ -448,11 +456,22 @@ void Menu::setSubmenu(const string& submenuToSwitchTo)
     m_currentSubmenu->m_activeEntry = m_currentSubmenu->m_entries.size() - 1;
     m_currentSubmenu->activateNextEntry(true);
 
-
     Entries& entries = m_submenus[submenuToSwitchTo]->m_entries;
     for each_(Entries, entries, iter)
     {
         (*iter)->reset();
+    }
+
+    if (submenuToSwitchTo == "startMulti")
+    {
+        Entries& entries = m_submenus["startMultiJoinIP"]->m_entries;
+
+        for each_(Entries, entries, iter)
+        {
+            (*iter)->enable();
+        }
+
+        entries[1]->m_string = Language::instance->get(TEXT_CONNECT_HOST);
     }
 }
 

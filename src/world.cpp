@@ -188,7 +188,6 @@ void World::init()
     NewtonSetSolverModel(m_newtonWorld, 1);
     
     m_music = Audio::instance->loadMusic("music");
-    //m_music->play();
 
     m_level = new Level();
 
@@ -244,6 +243,7 @@ void World::init()
 
     m_scoreBoard->reset();
     Input::instance->startKeyBuffer();
+    //m_music->play();
 }
 
 World::~World()
@@ -303,6 +303,7 @@ void World::control()
 void World::updateStep(float delta)
 {
     // updateStep is called more than one time in frame
+    m_level->m_properties->update();
 
     if (!m_freeze)
     {

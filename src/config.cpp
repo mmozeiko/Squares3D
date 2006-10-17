@@ -9,7 +9,7 @@ const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1, true, 1, 1 };
 const AudioConfig Config::defaultAudio = { true, 5, 5 };
-const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "" };
+const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost" };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
 {

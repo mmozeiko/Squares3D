@@ -155,6 +155,11 @@ unsigned int Random::getInt()
 
 unsigned int Random::getIntN(unsigned int n)
 {
+    if (n==0)
+    {
+        return 0;
+    }
+
     unsigned int used = n;
     used |= used >> 1;
     used |= used >> 2;

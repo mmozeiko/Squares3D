@@ -61,20 +61,26 @@ void Audio::unloadMusic(Music* music)
 
 SoundBuffer* Audio::loadSound(const string& filename)
 {
-    return *m_soundBuf.insert(new SoundBuffer(filename)).first;
+    SoundBufferMap::iterator iter = m_soundBuf.find(filename);
+    if (iter != m_soundBuf.end())
+    {
+        return iter->second;
+    }
+
+    return m_soundBuf.insert(make_pair(filename, new SoundBuffer(filename))).first->second;
 }
 
 void Audio::unloadSound(SoundBuffer* soundBuf)
 {
-    m_soundBuf.erase(soundBuf);
-    delete soundBuf;
-}
-
-Sound* Audio::newSound(bool interrupt)
-{
-    Sound* sound = *m_sound.insert(new Sound(interrupt)).first;
-    alSourcef(sound->m_source, AL_GAIN, Config::instance->m_audio.sound_vol/10.0f);
-    return sound;
+    for each_(SoundBufferMap, m_soundBuf, iter)
+    {
+        if (iter->second == soundBuf)
+        {
+            delete iter->second;
+            m_soundBuf.erase(iter);
+            break;
+        }
+    }
 }
 
 void Audio::update()
@@ -84,12 +90,3 @@ void Audio::update()
         (*iter)->update();
     }
 }
-
-void Audio::updateVolume(int soundVol, int musicVol)
-{
-    for each_(SoundSet, m_sound, iter)
-    {
-        alSourcef((*iter)->m_source, AL_GAIN, soundVol/10.0f);
-    }
-}
-

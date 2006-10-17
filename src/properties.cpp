@@ -1,3 +1,4 @@
+#include <AL/al.h>
 #include <Newton.h>
 
 #include "properties.h"
@@ -7,6 +8,10 @@
 #include "body.h"
 #include "collision.h"
 #include "xml.h"
+#include "sound.h"
+#include "sound_buffer.h"
+#include "random.h"
+#include "audio.h"
 
 struct MaterialContact : NoCopy
 {
@@ -15,12 +20,14 @@ struct MaterialContact : NoCopy
     static void onEnd(const NewtonMaterial* material);
 
     Body* body[2];
-    const Properties* properties;
+    Properties* properties;
     bool  hasContact;
+
+    int m0;
+    int m1;
     
     Vector position;
-    float  maxNormalSpeed;
-    float  maxTangentSpeed;
+    float  maxSpeed;
 };
 
 Properties::Properties() : m_uniqueID(2)
@@ -38,12 +45,86 @@ Properties::Properties() : m_uniqueID(2)
         MaterialContact::onBegin, 
         MaterialContact::onProcess,
         MaterialContact::onEnd);
-    
+
+    for (int i=0; i<8; i++)
+    {
+        m_idle.push_back(Soundable(new Sound(false), i<4+1)); // 5 important sources!
+    }
 }
 
 Properties::~Properties()
 {
     delete m_materialContact;
+
+    for each_const(SoundableList, m_idle, iter)
+    {
+        delete iter->sound;
+    }
+    for each_const(SoundableList, m_active, iter)
+    {
+        delete iter->sound;
+    }
+    for each_(SoundBufMap, m_soundBufs, iter)
+    {
+        for each_(SoundBufferVector, iter->second, iter2)
+        {
+            Audio::instance->unloadSound(*iter2);
+        }
+    }
+}
+
+void Properties::update()
+{
+    SoundableList::iterator iter = m_active.begin();
+    while (iter != m_active.end())
+    {
+        if (iter->sound->is_playing() == false)
+        {
+            m_idle.push_back(*iter);
+            iter = m_active.erase(iter);
+        }
+        else
+        {
+            iter++;
+        }
+    }
+}
+
+void Properties::play(Body* body, const SoundBuffer* buffer, bool important, const Vector& position)
+{
+    if (buffer == NULL)
+    {
+        return;
+    }
+
+    // check if not already playing
+    SoundableList::iterator iterA = m_active.begin();
+    while (iterA != m_active.end())
+    {
+        if (iterA->body == body)
+        {
+            return;
+        }
+        iterA++;
+    }
+
+
+    // check for free space
+    SoundableList::iterator iterI = m_idle.begin();
+    while (iterI != m_idle.end() && iterI->important != important)
+    {
+        iterI++;
+    }
+    if (iterI == m_idle.end())
+    {
+        return;
+    }
+
+    iterI->sound->play(buffer);
+    iterI->sound->update(position, body->getVelocity());
+
+    m_active.push_back(*iterI);
+    m_idle.erase(iterI);
 }
 
 int  Properties::getUndefined() const
@@ -125,6 +206,19 @@ void Properties::load(const XMLnode& node)
     float sC = node.getAttribute("softnessCoefficient", def.softnessCoefficient);
 
     m_properties.insert(make_pair(makepID(id0, id1), Property(sF, kF, eC, sC)));
+
+    SoundBufferVector& vec = m_soundBufs.insert(make_pair(makepID(id0, id1), SoundBufferVector())).first->second;
+    for each_const(XMLnodes, node.childs, n)
+    {
+        if (n->name == "sound")
+        {
+            vec.push_back(Audio::instance->loadSound(n->getAttribute("name")));
+        }
+        else
+        {
+            throw Exception("Invalid property node, expected sound child, but got - " + node.name);
+        }       
+    }
 }
 
 void Properties::loadDefault(const XMLnode& node)
@@ -168,6 +262,23 @@ const Property* Properties::get(int id0, int id1) const
         return NULL;
     }
 }
+    
+const SoundBuffer* Properties::getSB(int id0, int id1) const
+{
+    SoundBufMap::const_iterator iter = m_soundBufs.find(makepID(id0, id1));
+    
+    if (iter != m_soundBufs.end())
+    {
+        const SoundBufferVector& vec = iter->second;
+        if (vec.size() > 0)
+        {
+            int r = Random::getIntN(static_cast<int>(vec.size()));
+            return vec[r];
+        }
+    }
+
+    return NULL;
+}
 
 int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* body0, const NewtonBody* body1)
 {
@@ -181,8 +292,7 @@ int MaterialContact::onBegin(const NewtonMaterial* material, const NewtonBody* b
         return 0;
     }
 
-    self->maxNormalSpeed = 0.0f;
-    self->maxTangentSpeed = 0.0f;
+    self->maxSpeed = 0.0f;
     self->hasContact = false;
 
     return 1;
@@ -198,7 +308,7 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
 
     if (colID0 == self->properties->getInvisible())
     {
-        self->body[0]->onCollideHull(self->body[1], material);
+        self->body[0]->onCollideHull(self->body[1]);
 
         const Property * prop = self->properties->get((faceAttr ? faceAttr : colID1), self->properties->getPropertyID("football"));
         if (prop != NULL)
@@ -209,7 +319,7 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
     }
     else if (colID1 == self->properties->getInvisible())
     {
-        self->body[1]->onCollideHull(self->body[0], material);
+        self->body[1]->onCollideHull(self->body[0]);
         const Property * prop = self->properties->get((faceAttr ? faceAttr : colID0), self->properties->getPropertyID("football"));
         if (prop != NULL)
         {
@@ -217,26 +327,7 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
         }
         return 0;
     }
-
-    Vector normal;
-
-    float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
-    if (sp > self->maxNormalSpeed)
-    {
-        self->maxNormalSpeed = sp;
-        NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-    }
-
-    for (int i=0; i<2; i++)
-    {
-        float speed = NewtonMaterialGetContactTangentSpeed(material, contact, i);
-        if (speed > self->maxTangentSpeed)
-        {
-            self->maxTangentSpeed = speed;
-            NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
-        }
-    }
-       
+     
     bool isConvex0 = self->properties->hasPropertyID(colID0);
     bool isConvex1 = self->properties->hasPropertyID(colID1);
 
@@ -267,7 +358,30 @@ int MaterialContact::onProcess(const NewtonMaterial* material, const NewtonConta
         m0 = self->properties->getDefault();
         m1 = self->properties->getDefault();
     }
-    
+
+    Vector normal;
+
+    float sp = NewtonMaterialGetContactNormalSpeed(material, contact);
+    if (sp > self->maxSpeed)
+    {
+        self->maxSpeed = sp;
+        NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+        self->m0 = m0;
+        self->m1 = m1;
+    }
+
+    for (int i=0; i<2; i++)
+    {
+        float speed = NewtonMaterialGetContactTangentSpeed(material, contact, i);
+        if (speed > self->maxSpeed)
+        {
+            self->maxSpeed = speed;
+            NewtonMaterialGetContactPositionAndNormal(material, self->position.v, normal.v);
+            self->m0 = m0;
+            self->m1 = m1;
+        }
+    }
+
     const Property* prop = self->properties->get(m0, m1);
     
     if (prop == NULL)
@@ -298,17 +412,18 @@ void MaterialContact::onEnd(const NewtonMaterial* material)
         return;
     }
 
-    self->body[0]->onCollide(self->body[1], material);
-    self->body[1]->onCollide(self->body[0], material);
-
-    if (self->maxNormalSpeed > 0.0f && self->maxNormalSpeed > self->maxTangentSpeed)
+    self->body[0]->onCollide(self->body[1], material, self->position, self->maxSpeed);
+    self->body[1]->onCollide(self->body[0], material, self->position, self->maxSpeed);
+    
+    if (self->maxSpeed > 0.5f)
     {
-        self->body[0]->onImpact(self->body[1], self->position, self->maxNormalSpeed);
-        self->body[1]->onImpact(self->body[0], self->position, self->maxNormalSpeed);
-    }
-    else if (self->maxTangentSpeed > 0.0f && self->maxTangentSpeed > self->maxNormalSpeed)
-    {
-        self->body[0]->onScratch(self->body[1], self->position, self->maxTangentSpeed);
-        self->body[1]->onScratch(self->body[0], self->position, self->maxTangentSpeed);
+        if (self->body[0]->m_soundable)
+        {
+            self->properties->play(self->body[0], self->properties->getSB(self->m0, self->m1), self->body[0]->m_important, self->position);
+        }
+        else if (self->body[1]->m_soundable)
+        {
+            self->properties->play(self->body[1], self->properties->getSB(self->m0, self->m1), self->body[1]->m_important, self->position);
+        }
     }
 }

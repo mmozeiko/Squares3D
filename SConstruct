@@ -43,7 +43,7 @@ elif p == "darwin":
   env.Append( LINKFLAGS = Split("""-framework OpenAL
                                    -framework OpenGL
                                    -framework Carbon
-                                   -framework Cocoa
+                                   -framework AGL
                                    -framework IOKit""") )
 
   if isdebug:
@@ -68,7 +68,7 @@ else:
   raise "Not implemented!"
 
 env.Append(  CXXFLAGS = ["-I3rdparty/include"] )
-env.Append(  CXXFLAGS = ["-D_CONSOLE", "-DXML_STATIC"] )
+env.Append(  CXXFLAGS = ["-DXML_STATIC"] )
 env.Append(  LIBPATH  = ["3rdparty/lib"] )
 env.Prepend( LIBS     = [x+postfix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
 

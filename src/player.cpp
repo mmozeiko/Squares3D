@@ -10,8 +10,8 @@
 #include "collision.h"
 #include "profile.h"
 #include "ball.h"
-#include "audio.h"
-#include "sound.h"
+#include "properties.h"
+#include "level.h"
 
 static const pair<float, float> jumpMinMax = make_pair(0.2f, 1.0f);
 static const pair<float, float> speedMinMax = make_pair(3.5f, 6.5f);
@@ -38,7 +38,7 @@ Player::Player(const Profile* profile, Level* level) :
     m_ballBody(level->getBody("football"))
 {
     Collision* collision = level->getCollision(m_profile->m_collisionID);
-    m_body = new Body(m_profile->m_name, collision);
+    m_body = new Body(m_profile->m_name, level, collision);
     level->m_bodies[m_profile->m_name] = m_body;
     
     m_radius = (*m_body->m_collisions.begin())->getRadius();
@@ -60,10 +60,6 @@ Player::Player(const Profile* profile, Level* level) :
     m_rotateSpeedCoefficient = _applyCoefficient(rotateSpeedMinMax, m_profile->m_speed);
     m_accuracyCoefficient = _applyCoefficient(accuracyMinMax, m_profile->m_accuracy);
     m_jumpCoefficient = _applyCoefficient(jumpMinMax, m_profile->m_jump);
-
-    m_sound = Audio::instance->newSound(false);
-    //TODO: later update regularly in world update perhaps
-    m_sound->update(Vector::Zero, Vector::Zero);
 }
 
 void Player::setPositionRotation(const Vector& position, const Vector& rotation)
@@ -92,6 +88,10 @@ void Player::setKick(const Vector& kick)
     if ( m_timer.read() > 0.4f && dist.magnitude2() < (0.2f+BALL_RADIUS+m_radius)*(0.2f+BALL_RADIUS+m_radius) ) // TODO: (gurkja resnums + bumbas_raadiuss)^2
     {
         m_referee->process(m_ballBody, m_body);
+
+        Properties* prop = World::instance->m_level->m_properties;
+        const SoundBuffer* sb = prop->getSB(prop->getPropertyID("player"), prop->getPropertyID("football"));
+        prop->play(m_body, sb, true, m_ballBody->getPosition());
 
         // CHARACTER: kick powaaar!
         m_ballBody->setKickForce(Vector(0, 500, 0)); // 400-700
@@ -172,24 +172,16 @@ void Player::onSetForceAndTorque()
     NewtonBodyAddTorque (m_body->m_newtonBody, torque.v);
 }
 
-void Player::onCollide(const Body* other, const NewtonMaterial* material)
+void Player::onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed)
 {
     if (m_referee != NULL)
     {
         m_referee->process(m_body, other);
     }
     m_isOnGround = true;
-}
 
-void Player::onImpact(const Body* other, const Vector& position, float speed)
-{
     Vector v;
     NewtonBodyGetVelocity(other->m_newtonBody, v.v);
-}
-
-void Player::onScratch(const Body* other, const Vector& position, float speed)
-{
-    onImpact(other, position, speed);
 }
 
 void Player::setJump(bool needJump)

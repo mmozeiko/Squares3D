@@ -9,7 +9,7 @@
 #include "properties.h"
 #include "profile.h"
 
-Level::Level()
+Level::Level() : m_gravity(0.0f, -9.81f, 0.0f)
 {
     m_properties = new Properties();
 }
@@ -37,7 +37,11 @@ void Level::load(const string& levelFile, StringSet& loaded)
     for each_const(XMLnodes, xml.childs, iter)
     {
         const XMLnode& node = *iter;
-        if (node.name == "link")
+        if (node.name == "gravity")
+        {
+            m_gravity = node.getAttributesInVector("xyz");
+        }
+        else if (node.name == "link")
         {
             load(node.getAttribute("file"), loaded);
         }
@@ -49,7 +53,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 if (node.name == "body")
                 {
                     string id = node.getAttribute("id");
-                    m_bodies[id] = new Body(node);
+                    m_bodies[id] = new Body(node, this);
                 }
                 else
                 {

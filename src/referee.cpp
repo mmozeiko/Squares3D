@@ -104,17 +104,24 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_messages(messages),
     m_haltWait(3),
     m_playersAreHalted(false),
-    m_matchPoints(2)
+    m_matchPoints(21),
+    m_sound(new Sound(true))
 {
     initEvents();
-    m_soundBallPlayer = Audio::instance->loadSound("ball_player");
-    m_soundPlayerPlayer =Audio::instance->loadSound("player_player");
-    m_soundGameOver =Audio::instance->loadSound("referee_game_over");
-    m_soundGameStart =Audio::instance->loadSound("referee_game_start");
-    m_soundFault =Audio::instance->loadSound("referee_fault");
+    m_soundGameOver = Audio::instance->loadSound("referee_game_over");
+    m_soundGameStart = Audio::instance->loadSound("referee_game_start");
+    m_soundFault = Audio::instance->loadSound("referee_fault");
 
-    m_sound = Audio::instance->newSound();
     m_sound->update(Vector::Zero, Vector::Zero);
+}
+
+Referee::~Referee()
+{
+    Audio::instance->unloadSound(m_soundGameOver);
+    Audio::instance->unloadSound(m_soundGameStart);
+    Audio::instance->unloadSound(m_soundFault);
+        
+    delete m_sound;
 }
 
 string Referee::getLoserName() const
@@ -323,8 +330,12 @@ void Referee::registerPlayers(const vector<Player*> players)
 {
     for each_const(vector<Player*>, players, iter)
     {
-        m_players[(*iter)->m_body] = *iter;
-        (*iter)->m_referee = this;
+        Player* player = *iter;
+        m_players[player->m_body] = *iter;
+        player->m_referee = this;
+        
+        player->m_body->m_soundable = true;
+        player->m_body->m_important = true;
     }
     m_scoreBoard->registerPlayers(players);
 }
@@ -351,10 +362,6 @@ void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
             processPlayerGround(player);
         }
     }
-    else if (foundInMap(m_players, otherBody))
-    {
-        m_players[otherBody]->m_sound->play(m_soundPlayerPlayer);
-    }
 }
 
 void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
@@ -368,7 +375,6 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
     }
     else if (foundInMap(m_players, otherBody))
     {
-        m_ball->m_sound->play(m_soundBallPlayer);
         if (!(m_gameOver || m_mustResetBall))
         {
             processBallPlayer(otherBody);

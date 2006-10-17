@@ -15,8 +15,7 @@ class Sound;
 class SoundBuffer;
 
 typedef set<Music*> MusicSet;
-typedef set<Sound*> SoundSet;
-typedef set<SoundBuffer*> SoundBufferSet;
+typedef map<string, SoundBuffer*> SoundBufferMap;
 
 class Audio : public System<Audio>, NoCopy
 {
@@ -34,15 +33,12 @@ public:
 
     void update();
 
-    void updateVolume(int soundVol, int musicVol);
-
 private:
     ALCdevice*    m_device;
     ALCcontext*   m_context;
 
     MusicSet       m_music;
-    SoundSet       m_sound;
-    SoundBufferSet m_soundBuf;
+    SoundBufferMap m_soundBuf;
 };
 
 #endif

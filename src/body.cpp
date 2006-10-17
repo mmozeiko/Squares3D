@@ -8,10 +8,13 @@
 #include "properties.h"
 #include "geometry.h"
 
-Body::Body(const string& id, const Collision* collision):
+Body::Body(const string& id, Level* level, const Collision* collision):
     m_id(id),
     m_matrix(),
-    m_collideable(NULL)
+    m_collideable(NULL),
+    m_soundable(false),
+    m_important(false),
+    m_level(level)
 {
     m_totalMass = collision->m_mass;
     m_totalInertia = collision->m_inertia;
@@ -21,14 +24,19 @@ Body::Body(const string& id, const Collision* collision):
     createNewtonBody(collision->m_newtonCollision, collision->m_origin, Vector(), Vector());
 }    
 
-Body::Body(const XMLnode& node):
+Body::Body(const XMLnode& node, Level* level):
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),
-    m_collideable(NULL)
+    m_collideable(NULL),
+    m_soundable(false),
+    m_important(false),
+    m_level(level)
 {
     NewtonCollision* newtonCollision = NULL;
     m_id = node.getAttribute("id");
+    m_soundable = node.getAttribute<int>("soundable", 0) == 1;
+    m_important = node.getAttribute<int>("important", 0) == 1;
     
     Vector position(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
@@ -167,7 +175,7 @@ Vector Body::getVelocity() const
 
 void Body::onSetForceAndTorque()
 {
-    Vector force = gravityVec * m_totalMass;
+    Vector force = m_level->m_gravity * m_totalMass;
     NewtonBodySetForce(m_newtonBody, force.v);
     
     if (m_kickForce != Vector::Zero)
@@ -226,35 +234,19 @@ void Body::setCollideable(Collideable* collideable)
     m_collideable = collideable;
 }
 
-void Body::onCollide(const Body* other, const NewtonMaterial* material)
+void Body::onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed)
 {
     if (m_collideable != NULL)
     {
-        m_collideable->onCollide(other, material);
+        m_collideable->onCollide(other, material, position, speed);
     }
 }
 
-void Body::onCollideHull(const Body* other, const NewtonMaterial* material)
+void Body::onCollideHull(const Body* other)
 {
     if (m_collideable != NULL)
     {
-        m_collideable->onCollideHull(other, material);
-    }
-}
-
-void Body::onImpact(const Body* other, const Vector& position, float speed)
-{
-    if (m_collideable != NULL)
-    {
-        m_collideable->onImpact(other, position, speed);
-    }
-}
-
-void Body::onScratch(const Body* other, const Vector& position, float speed)
-{
-    if (m_collideable != NULL)
-    {
-        m_collideable->onScratch(other, position, speed);
+        m_collideable->onCollideHull(other);
     }
 }
 

@@ -342,15 +342,20 @@ void NetPlayerEntry::click(int button)
         return;
     }
 
-    if (m_isRemote)
+    if (m_idx != Network::instance->getLocalIdx() && !Network::instance->isLocal(m_idx))
     {
         // kick
+        Network::instance->setAiProfile(m_idx, Network::instance->getRandomAI());
+        Network::instance->kickClient(m_idx);
+
         m_menu->m_sound->play(m_menu->m_soundClick);
     }
     else if (m_idx != Network::instance->getLocalIdx())
     {
         // change CPU
         Network::instance->changeCpu(m_idx, button == GLFW_MOUSE_BUTTON_1 || button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_KEY_RIGHT);
+        Network::instance->updateAiProfile(m_idx);
+
         m_menu->m_sound->play(m_menu->m_soundChange);
     }
 }
@@ -371,8 +376,7 @@ void JoinHostEntry::click(int button)
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
     {
         Network::instance->createClient();
-        //Network::instance->setPlayerProfile(Game::instance->m_userProfile);
-        //Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, -1);        
+        Network::instance->createRemoteProfiles();
     }
     SubmenuEntry::click(button);
 }
@@ -429,43 +433,30 @@ void NetRemotePlayerEntry::render(const Font* font) const
     glPopMatrix();
 }
 
+ConnectEntry::ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner) :
+    SubmenuEntry(menu, label, submenuToSwitchTo),
+    m_owner(owner)
+{
+}
+
 void ConnectEntry::click(int button)
 {
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
     {
-        if (Network::instance->m_connecting)
+        m_menu->m_sound->play(m_menu->m_soundClick);
+        if (Network::instance->connect(Config::instance->m_misc.last_address))
         {
-            Network::instance->m_cancelConnection = true;
-            Network::instance->m_connecting = false;
-
             for each_(Entries, m_owner->m_entries, iter)
             {
                 Entry* entry = *iter;
-                if (entry != this)
+                if (entry != m_owner->m_entries.back())
                 {
-                    entry->enable();
+                    entry->disable();
                 }
 
             }
-            m_string = Language::instance->get(TEXT_CONNECT_HOST);
-
-        }
-        else
-        {
-            m_menu->m_sound->play(m_menu->m_soundClick);
-            if (Network::instance->connect(Config::instance->m_misc.last_address))
-            {
-                for each_(Entries, m_owner->m_entries, iter)
-                {
-                    Entry* entry = *iter;
-                    if (entry != this)
-                    {
-                        entry->disable();
-                    }
-
-                }
-                m_string = Language::instance->get(TEXT_CONNECTING);
-            }
+            m_string = Language::instance->get(TEXT_CONNECTING);
+            m_owner->activateNextEntry(true);
         }
     }
 }

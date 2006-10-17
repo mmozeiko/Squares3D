@@ -13,6 +13,16 @@ Profile::Profile() :
 {
 }
 
+Profile::Profile(const Profile& profile) :
+    m_name(profile.m_name),
+    m_collisionID(profile.m_collisionID),
+    m_color(profile.m_color),
+    m_speed(profile.m_speed),
+    m_accuracy(profile.m_accuracy),
+    m_jump(profile.m_jump)
+{
+}
+
 Profile::Profile(const XMLnode& node) :
     m_name("Player"),
     m_collisionID("player_small"),

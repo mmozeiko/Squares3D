@@ -18,10 +18,8 @@ public:
     virtual ~Collideable() {}
 
     // TODO: maybe somehow remove NewtonMaterial, or replace with Property class?
-    virtual void onCollide(const Body* other, const NewtonMaterial* material) {}
-    virtual void onCollideHull(const Body* other, const NewtonMaterial* material) {}
-    virtual void onImpact(const Body* other, const Vector& position, float speed) {}
-    virtual void onScratch(const Body* other, const Vector& position, float speed) {}
+    virtual void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed) {}
+    virtual void onCollideHull(const Body* other) {}
 
     virtual void onSetForceAndTorque() {}
 };
@@ -43,13 +41,11 @@ public:
 
     void setCollideable(Collideable* collideable);
 
-    Body(const string& id, const Collision* collision);
+    Body(const string& id, Level* level, const Collision* collision);
     virtual ~Body();
 
-    void onCollide(const Body* other, const NewtonMaterial* material);
-    void onCollideHull(const Body* other, const NewtonMaterial* material);
-    void onImpact(const Body* other, const Vector& position, float speed);
-    void onScratch(const Body* other, const Vector& position, float speed);
+    void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
+    void onCollideHull(const Body* other);
 
     string              m_id;
     NewtonBody*         m_newtonBody;        
@@ -59,9 +55,12 @@ public:
     float getMass() const;
     const Vector& getInertia() const;
 
+    bool m_soundable;
+    bool m_important;
+
 protected:
 
-    Body(const XMLnode& node);
+    Body(const XMLnode& node, Level* level);
 
     void createNewtonBody(const NewtonCollision* newtonCollision,
                           const Vector& totalOrigin,
@@ -75,6 +74,7 @@ private:
     Collideable* m_collideable;
     Vector       m_velocity;
     Vector       m_kickForce;
+    const Level* m_level;
 
     void onSetForceAndTorque();
     static void onSetForceAndTorque(const NewtonBody* newtonBody);

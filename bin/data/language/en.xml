@@ -42,6 +42,7 @@ Press ENTER to return to retry..
     <item name="CONNECT_HOST"             value="Connect"/>
     <item name="ADDRESS"                  value="Address"/>
     <item name="CONNECTING"               value="Connecting..."/>
+    <item name="DISCONNECT"               value="Disconnect"/>
 
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>

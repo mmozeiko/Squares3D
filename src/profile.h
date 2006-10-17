@@ -11,6 +11,7 @@ class Profile : NoCopy
 public:
     Profile(const XMLnode& node);
     Profile();
+    Profile(const Profile& profile);
 
     string m_name;
     string m_collisionID;
