@@ -73,4 +73,32 @@
                 elasticityCoefficient = "0.8"
                 softnessCoefficient   = "0.4"/>
 
+    <!-- misc -->
+    
+    <properties property0 = "wood" 
+                property1 = "wood" 
+                staticFriction       = "1.0"
+                kineticFriction      = "1.0"
+                elasticityCoefficient = "0.3"
+                softnessCoefficient   = "0.3">
+        <sound name="menu_click"/>
+    </properties>
+    
+    <properties property0 = "wood" 
+                property1 = "grass" 
+                staticFriction       = "1.0"
+                kineticFriction      = "1.0"
+                elasticityCoefficient = "0.4"
+                softnessCoefficient   = "0.5">
+        <sound name="menu_over"/>
+    </properties>
+
+    <properties property0 = "wood" 
+                property1 = "player" 
+                staticFriction       = "1.0"
+                kineticFriction      = "1.0"
+                elasticityCoefficient = "0.4"
+                softnessCoefficient   = "0.5">
+        <sound name="ball_player"/>
+    </properties>
 </xml>

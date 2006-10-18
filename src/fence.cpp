@@ -37,6 +37,7 @@ void makeFence(Level* level, const NewtonWorld* newtonWorld)
             {
                 string bodyID = "fence" + cast<string>(fencesVectorIdx) + "_" + cast<string>(i) + "_" + cast<string>(j);
                 Body* body = new Body(bodyID, level, &fencePartsCollisions);
+                body->m_soundable = true;
                 Vector position = Vector(startPoint + delta * static_cast<float>(j));
                 position.y = fenceHeight / 2 + heightMap->getHeight(position.x, position.z) + 0.05f;
                 body->setTransform(position, rotation);
