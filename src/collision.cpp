@@ -600,7 +600,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
     m_material = level->m_materials.find(material)->second;
     const float c = repeat/size; //1.5f; //m_texture->m_size;//1.5f;
 
-    int id = level->m_properties->getDefault();
+    int id = level->m_properties->getPropertyID("grass");
 
     NewtonCollision* collision = NewtonCreateTreeCollision(World::instance->m_newtonWorld, NULL);
     NewtonTreeCollisionBeginBuild(collision);
