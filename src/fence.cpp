@@ -7,13 +7,17 @@
 
 void makeFence(Level* level, const NewtonWorld* newtonWorld)
 {
-    Collision* fenceCollision = level->getCollision("fence");
+    vector<Collision*> fencePartsCollisions(4);
+    fencePartsCollisions[0] = level->getCollision("fence");
+    fencePartsCollisions[1] = level->getCollision("fenceClip1");
+    fencePartsCollisions[2] = level->getCollision("fenceClip2");
+    fencePartsCollisions[3] = level->getCollision("fenceTop");
 
     Collision* heightMap = level->getCollision("level");
 
     const float fenceWidth = 0.3f;
     const float fenceHeight = 1.0f;
-    const float fenceSpacing = fenceWidth + fenceWidth / 5;
+    const float fenceSpacing = fenceWidth + fenceWidth / 3;
 
     for (size_t fencesVectorIdx = 0; fencesVectorIdx < level->m_fences.size(); fencesVectorIdx++)
     {
@@ -32,7 +36,7 @@ void makeFence(Level* level, const NewtonWorld* newtonWorld)
             for (int j = 0; j < howMany; j++)
             {
                 string bodyID = "fence" + cast<string>(fencesVectorIdx) + "_" + cast<string>(i) + "_" + cast<string>(j);
-                Body* body = new Body(bodyID, level, fenceCollision);
+                Body* body = new Body(bodyID, level, &fencePartsCollisions);
                 Vector position = Vector(startPoint + delta * static_cast<float>(j));
                 position.y = fenceHeight / 2 + heightMap->getHeight(position.x, position.z) + 0.05f;
                 body->setTransform(position, rotation);

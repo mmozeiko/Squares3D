@@ -41,7 +41,7 @@ public:
 
     void setCollideable(Collideable* collideable);
 
-    Body(const string& id, const Level* level, const Collision* collision);
+    Body(const string& id, const Level* level, const vector<Collision*>* collisions);
     virtual ~Body();
 
     void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
@@ -62,9 +62,7 @@ protected:
 
     Body(const XMLnode& node, const Level* level);
 
-    void createNewtonBody(const NewtonCollision* newtonCollision,
-                          const Vector& totalOrigin,
-                          const Vector& position,
+    void createNewtonBody(const Vector& position,
                           const Vector& rotation);
 
 private:

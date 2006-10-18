@@ -8,7 +8,7 @@
 #include "properties.h"
 #include "geometry.h"
 
-Body::Body(const string& id, const Level* level, const Collision* collision):
+Body::Body(const string& id, const Level* level, const vector<Collision*>* collisions):
     m_id(id),
     m_matrix(),
     m_collideable(NULL),
@@ -16,12 +16,12 @@ Body::Body(const string& id, const Level* level, const Collision* collision):
     m_important(false),
     m_level(level)
 {
-    m_totalMass = collision->m_mass;
-    m_totalInertia = collision->m_inertia;
+    for each_const(vector<Collision*>, *collisions, iter)
+    {
+        m_collisions.insert(*iter);
+    }
 
-    m_collisions.insert(collision);
-
-    createNewtonBody(collision->m_newtonCollision, collision->m_origin, Vector(), Vector());
+    createNewtonBody(Vector(), Vector());
 }    
 
 Body::Body(const XMLnode& node, const Level* level):
@@ -62,8 +62,33 @@ Body::Body(const XMLnode& node, const Level* level):
         }
     }
 
-    Vector totalOrigin(0.0f, 0.0f, 0.0f);
+    if (m_collisions.size() == 0)
+    {
+        throw Exception("No collisions were found for body '" + m_id + "'");
+    }
 
+    createNewtonBody(position, rotation);
+}
+
+void Body::setKickForce(const Vector& force)
+{
+    m_kickForce = force;
+}
+
+void Body::setTransform(const Vector& position, const Vector& rotation)
+{
+    NewtonSetEulerAngle(rotation.v, m_matrix.m);
+    m_matrix = Matrix::translate(position) * m_matrix;
+            
+    NewtonBodySetMatrix(m_newtonBody, m_matrix.m);
+}
+
+void Body::createNewtonBody(const Vector&          position,
+                            const Vector&          rotation)
+{
+    Vector totalOrigin;
+
+    NewtonCollision* newtonCollision = NULL;
     if (m_collisions.size() == 1)
     {
         const Collision* collision = *m_collisions.begin();
@@ -92,37 +117,13 @@ Body::Body(const XMLnode& node, const Level* level):
                                                 World::instance->m_newtonWorld,
                                                 cnt,
                                                 &newtonCollisions[0]);
+
         for each_const(vector<NewtonCollision*>, newtonCollisions, collision)
         {
             //NewtonReleaseCollision(World::instance->m_newtonWorld, *collision);
         }
     }
-    else
-    {
-        throw Exception("No collisions were found for body '" + m_id + "'");
-    }
 
-    createNewtonBody(newtonCollision, totalOrigin, position, rotation);
-}
-
-void Body::setKickForce(const Vector& force)
-{
-    m_kickForce = force;
-}
-
-void Body::setTransform(const Vector& position, const Vector& rotation)
-{
-    NewtonSetEulerAngle(rotation.v, m_matrix.m);
-    m_matrix = Matrix::translate(position) * m_matrix;
-            
-    NewtonBodySetMatrix(m_newtonBody, m_matrix.m);
-}
-
-void Body::createNewtonBody(const NewtonCollision* newtonCollision,
-                            const Vector&          totalOrigin,
-                            const Vector&          position,
-                            const Vector&          rotation)
-{
     m_newtonBody = NewtonCreateBody(World::instance->m_newtonWorld, newtonCollision);
     NewtonBodySetUserData(m_newtonBody, static_cast<void*>(this));
 

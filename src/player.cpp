@@ -37,8 +37,9 @@ Player::Player(const Profile* profile, Level* level) :
     m_levelCollision(level->getCollision("level")),
     m_ballBody(level->getBody("football"))
 {
-    Collision* collision = level->getCollision(m_profile->m_collisionID);
-    m_body = new Body(m_profile->m_name, level, collision);
+    vector<Collision*> collisions(1);
+    collisions[0] = level->getCollision(m_profile->m_collisionID);
+    m_body = new Body(m_profile->m_name, level, &collisions);
     level->m_bodies[m_profile->m_name] = m_body;
     
     m_radius = (*m_body->m_collisions.begin())->getRadius();

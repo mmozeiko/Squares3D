@@ -357,12 +357,26 @@
             <offset x="0.0" y="-0.45" z="0.0" />
         </collision>
 
-        <collision id="fence" type="box" mass="5.0" material="wood">
+        <collision id="fence" type="box" mass="4.0" material="wood">
             <size x="1.0" y="0.3" z="0.08"/>
             <offset x="0.0" y="0.0" z="0.0" />
             <rotation x="0.0" y="0.0" z="90.0" />
         </collision>
-      
+        <collision id="fenceClip1" type="box" mass="1.0" material="wood">
+            <size x="0.4" y="0.2" z="0.08"/>
+            <offset x="0.0" y="-0.2" z="0.08" />
+            <rotation x="0.0" y="0.0" z="0.0" />
+        </collision>
+        <collision id="fenceClip2" type="box" mass="1.0" material="wood">
+            <size x="0.4" y="0.2" z="0.08"/>
+            <offset x="0.0" y="0.2" z="0.08" />
+            <rotation x="0.0" y="0.0" z="0.0" />
+        </collision>
+        <collision id="fenceTop" type="box" mass="1.0" material="wood">
+            <size x="0.25" y="0.25" z="0.06"/>
+            <offset x="0.0" y="0.5" z="0.0" />
+            <rotation x="0.0" y="0.0" z="45.0" />
+        </collision>
     </collisions>
 </xml>
 
