@@ -62,11 +62,9 @@ void AiPlayer::control()
     }
     else
     {
-        // CHARACTER: 0.75f - jump coeficient, recommended 1.0f (always jumpy) - 0.8f
-
         if (important &&                    // if moving towards ball
             dir.magnitude() < 1.0f &&       // and ball is nearby
-            ball->getVelocity().y > 0 &&    // and ball is going upwards
+            (ball->getVelocity().y > 0 || ball->getPosition().y > m_radius*2) &&    // and ball is going upwards or is above gurkjis
             ball->getPosition().y > 0.3f && // and ball is flying 
             Random::getFloat() < m_jumpCoefficient // and very probable random
             )
@@ -78,7 +76,6 @@ void AiPlayer::control()
             setJump(false);
         }
 
-        // CHARACTER: move acccuracy, recommended values 1.0f (precise) - 5.0f (random)
         const float acc = 1.0f / m_accuracyCoefficient;
 
         float r1 = acc*Random::getFloat() - acc/2.0f;

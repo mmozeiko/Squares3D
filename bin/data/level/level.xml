@@ -5,4 +5,5 @@
     <link file="collisions.xml"/>
     <link file="bodies.xml"/>
     <link file="joints.xml"/>
+    <link file="fences.xml"/>
 </xml>

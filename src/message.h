@@ -31,7 +31,7 @@ protected:
 
     virtual bool applyDelta(float delta);
 
-    virtual void Message::render(const Font* font) const;
+    virtual void render(const Font* font) const;
 
     wstring         m_text;
     Vector          m_position;

@@ -125,13 +125,13 @@ Video::Video() :
     glfwDisable(GLFW_MOUSE_CURSOR);
 
     loadExtensions();
-    m_quadricSphere = gluNewQuadric();
-    m_quadricAxes = gluNewQuadric();
-    m_quadricSphereHiQ = gluNewQuadric();
-    gluQuadricTexture(m_quadricSphere, GLU_TRUE);
-    gluQuadricNormals(m_quadricSphere, GLU_TRUE);
-    gluQuadricTexture(m_quadricSphereHiQ, GLU_TRUE);
-    gluQuadricNormals(m_quadricSphereHiQ, GLU_TRUE);
+ 
+    m_quadric    = gluNewQuadric();
+    m_quadricTex = gluNewQuadric();
+
+    gluQuadricTexture(m_quadricTex, GLU_TRUE);
+    gluQuadricNormals(m_quadricTex, GLU_TRUE);
+
     m_resolution = make_pair(width, height);
 
     for (int i=CIRCLE_DIVISIONS; i>=0; i--)
@@ -149,9 +149,8 @@ Video::~Video()
 {
     clog << "Closing video." << endl;
 
-    gluDeleteQuadric(m_quadricSphere);
-    gluDeleteQuadric(m_quadricAxes);
-    gluDeleteQuadric(m_quadricSphereHiQ);
+    gluDeleteQuadric(m_quadricTex);
+    gluDeleteQuadric(m_quadric);
 
     unloadTextures();
 
@@ -289,36 +288,36 @@ void Video::renderFace(const Face& face) const
 
 void Video::renderSphere(float radius) const
 {
-    gluSphere(m_quadricSphere, radius, 16, 16);
+    gluSphere(m_quadricTex, radius, 16, 16);
 }
 
 void Video::renderCylinder(float radius, float height) const
 {
-    gluCylinder(m_quadricSphere, radius, radius, height, 16, 16);
+    gluCylinder(m_quadricTex, radius, radius, height, 16, 16);
     
     glPushMatrix();
     glTranslatef(0.0f, 0.0f, height);
-    gluDisk(m_quadricSphere, 0.0, radius, 16, 16);
+    gluDisk(m_quadricTex, 0.0, radius, 16, 16);
     glPopMatrix();
 
     glPushMatrix();
     glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
-    gluDisk(m_quadricSphere, 0.0, radius, 16, 16);
+    gluDisk(m_quadricTex, 0.0, radius, 16, 16);
     glPopMatrix();
 }
 
 void Video::renderCone(float radius, float height) const
 {
-    gluCylinder(m_quadricSphere, radius, 0.0f, height, 16, 16);
+    gluCylinder(m_quadricTex, radius, 0.0f, height, 16, 16);
     glPushMatrix();
     glRotatef(180.0, 1.0, 0.0, 0.0);
-    gluDisk(m_quadricSphere, 0.0, radius, 16, 16);
+    gluDisk(m_quadricTex, 0.0, radius, 16, 16);
     glPopMatrix();
 }
 
 void Video::renderSphereHiQ(float radius) const
 {
-    gluSphere(m_quadricSphereHiQ, radius, 64, 64);
+    gluSphere(m_quadricTex, radius, 64, 64);
 }
   
 void Video::renderAxes(float size) const
@@ -350,26 +349,26 @@ void Video::renderAxes(float size) const
     glColor3fv(red);
     glTranslatef(size, 0.0, 0.0);
     glRotatef(90.0, 0.0, 1.0, 0.0);
-    gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+    gluCylinder(m_quadric, 0.2, 0.0, 1.0, 16, 16);
     glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+    gluDisk(m_quadric, 0.0, 0.2, 16, 16);
     glPopMatrix();
 
     glPushMatrix();
     glColor3fv(green);
     glTranslatef(0.0, size, 0.0);
     glRotatef(-90.0, 1.0, 0.0, 0.0);
-    gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+    gluCylinder(m_quadric, 0.2, 0.0, 1.0, 16, 16);
     glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+    gluDisk(m_quadric, 0.0, 0.2, 16, 16);
     glPopMatrix();
 
     glPushMatrix();
     glColor3fv(blue);
     glTranslatef(0.0, 0.0, size);
-    gluCylinder(m_quadricAxes, 0.2, 0.0, 1.0, 32, 32);
+    gluCylinder(m_quadric, 0.2, 0.0, 1.0, 16, 16);
     glRotatef(180.0, 0.0, 1.0, 0.0);
-    gluDisk(m_quadricAxes, 0.0, 0.2, 32, 32);
+    gluDisk(m_quadric, 0.0, 0.2, 16, 16);
     glPopMatrix();
 
     glPopAttrib();
@@ -542,6 +541,7 @@ void Video::loadProcAddress(const char* name, T& proc) const
 
 void Video::loadExtensions()
 {
+    /*
     int major=0, minor=0;
     glfwGetGLVersion(&major, &minor, NULL);
     if (major<2 && minor<5)
@@ -557,8 +557,12 @@ void Video::loadExtensions()
             }
         }
     }
+    */
 
-    loadProc(glActiveTextureARB);
+    if (glfwExtensionSupported("GL_ARB_multitexture"))
+    {
+        loadProc(glActiveTextureARB);
+    }
 
 /*
 if (glfwExtensionSupported("GL_ARB_fragment_program") && 
@@ -572,7 +576,8 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glBindProgramARB);
     }
 */
-    if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
+    if (glActiveTextureARB != NULL &&
+        glfwExtensionSupported("GL_ARB_fragment_shader") && 
         glfwExtensionSupported("GL_ARB_vertex_shader"))
     {
         m_haveShaders = true;
@@ -601,7 +606,7 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glVertexAttrib3fvARB);
     }
 
-    if (glfwExtensionSupported("GL_EXT_framebuffer_object"))
+    if (glActiveTextureARB != NULL && glfwExtensionSupported("GL_EXT_framebuffer_object"))
     {
         loadProc(glGenFramebuffersEXT);
         loadProc(glBindFramebufferEXT);
@@ -621,7 +626,8 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glBufferSubDataARB);
     }
 
-    if (glfwExtensionSupported("GL_ARB_depth_texture") &&
+    if (glActiveTextureARB != NULL &&
+        glfwExtensionSupported("GL_ARB_depth_texture") &&
         glfwExtensionSupported("GL_ARB_shadow"))
     {
         m_haveShadows = true;
@@ -685,6 +691,10 @@ const IntPairVector& Video::getModes() const
                 modes.push_back(make_pair(list[i].Width, list[i].Height));
             }
         }
+        if (modes.empty())
+        {
+            modes.push_back(make_pair(800, 600));
+        }
         first = false;
     }
 
@@ -742,6 +752,8 @@ void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* leve
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    level->renderTri(pos.x, pos.z);
+
     glBegin(GL_TRIANGLE_FAN);
     
     glColor4fv(color.v);
@@ -753,7 +765,7 @@ void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* leve
     {
         float xx = r * m_circleCos[i];
         float zz = r * m_circleSin[i];
-        //float yy = level->getHeight(pos.x+xx, pos.z+zz) + y;
+        float yy = level->getHeight(pos.x+xx, pos.z+zz) + y;
         glVertex3f(pos.x + xx, yy, pos.z + zz);
     }
 

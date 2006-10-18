@@ -13,8 +13,8 @@
 #include "properties.h"
 #include "level.h"
 
-static const pair<float, float> jumpMinMax = make_pair(0.2f, 1.0f);
-static const pair<float, float> speedMinMax = make_pair(3.5f, 6.5f);
+static const pair<float, float> jumpMinMax = make_pair(0.7f, 1.0f);
+static const pair<float, float> speedMinMax = make_pair(2.5f, 4.5f);
 static const pair<float, float> rotateSpeedMinMax = make_pair(8.0f, 14.0f);
 static const pair<float, float> accuracyMinMax = make_pair(0.2f, 1.0f);
 
@@ -66,8 +66,8 @@ void Player::setPositionRotation(const Vector& position, const Vector& rotation)
 {
     m_body->setTransform(position, rotation);
 
-    float x = FIELDLENGTH * position[0] / abs(position[0]);
-    float z = FIELDLENGTH * position[2] / abs(position[2]);
+    float x = FIELDLENGTH * position[0] / std::abs(position[0]);
+    float z = FIELDLENGTH * position[2] / std::abs(position[2]);
     
     if (x > 0) m_upperRight[0] = x;
     else m_lowerLeft[0] = x;
@@ -113,13 +113,11 @@ Vector Player::getFieldCenter() const
 
 void Player::setDirection(const Vector& direction)
 {
-    // CHARACTER: 5.0f=m_speedCoefficient  = move speed powaaaar
     m_direction = 0.8f * m_speedCoefficient * direction + 0.2f*m_direction;
 }
 
 void Player::setRotation(const Vector& rotation)
 {
-    // CHARACTER: 11.0f = rotate speed powaaar
     m_rotation = 0.8f * m_rotateSpeedCoefficient * rotation + 0.2f * m_rotation;
 }
 

@@ -14,7 +14,7 @@ e = env.Copy()
 
 if p == "win32":
   platformdir = "win32"
-  e.Append( CPPDEFINES = ["_GLFW_NO_DLOAD_GDI32", "_GLFW_NO_DLOAD_WINMM"] )
+  e.Append( CPPDEFINES = Split("_GLFW_NO_DLOAD_GDI32 _GLFW_NO_DLOAD_WINMM") )
 
 elif p=="darwin":
   platformdir = "macosx"
@@ -22,6 +22,11 @@ elif p=="darwin":
 
 elif p=="posix":
   platformdir = "x11"
+  sources += ["x11/x11_keysym2unicode.c"]
+  
+  e.Append( CPPDEFINES = Split("_GLFW_HAS_XF86VIDMODE _GLFW_HAS_PTHREAD _GLFW_HAS_GLXGETPROCADDRESS") ) # instead of last define _GLFW_HAS_DLOPEN can be defined
+
+  
 
 else:
   raise "Unsupported platform!"

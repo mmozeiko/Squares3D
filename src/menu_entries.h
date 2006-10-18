@@ -236,6 +236,16 @@ private:
     Submenu* m_owner;
 };
 
+class MultiWorldEntry : public Entry
+{
+public: 
+    MultiWorldEntry(Menu* menu, const wstring& stringIn) :
+        Entry(menu, stringIn)
+   {}
+    
+    void click(int button);
+};
+
 /*
 TODO: no time now
 

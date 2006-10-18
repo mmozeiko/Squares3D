@@ -1,39 +1,39 @@
 <cpu_profiles>
     <easy>  
         <profile>
-            <name>Vitolds</name>
+            <name>Dmitris</name>
             <collision>Dmitry</collision>
-            <properties   speed="0.2" accuracy="0.4" jump="0.3" />
+            <properties   speed="0.2" accuracy="0.5" jump="0.3" />
             <color r="0.6"  g="0.0" b="0.99" />
           </profile>
           <profile>
             <name>Macgyver</name>
             <collision>player_small</collision>
-            <properties   speed="0.3" accuracy="0.3" jump="0.3" />
+            <properties   speed="0.4" accuracy="0.3" jump="0.3" />
             <color  r="0.1"  g="0.99" b="0.1" />
           </profile>
           <profile>
             <name>Chuck Norris</name>
             <collision>player_thin</collision>
-            <properties   speed="0.9" accuracy="0.3" jump="0.2" />
+            <properties   speed="0.6" accuracy="0.3" jump="0.1" />
             <color r="0.5"  g="0.2" b="0.1" />
         </profile>
     </easy>
     <normal>
         <profile>
-            <name>Vitolds_n</name>
+            <name>Borat</name>
             <collision>Dmitry</collision>
             <properties   speed="0.5" accuracy="0.6" jump="0.4" />
             <color r="0.6"  g="0.0" b="0.99" />
         </profile>
         <profile>
-            <name>Macgyver_n</name>
+            <name>Noob</name>
             <collision>player_small</collision>
             <properties   speed="0.5" accuracy="0.5" jump="0.5" />
             <color  r="0.1"  g="0.99" b="0.1" />
         </profile>
         <profile>
-            <name>Chuck Norris_n</name>
+            <name>Teriks</name>
             <collision>player_thin</collision>
             <properties   speed="0.6" accuracy="0.6" jump="0.3" />
             <color r="0.5"  g="0.2" b="0.1" />
@@ -41,19 +41,19 @@
     </normal>
     <hard>
         <profile>
-            <name>Vitolds_h</name>
+            <name>Vaira</name>
             <collision>Dmitry</collision>
             <properties   speed="0.6" accuracy="1.0" jump="0.4" />
             <color r="0.6"  g="0.0" b="0.99" />
         </profile>
         <profile>
-            <name>Macgyver_h</name>
+            <name>Grundmains</name>
             <collision>player_small</collision>
-            <properties   speed="0.8" accuracy="0.8" jump="0.4" />
+            <properties   speed="0.6" accuracy="0.4" jump="1.0" />
             <color  r="0.1"  g="0.99" b="0.1" />
         </profile>
         <profile>
-            <name>Chuck Norris_h</name>
+            <name>Mr.T</name>
             <collision>player_thin</collision>
             <properties   speed="1.0" accuracy="0.7" jump="0.3" />
             <color r="0.5"  g="0.2" b="0.1" />

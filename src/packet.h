@@ -93,4 +93,13 @@ public:
     QuitPacket();
 };
 
+class StartPacket : public Packet
+{
+public:
+    StartPacket(const bytes& data);
+    StartPacket(int ai_count);
+
+    int m_ai_count;
+};
+
 #endif

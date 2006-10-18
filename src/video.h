@@ -126,9 +126,8 @@ private:
 
     void loadExtensions();
 
-    GLUquadric*   m_quadricSphere;
-    GLUquadric*   m_quadricSphereHiQ;
-    GLUquadric*   m_quadricAxes;
+    GLUquadric*   m_quadric;
+    GLUquadric*   m_quadricTex;
 
     ShaderMap     m_shaders;
     TextureMap    m_textures;

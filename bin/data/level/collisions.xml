@@ -75,7 +75,7 @@
         <collision id="football" type="sphere" mass="1.0" material="football" property="football">
             <radius x="0.2" y="0.2" z="0.2" />
         </collision>
-
+        
         <collision id="level" type="heightmap">
             <heightmap size="40.0" name="grassy" material="grass" repeat="26.0" />
         </collision>
@@ -356,7 +356,13 @@
             <radius x="0.1"  y="0.05" z="0.1" />
             <offset x="0.0" y="-0.45" z="0.0" />
         </collision>
-        
+
+        <collision id="fence" type="box" mass="5.0" material="wood">
+            <size x="1.0" y="0.3" z="0.08"/>
+            <offset x="0.0" y="0.0" z="0.0" />
+            <rotation x="0.0" y="0.0" z="90.0" />
+        </collision>
+      
     </collisions>
 </xml>
 

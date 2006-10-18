@@ -10,6 +10,7 @@ class XMLnode;
 class Sound;
 class SoundBuffer;
 class Body;
+struct MaterialContact;
 
 typedef long long pID;
 typedef map<pID, Property> PropertiesMap;

@@ -8,7 +8,7 @@
 #include "properties.h"
 #include "geometry.h"
 
-Body::Body(const string& id, Level* level, const Collision* collision):
+Body::Body(const string& id, const Level* level, const Collision* collision):
     m_id(id),
     m_matrix(),
     m_collideable(NULL),
@@ -24,7 +24,7 @@ Body::Body(const string& id, Level* level, const Collision* collision):
     createNewtonBody(collision->m_newtonCollision, collision->m_origin, Vector(), Vector());
 }    
 
-Body::Body(const XMLnode& node, Level* level):
+Body::Body(const XMLnode& node, const Level* level):
     m_matrix(),
     m_totalMass(0.0f),
     m_totalInertia(0.0f, 0.0f, 0.0f),

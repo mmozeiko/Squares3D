@@ -25,6 +25,7 @@
 #include "profile.h"
 #include "colors.h"
 #include "game.h"
+#include "fence.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -194,20 +195,13 @@ void World::init()
     StringSet tmp;
     m_level->load("level.xml", tmp);
     m_grass = new Grass(m_level);
+    makeFence(m_level, m_newtonWorld);
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
     m_referee = new Referee(m_messages, m_scoreBoard);
     m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
     m_referee->m_ground = m_level->getBody("level"); //referee now can recognize ground outside
-
-    // NETWORK-
-    if (Network::instance->m_isSingle)
-    {
-        Network::instance->setPlayerProfile(m_userProfile);
-        Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, m_current);
-    }
-    // -NETWORK
 
     const vector<Player*>& players = Network::instance->createPlayers(m_level);
 

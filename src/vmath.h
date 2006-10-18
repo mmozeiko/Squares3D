@@ -168,6 +168,11 @@ public:
             z *= L;
         }
     }
+    
+    float getRotationY()
+    {
+        return std::atan2(z, x);
+    }
 };
 
 inline Vector operator + (const Vector& first, const Vector& second)

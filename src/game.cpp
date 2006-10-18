@@ -1,5 +1,4 @@
-#include <cstdio>
-#include <PhysFS.h>
+#include <physfs.h>
 
 #include "game.h"
 #include "timer.h"

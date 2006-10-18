@@ -1,3 +1,8 @@
+#ifdef WIN32
+#define VC_EXTRALEAN
+#include <windows.h>
+#endif
+
 #include <fstream>
 
 #include "common.h"
@@ -7,15 +12,8 @@
 #include "game.h"
 #include "version.h"
 
-#ifdef WIN32
-#define VC_EXTRALEAN
-#include <windows.h>
-#endif
-
 int main(int, char* argv[])
 {
-//   STATIC_CHECK(sizeof(wchar_t)==2, ERROR_SIZE_OF_WCHAR_IS_NOT_2);
-
 #ifdef NDEBUG
     std::ofstream log("log.txt");
     clog.rdbuf(log.rdbuf());
@@ -59,7 +57,7 @@ int main(int, char* argv[])
 
     clog << "Finished: " << getDateTime() << endl;
 
-#if defined(_DEBUG) && !__MINGW32__ && !__APPLE__
+#if defined(_DEBUG) && !__MINGW32__ && !__APPLE__ && !__linux__
     m_dumpMemoryReport();
 #endif
     

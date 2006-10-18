@@ -12,7 +12,7 @@
 #include <iostream>
 #include <algorithm>
 
-#if defined(_DEBUG) && !__MINGW32__ && !__APPLE__
+#if defined(_DEBUG) && !__MINGW32__ && !__APPLE__ && !__linux__
 #include "mmgr.h"
 #endif
 

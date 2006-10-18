@@ -14,6 +14,12 @@ Level::Level() : m_gravity(0.0f, -9.81f, 0.0f)
     m_properties = new Properties();
 }
 
+void Level::load(const string& levelFile)
+{
+    StringSet tmp;
+    load(levelFile, tmp);
+}
+
 void Level::load(const string& levelFile, StringSet& loaded)
 {
     clog << "Reading '" << levelFile << "' data." << endl;
@@ -113,6 +119,44 @@ void Level::load(const string& levelFile, StringSet& loaded)
         else if (node.name == "defaultProperties")
         {
             m_properties->loadDefault(node);
+        }
+        else if (node.name == "fences")
+        {
+            for each_const(XMLnodes, node.childs, iter)
+            {
+                const XMLnode& node = *iter;
+                if (node.name == "fence")
+                {
+                    int i = 0;
+                    vector<Vector> points(2);
+                    for each_const(XMLnodes, node.childs, iter)
+                    {
+                        const XMLnode& node = *iter;
+                        if (i > 1)
+                        {
+                            throw Exception("Too many points in fence, currently supported two per one fence");
+                        }
+                        else if (node.name == "point")
+                        {
+                            points[i] = node.getAttributesInVector("xyz");
+                        }
+                        else
+                        {
+                            throw Exception("Invalid fence, unknown node - " + node.name);
+                        }
+                        i++;
+                    }
+                    if (i < 1)
+                    {
+                        throw Exception("Too less points in fence, expected at least 2");
+                    }
+                    m_fences.push_back(make_pair(points[0], points[1]));
+                }
+                else
+                {
+                    throw Exception("Invalid fences, unknown node - " + node.name);
+                }
+            }
         }
         else
         {

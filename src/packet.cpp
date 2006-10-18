@@ -181,3 +181,13 @@ QuitPacket::QuitPacket(const bytes& data) : Packet(data)
 QuitPacket::QuitPacket() : Packet(ID_QUIT)
 {
 }
+
+StartPacket::StartPacket(const bytes& data) : Packet(data)
+{
+    m_ai_count = readByte();
+}
+
+StartPacket::StartPacket(int ai_count) : Packet(ID_START)
+{
+    writeByte(ai_count);
+}

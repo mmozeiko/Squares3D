@@ -465,6 +465,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\fence.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\fence.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\grass.cpp"
 					>
 				</File>
@@ -926,6 +934,10 @@
 				</File>
 				<File
 					RelativePath=".\bin\data\level\cpu_players.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\fences.xml"
 					>
 				</File>
 				<File

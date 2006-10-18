@@ -9,6 +9,7 @@
 #include "texture.h"
 #include "config.h"
 #include "geometry.h"
+#include "input.h"
 
 class CollisionConvex : public Collision
 {
@@ -84,6 +85,7 @@ public:
     ~CollisionHMap();
     
     void render() const;
+    void renderTri(float x, float z) const;
     float getHeight(float x, float y) const;
 
 private:
@@ -987,8 +989,8 @@ CollisionHMap::~CollisionHMap()
 
 float CollisionHMap::getHeight(float x, float z) const
 {
-    float x0 = (x + m_size/2.0f) * m_realCount / m_size;
-    float z0 = (z + m_size/2.0f) * m_realCount / m_size;
+    float x0 = (x + m_size/2.0f) * (m_realCount-1) / m_size;
+    float z0 = (z + m_size/2.0f) * (m_realCount-1) / m_size;
     
     x0 = std::min(std::max(x0, 0.0f), static_cast<float>(m_realCount-2));
     z0 = std::min(std::max(z0, 0.0f), static_cast<float>(m_realCount-2));
@@ -1018,10 +1020,65 @@ float CollisionHMap::getHeight(float x, float z) const
         v3 = m_vertices[m_realCount * iz + ix+1];
     }
    
-    const Vector s1 = v2 - v1;
-    const Vector s2 = v3 - v1;
-    const Vector n = s1 ^ s2;
+    Vector s1 = v2 - v1;
+    Vector s2 = v3 - v1;
+    s1.norm();
+    s2.norm();
+    Vector n = s1 ^ s2;
+    n.norm();
     const float D = - (n % v1);
 
     return -(n.x * x + n.z * z + D)/n.y;
+}
+
+void CollisionHMap::renderTri(float x, float z) const
+{
+    if (Input::instance->key('`'))
+    {
+        float x0 = (x + m_size/2.0f) * (m_realCount-1) / m_size;
+        float z0 = (z + m_size/2.0f) * (m_realCount-1) / m_size;
+        
+        x0 = std::min(std::max(x0, 0.0f), static_cast<float>(m_realCount-2));
+        z0 = std::min(std::max(z0, 0.0f), static_cast<float>(m_realCount-2));
+        
+        int ix = static_cast<int>(std::floor(x0));
+        int iz = static_cast<int>(std::floor(z0));
+
+        x0 -= static_cast<float>(ix);
+        z0 -= static_cast<float>(iz);
+      
+        Vector v1;
+        Vector v2;
+        Vector v3;
+
+        if (x0+z0 <= 1.0f)
+        {
+            // lower triangle
+            v1 = m_vertices[m_realCount * iz + ix];
+            v2 = m_vertices[m_realCount * (iz+1) + ix];
+            v3 = m_vertices[m_realCount * iz + ix+1];
+        }
+        else
+        {
+            // upper triangle
+            v1 = m_vertices[m_realCount * (iz+1) + (ix+1)];
+            v2 = m_vertices[m_realCount * (iz+1) + ix];
+            v3 = m_vertices[m_realCount * iz + ix+1];
+        }
+
+        glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT | GL_CURRENT_BIT);
+        
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_TEXTURE_2D);
+        glPolygonMode(GL_FRONT_AND_BACK , GL_FILL);
+        glColor3f(1,1,1);
+
+        glBegin(GL_TRIANGLES);
+        glVertex3fv(v1.v);
+        glVertex3fv(v2.v);
+        glVertex3fv(v3.v);
+        glEnd();
+
+        glPopAttrib();
+    }
 }

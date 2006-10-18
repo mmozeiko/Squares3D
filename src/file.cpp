@@ -159,12 +159,37 @@ namespace File
             throw Exception(PHYSFS_getLastError());
         }
 
-        if (PHYSFS_mount("data.zip", "/data", 1) == 0)
+        const string tmp(argv0);
+        const string ds(PHYSFS_getDirSeparator());
+        size_t idx = tmp.size()-1-ds.size();
+
+        string base;
+
+        while (idx > 0)
+        {
+            bool found = true;
+            for (size_t i = 0; i < ds.size(); i++)
+            {
+                if (tmp[idx+i] != ds[i])
+                {
+                    found = false;
+                    break;
+                }
+            }
+            if (found)
+            {
+                base = tmp.substr(0, idx) + ds;
+                break;
+            }
+            idx--;
+        }
+
+        if (PHYSFS_mount((base + "data.zip").c_str(), "/data", 1) == 0)
         {
             throw Exception(PHYSFS_getLastError());
         }
 
-        if (PHYSFS_mount(PHYSFS_getBaseDir(), "/", 0) == 0)
+        if (PHYSFS_mount(base.c_str(), "/", 0) == 0)
         {
             throw Exception(PHYSFS_getLastError());
         }
@@ -176,7 +201,7 @@ namespace File
 
         if (PHYSFS_deinit()==0)
         {
-            throw Exception(PHYSFS_getLastError());
+            clog << "ERROR: " << Exception(PHYSFS_getLastError()) << endl;
         }
     }
 

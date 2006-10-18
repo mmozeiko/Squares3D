@@ -483,12 +483,12 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_PLACE)
         {
             // not possible
-            clog << "WARNING: " << Exception("invalid server packet type = ") << type << endl;
+            clog << "WARNING: " << Exception("invalid server packet type = :ID_PLACE") << endl;
         }
         else if (type == Packet::ID_KICK)
         {
             // not possible
-            clog << "WARNING: " << Exception("invalid server packet type = ") << type << endl;
+            clog << "WARNING: " << Exception("invalid server packet type = ID_KICK") << endl;
         }
         else if (type == Packet::ID_CHAT)
         {
@@ -496,15 +496,24 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         }
         else if (type == Packet::ID_START)
         {
+            // not possible
+            clog << "WARNING: " << Exception("invalid server packet type = ID_START") << endl;
         }
         else if (type == Packet::ID_READY)
         {
+            // recieve from client when it has loaded game, forward it to other clients
+            // when all remote clients is ready, send start to all clients
+            // ...
         }
         else if (type == Packet::ID_UPDATE)
         {
+            // not possible
+            clog << "WARNING: " << Exception("invalid server packet type = ID_UPDATE") << endl;
         }
         else if (type == Packet::ID_CONTROL)
         {
+            // recieve control from remote player, forward it to other remote players
+            // ...
         }
         else
         {
@@ -556,15 +565,23 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         }
         else if (type == Packet::ID_START)
         {
+            // when recieved from server, switch state to world
+            // when finished loading world, send ready to server
+            // ...
         }
         else if (type == Packet::ID_READY)
         {
+            // recieve from server, that some client is ready
+            // when all remote clients is ready, start the game
+            // ...
         }
         else if (type == Packet::ID_UPDATE)
         {
+            // recieve update from server, update body
         }
         else if (type == Packet::ID_CONTROL)
         {
+            // recieve control from remote player, update player
         }
         else
         {
@@ -603,4 +620,21 @@ void Network::kickClient(int idx)
     }
     m_clients.erase(eraseable); 
     m_aiIdx[idx] = true;
+}
+
+void Network::startGame()
+{
+    int ai_count = 0;
+    for (int i=0; i<4; i++)
+    {
+        ai_count += (m_aiIdx[i] ? 1 : 0);
+    }
+
+    for each_(PlayerMap, m_clients, client)
+    {
+        if (client->second != m_localIdx)
+        {
+            send(client->first, StartPacket(ai_count), true);
+        }
+    }
 }

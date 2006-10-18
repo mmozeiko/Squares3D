@@ -34,6 +34,7 @@ Press ENTER to return to retry..
     <item name="NORMAL"                   value="Normal Level"/>
     <item name="HARD"                     value="Hard Level"/>
 
+    <!-- Network menu -->
     <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
     <item name="START_HOST"               value="Host New Game"/>
     <item name="START_JOIN"               value="Join Game"/>
@@ -43,6 +44,9 @@ Press ENTER to return to retry..
     <item name="ADDRESS"                  value="Address"/>
     <item name="CONNECTING"               value="Connecting..."/>
     <item name="DISCONNECT"               value="Disconnect"/>
+    <item name="LOCAL_PLAYER"             value=" (Local)"/>
+    <item name="CPU_PLAYER"               value=" (CPU)"/>
+    <item name="REMOTE_PLAYER"            value=" (Remote)"/>
 
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>
@@ -84,7 +88,11 @@ Press ENTER to return to retry..
     <item name="MOUSE_SENSITIVITY"        value="Mouse Sensitivity"/>
     <item name="NAME"                     value="Name"/>
     <item name="COLOR"                    value="Color"/>
-    
+
+    <item name="MUSIC_VOL"                value="Music volume"/>
+    <item name="SOUND_VOL"                value="Sound volume"/>
+
+    <!-- Colors -->
     <item name="RED"                      value="Red"/>
     <item name="GREEN"                    value="Green"/>
     <item name="BLUE"                     value="Blue"/>
@@ -94,7 +102,4 @@ Press ENTER to return to retry..
     <item name="CYAN"                     value="Cyan"/>
     <item name="MAGENTA"                  value="Magenta"/>
     <item name="GREY"                     value="Grey"/>
-
-    <item name="MUSIC_VOL"                value="Music volume"/>
-    <item name="SOUND_VOL"                value="Sound volume"/>
 </xml>

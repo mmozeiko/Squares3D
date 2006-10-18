@@ -67,6 +67,7 @@ public:
 
     void updateAiProfile(int idx);
     void kickClient(int idx);
+    void startGame();
 
     bool m_needDisconnect;
     bool m_disconnected;

@@ -17,6 +17,7 @@ public:
     static Collision* create(const XMLnode& node, Level* level);
     
     virtual void render() const = 0;
+    virtual void renderTri(float x, float z) const {}
     virtual float getHeight(float x, float z) const;
     virtual float getRadius() const { return 0.0f; }
 

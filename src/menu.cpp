@@ -170,7 +170,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new NetPlayerEntry(this, 3));
 
     submenu->addEntry(new SpacerEntry());
-    submenu->addEntry(new WorldEntry(this, language->get(TEXT_BEGIN_GAME), 0, current));
+    submenu->addEntry(new MultiWorldEntry(this, language->get(TEXT_BEGIN_GAME)));
     submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
 
     submenu->center(submenuPosition);

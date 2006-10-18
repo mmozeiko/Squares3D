@@ -19,6 +19,6 @@ elif p=="darwin":
 else:
   sources += Split("unix.c posix.c")
 
-e.Append( CPPDEFINES = ["PHYSFS_SUPPORTS_ZIP"] )
+e.Append( CPPDEFINES = Split("PHYSFS_SUPPORTS_ZIP PHYSFS_NO_CDROM_SUPPORT") )
 
 e.StaticLibrary(lib + "/physfs" + postfix, sources)

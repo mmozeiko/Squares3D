@@ -13,17 +13,19 @@ class Body;
 class Profile;
 struct Face;
 
-typedef map<string, Material*>       MaterialsMap;
-typedef map<string, Collision*>      CollisionsMap;
-typedef map<string, Body*>           BodiesMap;
-typedef set<pair<Face*, Material*> > FaceSet;
+typedef map<string, Material*>        MaterialsMap;
+typedef map<string, Collision*>       CollisionsMap;
+typedef map<string, Body*>            BodiesMap;
+typedef set<pair<Face*, Material*> >  FaceSet;
+typedef vector<pair<Vector, Vector> > FencesVector;
 
 class Level : NoCopy
 {
 public:
     Level();
     ~Level();
-    void  load(const string& levelFile, StringSet& loaded = StringSet());
+    void  load(const string& levelFile);
+    void  load(const string& levelFile, StringSet& loaded);
     void  render() const;
     void  prepare();
     Body* getBody(const string& id) const;
@@ -35,6 +37,7 @@ public:
     FaceSet         m_faces;
     MaterialsMap    m_materials;
     Properties*     m_properties;
+    FencesVector    m_fences;
 };
 
 

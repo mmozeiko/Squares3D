@@ -263,11 +263,11 @@ void WorldEntry::click(int button)
 { 
     if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
+        Network::instance->setPlayerProfile(Game::instance->m_userProfile);
+        Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, m_current);
+
         m_current = m_switchTo;
         m_menu->setState(State::World);
-
-        // TODO: world entry sound
-        //m_menu->m_sound->play(m_menu->m_soundChange);
     }
 }
 
@@ -278,8 +278,6 @@ void QuitEntry::click(int button)
     if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         m_menu->setState(State::Quit);
-        // TODO: quit entry sound
-        //m_menu->m_sound->play(m_menu->m_soundChange);
     }
 }
 
@@ -310,18 +308,15 @@ wstring NetPlayerEntry::getString() const
     wstring type;
     if (m_idx == Network::instance->getLocalIdx())
     {
-        // TODO: translate
-        type = L" (Local)";
+        type = Language::instance->get(TEXT_LOCAL_PLAYER);
     }
     else if (Network::instance->isLocal(m_idx))
     {
-        // TODO: translate
-        type = L" (CPU)";
+        type = Language::instance->get(TEXT_CPU_PLAYER);
     }
     else
     {
-        // TODO: translate
-        type = L" (Remote)";
+        type = Language::instance->get(TEXT_REMOTE_PLAYER);
     }
 
     return wcast<wstring>(profiles[m_idx]->m_name) + type;
@@ -403,18 +398,11 @@ wstring NetRemotePlayerEntry::getString() const
     wstring type;
     if (m_idx == Network::instance->getLocalIdx())
     {
-        // TODO: translate
-        type = L" (Local)";
-    }
-    else if (Network::instance->isLocal(m_idx))
-    {
-        // TODO: translate
-        type = L" (CPU)";
+        type = Language::instance->get(TEXT_LOCAL_PLAYER);
     }
     else
     {
-        // TODO: translate
-        type = L" (Remote)";
+        type = Language::instance->get(TEXT_REMOTE_PLAYER);
     }
 
     return wcast<wstring>(profiles[m_idx]->m_name) + type;
@@ -458,5 +446,16 @@ void ConnectEntry::click(int button)
             m_string = Language::instance->get(TEXT_CONNECTING);
             m_owner->activateNextEntry(true);
         }
+    }
+}
+
+/*** MULTIWORLDENTRY ***/
+
+void MultiWorldEntry::click(int button) 
+{ 
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
+    {
+        Network::instance->startGame();
+        m_menu->setState(State::World);
     }
 }
