@@ -7,7 +7,7 @@
 #include "body.h"
 
 static const float LOOK_SPEED = 0.2f;
-static const float MOVE_SPEED = 5.0f;
+static const float MOVE_SPEED = 10.0f;
 
 Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_pos(-pos), 
@@ -15,7 +15,12 @@ Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_angleY(angleY * DEG_IN_RAD),
     m_strafeRotation(Matrix::rotateY(-M_PI/2)),
     m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f))),
-    m_lastDown(false)
+    m_lastDown(false),
+    m_uuberCamera(false),
+    m_lastUuberKey(false),
+    m_defPos(-pos),
+    m_defAngleX(angleX * DEG_IN_RAD),
+    m_defAngleY(angleY * DEG_IN_RAD)
 {
     int w, h; 
     glfwGetWindowSize(&w, &h);
@@ -32,7 +37,7 @@ void Camera::control()
 {
     const Mouse& mouse = Input::instance->mouse();
     m_targetRotation = Vector::Zero;
-    //m_targetDirection = Vector::Zero;
+    m_targetDirection = Vector::Zero;
 
     if (m_lastDown == false && (mouse.b & 2) == 2)
     {
@@ -47,63 +52,108 @@ void Camera::control()
     if ((mouse.b & 2) == 2)
     {
         Vector newMouse(static_cast<float>(mouse.x/2), static_cast<float>(mouse.y/2), static_cast<float>(mouse.z/2));
-
         Vector delta  = newMouse - m_lastMouse;
 
         m_targetRotation.y = delta.x;
         m_targetRotation.x = delta.y;
-        //m_targetDirection.z = delta.z;
+
+        if (m_uuberCamera)
+        {
+            if (Input::instance->key(GLFW_KEY_UP))       m_targetDirection.z = +1.0f;
+            if (Input::instance->key(GLFW_KEY_DOWN))     m_targetDirection.z = -1.0f;
+            if (Input::instance->key(GLFW_KEY_RIGHT))    m_targetDirection.x = +1.0f;
+            if (Input::instance->key(GLFW_KEY_LEFT))     m_targetDirection.x = -1.0f;
+
+            m_targetDirection.norm();
+        }
+        else
+        {
+            //m_targetDirection.z = delta.z;
+        }
 
         m_lastMouse = newMouse;
-
     }
+
+    if (Input::instance->key(GLFW_KEY_BACKSPACE) && m_lastUuberKey==false)
+    {
+        m_uuberCamera = !m_uuberCamera;
+
+        if (m_uuberCamera)
+        {
+            // .. recalc ??
+        }
+        else
+        {
+            m_pos = m_defPos;
+            m_angleX = m_defAngleX;
+            m_angleY = m_defAngleY;
+            prepare();
+        }
+        
+        m_targetRotation = Vector::Zero;
+        m_targetDirection = Vector::Zero;
+
+        m_lastUuberKey = true;
+    }
+
+    if (Input::instance->key(GLFW_KEY_BACKSPACE)==false && m_lastUuberKey==true)
+    {
+        m_lastUuberKey = false;
+    }
+
 }
 
 void Camera::update(float delta)
 {
-    m_targetRotation *= delta;
-    m_targetDirection *= delta;
-
-    m_angleY += LOOK_SPEED * m_targetRotation.y;
-    m_angleX += LOOK_SPEED * m_targetRotation.x;
-    
-    if (m_angleX < 10.0f * DEG_IN_RAD)
+    if (m_uuberCamera)
     {
-        m_angleX = 10.0f * DEG_IN_RAD;
+        m_targetRotation *= delta;
+        m_targetDirection *= delta;
+
+        m_angleY += LOOK_SPEED * m_targetRotation.y;
+        m_angleX += LOOK_SPEED * m_targetRotation.x;
+
+        const Matrix moveMatrix = Matrix::rotateY(-m_angleY) * Matrix::rotateX(-m_angleX);
+        const Matrix strafeMatrix = moveMatrix * m_strafeRotation;
+
+        const Vector deltaPos = m_targetDirection.z * moveMatrix.row(2) + m_targetDirection.x * strafeMatrix.row(2);
+        m_pos += MOVE_SPEED * deltaPos;
     }
-    else if (m_angleX > 60.0f * DEG_IN_RAD)
+    else
     {
-        m_angleX = 60.0f * DEG_IN_RAD;
+        m_targetRotation *= delta;
+        m_targetDirection *= delta;
+
+        m_angleY += LOOK_SPEED * m_targetRotation.y;
+        m_angleX += LOOK_SPEED * m_targetRotation.x;
+        
+        if (m_angleX < 10.0f * DEG_IN_RAD)
+        {
+            m_angleX = 10.0f * DEG_IN_RAD;
+        }
+        else if (m_angleX > 60.0f * DEG_IN_RAD)
+        {
+            m_angleX = 60.0f * DEG_IN_RAD;
+        }
     }
-
-/*
-    Matrix moveMatrix = Matrix::rotateX(m_angleX) * Matrix::rotateY(m_angleY);
-    //Matrix strafeMatrix = moveMatrix * m_strafeRotation;
-
-    Vector deltaPos = m_targetDirection.z * moveMatrix.row(2); // + m_targetDirection.x * strafeMatrix.row(2);
-
-    m_pos += MOVE_SPEED * deltaPos;
-
-    float m = m_pos.magnitude();
-    if (m < 3.0f)
-    {
-        m_pos.norm();
-        m_pos *= 3.0f;
-    }
-    else if (m > 10.0f)
-    {
-        m_pos.norm();
-        m_pos *= 10.0f;
-    }
-*/
 }
 
 void Camera::prepare()
 {
-    m_matrix = Matrix::translate(m_pos)  * 
-               Matrix::rotateX(m_angleX) *
-               Matrix::rotateY(m_angleY) *
-               m_scaleMatrix;
+    if (m_uuberCamera)
+    {
+        m_matrix = Matrix::rotateX(m_angleX) * 
+                   Matrix::rotateY(m_angleY) *
+                   Matrix::translate(m_pos)  *
+                   m_scaleMatrix;
+    }
+    else
+    {
+        m_matrix = Matrix::translate(m_pos)  * 
+                   Matrix::rotateX(m_angleX) *
+                   Matrix::rotateY(m_angleY) *
+                   m_scaleMatrix;
+    }
 }
 
 void Camera::render() const

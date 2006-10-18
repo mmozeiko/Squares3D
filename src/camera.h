@@ -32,6 +32,12 @@ private:
     Matrix m_matrix;
 
     bool   m_lastDown;
+    bool   m_uuberCamera;
+    bool   m_lastUuberKey;
+
+    const Vector m_defPos;
+    const float  m_defAngleX;
+    const float  m_defAngleY;
 };
 
 #endif
