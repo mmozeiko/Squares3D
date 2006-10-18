@@ -8,26 +8,22 @@
 #include "properties.h"
 #include "geometry.h"
 
-Body::Body(const string& id, const Level* level, const vector<Collision*>* collisions):
+Body::Body(const string& id, const Level* level, const CollisionSet* collisions):
     m_id(id),
     m_matrix(),
+    m_totalMass(0.0f),
     m_collideable(NULL),
     m_soundable(false),
     m_important(false),
-    m_level(level)
+    m_level(level),
+    m_collisions(*collisions)
 {
-    for each_const(vector<Collision*>, *collisions, iter)
-    {
-        m_collisions.insert(*iter);
-    }
-
     createNewtonBody(Vector(), Vector());
 }    
 
 Body::Body(const XMLnode& node, const Level* level):
     m_matrix(),
     m_totalMass(0.0f),
-    m_totalInertia(0.0f, 0.0f, 0.0f),
     m_collideable(NULL),
     m_soundable(false),
     m_important(false),

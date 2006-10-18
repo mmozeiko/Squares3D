@@ -37,8 +37,8 @@ Player::Player(const Profile* profile, Level* level) :
     m_levelCollision(level->getCollision("level")),
     m_ballBody(level->getBody("football"))
 {
-    vector<Collision*> collisions(1);
-    collisions[0] = level->getCollision(m_profile->m_collisionID);
+    CollisionSet collisions;
+    collisions.insert(level->getCollision(m_profile->m_collisionID));
     m_body = new Body(m_profile->m_name, level, &collisions);
     level->m_bodies[m_profile->m_name] = m_body;
     
