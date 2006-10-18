@@ -15,27 +15,31 @@ void makeFence(Level* level, const NewtonWorld* newtonWorld)
     const float fenceHeight = 1.0f;
     const float fenceSpacing = fenceWidth + fenceWidth / 5;
 
-    for (size_t i = 0; i < level->m_fences.size(); i++)
+    for (size_t fencesVectorIdx = 0; fencesVectorIdx < level->m_fences.size(); fencesVectorIdx++)
     {
-        Vector startPoint = level->m_fences[i].first;
-        Vector endPoint = level->m_fences[i].second;
-        Vector delta(endPoint - startPoint);
+        const vector<Vector>& fence = level->m_fences[fencesVectorIdx];
+        for (size_t i = 0; i < fence.size() - 1; i++)
+        {    
+            Vector startPoint = fence[i];
+            Vector endPoint = fence[i + 1];
+            Vector delta(endPoint - startPoint);
 
-        Vector direction = delta;
-        Vector rotation(0, - direction.getRotationY(), 0);
-        
-        float howMany = delta.magnitude() / fenceSpacing;
-        delta /= howMany;
-        for (int j = 0; j < howMany; j++)
-        {
-            string bodyID = "fence" + cast<string>(i) + "_" + cast<string>(j);
-            Body* body = new Body(bodyID, level, fenceCollision);
-            Vector position = Vector(startPoint + delta * static_cast<float>(j));
-            position.y = fenceHeight / 2 + heightMap->getHeight(position.x, position.z) + 0.05f;
-            body->setTransform(position, rotation);
-            NewtonWorldFreezeBody(newtonWorld, body->m_newtonBody);
-            NewtonBodySetAutoFreeze(body->m_newtonBody, 1);
-            level->m_bodies[bodyID] = body;
+            Vector direction = delta;
+            Vector rotation(0, - direction.getRotationY(), 0);
+            
+            float howMany = delta.magnitude() / fenceSpacing;
+            delta /= howMany;
+            for (int j = 0; j < howMany; j++)
+            {
+                string bodyID = "fence" + cast<string>(fencesVectorIdx) + "_" + cast<string>(i) + "_" + cast<string>(j);
+                Body* body = new Body(bodyID, level, fenceCollision);
+                Vector position = Vector(startPoint + delta * static_cast<float>(j));
+                position.y = fenceHeight / 2 + heightMap->getHeight(position.x, position.z) + 0.05f;
+                body->setTransform(position, rotation);
+                NewtonWorldFreezeBody(newtonWorld, body->m_newtonBody);
+                NewtonBodySetAutoFreeze(body->m_newtonBody, 1);
+                level->m_bodies[bodyID] = body;
+            }
         }
     }
 }

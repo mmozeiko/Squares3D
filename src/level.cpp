@@ -127,30 +127,24 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 const XMLnode& node = *iter;
                 if (node.name == "fence")
                 {
-                    int i = 0;
-                    vector<Vector> points(2);
+                    vector<Vector> points;
                     for each_const(XMLnodes, node.childs, iter)
                     {
                         const XMLnode& node = *iter;
-                        if (i > 1)
+                        if (node.name == "point")
                         {
-                            throw Exception("Too many points in fence, currently supported two per one fence");
-                        }
-                        else if (node.name == "point")
-                        {
-                            points[i] = node.getAttributesInVector("xyz");
+                            points.push_back(node.getAttributesInVector("xyz"));
                         }
                         else
                         {
                             throw Exception("Invalid fence, unknown node - " + node.name);
                         }
-                        i++;
                     }
-                    if (i < 1)
+                    if (points.size() < 2)
                     {
                         throw Exception("Too less points in fence, expected at least 2");
                     }
-                    m_fences.push_back(make_pair(points[0], points[1]));
+                    m_fences.push_back(points);
                 }
                 else
                 {

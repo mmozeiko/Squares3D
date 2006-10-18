@@ -17,7 +17,7 @@ typedef map<string, Material*>        MaterialsMap;
 typedef map<string, Collision*>       CollisionsMap;
 typedef map<string, Body*>            BodiesMap;
 typedef set<pair<Face*, Material*> >  FaceSet;
-typedef vector<pair<Vector, Vector> > FencesVector;
+typedef vector<vector<Vector> >       FencesVector;
 
 class Level : NoCopy
 {

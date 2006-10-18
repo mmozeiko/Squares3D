@@ -3,18 +3,13 @@
         <fence>
             <point x="-10.0" y="0.0" z="10.0"/>
             <point x="10.0"  y="0.0" z="10.0"/>
-        </fence>
-        <fence>
-            <point x="10.0" y="0.0" z="10.0"/>
             <point x="10.0" y="0.0" z="-10.0"/>
-        </fence>
-        <fence>
-            <point x="10.0"  y="0.0" z="-10.0"/>
-            <point x="-10.0" y="0.0" z="-10.0"/>
-        </fence>
-        <fence>
             <point x="-10.0" y="0.0" z="-10.0"/>
             <point x="-10.0" y="0.0" z="10.0"/>
+        </fence>
+        <fence>
+            <point x="-12.0" y="0.0" z="12.0"/>
+            <point x="0.0"  y="0.0" z="12.0"/>
         </fence>
     </fences>
 </xml>
