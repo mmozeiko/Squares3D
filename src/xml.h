@@ -58,7 +58,7 @@ inline bool XMLnode::hasAttributes() const
 
 inline bool XMLnode::hasAttribute(const string& name) const
 {
-    return foundInMap(attributes, name);
+    return foundIn(attributes, name);
 }
 
 template <typename T>

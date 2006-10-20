@@ -146,15 +146,15 @@ void OptionEntry::reset()
     }
 }
 
-void OptionEntry::render(const Font* font) const
+void OptionEntry::render() const
 {
     glPushMatrix();
-    font->render(m_string + L":", Font::Align_Right);
+    m_font->render(m_string + L":", Font::Align_Right);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(static_cast<float>(font->getWidth(L"  ")), 0.0f, 0.0f);
-    font->render(getValue(), Font::Align_Left);
+    glTranslatef(static_cast<float>(m_font->getWidth(L"  ")), 0.0f, 0.0f);
+    m_font->render(getValue(), Font::Align_Left);
     glPopMatrix();
 }
 
@@ -256,12 +256,12 @@ void ApplyOptionsEntry::click(int button)
     g_optionsEntry = m_submenuToSwitchTo;
 }
 
-int OptionEntry::getMaxLeftWidth(const Font* font) const
+int OptionEntry::getMaxLeftWidth() const
 {
-    return font->getWidth(m_string) + font->getWidth(L":");
+    return m_font->getWidth(m_string) + m_font->getWidth(L":");
 }
 
-int OptionEntry::getMaxRightWidth(const Font* font) const
+int OptionEntry::getMaxRightWidth() const
 {
-    return  font->getWidth(L"  ") +  m_value.getMaxWidth(font);
+    return  m_font->getWidth(L"  ") +  m_value.getMaxWidth(m_font);
 }

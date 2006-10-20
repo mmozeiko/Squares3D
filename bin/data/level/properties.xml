@@ -90,7 +90,7 @@
                 kineticFriction      = "1.0"
                 elasticityCoefficient = "0.4"
                 softnessCoefficient   = "0.5">
-        <sound name="menu_over"/>
+        <sound name="menu_click"/>
     </properties>
 
     <properties property0 = "wood" 

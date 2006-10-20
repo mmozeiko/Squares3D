@@ -25,7 +25,10 @@ Network::Network() :
     m_host(NULL),
     m_server(NULL),
     m_menu(NULL),
-    m_tmpProfile(NULL)
+    m_tmpProfile(NULL),
+    m_ready_count(0),
+    m_needToStartGame(false),
+    m_needToBeginGame(false)
 {
     clog << "Initializing network." << endl;
 
@@ -209,7 +212,7 @@ void Network::update()
             type = "Disconnect"; //peer, data
             if (m_isServer)
             {
-                if (foundInMap(m_clients, event.peer))
+                if (foundIn(m_clients, event.peer))
                 {
                     // client is quitting
                     int idx = m_clients[event.peer];
@@ -304,7 +307,7 @@ Profile* Network::getRandomAI()
     {
         i = Random::getIntN(3);
         k = Random::getIntN(static_cast<int>(m_allProfiles[i].size()));
-        found = foundInVector(m_profiles, m_allProfiles[i][k]);
+        found = foundIn(m_profiles, m_allProfiles[i][k]);
     }
     return m_allProfiles[i][k];
 }
@@ -466,7 +469,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_QUIT)
         {
             // client is quitting
-            if (foundInMap(m_clients, peer))
+            if (foundIn(m_clients, peer))
             {
                 int idx = m_clients[peer];
                 m_clients.erase(peer);
@@ -483,7 +486,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_PLACE)
         {
             // not possible
-            clog << "WARNING: " << Exception("invalid server packet type = :ID_PLACE") << endl;
+            clog << "WARNING: " << Exception("invalid server packet type = ID_PLACE") << endl;
         }
         else if (type == Packet::ID_KICK)
         {
@@ -503,7 +506,21 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         {
             // recieve from client when it has loaded game, forward it to other clients
             // when all remote clients is ready, send start to all clients
-            // ...
+
+            m_ready_count++;
+
+            for each_(PlayerMap, m_clients, client)
+            {
+                if (client->first != peer)
+                {
+                    send(client->first, ReadyPacket(), true);
+                }
+            }
+
+            if (m_ready_count == 3)
+            {
+                m_needToBeginGame = true;
+            }
         }
         else if (type == Packet::ID_UPDATE)
         {
@@ -567,13 +584,22 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         {
             // when recieved from server, switch state to world
             // when finished loading world, send ready to server
-            // ...
+
+            StartPacket p(packet);
+            m_ready_count = p.m_ai_count;
+            m_needToStartGame = true;
         }
         else if (type == Packet::ID_READY)
         {
             // recieve from server, that some client is ready
             // when all remote clients is ready, start the game
-            // ...
+            
+            m_ready_count++;
+            
+            if (m_ready_count == 3)
+            {
+                m_needToBeginGame = true;
+            }
         }
         else if (type == Packet::ID_UPDATE)
         {
@@ -636,5 +662,15 @@ void Network::startGame()
         {
             send(client->first, StartPacket(ai_count), true);
         }
+    }
+    
+    m_ready_count = ai_count;
+}
+
+void Network::iAmReady()
+{
+    if (m_isSingle == false && m_isServer == false)
+    {
+        send(m_server, ReadyPacket(), true);
     }
 }

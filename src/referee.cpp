@@ -287,6 +287,9 @@ void Referee::processCriticalEvent()
                                               0.8f));
 
         
+        // TODOTODO: network...
+        // ...
+
         wstring overText;
         if (maxScore.first == m_humanPlayer->m_profile->m_name)
         {
@@ -346,7 +349,7 @@ void Referee::process(const Body* body1, const Body* body2)
         {
             registerBallEvent(body1, body2);
         }
-        if (foundInMap(m_players, body1))
+        if (foundIn(m_players, body1))
         {
             registerPlayerEvent(body1, body2);
         }
@@ -373,7 +376,7 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
             processBallGround(otherBody);
         }
     }
-    else if (foundInMap(m_players, otherBody))
+    else if (foundIn(m_players, otherBody))
     {
         if (!(m_gameOver || m_mustResetBall))
         {
@@ -421,7 +424,7 @@ void Referee::processBallGround(const Body* groundObject)
 
         if (m_lastTouchedObject != NULL) //if last touched was not middle line
         {
-            if (foundInMap(m_players, m_lastTouchedObject))
+            if (foundIn(m_players, m_lastTouchedObject))
             {
                 //player has kicked the ball out
                 int points = m_scoreBoard->addSelfTotalPoints(m_lastTouchedObject->m_id);

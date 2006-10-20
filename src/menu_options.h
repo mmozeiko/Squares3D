@@ -23,10 +23,10 @@ public:
     
     bool isMouseOver(const Vector& mousePos) const { return m_enabled && Entry::isMouseOver(mousePos); }
     
-    void render(const Font* font) const;
+    void render() const;
     
-    virtual int getMaxLeftWidth(const Font* font) const;
-    virtual int getMaxRightWidth(const Font* font) const;
+    virtual int getMaxLeftWidth() const;
+    virtual int getMaxRightWidth() const;
 
 protected:
     Value m_value;

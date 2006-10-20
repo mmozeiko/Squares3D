@@ -128,16 +128,26 @@ int Value::getMaxWidth(const Font* font) const
 
 /*** ENTRY ***/
 
+Entry::Entry(Menu* menu, const wstring& stringIn, const Font* font) : 
+    m_string(stringIn), m_enabled(true), 
+    m_menu(menu), m_forBounds(false), m_font(font) 
+{
+    if (m_font == NULL)
+    {
+        m_font = menu->m_font;
+    }
+}
+
 bool Entry::isMouseOver(const Vector& mousePos) const
 {
     return isPointInRectangle(mousePos, m_lowerLeft, m_upperRight);
 }
 
-void Entry::calculateBounds(const Vector& position, const Font* font)
+void Entry::calculateBounds(const Vector& position)
 {
     m_forBounds = true;
-    m_lowerLeft = Vector(position.x - font->getWidth(getString())/2.0f, 0, position.y);
-    m_upperRight = Vector(position.x + font->getWidth(getString())/2.0f, 0, position.y + font->getHeight());
+    m_lowerLeft = Vector(position.x - m_font->getWidth(getString())/2.0f, 0, position.y);
+    m_upperRight = Vector(position.x + m_font->getWidth(getString())/2.0f, 0, position.y + m_font->getHeight());
     m_forBounds = false;
 }
 
@@ -147,33 +157,33 @@ void Entry::setXBound(float minX, float maxX)
     m_upperRight.x = maxX;
 }
 
-void Entry::render(const Font* font) const
+void Entry::render() const
 {
-    font->render(getString(), Font::Align_Center);
+    m_font->render(getString(), Font::Align_Center);
 }
 
-int Entry::getMaxLeftWidth(const Font* font) const
+int Entry::getMaxLeftWidth() const
 {
-    return font->getWidth(m_string)/2;
+    return m_font->getWidth(m_string)/2;
 }
 
-int Entry::getMaxRightWidth(const Font* font) const
+int Entry::getMaxRightWidth() const
 {
-    return font->getWidth(m_string)/2;
+    return m_font->getWidth(m_string)/2;
 }
 
 /*** COLORENTRY ***/
 
-void ColorEntry::render(const Font* font) const
+void ColorEntry::render() const
 {
     wstring stringToRender = m_string + L":  ";
     Vector color = colors.find(m_value.getCurrent())->second;
-    font->render(stringToRender, Font::Align_Right);
+    m_font->render(stringToRender, Font::Align_Right);
 
     glColor3f(color.x, color.y, color.z);
     
-    const float h = static_cast<float>(font->getHeight());
-    const float d = static_cast<float>(font->getWidth(L" ")); 
+    const float h = static_cast<float>(m_font->getHeight());
+    const float d = static_cast<float>(m_font->getWidth(L" ")); 
     
     // uuber magic numbers
     Video::instance->renderRoundRect(
@@ -198,16 +208,16 @@ void ColorEntry::click(int button)
     m_binding = colors.find(m_value.getCurrent())->second;
 }
 
-int ColorEntry::getMaxRightWidth(const Font* font) const
+int ColorEntry::getMaxRightWidth() const
 {
-    return 100 + font->getWidth(L" ");
+    return 100 + m_font->getWidth(L" ");
 }
 
-/*** WRITEABLEENTRY ***/
+/*** WRITEABLE ENTRY ***/
 
-void WritableEntry::render(const Font* font) const
+void WritableEntry::render() const
 {
-    font->render(m_string + L":  ", Font::Align_Right);
+    m_font->render(m_string + L":  ", Font::Align_Right);
 
     wstring stringToRender = wcast<wstring>(m_binding);
     if (m_ownerSubmenu->m_entries[m_ownerSubmenu->m_activeEntry] == this)
@@ -217,7 +227,7 @@ void WritableEntry::render(const Font* font) const
             stringToRender.push_back('_');
         }
     }
-    font->render(stringToRender, Font::Align_Left);
+    m_font->render(stringToRender, Font::Align_Left);
 }
 
 void WritableEntry::click(int key)
@@ -240,13 +250,13 @@ void WritableEntry::onChar(int ch)
         x = 15 - static_cast<int>(m_string.size());
     }
 
-    if (ch<=127 && m_ownerSubmenu->m_font->hasChar(ch) && (static_cast<int>(m_binding.size()) < x))
+    if (ch<=127 && m_menu->m_font->hasChar(ch) && (static_cast<int>(m_binding.size()) < x))
     {
         m_binding.push_back(ch);
     }
 }
 
-int WritableEntry::getMaxRightWidth(const Font* font) const
+int WritableEntry::getMaxRightWidth() const
 {
     int x = m_maxBindingSize;
     if (x == -1)
@@ -254,7 +264,7 @@ int WritableEntry::getMaxRightWidth(const Font* font) const
         x = 15 - static_cast<int>(m_string.size());
     }
 
-    return font->getWidth(L"M") * x;
+    return m_font->getWidth(L"M") * x;
 }
 
 /*** WORLDENTRY ***/
@@ -322,11 +332,11 @@ wstring NetPlayerEntry::getString() const
     return wcast<wstring>(profiles[m_idx]->m_name) + type;
 }
 
-void NetPlayerEntry::render(const Font* font) const
+void NetPlayerEntry::render() const
 {
     glPushMatrix();
-    glTranslatef(static_cast<float>(- this->getMaxLeftWidth(font)), 0.0f, 0.0f);
-    font->render(getString(), Font::Align_Left);
+    glTranslatef(static_cast<float>(- this->getMaxLeftWidth()), 0.0f, 0.0f);
+    m_font->render(getString(), Font::Align_Left);
     glPopMatrix();
 }
 
@@ -413,11 +423,11 @@ void NetRemotePlayerEntry::click(int button)
     return;
 }
 
-void NetRemotePlayerEntry::render(const Font* font) const
+void NetRemotePlayerEntry::render() const
 {
     glPushMatrix();
-    glTranslatef(static_cast<float>(- this->getMaxLeftWidth(font)), 0.0f, 0.0f);
-    font->render(getString(), Font::Align_Left);
+    glTranslatef(static_cast<float>(- this->getMaxLeftWidth()), 0.0f, 0.0f);
+    m_font->render(getString(), Font::Align_Left);
     glPopMatrix();
 }
 

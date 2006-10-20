@@ -90,6 +90,7 @@ Language::Language()
     REGISTER_TEXT_TYPE(LOCAL_PLAYER);
     REGISTER_TEXT_TYPE(CPU_PLAYER);
     REGISTER_TEXT_TYPE(REMOTE_PLAYER);
+    REGISTER_TEXT_TYPE(WAIT_PLAYERS);
 
 #undef REGISTER_TEXT_TYPE
     
@@ -104,7 +105,7 @@ Language::Language()
     
     // check if language is available
     StringVector available = getAvailable();
-    if (!foundInVector(available, Config::instance->m_misc.language))
+    if (!foundIn(available, Config::instance->m_misc.language))
     {
         Config::instance->m_misc.language = "en";
         return;

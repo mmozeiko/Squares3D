@@ -102,4 +102,11 @@ public:
     int m_ai_count;
 };
 
+class ReadyPacket : public Packet
+{
+public:
+    ReadyPacket(const bytes& data);
+    ReadyPacket();
+};
+
 #endif

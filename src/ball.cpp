@@ -82,7 +82,7 @@ void Ball::onCollide(const Body* other, const NewtonMaterial* material, const Ve
 void Ball::onCollideHull(const Body* other)
 {
     // when trigger collides
-    if (foundInMap(m_filteredBodies, other))
+    if (foundIn(m_filteredBodies, other))
     {
         //for bodies in filter map
         TriggerFlags& triggerFlags = m_filteredBodies[other];

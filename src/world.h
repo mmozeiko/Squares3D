@@ -80,6 +80,8 @@ private:
     void shadowMapPass1() const;
     void shadowMapPass2() const;
     void shadowMapPass3() const;
+
+    Message* m_waitMessage;
 };
 
 #endif

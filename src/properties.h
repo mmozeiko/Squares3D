@@ -50,6 +50,7 @@ public:
     bool hasPropertyID(int id) const; // id>=3
 
     void play(Body* body, const SoundBuffer* buffer, bool important, const Vector& position);
+    bool isPlaying(Body* body) const;
 
 private:
     int                 m_uniqueID;

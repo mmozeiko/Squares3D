@@ -28,7 +28,7 @@ void Submenu::control(int key)
     //get mouse position
     const Mouse& mouse = Input::instance->mouse();
     int videoHeight = Video::instance->getResolution().second;
-    Vector mousePos = Vector(static_cast<float>(mouse.x), 0, static_cast<float>(videoHeight - mouse.y));
+    Vector mousePos = Vector(static_cast<float>(mouse.x), 0.0f, static_cast<float>(videoHeight - mouse.y));
 
     //adjust active entry depending on up/down keys
     if ((key == GLFW_KEY_DOWN) || (key == GLFW_KEY_UP))
@@ -37,21 +37,25 @@ void Submenu::control(int key)
         m_menu->m_sound->play(m_menu->m_soundOver);
     }
 
-    //adjust active entry depending on mouse position
-    for (size_t i = 0; i < m_entries.size(); i++)
+    if (m_menu->m_mousePrevPos != mousePos)
     {
-        Entry* currentEntry = m_entries[i];
-        if ( (m_previousMousePos != mousePos)
-            && currentEntry->isMouseOver(mousePos)
-            && (currentEntry->isEnabled()))
+        //adjust active entry depending on mouse position
+        for (size_t i = 0; i < m_entries.size(); i++)
         {
-            if (m_activeEntry != i)
+            Entry* currentEntry = m_entries[i];
+            if ( (m_previousMousePos != mousePos)
+                && currentEntry->isMouseOver(mousePos)
+                && (currentEntry->isEnabled()))
             {
-                m_menu->m_sound->play(m_menu->m_soundOver);
+                if (m_activeEntry != i)
+                {
+                    m_menu->m_sound->play(m_menu->m_soundOver);
+                }
+                m_activeEntry = i;
+                break;
             }
-            m_activeEntry = i;
-            break;
         }
+        m_menu->m_mousePrevPos = mousePos;
     }
 
     Entry* currentEntry = m_entries[m_activeEntry];
@@ -83,7 +87,7 @@ Submenu::~Submenu()
 void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
-    m_height += entry->getHeight() * (m_font->getHeight() + 2);
+    m_height += entry->getHeight() * (entry->m_font->getHeight() + 2);
 }
 
 void Submenu::center(const Vector& centerPos)
@@ -91,20 +95,20 @@ void Submenu::center(const Vector& centerPos)
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
 
-    upperPos.y += m_height / 2 - m_font->getHeight() / 2;
+    upperPos.y += m_height / 2 - m_entries.front()->m_font->getHeight() / 2;
 
-    m_upper.y = upperPos.y + m_font->getHeight();
+    m_upper.y = upperPos.y + m_entries.front()->m_font->getHeight();
 
     int maxX = 0;
         
     for (size_t i = 0; i < m_entries.size(); i++)
     {      
         Entry* entry = m_entries[i];
-        entry->calculateBounds(upperPos, m_font);
-        upperPos.y -= entry->getHeight() * (m_font->getHeight() - 2);
+        entry->calculateBounds(upperPos);
+        upperPos.y -= entry->getHeight() * (m_entries[i]->m_font->getHeight() - 2);
         
-        int l = entry->getMaxLeftWidth(m_font);
-        int r = entry->getMaxRightWidth(m_font);
+        int l = entry->getMaxLeftWidth();
+        int r = entry->getMaxRightWidth();
         if (l > maxX)
         {
             maxX = l;
@@ -122,7 +126,7 @@ void Submenu::center(const Vector& centerPos)
 
     m_upper.x = centerPos.x + maxX; //std::max(maxR, maxL);
     m_lower.x = centerPos.x - maxX; //std::max(maxR, maxL);
-    m_lower.y = upperPos.y + m_font->getHeight() - 2;
+    m_lower.y = upperPos.y + m_entries.back()->m_font->getHeight() - 2;
 }
 
 void Submenu::setTitle(const wstring& title, const Vector& position)
@@ -160,10 +164,10 @@ void Submenu::activateNextEntry(bool moveDown)
 void Submenu::render() const
 {
     glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-    Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_font->getHeight()/2));
+    Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_menu->m_font->getHeight()/2));
 
     Vector upperPos = m_centerPos;
-    upperPos.y += m_height / 2 - m_font->getHeight() / 2;
+    upperPos.y += m_height / 2 - m_menu->m_font->getHeight() / 2;
 
     for (size_t i = 0; i < m_entries.size(); i++)
     {
@@ -186,20 +190,20 @@ void Submenu::render() const
                 glColor3fv(Grey.v); // disabled entry
             }
         }
-        entry->render(m_font);
+        entry->render();
         glPopMatrix();
-        upperPos.y -= entry->getHeight() * (m_font->getHeight() - 2);
+        upperPos.y -= entry->getHeight() * (m_menu->m_font->getHeight() - 2);
     }
 
     if (!m_title.empty())
     {
         // TODO: move somewhere else
-        m_fontBig->begin();
+        m_menu->m_fontBig->begin();
         glPushMatrix();
         glTranslatef(m_titlePos.x, m_titlePos.y, 0);
         glColor3fv(darker(Green, 1.5f).v);
-        m_fontBig->render(m_title, Font::Align_Center);
+        m_menu->m_fontBig->render(m_title, Font::Align_Center);
         glPopMatrix();
-        m_fontBig->end();
+        m_menu->m_fontBig->end();
     }
 }

@@ -686,7 +686,7 @@ const IntPairVector& Video::getModes() const
             	list[i].Height*16 == list[i].Width*9 ||
             	list[i].Height*16 == list[i].Width*10);
 
-            if ( aspectGood && bpp >= 24 && list[i].Height >= 480 && foundInSet(commonWidthSet, list[i].Width))
+            if ( aspectGood && bpp >= 24 && list[i].Height >= 480 && foundIn(commonWidthSet, list[i].Width))
             {
                 modes.push_back(make_pair(list[i].Width, list[i].Height));
             }

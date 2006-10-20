@@ -37,6 +37,7 @@ public:
     State::Type progress();
 
     Music*      m_music;
+    const Font* m_fontSmall;
     const Font* m_font;
     const Font* m_fontBig;
     Submenu*    m_currentSubmenu;
@@ -46,6 +47,7 @@ public:
     SoundBuffer* m_soundOver;
     SoundBuffer* m_soundClick;
     SoundBuffer* m_soundChange;
+    Vector       m_mousePrevPos;
 
 private:
     State::Type  m_state;

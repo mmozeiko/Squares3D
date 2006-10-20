@@ -62,18 +62,18 @@ public:
 
     void setMenuEntries(Menu* menu, const string& lobbySubmenu, const string& joinSubmenu);
 
-    void send(ENetPeer* peer, const Packet& packet, bool important);
-    void processPacket(ENetPeer* peer, const bytes& packet);
-
     void updateAiProfile(int idx);
     void kickClient(int idx);
-    void startGame();
+    void startGame(); // server->client, when starting world
+    void iAmReady();  // client->server, when world is loaded
 
     bool m_needDisconnect;
     bool m_disconnected;
 
     bool m_isSingle;
     bool m_inMenu;
+    bool m_needToStartGame;
+    bool m_needToBeginGame;
 
 private:
     bool m_isServer;
@@ -96,6 +96,11 @@ private:
 
     Profile*         m_tmpProfile;
     set<Profile*>    m_garbage;
+
+    int              m_ready_count;
+
+    void send(ENetPeer* peer, const Packet& packet, bool important);
+    void processPacket(ENetPeer* peer, const bytes& packet);
 };
 
 #endif

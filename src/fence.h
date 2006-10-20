@@ -3,6 +3,8 @@
 
 #include <Newton.h>
 
+#include "common.h"
+
 class Level;
 
 void makeFence(Level* level, const NewtonWorld* newtonWorld);

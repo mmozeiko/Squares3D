@@ -19,9 +19,9 @@ public:
     float   m_height;
     Vector  m_centerPos;
 
-    Submenu(Menu* menu, const Font* font, const Font* fontBig) :
+    Submenu(Menu* menu) :
         m_activeEntry(0), m_height(0), m_title(L""),
-        m_font(font), m_fontBig(fontBig), m_menu(menu) {}
+        m_menu(menu) {}
     ~Submenu();
 
     void addEntry(Entry* entry);
@@ -32,19 +32,16 @@ public:
     void setTitle(const wstring& title, const Vector& position);
     void activateNextEntry(bool moveDown);
 
-    Vector m_upper;
-    Vector m_lower;
+    Vector  m_upper;
+    Vector  m_lower;
 
     wstring m_title;
-    Vector m_titlePos;
+    Vector  m_titlePos;
 
-    const Font* m_font;
 private:
-    const Font* m_fontBig;
+    Vector      m_previousMousePos;
 
-    Vector m_previousMousePos;
-
-    Menu* m_menu;
+    Menu*       m_menu;
 };
 
 #endif

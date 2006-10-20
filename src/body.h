@@ -41,7 +41,7 @@ public:
 
     void setCollideable(Collideable* collideable);
 
-    Body(const string& id, const Level* level, const CollisionSet* collisions);
+    Body(const string& id, const Level* level, const CollisionSet& collisions);
     virtual ~Body();
 
     void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
@@ -77,6 +77,5 @@ private:
     void onSetForceAndTorque();
     static void onSetForceAndTorque(const NewtonBody* newtonBody);
 };
-
 
 #endif

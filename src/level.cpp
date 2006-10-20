@@ -24,7 +24,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
 {
     clog << "Reading '" << levelFile << "' data." << endl;
 
-    if (foundInSet(loaded, levelFile))
+    if (foundIn(loaded, levelFile))
     {
         clog << "ERROR: " << levelFile << " already is loaded!" << endl;
         return;

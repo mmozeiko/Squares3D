@@ -87,7 +87,6 @@ void Camera::control()
             m_pos = m_defPos;
             m_angleX = m_defAngleX;
             m_angleY = m_defAngleY;
-            prepare();
         }
         
         m_targetRotation = Vector::Zero;

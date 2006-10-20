@@ -47,6 +47,7 @@ Press ENTER to return to retry..
     <item name="LOCAL_PLAYER"             value=" (Local)"/>
     <item name="CPU_PLAYER"               value=" (CPU)"/>
     <item name="REMOTE_PLAYER"            value=" (Remote)"/>
+    <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
 
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>

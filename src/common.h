@@ -84,31 +84,38 @@ inline wstring wcast(const string& from)
 }
 
 template <typename ValueType>
-inline bool foundInVector(const vector<ValueType>& Vector,
-                          ValueType                Value)
+inline bool foundIn(const vector<ValueType>& Vector,
+                    ValueType                Value)
 {
     return std::find(Vector.begin(), Vector.end(), Value) != Vector.end();
 }
 
 template <typename KeyType, typename ValueType>
-inline bool foundInMap(const map<KeyType, ValueType>& Map,
-                       KeyType                        Key)
+inline bool foundIn(const map<KeyType, ValueType>& Map,
+                    KeyType                        Key)
 {
     return Map.find(Key) != Map.end();
 }
 
 template <typename KeyType, typename ValueType>
-inline bool foundInMap(const map<KeyType, ValueType>& Map,
-                       const char*                    Key)
+inline bool foundIn(const map<KeyType, ValueType>& Map,
+                    const char*                    Key)
 {
     return Map.find(Key) != Map.end();
 }
 
 template <typename KeyType>
-inline bool foundInSet(const set<KeyType>& Set,
-                       KeyType             Key)
+inline bool foundIn(const set<KeyType>& Set,
+                    KeyType             Key)
 {
     return Set.find(Key) != Set.end();
+}
+
+template <typename ArrayType, int N>
+inline bool foundIn(const ArrayType arr[N],
+                    ArrayType       Value)
+{
+    return std::find(arr, arr + N, Value) != arr + N;
 }
 
 #define sizeOfArray(array) (sizeof(array)/sizeof((array)[0]))

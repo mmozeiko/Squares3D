@@ -108,7 +108,6 @@ void Properties::play(Body* body, const SoundBuffer* buffer, bool important, con
         iterA++;
     }
 
-
     // check for free space
     SoundableList::iterator iterI = m_idle.begin();
     while (iterI != m_idle.end() && iterI->important != important)
@@ -125,6 +124,18 @@ void Properties::play(Body* body, const SoundBuffer* buffer, bool important, con
 
     m_active.push_back(*iterI);
     m_idle.erase(iterI);
+}
+
+bool Properties::isPlaying(Body* body) const
+{
+    for each_const(SoundableList, m_active, iter)
+    {
+        if (iter->body == body)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 int  Properties::getUndefined() const
@@ -192,7 +203,7 @@ void Properties::load(const XMLnode& node)
     const int id0 = getPropertyID(prop0);
     const int id1 = getPropertyID(prop1);
     
-    if (foundInMap(m_properties, makepID(id0, id1)))
+    if (foundIn(m_properties, makepID(id0, id1)))
     {
         throw Exception("Properties for '" + prop0 + "' and '"
                                            + prop1 + "' already loaded");
@@ -415,7 +426,7 @@ void MaterialContact::onEnd(const NewtonMaterial* material)
     self->body[0]->onCollide(self->body[1], material, self->position, self->maxSpeed);
     self->body[1]->onCollide(self->body[0], material, self->position, self->maxSpeed);
     
-    if (self->maxSpeed > 0.5f)
+    if (self->maxSpeed > 0.5f && !self->properties->isPlaying(self->body[0]) && !self->properties->isPlaying(self->body[1]) )
     {
         if (self->body[0]->m_soundable)
         {

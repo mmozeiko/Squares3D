@@ -44,7 +44,7 @@ public:
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(Menu* menu, const wstring& stringIn) : m_string(stringIn), m_enabled(true), m_menu(menu), m_forBounds(false) {}
+    Entry(Menu* menu, const wstring& stringIn, const Font* font = NULL);
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
@@ -61,11 +61,13 @@ public:
     virtual void enable()                                { m_enabled = true;  }
 
     bool isMouseOver(const Vector& mousePos) const;
-    virtual void calculateBounds(const Vector& position, const Font* font);
+    virtual void calculateBounds(const Vector& position);
     void setXBound(float minX, float maxX);
-    virtual void render(const Font* font) const;
-    virtual int getMaxLeftWidth(const Font* font) const;
-    virtual int getMaxRightWidth(const Font* font) const;
+    virtual void render() const;
+    virtual int getMaxLeftWidth() const;
+    virtual int getMaxRightWidth() const;
+
+    const Font* m_font;
 
 protected:
     bool m_enabled;
@@ -94,10 +96,10 @@ public:
         m_value.setCurrent(binding); 
     }
 
-    void render(const Font* font) const;
+    void render() const;
     void click(int button);
 
-    virtual int getMaxRightWidth(const Font* font) const;
+    virtual int getMaxRightWidth() const;
     
 private:
     Vector&    m_binding;
@@ -110,11 +112,11 @@ public:
     WritableEntry(Menu* menu, const wstring& label, string& binding, const Submenu* ownerSubmenu, int maxBindingSize = -1) :
       Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding), m_maxBindingSize(maxBindingSize) {}
 
-    void render(const Font* font) const;
+    void render() const;
     void click(int button);
     void onChar(int ch);
     
-    int getMaxRightWidth(const Font* font) const;
+    int getMaxRightWidth() const;
 
 private:
     const Submenu* m_ownerSubmenu;
@@ -150,7 +152,7 @@ public:
 class SpacerEntry : public Entry
 {
 public: 
-    SpacerEntry() : Entry(NULL, L"") { disable(); }
+    SpacerEntry(Menu* menu) : Entry(menu, L"") { disable(); }
     void click(int button)     {}
     wstring getString() const  { return L""; }
     bool isEnabled() const     { return false; }
@@ -167,7 +169,7 @@ public:
 
     wstring getString() const;
     void click(int button);
-    void render(const Font* font) const;
+    void render() const;
 
 private:
     int    m_idx;
@@ -181,7 +183,7 @@ public:
 
     wstring getString() const;
     void click(int button);
-    void render(const Font* font) const;
+    void render() const;
 
 private:
     int    m_idx;

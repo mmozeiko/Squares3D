@@ -39,10 +39,10 @@ Player::Player(const Profile* profile, Level* level) :
 {
     CollisionSet collisions;
     collisions.insert(level->getCollision(m_profile->m_collisionID));
-    m_body = new Body(m_profile->m_name, level, &collisions);
+    m_body = new Body(m_profile->m_name, level, collisions);
     level->m_bodies[m_profile->m_name] = m_body;
     
-    m_radius = (*m_body->m_collisions.begin())->getRadius();
+    m_radius = (*collisions.begin())->getRadius();
     
     // set the viscous damping the minimum
     NewtonBodySetLinearDamping(m_body->m_newtonBody, 0.0f);

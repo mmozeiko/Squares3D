@@ -191,3 +191,11 @@ StartPacket::StartPacket(int ai_count) : Packet(ID_START)
 {
     writeByte(ai_count);
 }
+
+ReadyPacket::ReadyPacket(const bytes& data) : Packet(data)
+{
+}
+
+ReadyPacket::ReadyPacket() : Packet(ID_READY)
+{
+}

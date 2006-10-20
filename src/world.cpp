@@ -1,3 +1,5 @@
+#include <AL/al.h>
+
 #include "world.h"
 #include "player.h"
 #include "camera.h"
@@ -48,73 +50,94 @@ State::Type World::progress()
         key = Input::instance->popKey();
         if (key == GLFW_KEY_ESC)
         {
-            if (m_freeze)
+            if (!Network::instance->m_isSingle && !Network::instance->m_needToStartGame)
             {
-                m_freeze = false;
-                m_messages->remove(escMessage);
-                return State::Current;
+                // quit game
+                return State::Menu;
             }
-            else
-            {
-                m_freeze = true;
-                float resY = static_cast<float>(Video::instance->getResolution().second);
-                escMessage = new Message(
-                                Language::instance->get(TEXT_ESC_MESSAGE), 
-                                Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
-                                       resY / 2 + resY / 4, 
-                                       0.0f), 
-                                Blue,
-                                Font::Align_Center);
-                m_messages->add2D(escMessage);
-            }
-        }
 
-        if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)) 
-        {
-            State::Type returnState = State::Current;
-            if (m_referee->m_gameOver)
+            else // local game
             {
-                if (m_referee->getLoserName() != m_userProfile->m_name) 
+                if (m_freeze)
                 {
-                    if ((m_current == m_unlockable) && (m_unlockable < 4))
-                    {
-                        m_unlockable++;
-                    }
-                    returnState = State::Menu;
+                    m_freeze = false;
+                    m_messages->remove(escMessage);
+                    escMessage = NULL;
+                    return State::Current;
                 }
                 else
                 {
-                    //here we don`t change the unlockable
-                    if (m_freeze)
+                    m_freeze = true;
+                    float resY = static_cast<float>(Video::instance->getResolution().second);
+                    escMessage = new Message(
+                                    Language::instance->get(TEXT_ESC_MESSAGE), 
+                                    Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
+                                           resY / 2 + resY / 4, 
+                                           0.0f), 
+                                    Blue,
+                                    Font::Align_Center);
+                    m_messages->add2D(escMessage);
+                }
+            }
+        }
+
+        if (Network::instance->m_isSingle)
+        {
+            if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)) 
+            {
+                State::Type returnState = State::Current;
+                if (m_referee->m_gameOver)
+                {
+                    if (m_referee->getLoserName() != m_userProfile->m_name) 
                     {
-                        //user wants to leave to menu and doesn`t want to retry - return State::MenuEasy
+                        if ((m_current == m_unlockable) && (m_unlockable < 4))
+                        {
+                            m_unlockable++;
+                        }
                         returnState = State::Menu;
                     }
                     else
                     {
-                        //if none from above - we return State::m_current to retry (reload the same level)
-                        init();
+                        //here we don`t change the unlockable
+                        if (m_freeze)
+                        {
+                            //user wants to leave to menu and doesn`t want to retry - return State::MenuEasy
+                            returnState = State::Menu;
+                        }
+                        else
+                        {
+                            //if none from above - we return State::m_current to retry (reload the same level)
+                            init();
+                        }
                     }
-                }
-            }
-            else
-            {
-                if (m_freeze)
-                {
-                    //user just wants to leave to menu in the middle of game - return State::MenuEasy
-                    //it DOESN`T change the unlockable level
-                    returnState = State::Menu;
                 }
                 else
                 {
-                    //don`t change anything
-                    returnState = State::Current;
+                    if (m_freeze)
+                    {
+                        //user just wants to leave to menu in the middle of game - return State::MenuEasy
+                        //it DOESN`T change the unlockable level
+                        returnState = State::Menu;
+                    }
+                    else
+                    {
+                        //don`t change anything
+                        returnState = State::Current;
+                    }
                 }
+                return returnState;            
             }
-            return returnState;            
         }
     }
     while (key != -1);
+
+    if (!Network::instance->m_isSingle && Network::instance->m_needToBeginGame)
+    {
+        m_freeze = false;
+        m_messages->remove(m_waitMessage);
+        
+        Network::instance->m_needToBeginGame = false;
+    }
 
     return State::Current;
 }
@@ -135,7 +158,8 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     escMessage(NULL),
     m_framebuffer(NULL),
     m_unlockable(unlockable),
-    m_current(current)
+    m_current(current),
+    m_waitMessage(NULL)
 {
     setInstance(this); // MUST go first
 
@@ -234,10 +258,26 @@ void World::init()
         }
     }
 
-
     m_scoreBoard->reset();
     Input::instance->startKeyBuffer();
     //m_music->play();
+
+    Network::instance->iAmReady();
+
+    if (!Network::instance->m_isSingle && !Network::instance->m_needToStartGame)
+    {
+        m_freeze = true;
+    
+        float resY = static_cast<float>(Video::instance->getResolution().second);
+        m_waitMessage = new Message(
+                        Language::instance->get(TEXT_WAIT_PLAYERS),
+                        Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
+                               resY / 2 + resY / 4, 
+                               0.0f), 
+                        Blue,
+                        Font::Align_Center);
+        m_messages->add2D(m_waitMessage);    
+    }
 }
 
 World::~World()
@@ -336,6 +376,9 @@ void World::update(float delta)
 {
     // update is called one time in frame
 
+    alListenerfv(AL_POSITION, m_localPlayers[0]->getPosition().v);
+    alListenerfv(AL_VELOCITY, m_localPlayers[0]->m_body->getVelocity().v);
+
     m_camera->update(delta);
     m_scoreBoard->update();
     m_referee->update();
@@ -389,24 +432,27 @@ void World::render() const
     // text messages are last
     if (m_freeze)
     {
-        const Font* font = m_messages->m_fonts.find(escMessage->getFontSize())->second;
-        font->begin();
-        const Vector& pos = escMessage->getPosition();
-        int w = font->getWidth(escMessage->getText());
-        int h = font->getHeight();
-        
-        Vector lower = pos;
-        lower.x -= w/2;
-        lower.y -= 2*h;
+        if (escMessage != NULL || m_waitMessage != NULL)
+        {
+            const Font* font = m_messages->m_fonts.find(escMessage->getFontSize())->second;
+            font->begin();
+            const Vector& pos = escMessage->getPosition();
+            int w = font->getWidth(escMessage->getText());
+            int h = font->getHeight();
+            
+            Vector lower = pos;
+            lower.x -= w/2;
+            lower.y -= 2*h;
 
-        Vector upper = pos;
-        upper.x += w/2;
-        upper.y += h;
+            Vector upper = pos;
+            upper.x += w/2;
+            upper.y += h;
 
-        glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-        Video::instance->renderRoundRect(lower, upper, static_cast<float>(h/2));
+            glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+            Video::instance->renderRoundRect(lower, upper, static_cast<float>(h/2));
 
-        font->end();
+            font->end();
+        }
     }
     m_messages->render();
 }
