@@ -7,7 +7,7 @@
 
 static const float fenceWidth = 0.3f;
 static const float fenceHeight = 1.0f;
-static const float fenceSpacing = fenceWidth + fenceWidth / 1.5f;
+static const float fenceSpacing = fenceWidth + fenceWidth / 3.0f;
 
 void makeFence(Level* level, const NewtonWorld* newtonWorld)
 {

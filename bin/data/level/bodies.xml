@@ -1,35 +1,65 @@
 <xml>
     <bodies>
         <body id="apple_tree_1">
-            <position x="-5.0" y="1.5" z="10.0"/>
+            <position x="15.0" y="1.5" z="13.0"/>
             <collision>apple_tree_bark</collision>
             <collision>apple_tree_middle</collision>
             <collision>apple_tree_top</collision>
         </body>
 
         <body id="apple_tree_2">
-            <position x="-1.0" y="1.5" z="10.0"/>
+            <position x="10.0" y="1.5" z="11.0"/>
             <collision>apple_tree_bark</collision>
             <collision>apple_tree_middle</collision>
             <collision>apple_tree_top</collision>
         </body>
 
         <body id="apple_tree_3">
-            <position x="4.0" y="1.5" z="4.0"/>
+            <position x="-3.0" y="1.5" z="14.0"/>
             <collision>apple_tree_bark</collision>
             <collision>apple_tree_middle</collision>
             <collision>apple_tree_top</collision>
         </body>
 
+		<body id="apple_tree_5">
+			<position x="3.0" y="1.5" z="12.0"/>
+			<collision>apple_tree_bark</collision>
+			<collision>apple_tree_middle</collision>
+			<collision>apple_tree_top</collision>
+		</body>
+
+		<body id="apple_tree_4">
+			<position x="6.0" y="1.5" z="8.0"/>
+			<collision>apple_tree_bark</collision>
+			<collision>apple_tree_middle</collision>
+			<collision>apple_tree_top</collision>
+		</body>
 
         <body id="fir_tree_1">
-            <position x="-5.0" y="0.75" z="4.0"/>
+            <position x="-17.0" y="3.0" z="4.0"/>
             <collision>fir_bark</collision>
             <collision>fir_bottom</collision>
             <collision>fir_middle</collision>
             <collision>fir_top</collision>
         </body>
-                
+
+		<body id="fir_tree_2">
+			<position x="-17.0" y="2.7" z="-10.0"/>
+			<rotation x="0.0" y="0.0" z="-5.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
+
+		<body id="fir_tree_3">
+			<position x="-17.0" y="2.7" z="-10.0"/>
+			<rotation x="0.0" y="0.0" z="-5.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
         
         <body id="level">
             <collision>level</collision>
