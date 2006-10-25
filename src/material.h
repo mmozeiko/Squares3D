@@ -9,7 +9,7 @@ class Level;
 class Texture;
 class XMLnode;
 
-class Material : NoCopy
+class Material : public NoCopy
 {
     friend class Level;
 public:

@@ -57,9 +57,6 @@ void LocalPlayer::control()
 
     setRotation(rotation/5.0f);
 
-    if (mouse.b & 1)
-    {
-        // .. kick
-        setKick(finalDirection);
-    }
+    // .. kick
+    setKick(mouse.b & 1);
 }

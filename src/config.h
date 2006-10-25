@@ -35,7 +35,7 @@ struct MiscConfig
 };
 
 
-class Config : public System<Config>, NoCopy
+class Config : public System<Config>, public NoCopy
 {
 public:
     Config();

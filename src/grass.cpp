@@ -5,6 +5,7 @@
 #include "random.h"
 #include "geometry.h"
 #include "config.h"
+#include "video_ext.h"
 
 Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_grassTex(NULL)
 {
@@ -82,21 +83,21 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_gras
 
     if (Video::instance->m_haveVBO)
     {
-        Video::glGenBuffersARB(2, (GLuint*)&m_buffer[0]);
+        glGenBuffersARB(2, (GLuint*)&m_buffer[0]);
 
         if (m_count > 0)
         {
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
-            Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count, &m_faces[0], GL_DYNAMIC_DRAW_ARB);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count, &m_faces[0], GL_DYNAMIC_DRAW_ARB);
         }
 
         if (m_count2 > 0)
         {
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
-            Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count2, &m_faces2[0], GL_DYNAMIC_DRAW_ARB);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(GrassFace)*m_count2, &m_faces2[0], GL_DYNAMIC_DRAW_ARB);
         }
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 
     m_grassTex = Video::instance->loadTexture("grassThingy");
@@ -107,7 +108,7 @@ Grass::~Grass()
 {
     if (Video::instance->m_haveVBO)
     {
-        Video::glDeleteBuffersARB(2, (GLuint*)&m_buffer[0]);
+        glDeleteBuffersARB(2, (GLuint*)&m_buffer[0]);
     }
 }
 
@@ -138,17 +139,17 @@ void Grass::update(float delta)
     {
         if (m_count != 0)
         {
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
-            Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count, &m_faces[0]);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
+            glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count, &m_faces[0]);
         }
 
         if (m_count2 != 0)
         {
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
-            Video::glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count2, &m_faces2[0]);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+            glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(GrassFace)*m_count2, &m_faces2[0]);
         }
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -174,7 +175,7 @@ void Grass::render() const
     {
         if (m_count != 0)
         {
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[0]);
             glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), NULL);
             glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));
         }
@@ -184,24 +185,24 @@ void Grass::render() const
 
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glDisable(GL_TEXTURE_2D);   
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
 
-            Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer[1]);
             glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), NULL);
             glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count2));
 
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glEnable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
         }
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
     else
     {
@@ -215,9 +216,9 @@ void Grass::render() const
         {
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glDisable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
 
             glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), &m_faces2[0]);
@@ -225,9 +226,9 @@ void Grass::render() const
 
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glEnable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
         }
 

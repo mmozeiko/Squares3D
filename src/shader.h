@@ -7,7 +7,7 @@
 
 class Video;
 
-class Shader : NoCopy
+class Shader : public NoCopy
 {
     friend class Video;
 

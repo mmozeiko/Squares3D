@@ -147,7 +147,7 @@ void Entry::calculateBounds(const Vector& position)
 {
     m_forBounds = true;
     m_lowerLeft = Vector(position.x - m_font->getWidth(getString())/2.0f, 0, position.y);
-    m_upperRight = Vector(position.x + m_font->getWidth(getString())/2.0f, 0, position.y + m_font->getHeight());
+    m_upperRight = Vector(position.x + m_font->getWidth(getString())/2.0f, 0, position.y + m_font->getHeight(getString()));
     m_forBounds = false;
 }
 

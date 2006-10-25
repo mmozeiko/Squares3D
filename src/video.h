@@ -7,7 +7,6 @@
 #include "common.h"
 #include "vmath.h"
 #include "system.h"
-#include "video_ext.h"
 
 class Shader;
 class Material;
@@ -34,7 +33,7 @@ struct Face
 typedef map<string, Shader*> ShaderMap;
 typedef map<string, Texture*> TextureMap;
 
-class Video : public System<Video>, NoCopy
+class Video : public System<Video>, public NoCopy
 {
 public:
     Video();
@@ -69,49 +68,6 @@ public:
     Texture* loadTexture(const string& name, bool mipmap = true);
     Shader*  loadShader(const string& vp, const string& fp);
 
-    static FNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
-
-/*
-    static FNGLGENPROGRAMSARBPROC glGenProgramsARB;
-    static FNGLPROGRAMSTRINGARBPROC glProgramStringARB;
-    static FNGLGETPROGRAMIVARBPROC glGetProgramivARB;
-    static FNGLDELETEPROGRAMPROC glDeleteProgramsARB;
-    static FNGLBINDPROGRAMARBPROC glBindProgramARB;
-*/
-    static FNGLCREATESHADEROBJECTARBPROC      glCreateShaderObjectARB;
-    static FNGLSHADERSOURCEARBPROC            glShaderSourceARB;
-    static FNGLCOMPILESHADERARBPROC           glCompileShaderARB;
-
-    static FNGLCREATEPROGRAMOBJECTARBPROC     glCreateProgramObjectARB;
-    static FNGLATTACHOBJECTARBPROC            glAttachObjectARB;
-    static FNGLLINKPROGRAMARBPROC             glLinkProgramARB;
-    static FNGLUSEPROGRAMOBJECTARBPROC        glUseProgramObjectARB;
-
-    static FNGLGETOBJECTPARAMETERIVARBPROC    glGetObjectParameterivARB;
-    static FNGLGETINFOLOGARBPROC              glGetInfoLogARB;
-
-    static FNGLDETACHOBJECTARBPROC            glDetachObjectARB;
-    static FNGLDELETEOBJECTARBPROC            glDeleteObjectARB;
-
-    static FNGLGETUNIFORMLOCATIONARBPROC      glGetUniformLocationARB;
-    static FNGLUNIFORM1IARBPROC               glUniform1iARB;
-    static FNGLUNIFORM3FARBPROC               glUniform3fARB;
-    static FNGLUNIFORMMATRIX4FVARBPROC        glUniformMatrix4fvARB;
-    static FNGLVERTEXATTRIB2FARBPROC          glVertexAttrib2fARB;
-    static FNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB;
-
-    static FNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
-    static FNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
-    static FNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
-    static FNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
-    static FNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
-
-    static FNGLGENBUFFERSARBPROC              glGenBuffersARB;
-    static FNGLBINDBUFFERARBPROC              glBindBufferARB;
-    static FNGLBUFFERDATAARBPROC              glBufferDataARB;
-    static FNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB;
-    static FNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
-
     bool m_haveShaders;
     bool m_haveShadows;
     bool m_haveShadowsFB;
@@ -121,9 +77,6 @@ public:
     bool m_shadowMap3ndPass;
 
 private:
-    template <typename T>
-    void loadProcAddress(const char* name, T& proc) const;
-
     void loadExtensions();
 
     GLUquadric*   m_quadric;

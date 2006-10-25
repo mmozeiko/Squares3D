@@ -4,45 +4,68 @@
 #include <GL/glfw.h>
 #include <GL/glext.h>
 
-#ifdef WIN32
-#define PPAPIENTRYP APIENTRY *
-#endif
-#ifndef PPAPIENTRYP
-#define PPAPIENTRYP *
+#ifndef GL_ARB_multitexture_
+extern PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
 #endif
 
-typedef void (PPAPIENTRYP FNGLACTIVETEXTUREARBPROC) (GLenum texture);
+/*
+PFNGLGENPROGRAMSARBPROC glGenProgramsARB;
+PFNGLPROGRAMSTRINGARBPROC glProgramStringARB;
+PFNGLGETPROGRAMIVARBPROC glGetProgramivARB;
+PFNGLDELETEPROGRAMPROC glDeleteProgramsARB;
+PFNGLBINDPROGRAMARBPROC glBindProgramARB;
+*/
 
-typedef GLhandleARB (PPAPIENTRYP FNGLCREATESHADEROBJECTARBPROC) (GLenum shaderType);
-typedef void (PPAPIENTRYP FNGLSHADERSOURCEARBPROC) (GLhandleARB shaderObj, GLsizei count, const GLcharARB* *string, const GLint *length);
-typedef void (PPAPIENTRYP FNGLCOMPILESHADERARBPROC) (GLhandleARB shaderObj);
+#ifndef GL_ARB_shader_objects_
+extern PFNGLCREATESHADEROBJECTARBPROC      glCreateShaderObjectARB;
+extern PFNGLSHADERSOURCEARBPROC            glShaderSourceARB;
+extern PFNGLCOMPILESHADERARBPROC           glCompileShaderARB;
 
-typedef GLhandleARB (PPAPIENTRYP FNGLCREATEPROGRAMOBJECTARBPROC) (void);
-typedef void (PPAPIENTRYP FNGLATTACHOBJECTARBPROC) (GLhandleARB containerObj, GLhandleARB obj);
-typedef void (PPAPIENTRYP FNGLLINKPROGRAMARBPROC) (GLhandleARB programObj);
-typedef void (PPAPIENTRYP FNGLUSEPROGRAMOBJECTARBPROC) (GLhandleARB programObj);
-typedef void (PPAPIENTRYP FNGLGETOBJECTPARAMETERIVARBPROC) (GLhandleARB obj, GLenum pname, GLint *params);
-typedef void (PPAPIENTRYP FNGLGETINFOLOGARBPROC) (GLhandleARB obj, GLsizei maxLength, GLsizei *length, GLcharARB *infoLog);
-typedef void (PPAPIENTRYP FNGLDETACHOBJECTARBPROC) (GLhandleARB containerObj, GLhandleARB attachedObj);
-typedef void (PPAPIENTRYP FNGLDELETEOBJECTARBPROC) (GLhandleARB obj);
+extern PFNGLCREATEPROGRAMOBJECTARBPROC     glCreateProgramObjectARB;
+extern PFNGLATTACHOBJECTARBPROC            glAttachObjectARB;
+extern PFNGLLINKPROGRAMARBPROC             glLinkProgramARB;
+extern PFNGLUSEPROGRAMOBJECTARBPROC        glUseProgramObjectARB;
 
-typedef GLint (PPAPIENTRYP FNGLGETUNIFORMLOCATIONARBPROC) (GLhandleARB programObj, const GLcharARB *name);
-typedef void (PPAPIENTRYP FNGLUNIFORM1IARBPROC) (GLint location, GLint v0);
-typedef void (PPAPIENTRYP FNGLUNIFORM3FARBPROC) (GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-typedef void (PPAPIENTRYP FNGLUNIFORMMATRIX4FVARBPROC) (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
-typedef void (PPAPIENTRYP FNGLVERTEXATTRIB2FARBPROC) (GLuint index, GLfloat x, GLfloat y);
-typedef void (PPAPIENTRYP FNGLVERTEXATTRIB3FVARBPROC) (GLuint index, const GLfloat *v);
+extern PFNGLGETOBJECTPARAMETERIVARBPROC    glGetObjectParameterivARB;
+extern PFNGLGETINFOLOGARBPROC              glGetInfoLogARB;
 
-typedef void (PPAPIENTRYP FNGLGENFRAMEBUFFERSEXTPROC) (GLsizei n, GLuint *framebuffers);
-typedef void (PPAPIENTRYP FNGLBINDFRAMEBUFFEREXTPROC) (GLenum target, GLuint framebuffer);
-typedef void (PPAPIENTRYP FNGLFRAMEBUFFERTEXTURE2DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-typedef GLenum (PPAPIENTRYP FNGLCHECKFRAMEBUFFERSTATUSEXTPROC) (GLenum target);
-typedef void (PPAPIENTRYP FNGLDELETEFRAMEBUFFERSEXTPROC) (GLsizei n, const GLuint *framebuffers);
+extern PFNGLDETACHOBJECTARBPROC            glDetachObjectARB;
+extern PFNGLDELETEOBJECTARBPROC            glDeleteObjectARB;
 
-typedef void (PPAPIENTRYP FNGLGENBUFFERSARBPROC) (GLsizei n, GLuint *buffers);
-typedef void (PPAPIENTRYP FNGLBINDBUFFERARBPROC) (GLenum target, GLuint buffer);
-typedef void (PPAPIENTRYP FNGLBUFFERDATAARBPROC) (GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
-typedef void (PPAPIENTRYP FNGLDELETEBUFFERSARBPROC) (GLsizei n, const GLuint *buffers);
-typedef void (PPAPIENTRYP FNGLBUFFERSUBDATAARBPROC) (GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid *data);
+extern PFNGLGETUNIFORMLOCATIONARBPROC      glGetUniformLocationARB;
+extern PFNGLUNIFORM1IARBPROC               glUniform1iARB;
+extern PFNGLUNIFORM3FARBPROC               glUniform3fARB;
+extern PFNGLUNIFORMMATRIX4FVARBPROC        glUniformMatrix4fvARB;
+extern PFNGLVERTEXATTRIB2FARBPROC          glVertexAttrib2fARB;
+extern PFNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB;
+#endif
+
+#ifndef GL_EXT_framebuffer_object_
+extern PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
+extern PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
+extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
+extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
+extern PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
+#endif
+
+#ifndef GL_ARB_vertex_buffer_object_
+extern PFNGLGENBUFFERSARBPROC              glGenBuffersARB;
+extern PFNGLBINDBUFFERARBPROC              glBindBufferARB;
+extern PFNGLBUFFERDATAARBPROC              glBufferDataARB;
+extern PFNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB;
+extern PFNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
+#endif
+
+template <typename T>
+void loadProcAddress(const char* name, T& proc)
+{
+    proc = reinterpret_cast<T>(glfwGetProcAddress(name));
+    if (proc == NULL)
+    {
+        throw Exception("Address of '" + string(name) + "' not found");
+    }
+}
+
+#define loadProc(X) loadProcAddress(#X, X)
 
 #endif

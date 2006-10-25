@@ -5,7 +5,7 @@
 
 class Game;
 
-class State : NoCopy
+class State : public NoCopy
 {
 public:
 

@@ -10,7 +10,7 @@ struct Mouse
     int x, y, z, b;
 };
 
-class Input : public System<Input>, NoCopy
+class Input : public System<Input>, public NoCopy
 {
 public:
     Input();

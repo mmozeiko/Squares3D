@@ -2,12 +2,14 @@
 #define __PLAYER_H__
 
 #include "common.h"
+#include "vmath.h"
 #include "body.h"
 #include "level.h"
 #include "timer.h"
 
 class Referee;
 class Collision;
+class ControlPacket;
 
 static const float FIELDLENGTH = 3.0f;
 
@@ -23,11 +25,13 @@ public:
     void setDirection(const Vector& direction);
     void setRotation(const Vector& rotation);
     void setJump(bool needJump);
-    void setKick(const Vector& kick);
+    void setKick(bool needKick);
 
     void setPositionRotation(const Vector& position, const Vector& rotation);
 
     virtual void control() = 0;
+    virtual void control(const ControlPacket& packet) {}
+    ControlPacket* getControl() const;
 
     Vector getPosition() const;
     Vector getFieldCenter() const;
@@ -55,6 +59,7 @@ protected:
 
     bool         m_isOnGround; // TODO: rename, current name is incorrect
     bool         m_jump;
+    bool         m_kick;
 
     Vector       m_direction;
     Vector       m_rotation;

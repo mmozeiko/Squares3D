@@ -200,7 +200,7 @@ void Game::run()
 
         m_state->prepare();
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
         if (Input::instance->key('`'))
         {
             glPolygonMode(GL_FRONT, GL_LINE);
@@ -210,7 +210,7 @@ void Game::run()
         {
             glPolygonMode(GL_FRONT, GL_FILL);
         }
-#endif
+//#endif
         m_state->render();
         
         fps.update();

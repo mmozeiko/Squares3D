@@ -28,7 +28,7 @@ typedef list<Soundable>             SoundableList;
 typedef vector<SoundBuffer*>        SoundBufferVector;
 typedef map<pID, SoundBufferVector> SoundBufMap;
 
-class Properties : NoCopy
+class Properties : public NoCopy
 {
     friend struct MaterialContact;
 public:

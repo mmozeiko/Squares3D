@@ -7,7 +7,7 @@
 
 class SoundBuffer;
 
-class Sound : NoCopy
+class Sound : public NoCopy
 {
 public:
     Sound(bool interrupt);

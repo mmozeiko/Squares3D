@@ -22,7 +22,7 @@ extern string g_optionsEntry;
 
 typedef vector<Profile*> ProfilesVector;
 
-class Game : public System<Game>, NoCopy
+class Game : public System<Game>, public NoCopy
 {
 public:
     Game();

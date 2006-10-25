@@ -89,9 +89,9 @@ void Messages::add3D(Message* message)
     {
         vy = 0;
     }
-    else if (vy > Video::instance->getResolution().second - font->getHeight() * 5)
+    else if (vy > Video::instance->getResolution().second - font->getHeight(message->getText()) * 5)
     {
-        vy = Video::instance->getResolution().second - font->getHeight() * 5;
+        vy = Video::instance->getResolution().second - font->getHeight(message->getText()) * 5;
     }
 
     message->m_position = Vector(static_cast<float>(vx),

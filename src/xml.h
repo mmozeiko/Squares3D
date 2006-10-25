@@ -30,22 +30,18 @@ public:
     unsigned int line;
 
     inline bool hasAttributes() const;
-
     inline bool hasAttribute(const string& name) const;
 
     template <typename T>
     inline T getAttribute(const string& name) const;
-
     inline string getAttribute(const string& name) const;
 
     template <typename T>
     inline T getAttribute(const string& name, T defaultValue) const;
-
     inline string getAttribute(const string& name, const string& defaultValue) const;
-    
-    inline void setAttribute(const string& name, const string& value);
-
     inline Vector getAttributesInVector(const string& attributeSymbols) const;
+
+    inline void setAttribute(const string& name, const string& value);
 
 private:
     StringMap attributes;

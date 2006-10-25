@@ -9,10 +9,11 @@ class Collision;
 class Level;
 class XMLnode;
 class Body;
+class UpdatePacket;
 
 typedef set<const Collision*> CollisionSet;
 
-class Collideable : NoCopy
+class Collideable : public NoCopy
 {
 public:
     virtual ~Collideable() {}
@@ -43,6 +44,8 @@ public:
 
     Body(const string& id, const Level* level, const CollisionSet& collisions);
     virtual ~Body();
+
+    void update(const UpdatePacket& packet);
 
     void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
     void onCollideHull(const Body* other);

@@ -5,7 +5,7 @@
 #include "common.h"
 #include "file.h"
 
-class OggDecoder : NoCopy
+class OggDecoder : public NoCopy
 {
 public:
     OggDecoder(const string& filename);

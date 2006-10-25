@@ -1,0 +1,45 @@
+#include "video_ext.h"
+
+#ifndef GL_ARB_multitexture_
+PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB = NULL;
+#endif
+
+#ifndef GL_ARB_shader_objects_
+PFNGLCREATESHADEROBJECTARBPROC      glCreateShaderObjectARB = NULL;
+PFNGLSHADERSOURCEARBPROC            glShaderSourceARB = NULL;
+PFNGLCOMPILESHADERARBPROC           glCompileShaderARB = NULL;
+
+PFNGLCREATEPROGRAMOBJECTARBPROC     glCreateProgramObjectARB = NULL;
+PFNGLATTACHOBJECTARBPROC            glAttachObjectARB = NULL;
+PFNGLLINKPROGRAMARBPROC             glLinkProgramARB = NULL;
+PFNGLUSEPROGRAMOBJECTARBPROC        glUseProgramObjectARB = NULL;
+
+PFNGLGETOBJECTPARAMETERIVARBPROC    glGetObjectParameterivARB = NULL;
+PFNGLGETINFOLOGARBPROC              glGetInfoLogARB = NULL;
+
+PFNGLDETACHOBJECTARBPROC            glDetachObjectARB = NULL;
+PFNGLDELETEOBJECTARBPROC            glDeleteObjectARB = NULL;
+
+PFNGLGETUNIFORMLOCATIONARBPROC      glGetUniformLocationARB = NULL;
+PFNGLUNIFORM1IARBPROC               glUniform1iARB = NULL;
+PFNGLUNIFORM3FARBPROC               glUniform3fARB = NULL;
+PFNGLUNIFORMMATRIX4FVARBPROC        glUniformMatrix4fvARB = NULL;
+PFNGLVERTEXATTRIB2FARBPROC          glVertexAttrib2fARB = NULL;
+PFNGLVERTEXATTRIB3FVARBPROC         glVertexAttrib3fvARB = NULL;
+#endif
+
+#ifndef GL_EXT_framebuffer_object_
+PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT = NULL;
+PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT = NULL;
+PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT = NULL;
+#endif
+
+#ifndef GL_ARB_vertex_buffer_object_
+PFNGLGENBUFFERSARBPROC              glGenBuffersARB = NULL;
+PFNGLBINDBUFFERARBPROC              glBindBufferARB = NULL;
+PFNGLBUFFERDATAARBPROC              glBufferDataARB = NULL;
+PFNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB = NULL;
+PFNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB = NULL;
+#endif

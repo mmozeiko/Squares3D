@@ -87,7 +87,7 @@ Submenu::~Submenu()
 void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
-    m_height += entry->getHeight() * (entry->m_font->getHeight() + 2);
+    m_height += entry->getHeight() * (entry->m_font->getHeight(entry->m_string) + 2);
 }
 
 void Submenu::center(const Vector& centerPos)
@@ -95,9 +95,9 @@ void Submenu::center(const Vector& centerPos)
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
 
-    upperPos.y += m_height / 2 - m_entries.front()->m_font->getHeight() / 2;
+    upperPos.y += m_height / 2 - static_cast<float>(m_entries.front()->m_font->getHeight(m_entries.front()->m_string) / 2);
 
-    m_upper.y = upperPos.y + m_entries.front()->m_font->getHeight();
+    m_upper.y = upperPos.y + m_entries.front()->m_font->getHeight(m_entries.front()->m_string);
 
     int maxX = 0;
         
@@ -105,7 +105,7 @@ void Submenu::center(const Vector& centerPos)
     {      
         Entry* entry = m_entries[i];
         entry->calculateBounds(upperPos);
-        upperPos.y -= entry->getHeight() * (m_entries[i]->m_font->getHeight() - 2);
+        upperPos.y -= entry->getHeight() * (m_entries[i]->m_font->getHeight(m_entries.front()->m_string) - 2);
         
         int l = entry->getMaxLeftWidth();
         int r = entry->getMaxRightWidth();
@@ -126,7 +126,7 @@ void Submenu::center(const Vector& centerPos)
 
     m_upper.x = centerPos.x + maxX; //std::max(maxR, maxL);
     m_lower.x = centerPos.x - maxX; //std::max(maxR, maxL);
-    m_lower.y = upperPos.y + m_entries.back()->m_font->getHeight() - 2;
+    m_lower.y = upperPos.y + m_entries.back()->m_font->getHeight(m_entries.front()->m_string) - 2;
 }
 
 void Submenu::setTitle(const wstring& title, const Vector& position)
@@ -167,7 +167,7 @@ void Submenu::render() const
     Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_menu->m_font->getHeight()/2));
 
     Vector upperPos = m_centerPos;
-    upperPos.y += m_height / 2 - m_menu->m_font->getHeight() / 2;
+    upperPos.y += m_height / 2 - static_cast<float>(m_menu->m_font->getHeight(m_entries.front()->m_string) / 2);
 
     for (size_t i = 0; i < m_entries.size(); i++)
     {
@@ -190,9 +190,10 @@ void Submenu::render() const
                 glColor3fv(Grey.v); // disabled entry
             }
         }
+        entry->m_font->begin2();
         entry->render();
         glPopMatrix();
-        upperPos.y -= entry->getHeight() * (m_menu->m_font->getHeight() - 2);
+        upperPos.y -= entry->getHeight() * (entry->m_font->getHeight(entry->m_string) - 2);
     }
 
     if (!m_title.empty())

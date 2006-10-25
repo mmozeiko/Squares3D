@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-class Timer : NoCopy
+class Timer : public NoCopy
 {
 public:
     Timer(bool start = true);

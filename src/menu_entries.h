@@ -37,7 +37,7 @@ public:
     void setCurrent(const Vector& color);
 };
 
-class Entry : NoCopy
+class Entry : public NoCopy
 {
 public: 
     wstring     m_string;
@@ -192,8 +192,8 @@ private:
 class LabelEntry : public Entry
 {
 public: 
-    LabelEntry(Menu* menu, const wstring& label) :
-      Entry(menu, label) {}
+    LabelEntry(Menu* menu, const wstring& label, const Font* font = NULL) :
+      Entry(menu, label, font) {}
 
     wstring getString() const;
     void click(int button) {}

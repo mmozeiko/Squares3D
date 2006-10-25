@@ -1,5 +1,6 @@
 #include "packet.h"
 #include "profile.h"
+#include "body.h"
 
 Packet::Packet(int type) :
     m_data(),
@@ -112,14 +113,30 @@ const bytes& Packet::data() const
 
 ControlPacket::ControlPacket(const bytes& data) : Packet(data)
 {
-    m_control = readInt();
+    m_netDirection.x = readFloat();
+    m_netDirection.y = readFloat();
+    m_netDirection.z = readFloat();
+    m_netRotation.x = readFloat();
+    m_netRotation.y = readFloat();
+    m_netRotation.z = readFloat();
+    m_netJump = readByte()==1;
+    m_netKick = readByte()==1;
+    m_idx = readByte();
 }
 
-ControlPacket::ControlPacket(int control) : Packet(ID_CONTROL)
+ControlPacket::ControlPacket(byte idx, const Vector& direction, const Vector& rotation, bool jump, bool kick)
+    : Packet(ID_CONTROL)
 {
-    writeInt(control);
+    writeFloat(direction.x);
+    writeFloat(direction.y);
+    writeFloat(direction.z);
+    writeFloat(rotation.x);
+    writeFloat(rotation.y);
+    writeFloat(rotation.z);
+    writeByte(jump ? 1 : 0);
+    writeByte(kick ? 1 : 0);
+    writeByte(idx);
 }
-
 
 JoinPacket::JoinPacket(const bytes& data) : Packet(data), m_profile(NULL)
 {
@@ -198,4 +215,38 @@ ReadyPacket::ReadyPacket(const bytes& data) : Packet(data)
 
 ReadyPacket::ReadyPacket() : Packet(ID_READY)
 {
+}
+
+UpdatePacket::UpdatePacket(const bytes& data) : Packet(data)
+{
+    m_idx = readByte();
+    for (int i=0; i<16; i++)
+    {
+        m_position[i] = readFloat();
+    }
+    m_speed.x = readFloat();
+    m_speed.y = readFloat();
+    m_speed.z = readFloat();
+    m_omega.x = readFloat();
+    m_omega.y = readFloat();
+    m_omega.z = readFloat();
+}
+
+UpdatePacket::UpdatePacket(byte idx, const Body* body) : Packet(ID_UPDATE)
+{
+    writeByte(idx);
+    m_position = body->m_matrix;
+    m_speed = body->getVelocity();
+    NewtonBodyGetOmega(body->m_newtonBody, m_omega.v);
+
+    for (int i=0; i<16; i++)
+    {
+        writeFloat(m_position[i]);
+    }
+    writeFloat(m_speed.x);
+    writeFloat(m_speed.y);
+    writeFloat(m_speed.z);
+    writeFloat(m_omega.x);
+    writeFloat(m_omega.y);
+    writeFloat(m_omega.z);
 }

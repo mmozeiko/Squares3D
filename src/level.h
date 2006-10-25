@@ -19,7 +19,7 @@ typedef map<string, Body*>            BodiesMap;
 typedef set<pair<Face*, Material*> >  FaceSet;
 typedef vector<vector<Vector> >       FencesVector;
 
-class Level : NoCopy
+class Level : public NoCopy
 {
 public:
     Level();

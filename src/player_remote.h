@@ -13,10 +13,13 @@ public:
     ~RemotePlayer();
 
     void control();
-    void control(const ControlPacket* packet);
+    void control(const ControlPacket& packet);
 
 private:
-    int status; // ... from packet
+    Vector m_netDirection;
+    Vector m_netRotation;
+    bool   m_netJump;
+    bool   m_netKick;
 };
 
 #endif

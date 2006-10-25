@@ -52,7 +52,7 @@ void FPS::render() const
 
     glTranslatef(
         static_cast<float>(res.first - m_width)/2, 
-        static_cast<float>(res.second - m_font->getHeight()),
+        static_cast<float>(res.second - m_font->getHeight(m_fps)),
         0.0f);
     glColor3fv(m_color.v);
     m_font->render(m_fps);

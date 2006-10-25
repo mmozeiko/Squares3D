@@ -1,6 +1,7 @@
 #include <GL/glfw.h>
 
 #include "video.h"
+#include "video_ext.h"
 #include "config.h"
 #include "file.h"
 #include "shader.h"
@@ -390,7 +391,6 @@ void Video::end() const
     glPopMatrix();
 }
 
-
 void Video::begin(const Shader* shader) const
 {
     if (shader != NULL)
@@ -482,62 +482,6 @@ Shader* Video::loadShader(const string& vp, const string& fp)
     return NULL;
     //throw Exception("Shaders not supported, GENA HAUZE!");
 }
-
-FNGLACTIVETEXTUREARBPROC           Video::glActiveTextureARB = NULL;
-
-/*
-FNGLGENPROGRAMSARBPROC     Video::glGenProgramsARB = NULL;
-FNGLPROGRAMSTRINGARBPROC   Video::glProgramStringARB = NULL;
-FNGLGETPROGRAMIVARBPROC    Video::glGetProgramivARB = NULL;
-FNGLDELETEPROGRAMPROC      Video::glDeleteProgramsARB = NULL;
-FNGLBINDPROGRAMARBPROC     Video::glBindProgramARB = NULL;
-*/
-
-FNGLCREATESHADEROBJECTARBPROC      Video::glCreateShaderObjectARB = NULL;
-FNGLSHADERSOURCEARBPROC            Video::glShaderSourceARB = NULL;
-FNGLCOMPILESHADERARBPROC           Video::glCompileShaderARB = NULL;
-
-FNGLCREATEPROGRAMOBJECTARBPROC     Video::glCreateProgramObjectARB = NULL;
-FNGLATTACHOBJECTARBPROC            Video::glAttachObjectARB = NULL;
-FNGLLINKPROGRAMARBPROC             Video::glLinkProgramARB = NULL;
-FNGLUSEPROGRAMOBJECTARBPROC        Video::glUseProgramObjectARB = NULL;
-
-FNGLGETOBJECTPARAMETERIVARBPROC    Video::glGetObjectParameterivARB = NULL;
-FNGLGETINFOLOGARBPROC              Video::glGetInfoLogARB = NULL;
-
-FNGLDETACHOBJECTARBPROC            Video::glDetachObjectARB = NULL;
-FNGLDELETEOBJECTARBPROC            Video::glDeleteObjectARB = NULL;
-
-FNGLGETUNIFORMLOCATIONARBPROC      Video::glGetUniformLocationARB = NULL;
-FNGLUNIFORM1IARBPROC               Video::glUniform1iARB = NULL;
-FNGLUNIFORM3FARBPROC               Video::glUniform3fARB = NULL;
-FNGLUNIFORMMATRIX4FVARBPROC        Video::glUniformMatrix4fvARB = NULL;
-FNGLVERTEXATTRIB2FARBPROC          Video::glVertexAttrib2fARB = NULL;
-FNGLVERTEXATTRIB3FVARBPROC         Video::glVertexAttrib3fvARB = NULL;
-
-FNGLGENFRAMEBUFFERSEXTPROC         Video::glGenFramebuffersEXT = NULL;
-FNGLBINDFRAMEBUFFEREXTPROC         Video::glBindFramebufferEXT = NULL;
-FNGLFRAMEBUFFERTEXTURE2DEXTPROC    Video::glFramebufferTexture2DEXT = NULL;
-FNGLCHECKFRAMEBUFFERSTATUSEXTPROC  Video::glCheckFramebufferStatusEXT = NULL;
-FNGLDELETEFRAMEBUFFERSEXTPROC      Video::glDeleteFramebuffersEXT = NULL;
-
-FNGLGENBUFFERSARBPROC              Video::glGenBuffersARB = NULL;
-FNGLBINDBUFFERARBPROC              Video::glBindBufferARB = NULL;
-FNGLBUFFERDATAARBPROC              Video::glBufferDataARB = NULL;
-FNGLDELETEBUFFERSARBPROC           Video::glDeleteBuffersARB = NULL;
-FNGLBUFFERSUBDATAARBPROC           Video::glBufferSubDataARB = NULL;
-
-template <typename T>
-void Video::loadProcAddress(const char* name, T& proc) const
-{
-    proc = (T)(glfwGetProcAddress(name));
-    if (proc == NULL)
-    {
-        throw Exception("Address of '" + string(name) + "' not found");
-    }
-}
-
-#define loadProc(X) loadProcAddress(#X, X)
 
 void Video::loadExtensions()
 {

@@ -12,6 +12,7 @@
 #include "ball.h"
 #include "properties.h"
 #include "level.h"
+#include "packet.h"
 
 static const pair<float, float> jumpMinMax = make_pair(0.7f, 1.0f);
 static const pair<float, float> speedMinMax = make_pair(2.5f, 4.5f);
@@ -82,22 +83,27 @@ Player::~Player()
     NewtonDestroyJoint(World::instance->m_newtonWorld, m_upVector);
 }
 
-void Player::setKick(const Vector& kick)
+void Player::setKick(bool needKick)
 {
-    Vector dist = m_ballBody->getPosition() - m_body->getPosition();
+    m_kick = needKick;
     
-    if ( m_timer.read() > 0.4f && dist.magnitude2() < (0.2f+BALL_RADIUS+m_radius)*(0.2f+BALL_RADIUS+m_radius) ) // TODO: (gurkja resnums + bumbas_raadiuss)^2
+    if (m_kick)
     {
-        m_referee->process(m_ballBody, m_body);
+        Vector dist = m_ballBody->getPosition() - m_body->getPosition();
+        
+        if ( m_timer.read() > 0.4f && dist.magnitude2() < (0.2f+BALL_RADIUS+m_radius)*(0.2f+BALL_RADIUS+m_radius) ) // TODO: (gurkja resnums + bumbas_raadiuss)^2
+        {
+            m_referee->process(m_ballBody, m_body);
 
-        Properties* prop = World::instance->m_level->m_properties;
-        const SoundBuffer* sb = prop->getSB(prop->getPropertyID("player"), prop->getPropertyID("football"));
-        prop->play(m_body, sb, true, m_ballBody->getPosition());
+            Properties* prop = World::instance->m_level->m_properties;
+            const SoundBuffer* sb = prop->getSB(prop->getPropertyID("player"), prop->getPropertyID("football"));
+            prop->play(m_body, sb, true, m_ballBody->getPosition());
 
-        // CHARACTER: kick powaaar!
-        m_ballBody->setKickForce(Vector(0, 500, 0)); // 400-700
+            // CHARACTER: kick powaaar!
+            m_ballBody->setKickForce(Vector(0, 500, 0)); // 400-700
 
-        m_timer.reset();
+            m_timer.reset();
+        }
     }
 }
 
@@ -194,3 +200,9 @@ void Player::renderColor() const
     c.w = 0.3f;
     Video::instance->renderSimpleShadow(0.3f, m_body->getPosition(), m_levelCollision, c);
 }
+
+ControlPacket* Player::getControl() const
+{
+    return new ControlPacket(0, m_direction, m_rotation, m_jump, m_kick);
+}
+

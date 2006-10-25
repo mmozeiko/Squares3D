@@ -4,7 +4,7 @@
 #include "common.h"
 #include "vmath.h"
 
-class Font : NoCopy
+class Font : public NoCopy
 {
 public:
     enum AlignType
@@ -20,18 +20,20 @@ public:
     bool hasChar(int ch) const;
     int getWidth(const wstring& text) const;
     int getHeight() const;
+    int getHeight(const wstring& text) const;
 
     void begin(bool shadowed = true, const Vector& shadow = Vector(0.1f, 0.1f, 0.1f), float shadowWidth = 1.5f) const;
     void render(const wstring& text, AlignType align = Align_Left) const;
     void end() const;
 
-    unsigned int m_texture;
+    void begin2() const;
 
 private:
     Font(const string& filename);
     ~Font();
 
     unsigned int m_listbase;
+    unsigned int m_texture;
 
     int       m_count;
     int       m_height;

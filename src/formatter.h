@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-class Formatter : NoCopy
+class Formatter : public NoCopy
 {
 public:
     Formatter(const wstring& txt);

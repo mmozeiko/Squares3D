@@ -17,7 +17,7 @@ class SoundBuffer;
 typedef set<Music*> MusicSet;
 typedef map<string, SoundBuffer*> SoundBufferMap;
 
-class Audio : public System<Audio>, NoCopy
+class Audio : public System<Audio>, public NoCopy
 {
 public:
     Audio();

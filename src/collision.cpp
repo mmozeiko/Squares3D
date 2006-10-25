@@ -1,6 +1,7 @@
 #include "collision.h"
 #include "xml.h"
 #include "video.h"
+#include "video_ext.h"
 #include "material.h"
 #include "level.h"
 #include "property.h"
@@ -518,11 +519,11 @@ CollisionTree::CollisionTree(const XMLnode& node, Level* level) :
     }
     /*
     m_buffers.resize(m_faces.size());
-    Video::glGenBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
+    glGenBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
     for (size_t i=0; i<m_faces.size(); i++)
     {
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
-        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(FaceBuf), &m_faces[i], GL_STATIC_DRAW_ARB);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(FaceBuf), &m_faces[i], GL_STATIC_DRAW_ARB);
     }
     */
 }
@@ -545,7 +546,7 @@ void CollisionTree::render() const
             Video::instance->bind(m_materials[i]);
 
             Video::instance->renderFace(m_faces[i]);
-            //Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
+            //glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[i]);
             //glInterleavedArrays(GL_T2F_N3F_V3F, 0, NULL);
             //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); 
         }
@@ -558,7 +559,7 @@ void CollisionTree::render() const
 
 CollisionTree::~CollisionTree()
 {
-//    Video::glDeleteBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
+//    glDeleteBuffersARB(static_cast<GLsizei>(m_faces.size()), &m_buffers[0]);
 }
 
 CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node), m_material(NULL)
@@ -597,7 +598,12 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
         throw Exception("Invalid heightmap collision, repeat not specified");
     }
 
+    if (!foundIn(level->m_materials, material))
+    {
+        throw Exception("Material '" + material + "' not found!");
+    }
     m_material = level->m_materials.find(material)->second;
+
     const float c = repeat/size; //1.5f; //m_texture->m_size;//1.5f;
 
     int id = level->m_properties->getPropertyID("grass");
@@ -872,31 +878,31 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
     
     if (Video::instance->m_haveVBO)
     {
-        Video::glGenBuffersARB(5, (GLuint*)&m_buffers[0]);
+        glGenBuffersARB(5, (GLuint*)&m_buffers[0]);
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
-        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_uv.size() * sizeof(UV), &m_uv[0], GL_STATIC_DRAW_ARB);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_uv.size() * sizeof(UV), &m_uv[0], GL_STATIC_DRAW_ARB);
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
-        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_normals.size() * sizeof(Vector), &m_normals[0], GL_STATIC_DRAW_ARB);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_normals.size() * sizeof(Vector), &m_normals[0], GL_STATIC_DRAW_ARB);
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[2]);
-        Video::glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_vertices.size() * sizeof(Vector), &m_vertices[0], GL_STATIC_DRAW_ARB);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[2]);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_vertices.size() * sizeof(Vector), &m_vertices[0], GL_STATIC_DRAW_ARB);
 
         if (m_indices.size() != 0)
         {
-            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
-            Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
+            glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
         }
 
         if (m_indices2.size() != 0)
         {
-            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
-            Video::glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices2.size() * sizeof(unsigned short), &m_indices2[0], GL_STATIC_DRAW_ARB);
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
+            glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices2.size() * sizeof(unsigned short), &m_indices2[0], GL_STATIC_DRAW_ARB);
         }
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -911,18 +917,18 @@ void CollisionHMap::render() const
 
     if (Video::instance->m_haveVBO)
     {
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
         glTexCoordPointer(2, GL_FLOAT, sizeof(UV), NULL);
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[1]);
         glNormalPointer(GL_FLOAT, sizeof(Vector), NULL);
 
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[2]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[2]);
         glVertexPointer(3, GL_FLOAT, sizeof(Vector), NULL);
 
         if (m_indices.size() != 0)
         {
-            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[3]);
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, NULL);
         }
 
@@ -930,24 +936,24 @@ void CollisionHMap::render() const
         {
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glDisable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
             
-            Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, NULL);
 
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glEnable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
         }
 
-        Video::glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-        Video::glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
     else
     {
@@ -964,16 +970,16 @@ void CollisionHMap::render() const
         {
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glDisable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, &m_indices2[0]);
             if (Video::instance->m_shadowMap3ndPass)
             {
-                Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+                glActiveTextureARB(GL_TEXTURE1_ARB);
                 glEnable(GL_TEXTURE_2D);
-                Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+                glActiveTextureARB(GL_TEXTURE0_ARB);
             }
         }
     }
@@ -983,7 +989,7 @@ CollisionHMap::~CollisionHMap()
 {
     if (Video::instance->m_haveVBO)
     {
-        Video::glDeleteBuffersARB(5, (GLuint*)&m_buffers[0]);
+        glDeleteBuffersARB(5, (GLuint*)&m_buffers[0]);
     }
 }
 

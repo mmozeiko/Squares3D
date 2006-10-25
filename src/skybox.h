@@ -6,7 +6,7 @@
 
 class Texture;
 
-class SkyBox : NoCopy
+class SkyBox : public NoCopy
 {
 public:
     SkyBox();

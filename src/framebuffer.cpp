@@ -1,5 +1,6 @@
 #include "framebuffer.h"
 #include "video.h"
+#include "video_ext.h"
 
 FrameBuffer::FrameBuffer() :
     m_size(0),
@@ -19,8 +20,8 @@ void FrameBuffer::create(unsigned int size)
     m_size = size;
 
     destroy();
-    Video::glGenFramebuffersEXT(1, (GLuint*)&m_frameBuffer);
-    Video::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_frameBuffer);
+    glGenFramebuffersEXT(1, (GLuint*)&m_frameBuffer);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_frameBuffer);
 }
 
 void FrameBuffer::destroy()
@@ -39,28 +40,28 @@ void FrameBuffer::destroy()
     
     if (m_frameBuffer != 0)
     {
-        Video::glDeleteFramebuffersEXT(1, (GLuint*)&m_frameBuffer);
+        glDeleteFramebuffersEXT(1, (GLuint*)&m_frameBuffer);
         m_frameBuffer = 0;
     }
 }
 
 bool FrameBuffer::isValid() const
 {
-    GLenum status = Video::glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
-    Video::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
     return (status==GL_FRAMEBUFFER_COMPLETE_EXT);
 }
 
 void FrameBuffer::bind() const
 {
-    Video::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_frameBuffer);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_frameBuffer);
 }
 
 void FrameBuffer::unbind() const
 {
-    Video::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
 unsigned int FrameBuffer::attachColorTex()
@@ -71,7 +72,7 @@ unsigned int FrameBuffer::attachColorTex()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    Video::glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_colorTex, 0);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_colorTex, 0);
 
     return m_colorTex;
 }
@@ -87,7 +88,7 @@ unsigned int FrameBuffer::attachDepthTex()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
    
-    Video::glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_shadowTex, 0);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_shadowTex, 0);
 
     return m_shadowTex;
 }

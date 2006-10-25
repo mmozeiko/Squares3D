@@ -4,9 +4,11 @@
 #include "xml.h"
 #include "world.h"
 #include "video.h"
+#include "video_ext.h"
 #include "level.h"
 #include "properties.h"
 #include "geometry.h"
+#include "packet.h"
 
 Body::Body(const string& id, const Level* level, const CollisionSet& collisions):
     m_id(id),
@@ -212,9 +214,9 @@ void Body::render() const
         const Vector pos = m_matrix.row(3);
         if (!isPointInRectangle(pos, g_fieldLower, g_fieldUpper))
         {
-            Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+            glActiveTextureARB(GL_TEXTURE1_ARB);
             glDisable(GL_TEXTURE_2D);
-            Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+            glActiveTextureARB(GL_TEXTURE0_ARB);
             doit = true;
         }
     }
@@ -228,9 +230,9 @@ void Body::render() const
 
     if (doit)
     {
-        Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
         glEnable(GL_TEXTURE_2D);
-        Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
     }
 
     Video::instance->end();
@@ -265,4 +267,11 @@ float Body::getMass() const
 const Vector& Body::getInertia() const
 {
     return m_totalInertia;
+}
+
+void Body::update(const UpdatePacket& packet)
+{
+    NewtonBodySetVelocity(m_newtonBody, packet.m_speed.v);
+    NewtonBodySetOmega(m_newtonBody, packet.m_omega.v);
+    NewtonBodySetMatrix(m_newtonBody, packet.m_position.m);
 }

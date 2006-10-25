@@ -16,7 +16,7 @@ struct GrassFace
     Vector vertex;
 };
 
-class Grass : NoCopy
+class Grass : public NoCopy
 {
 public:
     Grass(const Level* level);

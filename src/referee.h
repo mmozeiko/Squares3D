@@ -15,7 +15,7 @@ class SoundBuffer;
 
 typedef map<const Body*, Player*> BodyToPlayerMap;
 
-class Referee : NoCopy
+class Referee : public NoCopy
 {
 public:
 

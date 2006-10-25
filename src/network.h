@@ -12,6 +12,7 @@
 #include <enet/enet.h>
 
 #include "common.h"
+#include "timer.h"
 #include "system.h"
 
 class Body;
@@ -20,19 +21,13 @@ class Level;
 class Player;
 class Packet;
 class Menu;
+class RemotePlayer;
 
-struct ActiveBody
-{
-    Body* body;
-    // also controls
-    // ..
-};
-
-typedef set<ActiveBody*> ActiveBodySet;
+typedef vector<Body*> ActiveBodyVector;
 
 typedef map<ENetPeer*, int> PlayerMap;
 
-class Network : public System<Network>, NoCopy
+class Network : public System<Network>, public NoCopy
 {
 public:
     Network();
@@ -49,7 +44,7 @@ public:
     void add(Body* body);
 
     void setPlayerProfile(Profile* player);
-    void setCpuProfiles(const vector<Profile*>* profiles, int level);
+    void setCpuProfiles(const vector<Profile*> profiles[], int level);
     void createRemoteProfiles();
     void setAiProfile(int idx, Profile* ai);
     Profile* getRandomAI();
@@ -70,18 +65,20 @@ public:
     bool m_needDisconnect;
     bool m_disconnected;
 
+    bool m_isServer;
     bool m_isSingle;
     bool m_inMenu;
+
     bool m_needToStartGame;
     bool m_needToBeginGame;
+    bool m_needToQuitGame;
+    bool m_playing;
 
 private:
-    bool m_isServer;
-
     ENetHost* m_host;
     ENetPeer* m_server;
 
-    ActiveBodySet m_activeBodies;
+    ActiveBodyVector m_activeBodies;
     PlayerMap     m_clients;
 
     vector<Profile*> m_allProfiles[3];
@@ -98,6 +95,8 @@ private:
     set<Profile*>    m_garbage;
 
     int              m_ready_count;
+    Timer            m_timer;
+
 
     void send(ENetPeer* peer, const Packet& packet, bool important);
     void processPacket(ENetPeer* peer, const bytes& packet);

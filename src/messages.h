@@ -12,7 +12,7 @@ typedef list<Message*> MessageVector;
 typedef map<int, MessageVector> MessageVectorsByHeight;
 typedef map<int, const Font*> Fonts;
 
-class Messages : NoCopy
+class Messages : public NoCopy
 {
 public:
     Messages();

@@ -209,6 +209,13 @@ void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
     m_shadowWidth = shadowWidth;
 }
 
+void Font::begin2() const
+{
+    glListBase(m_listbase);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+}
+
+
 void Font::renderPlain(const wstring& text) const
 {
     glPushMatrix();
@@ -325,7 +332,17 @@ int Font::getWidth(const wstring& text) const
     return maxWidth;
 }
 
+bool isEndline(const wchar_t& t)
+{
+    return t == L'\n';
+}
+
 int Font::getHeight() const
 {
     return m_height;
+}
+
+int Font::getHeight(const wstring& text) const
+{
+    return static_cast<int>(m_height * (1 + std::count_if(text.begin(), text.end(), isEndline)));
 }

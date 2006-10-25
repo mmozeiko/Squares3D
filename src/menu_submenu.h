@@ -10,7 +10,7 @@ class Menu;
 
 typedef vector<Entry*> Entries;
 
-class Submenu : NoCopy
+class Submenu : public NoCopy
 {
 public:
 

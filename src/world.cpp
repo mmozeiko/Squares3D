@@ -4,6 +4,7 @@
 #include "player.h"
 #include "camera.h"
 #include "video.h"
+#include "video_ext.h"
 #include "audio.h"
 #include "player_local.h"
 #include "player_ai.h"
@@ -50,7 +51,7 @@ State::Type World::progress()
         key = Input::instance->popKey();
         if (key == GLFW_KEY_ESC)
         {
-            if (!Network::instance->m_isSingle && !Network::instance->m_needToStartGame)
+            if (!Network::instance->m_isSingle && (!Network::instance->m_needToBeginGame || Network::instance->m_needToQuitGame))
             {
                 // quit game
                 return State::Menu;
@@ -74,7 +75,7 @@ State::Type World::progress()
                                     Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
                                            resY / 2 + resY / 4, 
                                            0.0f), 
-                                    Blue,
+                                    White,
                                     Font::Align_Center);
                     m_messages->add2D(escMessage);
                 }
@@ -131,12 +132,16 @@ State::Type World::progress()
     }
     while (key != -1);
 
-    if (!Network::instance->m_isSingle && Network::instance->m_needToBeginGame)
+    if (!Network::instance->m_isSingle)
     {
-        m_freeze = false;
-        m_messages->remove(m_waitMessage);
-        
-        Network::instance->m_needToBeginGame = false;
+        if (Network::instance->m_needToBeginGame)
+        {
+            m_freeze = false;
+            m_messages->remove(m_waitMessage);
+            m_waitMessage = NULL;
+            
+            Network::instance->m_needToBeginGame = false;
+        }
     }
 
     return State::Current;
@@ -249,13 +254,20 @@ void World::init()
         m_ball->addBodyToFilter(m_localPlayers[i]->m_body);
     }
 
-    Network* net = Network::instance;
-    for each_const(BodiesMap, m_level->m_bodies, iter)
+    if (!Network::instance->m_isSingle)
     {
-        if (iter->second->getMass() > 0.0f)
+        Network* net = Network::instance;
+        net->add(m_ball->m_body);
+
+        for each_const(vector<Player*>, players, iter)
         {
-            net->add(iter->second);
+            net->add((*iter)->m_body);
         }
+
+        net->add(m_level->getBody("seat"));
+        net->add(m_level->getBody("cucumberFan1"));
+        net->add(m_level->getBody("cucumberFan2"));
+        net->add(m_level->getBody("cucumberFan3"));
     }
 
     m_scoreBoard->reset();
@@ -264,7 +276,7 @@ void World::init()
 
     Network::instance->iAmReady();
 
-    if (!Network::instance->m_isSingle && !Network::instance->m_needToStartGame)
+    if (!Network::instance->m_isSingle)
     {
         m_freeze = true;
     
@@ -324,13 +336,24 @@ void World::control()
     {
         // only camera and local players
         m_camera->control();
-        m_localPlayers.front()->control();
+        if (Network::instance->m_isSingle)
+        {
+            m_localPlayers[Network::instance->getLocalIdx()]->control();
+        }
     }
+    if (!Network::instance->m_isSingle)
+    {
+        m_localPlayers[Network::instance->getLocalIdx()]->control();
+    }
+    
     // other objects go after this
 
-    for (size_t i=1; i<m_localPlayers.size(); i++)
+    for (size_t i=0; i<m_localPlayers.size(); i++)
     {
-        m_localPlayers[i]->control();
+        if (i != Network::instance->getLocalIdx())
+        {
+            m_localPlayers[i]->control();
+        }
     }
 }
 
@@ -434,11 +457,16 @@ void World::render() const
     {
         if (escMessage != NULL || m_waitMessage != NULL)
         {
-            const Font* font = m_messages->m_fonts.find(escMessage->getFontSize())->second;
+            Message* m = escMessage;
+            if (m == NULL)
+            {
+                 m = m_waitMessage;
+            }
+            const Font* font = m_messages->m_fonts.find(m->getFontSize())->second;
             font->begin();
-            const Vector& pos = escMessage->getPosition();
-            int w = font->getWidth(escMessage->getText());
-            int h = font->getHeight();
+            const Vector& pos = m->getPosition();
+            int w = font->getWidth(m->getText());
+            int h = font->getHeight(m->getText());
             
             Vector lower = pos;
             lower.x -= w/2;
@@ -666,7 +694,7 @@ void World::shadowMapPass2() const
 void World::shadowMapPass3() const
 {
     //3rd pass
-    Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
 
     //Remember state
     glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
@@ -697,7 +725,7 @@ void World::shadowMapPass3() const
     glEnable(GL_TEXTURE_GEN_R);
     glEnable(GL_TEXTURE_GEN_Q);
 
-    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
 
     Video::instance->m_shadowMap3ndPass = true;
 
@@ -717,10 +745,10 @@ void World::shadowMapPass3() const
 
     Video::instance->m_shadowMap3ndPass = false;
 
-    Video::glActiveTextureARB(GL_TEXTURE1_ARB);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
 
     //Restore states
     glPopAttrib();
 
-    Video::glActiveTextureARB(GL_TEXTURE0_ARB);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
 }

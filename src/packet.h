@@ -2,10 +2,12 @@
 #define __PACKET_H__
 
 #include "common.h"
+#include "vmath.h"
 
 class Profile;
+class Body;
 
-class Packet : NoCopy
+class Packet : public NoCopy
 {
 public:
     enum
@@ -52,9 +54,25 @@ class ControlPacket : public Packet
 {
 public:
     ControlPacket(const bytes& data);
-    ControlPacket(int control);
+    ControlPacket(byte idx, const Vector& direction, const Vector& rotation, bool jump, bool kick);
 
-    int m_control;
+    Vector m_netDirection;
+    Vector m_netRotation;
+    bool   m_netJump;
+    bool   m_netKick;
+    byte   m_idx;
+};
+
+class UpdatePacket : public Packet
+{
+public:
+    UpdatePacket(const bytes& data);
+    UpdatePacket(byte idx, const Body* body);
+
+    Matrix m_position;
+    Vector m_speed;
+    Vector m_omega;
+    byte   m_idx;
 };
 
 class JoinPacket : public Packet

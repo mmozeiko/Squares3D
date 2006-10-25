@@ -660,6 +660,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\video_ext.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\src\video_ext.h"
 						>
 					</File>

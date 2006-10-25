@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-class FrameBuffer : NoCopy
+class FrameBuffer : public NoCopy
 {
 public:
     FrameBuffer();

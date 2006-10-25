@@ -54,7 +54,7 @@ elif p == "darwin":
     builddir = "Debug"
 
   else:
-    env.Append( CXXFLAGS  = ["-Os", "-march=i686", "-fomit-frame-pointer", "-ffast-math"] )
+    env.Append( CXXFLAGS  = ["-O2"] )
     env.Append( CXXFLAGS  = ["-DNDEBUG"] )
 
     postfix = ""

@@ -6,7 +6,7 @@
 
 class XMLnode;
 
-class Profile : NoCopy
+class Profile : public NoCopy
 {
 public:
     Profile(const XMLnode& node);

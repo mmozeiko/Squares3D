@@ -33,7 +33,7 @@ typedef vector<ScoreMessage*> ScoreMessages;
 typedef vector<ComboMessage*> ComboMessages;
 typedef pair<string, int> StringIntPair;
 
-class ScoreBoard : NoCopy
+class ScoreBoard : public NoCopy
 {
 public:
     ScoreBoard(Messages* messages);

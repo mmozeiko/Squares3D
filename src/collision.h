@@ -9,7 +9,7 @@ class Body;
 class XMLnode;
 class Level;
 
-class Collision : NoCopy
+class Collision : public NoCopy
 {
     friend class Body;
 

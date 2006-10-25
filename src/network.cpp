@@ -28,7 +28,8 @@ Network::Network() :
     m_tmpProfile(NULL),
     m_ready_count(0),
     m_needToStartGame(false),
-    m_needToBeginGame(false)
+    m_needToBeginGame(false),
+    m_needToQuitGame(false)
 {
     clog << "Initializing network." << endl;
 
@@ -50,10 +51,6 @@ Network::~Network()
     close();
     enet_deinitialize();
 
-    for each_const(ActiveBodySet, m_activeBodies, iter)
-    {
-        delete *iter;
-    }
     delete m_tmpProfile;
 }
 
@@ -73,6 +70,10 @@ void Network::createServer()
     m_clients.clear();
     m_isServer = true;
     m_isSingle = false;
+    m_needToStartGame = false;
+    m_needToBeginGame = false;
+    m_needToQuitGame = false;
+    m_playing = false;
 }
 
 void Network::createClient()
@@ -86,6 +87,10 @@ void Network::createClient()
     m_isServer = false;
     m_disconnected = false;
     m_isSingle = false;
+    m_needToStartGame = false;
+    m_needToBeginGame = false;
+    m_needToQuitGame = false;
+    m_playing = false;
 }
 
 bool Network::connect(const string& host)
@@ -130,7 +135,12 @@ void Network::close()
             enet_host_flush(m_host);
         }
     }
-    
+    m_needToStartGame = false;
+    m_needToBeginGame = false;
+    m_needToQuitGame = false;
+    m_playing = false;
+    m_activeBodies.clear();
+
     for each_const(set<Profile*>, m_garbage, iter)
     {
         delete *iter;
@@ -152,9 +162,52 @@ void Network::close()
 
 void Network::update()
 {
-    if (m_host == NULL)
+    if (m_host == NULL) // no network, single player game!
     {
         return;
+    }
+
+    if (m_playing && !m_needToQuitGame)
+    {
+        if (m_timer.read() > 0.1f) // 100ms (10fps)
+        {
+            // update local player to remote players
+            ControlPacket* packet = m_players[m_localIdx]->getControl();
+            packet->m_idx = m_localIdx;
+            if (m_isServer)
+            {
+                for each_(PlayerMap, m_clients, client)
+                {
+                    send(client->first, *packet, false);
+                }
+
+                for (size_t i=0; i<m_activeBodies.size(); i++)
+                {
+                    UpdatePacket p(static_cast<byte>(i), m_activeBodies[i]);
+                    for each_(PlayerMap, m_clients, client)
+                    {
+                        send(client->first, p, false);
+                    }
+                }
+            }
+            else // client
+            {
+                send(m_server, *packet, false);
+
+                for (size_t i=0; i<m_activeBodies.size(); i++)
+                {
+                    if (m_players[m_localIdx]->m_body == m_activeBodies[i])
+                    {
+                        UpdatePacket p(static_cast<byte>(i), m_players[m_localIdx]->m_body);
+                        send(m_server, p, false);
+                        break;
+                    }
+                }
+            }
+            delete packet;
+            
+            m_timer.reset();
+        }
     }
 
     ENetEvent event;
@@ -172,29 +225,37 @@ void Network::update()
             type = "Connect"; // peer
             if (m_isServer)
             {
-                int freePlace = -1;
-                for (int i=0; i<4; i++)
+                if (m_inMenu == false)
                 {
-                    if (m_aiIdx[i] && freePlace == -1)
-                    {
-                        freePlace = i;
-                        m_aiIdx[freePlace] = false;
-                    }
-                    
-                    if (i != freePlace)
-                    {
-                        send(event.peer, JoinPacket(i, m_profiles[i]), true);
-                    }
-                }
-
-                if (freePlace == -1)
-                {
-                    send(event.peer, KickPacket("No free places!!"), true);
+                    enet_peer_disconnect(event.peer);
+                    enet_host_flush(m_host);
                 }
                 else
                 {
-                    send(event.peer, SetPlacePacket(freePlace), true);
-                    m_clients[event.peer] = freePlace;
+                    int freePlace = -1;
+                    for (int i=0; i<4; i++)
+                    {
+                        if (m_aiIdx[i] && freePlace == -1)
+                        {
+                            freePlace = i;
+                            m_aiIdx[freePlace] = false;
+                        }
+                        
+                        if (i != freePlace)
+                        {
+                            send(event.peer, JoinPacket(i, m_profiles[i]), true);
+                        }
+                    }
+
+                    if (freePlace == -1)
+                    {
+                        send(event.peer, KickPacket("No free places!!"), true);
+                    }
+                    else
+                    {
+                        send(event.peer, SetPlacePacket(freePlace), true);
+                        m_clients[event.peer] = freePlace;
+                    }
                 }
             }
             else
@@ -238,6 +299,7 @@ void Network::update()
                 {
                     m_menu->setSubmenu(m_joinSubmenu);
                 }
+                m_needToQuitGame = true;
             }
             break;
 
@@ -249,16 +311,12 @@ void Network::update()
         default:
             assert(false);
         }
-
-        clog << "Network event: " << type << endl;
     }
 }
 
 void Network::add(Body* body)
 {
-    ActiveBody* ab = new ActiveBody();
-    ab->body = body;
-    m_activeBodies.insert(ab);
+    m_activeBodies.push_back(body);
 }
 
 const vector<Profile*>& Network::getCurrentProfiles() const
@@ -481,7 +539,11 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
                     send(client->first, JoinPacket(idx, m_profiles[idx]), true);
                 }
             }
-
+            
+            if (!m_inMenu)
+            {
+                m_needToQuitGame = true;
+            }
         }
         else if (type == Packet::ID_PLACE)
         {
@@ -517,20 +579,33 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
                 }
             }
 
-            if (m_ready_count == 3)
+            if (m_ready_count == 4)
             {
                 m_needToBeginGame = true;
+                m_playing = true;
             }
         }
         else if (type == Packet::ID_UPDATE)
         {
-            // not possible
-            clog << "WARNING: " << Exception("invalid server packet type = ID_UPDATE") << endl;
+            // only for remote client
+            UpdatePacket p(packet);
+            m_activeBodies[p.m_idx]->update(p);
         }
         else if (type == Packet::ID_CONTROL)
         {
             // recieve control from remote player, forward it to other remote players
-            // ...
+            ControlPacket p(packet);
+            
+            for each_(PlayerMap, m_clients, client)
+            {
+                if (client->first != peer)
+                {
+                    send(client->first, p, false);
+                }
+            }
+            
+            // control remote player on server
+            m_players[p.m_idx]->control(p);
         }
         else
         {
@@ -550,6 +625,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
             m_aiIdx[p.m_idx] = false;
             Profile* prof = new Profile(*p.m_profile);
             m_profiles[p.m_idx] = prof;
+            clog << "Profile: name=" << prof->m_name << ", cid=" << prof->m_collisionID << endl;
             m_garbage.insert(prof);
         }
         else if (type == Packet::ID_QUIT)
@@ -559,6 +635,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
             {
                 m_menu->setSubmenu(m_joinSubmenu);
             }
+            m_needToQuitGame = true;
         }
         else if (type == Packet::ID_PLACE)
         {
@@ -596,18 +673,28 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
             
             m_ready_count++;
             
-            if (m_ready_count == 3)
+            if (m_ready_count == 4)
             {
                 m_needToBeginGame = true;
+                m_playing = true;
             }
         }
         else if (type == Packet::ID_UPDATE)
         {
             // recieve update from server, update body
+            UpdatePacket p(packet);
+            
+            // ignore update, if server tries to update this client player body
+            if (m_players[m_localIdx]->m_body != m_activeBodies[p.m_idx])
+            {
+                m_activeBodies[p.m_idx]->update(p);
+            }
         }
         else if (type == Packet::ID_CONTROL)
         {
-            // recieve control from remote player, update player
+            // recieve control from remote player (on server, or other client), update player
+            ControlPacket p(packet);
+            m_players[p.m_idx]->control(p);
         }
         else
         {
@@ -655,7 +742,7 @@ void Network::startGame()
     {
         ai_count += (m_aiIdx[i] ? 1 : 0);
     }
-
+    
     for each_(PlayerMap, m_clients, client)
     {
         if (client->second != m_localIdx)
@@ -665,12 +752,36 @@ void Network::startGame()
     }
     
     m_ready_count = ai_count;
+    m_needToStartGame = true;
 }
 
 void Network::iAmReady()
 {
     if (m_isSingle == false && m_isServer == false)
     {
+        m_ready_count++;
+
         send(m_server, ReadyPacket(), true);
+        
+        if (m_ready_count==4)
+        {
+            m_needToBeginGame = true;
+            m_playing = true;
+        }
+    }
+    else if (m_isServer == true)
+    {
+        m_ready_count++;
+
+        for each_(PlayerMap, m_clients, client)
+        {
+            send(client->first, ReadyPacket(), true);
+        }
+
+        if (m_ready_count==4)
+        {
+            m_needToBeginGame = true;
+            m_playing = true;
+        }
     }
 }
