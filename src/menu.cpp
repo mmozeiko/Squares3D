@@ -320,8 +320,13 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     valFSAA.add(L"8");
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_FSAA), valFSAA));
 
-    BoolValue valSh("use_shaders");
-    submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADERS), valSh));
+    Value valAn("anisotropy");
+    valAn.add(L"0");
+    for (int i=1; i<=Video::instance->m_maxAnisotropy; i++)
+    {
+        valAn.add(wcast<wstring>(1<<i));
+    }
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_ANISOTROPY), valAn));
 
     BoolValue valShad("shadow_type");
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADOW_TYPE), valShad));

@@ -4,7 +4,6 @@
 #include "video_ext.h"
 #include "config.h"
 #include "file.h"
-#include "shader.h"
 #include "level.h"
 #include "material.h"
 #include "texture.h"
@@ -27,7 +26,8 @@ static void GLFWCALL sizeCb(int width, int height)
 }
 
 Video::Video() :
-    m_haveShaders(false),
+    m_haveAnisotropy(false),
+    m_maxAnisotropy(0),
     m_haveShadows(false),
     m_haveShadowsFB(false),
     m_haveVBO(false),
@@ -140,10 +140,6 @@ Video::Video() :
         m_circleSin.push_back(std::sin(i*2.0f*M_PI/CIRCLE_DIVISIONS));
         m_circleCos.push_back(std::cos(i*2.0f*M_PI/CIRCLE_DIVISIONS));
     }
-
-    //int i;
-    //glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &i);
-    //clog << i << endl;
 }
 
 Video::~Video()
@@ -154,12 +150,6 @@ Video::~Video()
     gluDeleteQuadric(m_quadric);
 
     unloadTextures();
-
-    for each_(ShaderMap, m_shaders, iter)
-    {
-        delete iter->second;
-    }
-    m_shaders.clear();
 
     for each_(UIntSet, m_lists, iter)
     {
@@ -391,32 +381,11 @@ void Video::end() const
     glPopMatrix();
 }
 
-void Video::begin(const Shader* shader) const
-{
-    if (shader != NULL)
-    {
-        shader->begin();
-    }
-}
-
-void Video::end(const Shader* shader) const
-{
-    if (shader != NULL)
-    {
-        shader->end();
-    }
-}
-
 void Video::bind(const Material* material) const
 {
     if (m_lastBound == material)
     {
         return;
-    }
-
-    if (m_lastBound != NULL)
-    {
-        //m_lastBound->unbind();
     }
 
     if (material != NULL)
@@ -439,126 +408,64 @@ Texture* Video::loadTexture(const string& name, bool mipmap)
     return m_textures.insert(make_pair(name, texture)).first->second;
 }
 
-Shader* Video::loadShader(const string& vp, const string& fp)
-{
-    if (m_haveShaders)
-    {
-        ShaderMap::const_iterator iter = m_shaders.find(vp+"::"+fp);
-        if (iter != m_shaders.end())
-        {
-            return iter->second;
-        }
-
-        string vprogram, fprogram;
-
-        string vp_filename = "/data/shaders/" + vp;
-        string fp_filename = "/data/shaders/" + fp;
-
-        File::Reader file(vp_filename);
-        if (!file.is_open())
-        {
-            throw Exception("Shader '" + vp + "' not found");
-        }
-        vector<char> v(file.size());
-        file.read(&v[0], file.size());
-        file.close();
-        vprogram.assign(v.begin(), v.end());
-
-        file.open(fp_filename);
-        if (!file.is_open())
-        {
-            throw Exception("Shader '" + fp + "' not found");
-        }
-        v.resize(file.size());
-        file.read(&v[0], file.size());
-        file.close();
-        fprogram.assign(v.begin(), v.end());
-
-
-        Shader* shader = new Shader(vprogram, fprogram);
-        return m_shaders.insert(make_pair(vp+"::"+fp, shader)).first->second;
-    }
-
-    return NULL;
-    //throw Exception("Shaders not supported, GENA HAUZE!");
-}
-
 void Video::loadExtensions()
 {
-    /*
-    int major=0, minor=0;
-    glfwGetGLVersion(&major, &minor, NULL);
-    if (major<2 && minor<5)
-    {
-        static const char* needed[] = {
-            "GL_ARB_multitexture",
-        };
-        for (size_t i=0; i<sizeOfArray(needed); i++)
-        {
-            if (glfwExtensionSupported(needed[i])==GL_FALSE)
-            {
-                throw Exception("Needed OpenGL extension '" + string(needed[i]) + "' not supported");
-            }
-        }
-    }
-    */
-
+    bool activeTex = false;
+#ifndef GL_ARB_multitexture
     if (glfwExtensionSupported("GL_ARB_multitexture"))
     {
+        activeTex = true;
         loadProc(glActiveTextureARB);
     }
+#else
+    activeTex = true;
+#endif
 
-/*
-if (glfwExtensionSupported("GL_ARB_fragment_program") && 
-        glfwExtensionSupported("GL_ARB_vertex_program"))
+#ifndef GL_EXT_texture_filter_anisotropic
+    if (glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
     {
-        m_haveShaders = true;
-        loadProc(glGenProgramsARB);
-        loadProc(glProgramStringARB);
-        loadProc(glGetProgramivARB);
-        loadProc(glDeleteProgramsARB);
-        loadProc(glBindProgramARB);
+        m_haveAnisotropy = true;
     }
-*/
-    if (glActiveTextureARB != NULL &&
-        glfwExtensionSupported("GL_ARB_fragment_shader") && 
-        glfwExtensionSupported("GL_ARB_vertex_shader"))
+#else
+    m_haveAnisotropy = true;
+#endif
+
+    if (m_haveAnisotropy)
     {
-        m_haveShaders = true;
-
-        loadProc(glCreateShaderObjectARB);
-        loadProc(glShaderSourceARB);
-        loadProc(glCompileShaderARB);
-
-        loadProc(glCreateProgramObjectARB);
-        loadProc(glAttachObjectARB);
-        loadProc(glLinkProgramARB);
-        loadProc(glUseProgramObjectARB);
-
-        loadProc(glGetObjectParameterivARB);
-        loadProc(glGetInfoLogARB);
-
-        loadProc(glDetachObjectARB);
-        loadProc(glDeleteObjectARB);
-
-        loadProc(glGetUniformLocationARB);
-        loadProc(glUniform1iARB);
-        loadProc(glUniform3fARB);
-        loadProc(glUniformMatrix4fvARB);
-        
-        loadProc(glVertexAttrib2fARB);
-        loadProc(glVertexAttrib3fvARB);
+        GLint i;
+        glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &i);
+        m_maxAnisotropy = 0;
+        while (i != 1)
+        {
+            m_maxAnisotropy++;
+            i >>= 1;
+        }
+        if (Config::instance->m_video.anisotropy > m_maxAnisotropy)
+        {
+            Config::instance->m_video.anisotropy = m_maxAnisotropy;
+        }
+    }
+    else
+    {
+        Config::instance->m_video.anisotropy = 0;
     }
 
-    if (glActiveTextureARB != NULL && glfwExtensionSupported("GL_EXT_framebuffer_object"))
+#ifndef GL_EXT_framebuffer_object
+    if (activeTex && glfwExtensionSupported("GL_EXT_framebuffer_object"))
     {
+        m_haveShadowsFB = true;
+
         loadProc(glGenFramebuffersEXT);
         loadProc(glBindFramebufferEXT);
         loadProc(glFramebufferTexture2DEXT);
         loadProc(glCheckFramebufferStatusEXT);
         loadProc(glDeleteFramebuffersEXT);
     }
+#else
+    m_haveShadowsFB = true;
+#endif
 
+#ifndef GL_ARB_vertex_buffer_object
     if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
     {
         m_haveVBO = true;
@@ -569,30 +476,28 @@ if (glfwExtensionSupported("GL_ARB_fragment_program") &&
         loadProc(glDeleteBuffersARB);
         loadProc(glBufferSubDataARB);
     }
+#endif
 
-    if (glActiveTextureARB != NULL &&
+    if (activeTex &&
         glfwExtensionSupported("GL_ARB_depth_texture") &&
         glfwExtensionSupported("GL_ARB_shadow"))
     {
         m_haveShadows = true;
-        if (glfwExtensionSupported("GL_EXT_framebuffer_object"))
-        {
-            m_haveShadowsFB = true;
-        }
-        else
-        {
-            Config::instance->m_video.shadowmap_size = 0;
-        }
     }
 
-     if (!m_haveShaders)
+    if (!m_haveAnisotropy)
     {
-        Config::instance->m_video.use_shaders = 0;
+        Config::instance->m_video.anisotropy = 0;
     }
 
     if (!m_haveShadows)
     {
         Config::instance->m_video.shadow_type = 0;
+    }
+
+    if (!m_haveShadowsFB)
+    {
+        Config::instance->m_video.shadowmap_size = 0;
     }
 }
 

@@ -11,7 +11,7 @@ struct VideoConfig
     bool fullscreen;
     bool vsync;
     int  samples;
-    bool use_shaders;
+    int  anisotropy;
     int  shadow_type;
     int  shadowmap_size;
     bool show_fps;

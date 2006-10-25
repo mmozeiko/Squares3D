@@ -76,13 +76,13 @@ void OptionEntry::reset()
     {
         m_value.m_current = Config::instance->m_video.samples / 2;
     }
-    else if (m_value.m_id == "use_shaders")
+    else if (m_value.m_id == "anisotropy")
     {
-        if (!Video::instance->m_haveShaders)
+        if (!Video::instance->m_haveAnisotropy)
         {
             m_enabled = false;
         }
-        m_value.m_current = Config::instance->m_video.use_shaders ? 1 : 0;
+        m_value.m_current = Config::instance->m_video.anisotropy;
     }
     else if (m_value.m_id == "shadow_type")
     {
@@ -201,9 +201,9 @@ void ApplyOptionsEntry::click(int button)
         {
             Config::instance->m_video.samples = 2 * (*iter)->getCurrentValueIdx();
         }
-        else if (id == "use_shaders")
+        else if (id == "anisotropy")
         {
-            Config::instance->m_video.use_shaders = (*iter)->getCurrentValueIdx()==1;
+            Config::instance->m_video.anisotropy = (*iter)->getCurrentValueIdx();
         }
         else if (id == "shadow_type")
         {

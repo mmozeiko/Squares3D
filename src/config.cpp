@@ -7,7 +7,7 @@ template <class Config> Config* System<Config>::instance = NULL;
 
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, true, 1, 1, true, 1, 1 };
+const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, 0, 1, 1, true, 1, 1 };
 const AudioConfig Config::defaultAudio = { true, 5, 5 };
 const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost" };
 
@@ -65,9 +65,15 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                         m_video.samples = Config::defaultVideo.samples;
                     }
                 }
-                else if (node.name == "use_shaders")
+                else if (node.name == "anisotropy")
                 {
-                    m_video.use_shaders = cast<int>(node.value)==1;
+                    int i = cast<int>(node.value);
+                    m_video.anisotropy = 0;
+                    while (i > 1)
+                    {
+                        i >>= 1;
+                        m_video.anisotropy++;
+                    }
                 }
                 else if (node.name == "shadow_type")
                 {
@@ -211,7 +217,7 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("fullscreen", cast<string>(m_video.fullscreen ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("vsync", cast<string>(m_video.vsync ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("fsaa_samples", cast<string>(m_video.samples)));
-    xml.childs.back().childs.push_back(XMLnode("use_shaders", cast<string>(m_video.use_shaders ? 1 : 0)));
+    xml.childs.back().childs.push_back(XMLnode("anisotropy", cast<string>(m_video.anisotropy == 0 ? 0 : 1 << m_video.anisotropy)));
     xml.childs.back().childs.push_back(XMLnode("shadow_type", cast<string>(m_video.shadow_type)));
     xml.childs.back().childs.push_back(XMLnode("shadowmap_size", cast<string>(m_video.shadowmap_size)));
     xml.childs.back().childs.push_back(XMLnode("show_fps", cast<string>(m_video.show_fps ? 1 : 0)));

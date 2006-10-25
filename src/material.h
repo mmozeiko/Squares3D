@@ -5,7 +5,6 @@
 #include "vmath.h"
 
 class Level;
-//class Shader;
 class Texture;
 class XMLnode;
 
@@ -14,7 +13,6 @@ class Material : public NoCopy
     friend class Level;
 public:
     string  m_id;        // ""
-    //Shader* m_shader;
     Vector  m_cAmbient;  // (0.2f, 0.2f, 0.2f, 1.0f)
     Vector  m_cDiffuse;  // (0.8f, 0.8f, 0.8f, 1.0f)
     Vector  m_cSpecular; // (0.0f, 0.0f, 0.0f)
@@ -22,12 +20,10 @@ public:
     float   m_cShine;    // 0.0f
 
     void bind() const;
-    //void unbind() const;
 private: 
     Material(const XMLnode& node);
 
     Texture* m_texture;
-    //Texture* m_textureBump;
 };
 
 #endif

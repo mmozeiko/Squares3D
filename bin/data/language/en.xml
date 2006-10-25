@@ -67,7 +67,7 @@ Press ENTER to return to retry..
     <item name="FULLSCREEN"               value="Fullscreen"/>
     <item name="VSYNC"                    value="Vertical Sync"/>
     <item name="FSAA"                     value="Antialiasing"/>
-    <item name="SHADERS"                  value="Use Shaders"/>
+    <item name="ANISOTROPY"               value="Anisotropy Filter"/>
     <item name="SHADOW_TYPE"              value="Use Shadows"/>
     <item name="SHADOWMAP_SIZE"           value="Shadow Quality"/>
     <item name="SHOW_FPS"                 value="Show FPS"/>

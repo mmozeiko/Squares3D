@@ -52,7 +52,7 @@ Piespiediet ENTER, lai mēģinātu vēlreiz..
     <item name="FULLSCREEN"               value="Pilnekrāns"/>
     <item name="VSYNC"                    value="Vertikālā sinhronizācija"/>
     <item name="FSAA"                     value="Attēla izlīdzināšana"/>
-    <item name="SHADERS"                  value="Izmantot Šeiderus"/>
+    <item name="ANISOTROPY"               value="Anisotropy Filtrs"/>
     <item name="SHADOW_TYPE"              value="Izmantot Ēnas"/>
     <item name="SHADOWMAP_SIZE"           value="Ēnu Kvalitāte"/>
     <item name="SHOW_FPS"                 value="Rādīt Kadrus/sekundē"/>

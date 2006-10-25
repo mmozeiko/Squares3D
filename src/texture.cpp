@@ -1,9 +1,10 @@
 #include <GL/glfw.h>
-#include <GL/glext.h>
 
 #include "texture.h"
 #include "file.h"
 #include "vmath.h"
+#include "config.h"
+#include "video_ext.h"
 
 Texture::Texture(const string& name, bool mipmaps) : m_size(0)
 {
@@ -18,6 +19,11 @@ Texture::Texture(const string& name, bool mipmaps) : m_size(0)
 
     setFilter(Trilinear);
     setWrap(Repeat);
+
+    if (Config::instance->m_video.anisotropy > 0)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 << Config::instance->m_video.anisotropy);
+    }
 }
 
 Texture::~Texture()
