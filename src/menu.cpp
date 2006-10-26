@@ -135,6 +135,12 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     {
         submenu->m_entries.back()->disable();
     }
+    submenu->addEntry(new WorldEntry(this, language->get(TEXT_EXTRA), 3, current));
+    if (unlockable < 3)
+    {
+        submenu->m_entries.back()->disable();
+    }
+    submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
 
     submenu->center(submenuPosition);
@@ -324,6 +330,10 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
         valAn.add(wcast<wstring>(1<<i));
     }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_ANISOTROPY), valAn));
+    if (Video::instance->m_haveAnisotropy == false)
+    {
+        submenu->m_entries.back()->disable();
+    }
 
     BoolValue valShad("shadow_type");
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADOW_TYPE), valShad));
@@ -332,7 +342,10 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     valShadS.add(language->get(TEXT_LOW));
     valShadS.add(language->get(TEXT_MEDIUM));
     valShadS.add(language->get(TEXT_HIGH));
-    valShadS.add(language->get(TEXT_NOT_SUPPORTED));
+    if (Video::instance->m_haveShadows == false)
+    {
+        valShadS.add(language->get(TEXT_NOT_SUPPORTED));
+    }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADOWMAP_SIZE), valShadS));
 
     Value valGD("grass_density");

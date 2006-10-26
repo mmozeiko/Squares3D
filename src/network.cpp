@@ -363,8 +363,8 @@ Profile* Network::getRandomAI()
     int i, k;
     while (found)
     {
-        i = Random::getIntN(3);
-        k = Random::getIntN(static_cast<int>(m_allProfiles[i].size()));
+        i = Randoms::getIntN(3);
+        k = Randoms::getIntN(static_cast<int>(m_allProfiles[i].size()));
         found = foundIn(m_profiles, m_allProfiles[i][k]);
     }
     return m_allProfiles[i][k];

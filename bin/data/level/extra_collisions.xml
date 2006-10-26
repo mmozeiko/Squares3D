@@ -1,0 +1,43 @@
+<xml>
+    <collisions>
+        <!-- pleijeri -->
+
+        <collision id="player_small" type="sphere" mass="10.0" material="penguin" property="player">
+            <radius   x="0.25"  y="0.25" z="0.5" />
+            <rotation x="-90.0" y="0.0"  z="0.0" />
+        </collision>
+
+        <collision id="player_thin" type="sphere" mass="10.0" material="penguin" property="player">
+            <radius   x="0.22"  y="0.22" z="0.6" />
+            <rotation x="-90.0" y="0.0"  z="0.0" />
+        </collision>
+        
+        <collision id="Dmitry" type="sphere" mass="10.0" material="penguin" property="player">
+            <radius   x="0.35"  y="0.35" z="0.5" />
+            <rotation x="-90.0" y="0.0"  z="0.0" />
+        </collision>
+
+        <collision id="level" type="heightmap">
+            <heightmap size="40.0" name="extra" material="wood" repeat="26.0" />
+        </collision>
+
+        <collision id="restSeatFoot1" type="box" mass="40.0" material="wood">
+            <size x="0.5" y="0.3" z="0.5"/>
+            <offset x="0.75" y="0.3" z="0.0" />
+        </collision>
+        <collision id="restSeatFoot2" type="box" mass="40.0" material="wood">
+            <size x="0.5" y="0.3" z="0.5"/>
+            <offset x="-0.75" y="0.3" z="0.0" />
+        </collision>
+        <collision id="restSeatPlank" type="box" mass="50.0" material="wood">
+            <size x="2.0" y="0.1" z="0.5"/>
+            <offset x="0.0" y="0.5" z="0.0" />
+        </collision>
+        <collision id="smallLegForPlayer_Small" type="sphere" mass="400.0" material="wood">
+            <radius x="0.1"  y="0.05" z="0.1" />
+            <offset x="0.0" y="-0.45" z="0.0" />
+        </collision>
+
+    </collisions>
+</xml>
+

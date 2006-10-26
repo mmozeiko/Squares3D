@@ -15,19 +15,14 @@ Nospiediet ESCAPE, lai turpinātu
 
 Nospiediet ENTER, lai izietu uz galveno izvēlni..
     </item>
-    <item name="CONTINUE">
-Apsveicam, jūs esat izgājuši šo raundu!
-
-Nospiediet ENTER, lai turpinātu nākamo..
-    </item>
     <item name="RESTART">
 Jūs zaudējāt šo spēli..
 
 Piespiediet ENTER, lai mēģinātu vēlreiz..
     </item>
     <!-- Main menu -->
+    <item name="START_SINGLEPLAYER"       value="Sākt Spēli"/>
     <item name="MAIN_MENU"                value="Galvenā Izvēlne"/>
-    <item name="START_GAME"               value="Sākt Spēli"/>
     <item name="PLAYER_OPTIONS"           value="Spēlētāja Uzstādījumi"/>
     <item name="OPTIONS"                  value="Uzstādījumi"/>
     <item name="AUDIO_OPTIONS"            value="Skaņas Uzstādījumi"/>

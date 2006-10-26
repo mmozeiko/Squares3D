@@ -1,5 +1,5 @@
 #if defined(WIN32)
-#define WIN32_LEAN_AND_MEANs
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #elif defined(__APPLE__)
 #include <Carbon/Carbon.h>
@@ -26,7 +26,7 @@ int main(int, char* argv[])
 
     clog << "Started: " << getDateTime() << endl;
 
-    Random::init();
+    Randoms::init();
 
     try
     {
@@ -51,9 +51,10 @@ int main(int, char* argv[])
 #if defined(WIN32)
             MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
 #elif defined(__APPLE__)
-            string err(" Exception occured (for details see log.txt file)";
+            string err(" Exception occured (for details see log.txt file");
             err[0] = static_cast<char>(err.size());
-            StandardAlert(kAlertStopAlert, err.c_str(), null, null, kAlertStdAlertOKButton);
+            short x;
+            StandardAlert(kAlertStopAlert, err.c_str(), null, null, &x);
 #else
             std::cout << "Exception occured (for details see log.txt file):" << endl << exception << endl;
 #endif
@@ -67,9 +68,10 @@ int main(int, char* argv[])
 #ifdef WIN32
          MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
 #elif defined(__APPLE__)
-            string err(" Exception occured (for details see log.txt file)";
+            string err(" Exception occured (for details see log.txt file");
             err[0] = static_cast<char>(err.size());
-            StandardAlert(kAlertStopAlert, err.c_str(), null, null, kAlertStdAlertOKButton);
+            short x;
+            StandardAlert(kAlertStopAlert, err.c_str(), null, null, &x);
 #else
             std::cout << "Exception occured (for details see log.txt file):" << endl << exception << endl;
 #endif

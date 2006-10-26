@@ -8,8 +8,10 @@
 #include "body.h"
 #include "properties.h"
 #include "profile.h"
+#include "music.h"
+#include "audio.h"
 
-Level::Level() : m_gravity(0.0f, -9.81f, 0.0f)
+Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_music(NULL)
 {
     m_properties = new Properties();
 }
@@ -46,6 +48,10 @@ void Level::load(const string& levelFile, StringSet& loaded)
         if (node.name == "gravity")
         {
             m_gravity = node.getAttributesInVector("xyz");
+        }
+        else if (node.name == "music")
+        {
+            m_music = Audio::instance->loadMusic(node.getAttribute("name"));
         }
         else if (node.name == "link")
         {
@@ -174,6 +180,12 @@ Level::~Level()
         delete iter->second;
     }
     delete m_properties;
+
+    if (m_music != NULL)
+    {
+        m_music->stop();
+        Audio::instance->unloadMusic(m_music);
+    }
 }
 
 Body* Level::getBody(const string& id) const

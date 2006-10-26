@@ -12,6 +12,7 @@ enum TextType
     TEXT_EASY,
     TEXT_NORMAL,
     TEXT_HARD,
+    TEXT_EXTRA,
     TEXT_MAIN_MENU,
     TEXT_OPTIONS,
     TEXT_AUDIO_OPTIONS,

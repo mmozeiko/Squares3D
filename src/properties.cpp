@@ -283,7 +283,7 @@ const SoundBuffer* Properties::getSB(int id0, int id1) const
         const SoundBufferVector& vec = iter->second;
         if (vec.size() > 0)
         {
-            int r = Random::getIntN(static_cast<int>(vec.size()));
+            int r = Randoms::getIntN(static_cast<int>(vec.size()));
             return vec[r];
         }
     }

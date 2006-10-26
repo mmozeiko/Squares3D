@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-namespace Random
+namespace Randoms
 {
     void init();
 

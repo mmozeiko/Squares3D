@@ -39,7 +39,6 @@ public:
     void render() const;
     State::Type progress();
 
-    Music*           m_music;
     Camera*          m_camera;
     SkyBox*          m_skybox;
     Grass*           m_grass;

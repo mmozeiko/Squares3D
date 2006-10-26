@@ -66,7 +66,7 @@ void AiPlayer::control()
             dir.magnitude() < 1.0f &&       // and ball is nearby
             (ball->getVelocity().y > 0 || ball->getPosition().y > m_radius*2) &&    // and ball is going upwards or is above gurkjis
             ball->getPosition().y > 0.3f && // and ball is flying 
-            Random::getFloat() < m_jumpCoefficient // and very probable random
+            Randoms::getFloat() < m_jumpCoefficient // and very probable random
             )
         {
             setJump(true);
@@ -78,8 +78,8 @@ void AiPlayer::control()
 
         const float acc = 1.0f / m_accuracyCoefficient;
 
-        float r1 = acc*Random::getFloat() - acc/2.0f;
-        float r2 = acc*Random::getFloat() - acc/2.0f;
+        float r1 = acc*Randoms::getFloat() - acc/2.0f;
+        float r2 = acc*Randoms::getFloat() - acc/2.0f;
         dir += Vector(r1, 0.0f, r2);
         dir.y = 0;
         dir.norm();

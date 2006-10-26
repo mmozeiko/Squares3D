@@ -91,7 +91,7 @@ State::Type World::progress()
                 {
                     if (m_referee->getLoserName() != m_userProfile->m_name) 
                     {
-                        if ((m_current == m_unlockable) && (m_unlockable < 4))
+                        if ((m_current == m_unlockable) && (m_unlockable < 3))
                         {
                             m_unlockable++;
                         }
@@ -148,7 +148,6 @@ State::Type World::progress()
 }
 
 World::World(Profile* userProfile, int& unlockable, int current) :
-    m_music(NULL),
     m_camera(NULL),
     m_skybox(NULL),
     m_grass(NULL),
@@ -183,8 +182,6 @@ void World::init()
         delete m_messages;
         delete m_scoreBoard;
 
-        m_music->stop();
-        Audio::instance->unloadMusic(m_music);
 
         for each_const(vector<Player*>, m_localPlayers, iter)
         {
@@ -202,7 +199,6 @@ void World::init()
         m_messages = NULL;
         m_scoreBoard = NULL;
 
-        m_music = NULL;
         m_ball = NULL;
         m_referee = NULL;
         m_level = NULL;
@@ -217,14 +213,16 @@ void World::init()
     // enable some Newton optimization
     NewtonSetSolverModel(m_newtonWorld, 1);
     
-    m_music = Audio::instance->loadMusic("music");
-
     m_level = new Level();
 
     StringSet tmp;
-    m_level->load("level.xml", tmp);
+    m_level->load( ( m_current < 3 ? "world.xml" : "extra.xml" ), tmp);
     m_grass = new Grass(m_level);
-    makeFence(m_level, m_newtonWorld);
+    
+    if (m_level->m_fences.empty() == false)
+    {
+        makeFence(m_level, m_newtonWorld);
+    }
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
@@ -272,7 +270,11 @@ void World::init()
 
     m_scoreBoard->reset();
     Input::instance->startKeyBuffer();
-    //m_music->play();
+
+    if (m_level->m_music != NULL)
+    {
+        m_level->m_music->play();
+    }
 
     Network::instance->iAmReady();
 
@@ -308,9 +310,6 @@ World::~World()
     {
         delete m_grass;
     }
-
-    m_music->stop();
-    Audio::instance->unloadMusic(m_music);
 
     for each_const(vector<Player*>, m_localPlayers, iter)
     {

@@ -16,6 +16,7 @@ Language::Language()
     REGISTER_TEXT_TYPE(EASY);
     REGISTER_TEXT_TYPE(NORMAL);
     REGISTER_TEXT_TYPE(HARD);
+    REGISTER_TEXT_TYPE(EXTRA);
     REGISTER_TEXT_TYPE(FPS_DISPLAY);
     REGISTER_TEXT_TYPE(GAME_OVER);
     REGISTER_TEXT_TYPE(PLAYER_KICKS_OUT_BALL);
@@ -217,7 +218,7 @@ int Language::load(const string& name)
 
 static bool isLegalUTF8(const string& source, size_t start, size_t length)
 {
-#ifdef __APPLE__
+#if 1 || defined(__APPLE__)
     return true;
 #else
     unsigned char a;
@@ -227,11 +228,11 @@ static bool isLegalUTF8(const string& source, size_t start, size_t length)
         default: return false;
         /* Everything else falls through when "true"... */
         case 4:
-            if ((a = (unsigned char)source[--start]) < 0x80 || a > 0xBF) return false;
+            if ((a = source[--start]) < 0x80 || a > 0xBF) return false;
         case 3:
-            if ((a = (unsigned char)source[--start]) < 0x80 || a > 0xBF) return false;
+            if ((a = source[--start]) < 0x80 || a > 0xBF) return false;
         case 2:
-            if ((a = (unsigned char)source[--start]) > 0xBF) return false;
+            if ((a = source[--start]) > 0xBF) return false;
 
             switch ((unsigned char)source[start])
             {
@@ -287,6 +288,7 @@ wstring UTF8_to_UCS2(const string& str)
         if (! isLegalUTF8(str, i, extraBytesToRead+1))
         {
             // illegal UTF-8 character
+            clog << "Illegan UTF-8!" << endl;
             break;
         }
         /*

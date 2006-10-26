@@ -1,5 +1,5 @@
 #if WIN32
-    #define VC_EXTRALEAN
+    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     #include <wincrypt.h>
 #else
@@ -105,7 +105,7 @@ inline unsigned int hash(const time_t& t, const clock_t& c)
     return h1 ^ h2;
 }
 
-void Random::init()
+void Randoms::init()
 {
     clog << "Initializing random seed." << endl;
 
@@ -141,7 +141,7 @@ void Random::init()
     }
 }
 
-unsigned int Random::getInt()
+unsigned int Randoms::getInt()
 {
     if (left == 0) reload();
     --left;
@@ -153,11 +153,11 @@ unsigned int Random::getInt()
     return s1 ^ (s1 >> 18);
 }
 
-unsigned int Random::getIntN(unsigned int n)
+unsigned int Randoms::getIntN(unsigned int n)
 {
     if (n==0)
     {
-        return 0;
+        return getInt();
     }
 
     unsigned int used = n;
@@ -175,12 +175,12 @@ unsigned int Random::getIntN(unsigned int n)
     return i;
 }
 
-float Random::getFloat()
+float Randoms::getFloat()
 {
     return getInt() * (1.0f / 4294967295.0f);
 }
 
-float Random::getFloatN(float n)
+float Randoms::getFloatN(float n)
 {
     return getFloat() * n;
 }

@@ -83,10 +83,10 @@ elif p == "posix":
     env.Append( CXXFLAGS  = ["-O2"] )
     env.Append( CXXFLAGS  = ["-DNDEBUG"] )
 
-  env.Append( CXXFLAGS  = ["-fpermissive"] )
-
     postfix = ""
     builddir = "Release"
+
+  env.Append( CXXFLAGS  = ["-fpermissive"] )
 
   additional = []
 

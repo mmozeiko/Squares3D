@@ -1,0 +1,15 @@
+<xml>
+    <gravity x="0.0" y="-9.81" z="0.0"/>
+    <music name="world"/>
+
+    <link file="common_materials.xml"/>
+    <link file="common_properties.xml"/>
+
+    <link file="world_collisions.xml"/>
+    <link file="world_bodies.xml"/>
+    <link file="world_fences.xml"/>
+
+    <link file="object_football.xml"/>
+    <link file="object_field.xml"/>
+
+</xml>

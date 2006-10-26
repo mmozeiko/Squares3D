@@ -11,6 +11,7 @@ class Properties;
 class Collision;
 class Body;
 class Profile;
+class Music;
 struct Face;
 
 typedef map<string, Material*>        MaterialsMap;
@@ -38,6 +39,7 @@ public:
     MaterialsMap    m_materials;
     Properties*     m_properties;
     FencesVector    m_fences;
+    Music*          m_music;
 };
 
 

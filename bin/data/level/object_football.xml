@@ -1,0 +1,17 @@
+<xml>
+
+    <collisions>
+        <collision id="football" type="sphere" mass="1.0" material="football" property="football">
+            <radius x="0.2" y="0.2" z="0.2" />
+        </collision>
+    </collisions>
+
+    <bodies>
+        <body id="football" soundable="1" important="1">
+            <position x="0.0" y="0.5" z="0.0" />
+            <rotation x="0.0" y="0.0" z="0.0" />
+            <collision>football</collision>
+        </body>  
+    </bodies>
+
+</xml>

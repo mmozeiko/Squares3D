@@ -40,7 +40,7 @@ public:
     Input*      m_input;
     //
 
-    ProfilesVector  m_cpuProfiles[3];
+    ProfilesVector  m_cpuProfiles[4];
     Profile*        m_userProfile;    
 
 private:

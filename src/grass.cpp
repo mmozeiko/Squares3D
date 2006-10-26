@@ -33,12 +33,12 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_gras
         float area = areaV.magnitude();
         float count = grass_density * area;
 
-        if (count >= 1.0f || (count < 1.0f && Random::getFloat() < count))
+        if (count >= 1.0f || (count < 1.0f && Randoms::getFloat() < count))
         {
             for (int n = 0; n < count; n++)
             {
-                float s = Random::getFloat();
-                float t = Random::getFloat();
+                float s = Randoms::getFloat();
+                float t = Randoms::getFloat();
                 
                 // mapping from [0,1]x[0,1] square to triangle
                 t = sqrt(t);
@@ -51,7 +51,7 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_gras
                 if (!(isPointInRectangle(v, lower, upper)))
                 {
 
-                    Matrix trM = Matrix::translate(v) * Matrix::rotateY(Random::getFloatN(2*M_PI));
+                    Matrix trM = Matrix::translate(v) * Matrix::rotateY(Randoms::getFloatN(2*M_PI));
 
                     vector<GrassFace>* faces;
                     if (isPointInRectangle(v, g_fieldLower, g_fieldUpper))

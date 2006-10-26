@@ -1,0 +1,14 @@
+<xml>
+    <gravity x="0.0" y="-6.81" z="0.0"/>
+    <!--music name="extra"/-->
+
+    <link file="common_materials.xml"/>
+    <link file="common_properties.xml"/>
+
+    <link file="extra_collisions.xml"/>
+    <link file="extra_bodies.xml"/>
+
+    <link file="object_football.xml"/>
+    <link file="object_field.xml"/>
+
+</xml>

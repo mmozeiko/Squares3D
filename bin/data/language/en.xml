@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml>
+    <!-- Ingame texts -->
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
     <item name="GAME_OVER"             value="Game has ended!"/>
     <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
@@ -26,16 +27,26 @@ You`ve lost the game..
 
 Press ENTER to return to retry..
     </item>
-    
+    <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
+
     <!-- Main menu -->
     <item name="MAIN_MENU"                value="Main Menu"/>
     <item name="START_SINGLEPLAYER"       value="Start Singleplayer"/>
+    <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
+    <item name="PLAYER_OPTIONS"           value="Player Options"/>
+    <item name="OPTIONS"                  value="Options"/>
+    <item name="CREDITS"                  value="Credits"/>
+    <item name="QUIT_GAME"                value="Quit Game"/>
+
+    <item name="BACK"                     value="Back"/>
+
+    <!-- Singleplayer menu -->
     <item name="EASY"                     value="Easy Level"/>
     <item name="NORMAL"                   value="Normal Level"/>
     <item name="HARD"                     value="Hard Level"/>
+    <item name="EXTRA"                    value="Extra Level"/>
 
-    <!-- Network menu -->
-    <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
+    <!-- Multiplayer menu -->
     <item name="START_HOST"               value="Host New Game"/>
     <item name="START_JOIN"               value="Join Game"/>
     <item name="BEGIN_GAME"               value="Start Game"/>
@@ -47,17 +58,16 @@ Press ENTER to return to retry..
     <item name="LOCAL_PLAYER"             value=" (Local)"/>
     <item name="CPU_PLAYER"               value=" (CPU)"/>
     <item name="REMOTE_PLAYER"            value=" (Remote)"/>
-    <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
 
-    <item name="PLAYER_OPTIONS"           value="Player Options"/>
-    <item name="OPTIONS"                  value="Options"/>
+    <!-- Player options -->
+    <item name="NAME"                     value="Name"/>
+    <item name="COLOR"                    value="Color"/>
+
+    <!-- Options menu -->
     <item name="AUDIO_OPTIONS"            value="Audio Options"/>
     <item name="VIDEO_OPTIONS"            value="Video Options"/>
     <item name="VIDEO_OPTIONS_ADVANCED"   value="Advanced Video Options"/>
     <item name="OTHER_OPTIONS"            value="Other Options"/>
-    <item name="CREDITS"                  value="Credits"/>
-    <item name="QUIT_GAME"                value="Quit Game"/>
-    <item name="BACK"                     value="Back"/>
     <item name="SAVE"                     value="Apply Settings"/>
                                        
     <!-- Options -->                   
@@ -75,20 +85,16 @@ Press ENTER to return to retry..
     <item name="TERRAIN_DETAIL"           value="Terrain Detail"/>
     <item name="ENVIRONMENT_DETAILS"      value="Environmental Details"/>
                                        
-                                       
     <item name="LOW"                      value="Low"/>
     <item name="MEDIUM"                   value="Medium"/>
     <item name="HIGH"                     value="High"/>
     <item name="CUSTOM"                   value="Custom"/>
     <item name="NOT_SUPPORTED"            value="Not Available"/>
                                        
-                                       
     <item name="AUDIO"                    value="Audio On"/>
     <item name="SYSTEM_KEYS"              value="System Keys"/>
     <item name="LANGUAGE"                 value="Language"/>
     <item name="MOUSE_SENSITIVITY"        value="Mouse Sensitivity"/>
-    <item name="NAME"                     value="Name"/>
-    <item name="COLOR"                    value="Color"/>
 
     <item name="MUSIC_VOL"                value="Music volume"/>
     <item name="SOUND_VOL"                value="Sound volume"/>

@@ -280,7 +280,7 @@ void Game::run()
     */
 
     clog << "Game finished... " << endl;
-    clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;
+    //clog << "Rendered " << fps.frames() << " frames in " << fps.time() << " seconds = " << fps.fps() << " FPS" << endl;
 }
 
 State* Game::switchState(const State::Type nextState)
@@ -336,7 +336,7 @@ void Game::loadUserData()
                         
                         m_unlockable = ((magic1 + magic2 + M1) ^ magic4) - magic3 - M2;
 
-                        if (m_unlockable < 0 || m_unlockable > 2)
+                        if (m_unlockable < 0 || m_unlockable > 3)
                         {
                             m_unlockable = 0;
                         }
@@ -388,9 +388,9 @@ void Game::saveUserData()
     XMLnode& other_data = xml.childs.back();
     other_data.childs.push_back(XMLnode("magic"));
     
-    unsigned int magic1 = Random::getInt();
-    unsigned int magic2 = Random::getInt();
-    unsigned int magic3 = Random::getInt();
+    unsigned int magic1 = Randoms::getInt();
+    unsigned int magic2 = Randoms::getInt();
+    unsigned int magic3 = Randoms::getInt();
     unsigned int magic4 = (magic1 + magic2 + M1) ^ (magic3 + static_cast<unsigned int>(m_unlockable) + M2);
     other_data.childs.back().setAttribute("magic1", cast<string>(magic1));
     other_data.childs.back().setAttribute("magic2", cast<string>(magic2));
@@ -466,4 +466,6 @@ void Game::loadCpuData()
             throw Exception("Invalid cpu_profiles, there should be at least 3 profiles in each difficulty");
         }
     }
+
+    m_cpuProfiles[3] = m_cpuProfiles[2];
 }

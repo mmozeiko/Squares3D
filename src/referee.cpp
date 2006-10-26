@@ -198,7 +198,7 @@ void Referee::releaseCpuPlayers()
 
 void Referee::resetBall()
 {
-    float random = static_cast<float>(Random::getIntN(2) + 1) / 50;
+    float random = static_cast<float>(Randoms::getIntN(2) + 1) / 50;
     Vector resetPosition(random, 1.8f, random);
     Vector velocity = Vector::Zero;
 
@@ -303,7 +303,7 @@ void Referee::processCriticalEvent()
             
         m_messages->add2D(new Message(overText, 
                                       Vector(center.x, center.y - (72 + 32), center.z), 
-                                      Grey, 
+                                      brighter(Grey, 3.0f), 
                                       Font::Align_Center,
                                       32));
         m_gameOver = true;
