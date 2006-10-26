@@ -95,9 +95,9 @@ void Submenu::center(const Vector& centerPos)
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
 
-    upperPos.y += m_height / 2 - static_cast<float>(m_entries.front()->m_font->getHeight(m_entries.front()->m_string)) / 2;
+    upperPos.y += m_height / 2;
 
-    m_upper.y = upperPos.y + m_entries.front()->m_font->getHeight(m_entries.front()->m_string);
+    m_upper.y = upperPos.y + m_entries.front()->m_font->getHeight();
 
     int maxX = 0;
         
@@ -105,7 +105,7 @@ void Submenu::center(const Vector& centerPos)
     {      
         Entry* entry = m_entries[i];
         entry->calculateBounds(upperPos);
-        upperPos.y -= (m_entries[i]->m_font->getHeight(m_entries[i]->m_string) - 2);
+        upperPos.y -= m_entries[i]->m_font->getHeight(m_entries[i]->m_string) - 2;
 
         int l = entry->getMaxLeftWidth();
         int r = entry->getMaxRightWidth();
@@ -126,7 +126,7 @@ void Submenu::center(const Vector& centerPos)
 
     m_upper.x = centerPos.x + maxX; //std::max(maxR, maxL);
     m_lower.x = centerPos.x - maxX; //std::max(maxR, maxL);
-    m_lower.y = upperPos.y + m_entries.back()->m_font->getHeight(m_entries.front()->m_string) - 2;
+    m_lower.y = m_upper.y  - m_height;
 }
 
 void Submenu::setTitle(const wstring& title, const Vector& position)
@@ -166,16 +166,14 @@ void Submenu::render() const
     glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
     Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_menu->m_font->getHeight()/2));
 
-    Vector upperPos = m_centerPos;
-    upperPos.y += m_height / 2 - static_cast<float>(m_entries.front()->m_font->getHeight(m_entries.front()->m_string)) / 2;
-
     for (size_t i = 0; i < m_entries.size(); i++)
     {
         Entry* entry = m_entries[i];
 
         glPushMatrix();
 
-        glTranslatef(upperPos.x, upperPos.y, upperPos.z);
+		glTranslatef(m_centerPos.x, entry->m_lowerLeft.z, m_centerPos.z);
+
         if (m_activeEntry == i)
         {
             glColor3fv(Yellow.v);              // active entry
@@ -195,7 +193,6 @@ void Submenu::render() const
         entry->render();
         glPopMatrix();
 
-        upperPos.y -= (entry->m_font->getHeight(entry->m_string) - 2);
     }
 
     if (!m_title.empty())

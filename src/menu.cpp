@@ -206,7 +206,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     submenu->setTitle(language->get(TEXT_CREDITS), titlePos);
 
-    submenu->addEntry(new LabelEntry(this, L"Martins Mozeiko\nKristaps Straupe\nMartin Offerman\nSome other fat dudeasdhajkshdkjahd\nhsdjkchskhdckhd", this->m_fontSmall));
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_CREDITS_SCREEN)));
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    

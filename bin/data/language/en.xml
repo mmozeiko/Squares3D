@@ -103,4 +103,17 @@ Press ENTER to return to retry..
     <item name="CYAN"                     value="Cyan"/>
     <item name="MAGENTA"                  value="Magenta"/>
     <item name="GREY"                     value="Grey"/>
+
+
+	<item name="CREDITS_SCREEN">
+__Programming__
+Martins Mozeiko
+Kristaps Straupe
+__Design__
+Martins Mozeiko
+Kristaps Straupe
+Atis Straujums
+__Sound__
+Martin Offerman
+	</item>
 </xml>
