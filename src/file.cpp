@@ -149,16 +149,8 @@ namespace File
         return static_cast<size_t>(result);
     }
 
-    void init(const char* argv0)
+    string getBase(const char* argv0, bool dirSep)
     {
-        clog << "Initializing filesystem." << endl;
-
-        if (PHYSFS_init(argv0)==0 ||
-            PHYSFS_setWriteDir(PHYSFS_getBaseDir())==0)
-        {
-            throw Exception(PHYSFS_getLastError());
-        }
-
         const string tmp(argv0);
         const string ds(PHYSFS_getDirSeparator());
         size_t idx = tmp.size()-1-ds.size();
@@ -178,18 +170,35 @@ namespace File
             }
             if (found)
             {
-                base = tmp.substr(0, idx) + ds;
+                base = tmp.substr(0, idx);
                 break;
             }
             idx--;
         }
+        return base + (dirSep ? ds : "");
+    }
 
-        if (PHYSFS_mount((base + "data.zip").c_str(), "/data", 1) == 0)
+    void init(const char* argv0)
+    {
+        clog << "Initializing filesystem." << endl;
+        clog << "Base directory: " << getBase(argv0) << endl;
+
+        if (PHYSFS_init(argv0)==0)
         {
             throw Exception(PHYSFS_getLastError());
         }
 
-        if (PHYSFS_mount(base.c_str(), "/", 0) == 0)
+        if (PHYSFS_setWriteDir(getBase(argv0).c_str())==0)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        if (PHYSFS_mount((getBase(argv0, true) + "data.zip").c_str(), "/data", 1) == 0)
+        {
+            throw Exception(PHYSFS_getLastError());
+        }
+
+        if (PHYSFS_mount(getBase(argv0).c_str(), "/", 0) == 0)
         {
             throw Exception(PHYSFS_getLastError());
         }

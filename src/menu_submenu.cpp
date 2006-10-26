@@ -87,7 +87,7 @@ Submenu::~Submenu()
 void Submenu::addEntry(Entry* entry)
 {
     m_entries.push_back(entry);
-    m_height += entry->getHeight() * (entry->m_font->getHeight(entry->m_string) + 2);
+    m_height += entry->m_font->getHeight(entry->m_string) + 2;
 }
 
 void Submenu::center(const Vector& centerPos)
@@ -95,7 +95,7 @@ void Submenu::center(const Vector& centerPos)
     m_centerPos = centerPos;
     Vector upperPos = centerPos;
 
-    upperPos.y += m_height / 2 - static_cast<float>(m_entries.front()->m_font->getHeight(m_entries.front()->m_string) / 2);
+    upperPos.y += m_height / 2 - static_cast<float>(m_entries.front()->m_font->getHeight(m_entries.front()->m_string)) / 2;
 
     m_upper.y = upperPos.y + m_entries.front()->m_font->getHeight(m_entries.front()->m_string);
 
@@ -105,8 +105,8 @@ void Submenu::center(const Vector& centerPos)
     {      
         Entry* entry = m_entries[i];
         entry->calculateBounds(upperPos);
-        upperPos.y -= entry->getHeight() * (m_entries[i]->m_font->getHeight(m_entries.front()->m_string) - 2);
-        
+        upperPos.y -= (m_entries[i]->m_font->getHeight(m_entries[i]->m_string) - 2);
+
         int l = entry->getMaxLeftWidth();
         int r = entry->getMaxRightWidth();
         if (l > maxX)
@@ -167,13 +167,14 @@ void Submenu::render() const
     Video::instance->renderRoundRect(m_lower, m_upper, static_cast<float>(m_menu->m_font->getHeight()/2));
 
     Vector upperPos = m_centerPos;
-    upperPos.y += m_height / 2 - static_cast<float>(m_menu->m_font->getHeight(m_entries.front()->m_string) / 2);
+    upperPos.y += m_height / 2 - static_cast<float>(m_entries.front()->m_font->getHeight(m_entries.front()->m_string)) / 2;
 
     for (size_t i = 0; i < m_entries.size(); i++)
     {
         Entry* entry = m_entries[i];
 
         glPushMatrix();
+
         glTranslatef(upperPos.x, upperPos.y, upperPos.z);
         if (m_activeEntry == i)
         {
@@ -193,7 +194,8 @@ void Submenu::render() const
         entry->m_font->begin2();
         entry->render();
         glPopMatrix();
-        upperPos.y -= entry->getHeight() * (entry->m_font->getHeight(entry->m_string) - 2);
+
+        upperPos.y -= (entry->m_font->getHeight(entry->m_string) - 2);
     }
 
     if (!m_title.empty())

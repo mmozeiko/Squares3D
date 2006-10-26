@@ -464,20 +464,21 @@ void World::render() const
             }
             const Font* font = m_messages->m_fonts.find(m->getFontSize())->second;
             font->begin();
-            const Vector& pos = m->getPosition();
-            int w = font->getWidth(m->getText());
-            int h = font->getHeight(m->getText());
-            
+            float w = static_cast<float>(font->getWidth(m->getText()));
+            float h = static_cast<float>(font->getHeight(m->getText()));
+
+            const Vector& pos = m->getPosition() - Vector(0.0f, h / 4, 0.0f);
+
             Vector lower = pos;
-            lower.x -= w/2;
-            lower.y -= 2*h;
+            lower.x -= w / 2;
+            lower.y -= h / 2;
 
             Vector upper = pos;
-            upper.x += w/2;
-            upper.y += h;
+            upper.x += w / 2;
+            upper.y +=  h / 2;
 
             glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-            Video::instance->renderRoundRect(lower, upper, static_cast<float>(h/2));
+            Video::instance->renderRoundRect(lower, upper, h / 4);
 
             font->end();
         }

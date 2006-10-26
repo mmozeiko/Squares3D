@@ -78,8 +78,8 @@ protected:
 class SubmenuEntry : public Entry
 {
 public: 
-    SubmenuEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo) :
-        Entry(menu, stringIn), m_submenuToSwitchTo(submenuToSwitchTo) {}
+    SubmenuEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo, const Font* font = NULL) :
+        Entry(menu, stringIn, font), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
     void click(int button); 
 
@@ -193,7 +193,7 @@ class LabelEntry : public Entry
 {
 public: 
     LabelEntry(Menu* menu, const wstring& label, const Font* font = NULL) :
-      Entry(menu, label, font) {}
+      Entry(menu, label, font) { m_enabled = false; }
 
     wstring getString() const;
     void click(int button) {}

@@ -178,6 +178,14 @@ int Language::load(const string& name)
         TextType type = txtIter->second;
         string value = (node.hasAttribute("value") ? node.getAttribute("value") : node.value);
         m_lang[type] = UTF8_to_UCS2(value);
+		wchar_t max = 0;
+		for (size_t t=0; t<m_lang[type].size(); t++)
+		{
+		  if (m_lang[type][t] > max)
+		  {
+		    max = m_lang[type][t];
+		  }
+		}
         count++;
     }
     
@@ -208,6 +216,9 @@ int Language::load(const string& name)
 
 static bool isLegalUTF8(const string& source, size_t start, size_t length)
 {
+#ifdef __APPLE__
+    return true;
+#else
     unsigned char a;
     start += length;
     switch (length)
@@ -215,13 +226,13 @@ static bool isLegalUTF8(const string& source, size_t start, size_t length)
         default: return false;
         /* Everything else falls through when "true"... */
         case 4:
-            if ((a = source[--start]) < 0x80 || a > 0xBF) return false;
+            if ((a = (unsigned char)source[--start]) < 0x80 || a > 0xBF) return false;
         case 3:
-            if ((a = source[--start]) < 0x80 || a > 0xBF) return false;
+            if ((a = (unsigned char)source[--start]) < 0x80 || a > 0xBF) return false;
         case 2:
-            if ((a = source[--start]) > 0xBF) return false;
+            if ((a = (unsigned char)source[--start]) > 0xBF) return false;
 
-            switch (source[start])
+            switch ((unsigned char)source[start])
             {
                 /* no fall-through in this inner switch */
                 case 0xE0: if (a < 0xA0) return false; break;
@@ -236,8 +247,9 @@ static bool isLegalUTF8(const string& source, size_t start, size_t length)
                 static_cast<unsigned char>(source[start]) < 0xC2) return false;
     }
     
-    if (static_cast<unsigned char>(source[start]) > 0xF4) return false;
+    if (static_cast<unsigned int>(source[start]) > 0xF4) return false;
     return true;
+#endif
 }
 
 static const char trailingBytesForUTF8[] = {

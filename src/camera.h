@@ -19,7 +19,6 @@ public:
 
 private:
     Vector m_lastMouse;
-
     Vector m_targetRotation;
     Vector m_targetDirection;
 

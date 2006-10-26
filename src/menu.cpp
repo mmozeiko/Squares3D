@@ -74,7 +74,7 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     Input::instance->startButtonBuffer();
     Input::instance->startKeyBuffer();
     Input::instance->startCharBuffer();
-    glfwEnable(GLFW_MOUSE_CURSOR);
+    Input::instance->mouseVisible(true);
 
     m_soundOver = Audio::instance->loadSound("menu_over");
     m_soundClick = Audio::instance->loadSound("menu_click");
@@ -206,10 +206,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     submenu->setTitle(language->get(TEXT_CREDITS), titlePos);
 
-    submenu->addEntry(new LabelEntry(this, L"Martins Mozeiko", this->m_fontSmall));
-    submenu->addEntry(new LabelEntry(this, L"Kristaps Straupe", this->m_fontSmall));
-    submenu->addEntry(new LabelEntry(this, L"Martin Offerman", this->m_fontSmall));
-    submenu->addEntry(new LabelEntry(this, L"Some other fat dudeasdhajkshdkjahd\nhsdjkchskhdckhd", this->m_fontSmall));
+    submenu->addEntry(new LabelEntry(this, L"Martins Mozeiko\nKristaps Straupe\nMartin Offerman\nSome other fat dudeasdhajkshdkjahd\nhsdjkchskhdckhd", this->m_fontSmall));
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
@@ -453,7 +450,7 @@ Menu::~Menu()
     Audio::instance->unloadSound(m_soundChange);
     Audio::instance->unloadMusic(m_music);
 
-    glfwDisable(GLFW_MOUSE_CURSOR);
+    Input::instance->mouseVisible(false);
     Input::instance->endKeyBuffer();
     Input::instance->endCharBuffer();
     Input::instance->endButtonBuffer();

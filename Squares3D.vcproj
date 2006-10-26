@@ -906,18 +906,6 @@
 				>
 			</File>
 			<Filter
-				Name="shaders"
-				>
-				<File
-					RelativePath=".\bin\data\shaders\bump.fp"
-					>
-				</File>
-				<File
-					RelativePath=".\bin\data\shaders\bump.vp"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="level"
 				>
 				<File

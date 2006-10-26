@@ -7,6 +7,8 @@
 
 namespace File
 {
+    string getBase(const char* argv0, bool dirSep = false);
+
     void init(const char* argv0);
     void done();
     bool exists(const string& filename);

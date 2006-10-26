@@ -25,18 +25,18 @@ void LocalPlayer::control()
         setDirection(Vector::Zero);
         return;
     }
-
     Vector direction = curMouse - m_lastMouse;
 
     direction.z = -direction.z;
     direction /= 8.9f;
 
-    direction = 0.7f * direction + 0.2f * m_lastMove[1] + 0.1f * m_lastMove[0];
+    direction = 0.8f * direction + 0.15f * m_lastMove[1] + 0.05f * m_lastMove[0];
 
     m_lastMove[0] = m_lastMove[1];
     m_lastMove[1] = direction;
+
     m_lastMouse = curMouse;
-    
+
     //this disables acceleration
     //direction.norm();
 

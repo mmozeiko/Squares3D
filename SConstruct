@@ -60,6 +60,34 @@ elif p == "darwin":
     postfix = ""
     builddir = "Release"
 
+  env.Append( CXXFLAGS  = ["-fpermissive"] )
+
+  additional = []
+
+  removeMMGR = True
+
+elif p == "posix":
+
+  env = Environment( tools = ["g++", "ar", "link"], ENV = os.environ )
+  env.Append( LIBS = Split("Newton") )
+  env.Append( LIBS = Split("GLU GL X11 openal") )
+
+  if isdebug:
+    env.Append( CXXFLAGS   = ["-O0", "-g"] )
+    env.Append( CXXFLAGS   = ["-D_DEBUG"] )
+
+    postfix = "_d"
+    builddir = "Debug"
+
+  else:
+    env.Append( CXXFLAGS  = ["-O2"] )
+    env.Append( CXXFLAGS  = ["-DNDEBUG"] )
+
+  env.Append( CXXFLAGS  = ["-fpermissive"] )
+
+    postfix = ""
+    builddir = "Release"
+
   additional = []
 
   removeMMGR = True

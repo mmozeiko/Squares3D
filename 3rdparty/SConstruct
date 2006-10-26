@@ -46,6 +46,27 @@ elif p == "darwin":
 
   additional = []
 
+elif p == "posix":
+
+  env = Environment( tools = ["gcc", "ar", "link"], ENV = os.environ)
+  env.Append( CPPDEFINES = ["_LIB"] )
+
+  if isdebug:
+    env.Append( CCFLAGS   = ["-O0", "-g"] )
+    env.Append( CPPDEFINES = ["_DEBUG"] )
+
+    postfix = "_d"
+    builddir = "Debug"
+
+  else:
+    env.Append( CCFLAGS   = ["-O2"] )
+    env.Append( CPPDEFINES = ["NDEBUG"] )
+
+    postfix = ""
+    builddir = "Release"
+
+  additional = []
+
 else:
   raise "Not Implemented!"
 

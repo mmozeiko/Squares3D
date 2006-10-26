@@ -9,6 +9,7 @@
 #include "texture.h"
 #include "geometry.h"
 #include "collision.h"
+#include "input.h"
 
 static const int CIRCLE_DIVISIONS = 12;
 
@@ -37,11 +38,6 @@ Video::Video() :
     setInstance(this);
 
     clog << "Initializing video." << endl;
-
-    if (glfwInit() != GL_TRUE)
-    {
-        throw Exception("glfwInit failed");
-    }
 
     int width = Config::instance->m_video.width;;
     int height = Config::instance->m_video.height;
@@ -123,7 +119,7 @@ Video::Video() :
     }
 
     glfwDisable(GLFW_KEY_REPEAT);
-    glfwDisable(GLFW_MOUSE_CURSOR);
+    Input::instance->mouseVisible(false);
 
     loadExtensions();
  
@@ -158,7 +154,6 @@ Video::~Video()
     m_lists.clear();
 
     glfwCloseWindow();
-    glfwTerminate();
 }
 
 void Video::init()

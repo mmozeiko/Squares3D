@@ -16,10 +16,13 @@ public:
     Input();
     ~Input();
 
+    void init();
     void update();
 
     bool  key(int key) const;
     const Mouse& mouse() const;
+
+    void mouseVisible(bool visible);
 
     void startKeyBuffer();
     void endKeyBuffer();
@@ -39,6 +42,10 @@ public:
     void addButton(int b);
 
 private:
+    bool    m_mouseVisible;
+    int     m_mouseMiddleX;
+    int     m_mouseMiddleY;
+	Mouse   m_last;
     Mouse   m_mouse;
     IntList m_keyBuffer;
     IntList m_charBuffer;

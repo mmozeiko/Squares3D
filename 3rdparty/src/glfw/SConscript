@@ -18,7 +18,6 @@ if p == "win32":
 
 elif p=="darwin":
   platformdir = "macosx"
-  e.Append( CCFLAGS = ["-msse2"] )
 
 elif p=="posix":
   platformdir = "x11"

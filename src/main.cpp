@@ -3,6 +3,7 @@
 #include <windows.h>
 #endif
 
+#include <GL/glfw.h>
 #include <fstream>
 
 #include "common.h"
@@ -15,8 +16,8 @@
 int main(int, char* argv[])
 {
 #ifdef NDEBUG
-    std::ofstream log("log.txt");
-    clog.rdbuf(log.rdbuf());
+    std::ofstream log((File::getBase(argv[0], true) +  "log.txt").c_str());
+    std::streambuf* old_clog = clog.rdbuf(log.rdbuf());
 #endif
 
     clog << "*** Squares 3D version: " << g_version << " ***" << endl;
@@ -30,11 +31,16 @@ int main(int, char* argv[])
         File::init(argv[0]);
         try
         {
+            if (glfwInit() != GL_TRUE)  // MacOSX bug!!
+            {
+                throw Exception("glfwInit failed");
+            }
             do
             {
                 Game().run();
             }
             while (g_needsToReload);
+            glfwTerminate(); // MacOSX bug!!
         }
         catch (string& exception)
         {
@@ -61,5 +67,10 @@ int main(int, char* argv[])
     m_dumpMemoryReport();
 #endif
     
+#ifdef NDEBUG
+    clog.rdbuf(old_clog);
+    log.close();
+#endif
+
     return 0;
 }

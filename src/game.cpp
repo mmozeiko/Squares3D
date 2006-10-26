@@ -44,11 +44,12 @@ Game::Game() :
     // these and only these objects are singletons,
     // they all have public static instance attribute
     m_config = new Config();
+    m_input = new Input();
     m_language = new Language();
     m_video = new Video();
     m_audio = new Audio();
     m_network = new Network();
-    m_input = new Input();
+	m_input->init();
     //
 
     loadUserData();
@@ -89,11 +90,11 @@ Game::~Game()
         delete m_state;
     }
 
-    delete m_input;
     delete m_network;
     delete m_audio;
     delete m_video;
     delete m_language;
+    delete m_input;
     delete m_config;
 }
 

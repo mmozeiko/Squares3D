@@ -22,9 +22,10 @@ Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_defAngleX(angleX * DEG_IN_RAD),
     m_defAngleY(angleY * DEG_IN_RAD)
 {
-    int w, h; 
-    glfwGetWindowSize(&w, &h);
-    m_lastMouse = Vector(static_cast<float>(w/2), static_cast<float>(h/2), static_cast<float>(glfwGetMouseWheel()));
+    //int w, h; 
+    //glfwGetWindowSize(&w, &h);
+	const Mouse& mouse = Input::instance->mouse();
+    m_lastMouse = Vector(mouse.x, mouse.y, mouse.z) ; //static_cast<float>(w/2), static_cast<float>(h/2), static_cast<float>(glfwGetMouseWheel()));
 }
 
 Camera::~Camera()
@@ -41,7 +42,7 @@ void Camera::control()
 
     if (m_lastDown == false && (mouse.b & 2) == 2)
     {
-        m_lastMouse = Vector(static_cast<float>(mouse.x/2), static_cast<float>(mouse.y/2), static_cast<float>(mouse.z/2));
+        m_lastMouse = Vector(static_cast<float>(mouse.x), static_cast<float>(mouse.y), static_cast<float>(mouse.z));
         m_lastDown = true;
     }
     if (m_lastDown == true && (mouse.b & 2) == 0)
@@ -51,7 +52,7 @@ void Camera::control()
 
     if ((mouse.b & 2) == 2)
     {
-        Vector newMouse(static_cast<float>(mouse.x/2), static_cast<float>(mouse.y/2), static_cast<float>(mouse.z/2));
+        Vector newMouse(static_cast<float>(mouse.x), static_cast<float>(mouse.y), static_cast<float>(mouse.z));
         Vector delta  = newMouse - m_lastMouse;
 
         m_targetRotation.y = delta.x;

@@ -2,17 +2,9 @@
 
 template <class Input> Input* System<Input>::instance = NULL;
 
-Input::Input() : m_mouse(), m_keyBuffer(), m_charBuffer(), m_buttonBuffer()
+Input::Input() : m_mouseVisible(true), m_mouse(), m_keyBuffer(), m_charBuffer(), m_buttonBuffer()
 {
     clog << "Initializing input... " << endl;
-
-    glfwGetWindowSize(&m_mouse.x, &m_mouse.y);
-    m_mouse.x /= 2;
-    m_mouse.y /= 2;
-    m_mouse.z = 0;
-
-    glfwSetMousePos(m_mouse.x, m_mouse.y);
-    glfwSetMouseWheel(0);
 }
 
 Input::~Input()
@@ -20,10 +12,48 @@ Input::~Input()
     clog << "Closing input." << endl;
 }
 
+void Input::init()
+{
+    glfwGetWindowSize(&m_mouse.x, &m_mouse.y);
+    m_mouse.x /= 2;
+    m_mouse.y /= 2;
+    m_mouse.z = 0;
+
+    m_mouseMiddleX = m_mouse.x;
+    m_mouseMiddleY = m_mouse.y;
+
+    glfwSetMousePos(m_mouse.x, m_mouse.y);
+    glfwSetMouseWheel(0);
+}
+
+void Input::mouseVisible(bool visible)
+{
+    if (visible)
+    {
+        glfwEnable(GLFW_MOUSE_CURSOR);
+        //glfwSetMousePos(m_mouseMiddleX, m_mouseMiddleY);
+    }
+    else
+    {
+        glfwDisable(GLFW_MOUSE_CURSOR);
+        //glfwSetMousePos(0, 0); //m_mouseMiddleX, m_mouseMiddleY);
+    }
+    m_mouseVisible = visible;
+}
+
 void Input::update()
 {
     glfwGetMousePos(&m_mouse.x, &m_mouse.y);
     m_mouse.z = glfwGetMouseWheel();
+    if (m_mouseVisible == false)
+    {
+	    //int x = m_lastX;
+		//int y = m_lastY;
+        //clog << "MOUSE POS = " << m_mouse.x << ' ' << m_mouse.y << endl;
+		//m_mouse.x -= m_mouseMiddleX;
+        //m_mouse.y -= m_mouseMiddleY;
+        //glfwSetMousePos(0, 0); //m_mouseMiddleX, m_mouseMiddleY);
+    }
     
     m_mouse.b = 0;
     if (glfwGetMouseButton(GLFW_MOUSE_BUTTON_1))
