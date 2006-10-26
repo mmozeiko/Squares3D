@@ -36,7 +36,7 @@
 		</body>
 
         <body id="fir_tree_1">
-            <position x="-17.0" y="3.0" z="4.0"/>
+            <position x="-17.0" y="2.7" z="4.0"/>
             <collision>fir_bark</collision>
             <collision>fir_bottom</collision>
             <collision>fir_middle</collision>
@@ -53,15 +53,60 @@
 		</body>
 
 		<body id="fir_tree_3">
-			<position x="-17.0" y="2.7" z="-10.0"/>
-			<rotation x="0.0" y="0.0" z="-5.0"/>
+			<position x="-25.0" y="2.7" z="-11.0"/>
+			<rotation x="0.0" y="0.0" z="0.0"/>
 			<collision>fir_bark</collision>
 			<collision>fir_bottom</collision>
 			<collision>fir_middle</collision>
 			<collision>fir_top</collision>
 		</body>
-        
-        <body id="level">
+		
+		<body id="fir_tree_4">
+			<position x="-25.0" y="2.7" z="0.0"/>
+			<rotation x="0.0" y="0.0" z="0.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
+
+		<body id="fir_tree_5">
+			<position x="-25.0" y="2.7" z="6.0"/>
+			<rotation x="0.0" y="0.0" z="0.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
+
+		<body id="fir_tree_6">
+			<position x="-25.0" y="2.7" z="10.0"/>
+			<rotation x="0.0" y="0.0" z="0.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
+
+		<body id="fir_tree_7">
+			<position x="-25.0" y="2.7" z="-6.0"/>
+			<rotation x="0.0" y="0.0" z="0.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
+		
+		<body id="fir_tree_8">
+			<position x="-25.0" y="2.7" z="-17.0"/>
+			<rotation x="0.0" y="0.0" z="0.0"/>
+			<collision>fir_bark</collision>
+			<collision>fir_bottom</collision>
+			<collision>fir_middle</collision>
+			<collision>fir_top</collision>
+		</body>
+
+		<body id="level">
             <collision>level</collision>
         </body>
         

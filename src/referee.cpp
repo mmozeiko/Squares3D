@@ -105,7 +105,7 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_messages(messages),
     m_haltWait(3),
     m_playersAreHalted(false),
-    m_matchPoints(1),
+    m_matchPoints(21),
     m_sound(new Sound(true)),
     m_over(NULL)
 {
