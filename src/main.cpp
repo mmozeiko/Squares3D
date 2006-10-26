@@ -1,6 +1,8 @@
-#ifdef WIN32
-#define VC_EXTRALEAN
+#if defined(WIN32)
+#define WIN32_LEAN_AND_MEANs
 #include <windows.h>
+#elif defined(__APPLE__)
+#include <Carbon/Carbon.h>
 #endif
 
 #include <GL/glfw.h>
@@ -46,8 +48,14 @@ int main(int, char* argv[])
         {
             clog << "Exception occured :" << endl
                  << "  " << exception << endl;
-#ifdef WIN32
+#if defined(WIN32)
             MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
+#elif defined(__APPLE__)
+            string err(" Exception occured (for details see log.txt file)";
+            err[0] = static_cast<char>(err.size());
+            StandardAlert(kAlertStopAlert, err.c_str(), null, null, kAlertStdAlertOKButton);
+#else
+            std::cout << "Exception occured (for details see log.txt file):" << endl << exception << endl;
 #endif
         }
         File::done();
@@ -58,6 +66,12 @@ int main(int, char* argv[])
              << "  " << exception << endl;
 #ifdef WIN32
          MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
+#elif defined(__APPLE__)
+            string err(" Exception occured (for details see log.txt file)";
+            err[0] = static_cast<char>(err.size());
+            StandardAlert(kAlertStopAlert, err.c_str(), null, null, kAlertStdAlertOKButton);
+#else
+            std::cout << "Exception occured (for details see log.txt file):" << endl << exception << endl;
 #endif
     }
 

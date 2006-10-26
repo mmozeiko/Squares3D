@@ -22,10 +22,8 @@ Camera::Camera(const Vector& pos, float angleX, float angleY) :
     m_defAngleX(angleX * DEG_IN_RAD),
     m_defAngleY(angleY * DEG_IN_RAD)
 {
-    //int w, h; 
-    //glfwGetWindowSize(&w, &h);
 	const Mouse& mouse = Input::instance->mouse();
-    m_lastMouse = Vector(mouse.x, mouse.y, mouse.z) ; //static_cast<float>(w/2), static_cast<float>(h/2), static_cast<float>(glfwGetMouseWheel()));
+    m_lastMouse = Vector(static_cast<float>(mouse.x), static_cast<float>(mouse.y), static_cast<float>(mouse.z));
 }
 
 Camera::~Camera()
