@@ -67,7 +67,7 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_backGround->uv.push_back(UV(1.0f, 0.0f));
     m_backGround->uv.push_back(UV(1.0f, 1.0f));
 
-    m_backGroundTexture = Video::instance->loadTexture("paradise", false);
+    m_backGroundTexture = Video::instance->loadTexture("background", false);
     m_backGroundTexture->setFilter(Texture::Bilinear);
 
     loadMenu(userProfile, unlockable, current);
