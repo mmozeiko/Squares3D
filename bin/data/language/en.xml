@@ -22,6 +22,13 @@ Congratulations, You have cleared this difficulty level!
 
 Press ENTER to return to Main Menu..
     </item>
+    <item name="FINISHED_GAME">
+Congratulations, You have finished Extra level!
+Now you are The Ultimate Master of Squares.
+No one can defeat You anymore!
+Press ENTER to return to Main Menu..
+    </item>
+    REGISTER_TEXT_TYPE(
     <item name="RESTART">
 You`ve lost the game..
 
@@ -109,9 +116,15 @@ Press ENTER to return to retry..
     <item name="CYAN"                     value="Cyan"/>
     <item name="MAGENTA"                  value="Magenta"/>
     <item name="GREY"                     value="Grey"/>
+    
+    <!-- Languages, do not translate and do not put in other xml files!!! -->
+    <item name="LANG_ENGLISH" value="English"/>
+    <item name="LANG_LATVIAN" value="Latviešu"/>
+    <item name="LANG_RUSSIAN" value="Russkij"/>
+    <item name="LANG_GERMAN"  value="Deutchland"/>
 
 
-	<item name="CREDITS_SCREEN">
+    <item name="CREDITS_SCREEN">
 __Programming__
 Martins Mozeiko
 Kristaps Straupe

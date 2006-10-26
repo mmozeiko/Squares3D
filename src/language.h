@@ -8,6 +8,7 @@
 // remember to update in Language constructor
 enum TextType
 {
+    TEXT_FINISHED_GAME,
     TEXT_START_SINGLEPLAYER,
     TEXT_EASY,
     TEXT_NORMAL,
@@ -90,6 +91,11 @@ enum TextType
     TEXT_REMOTE_PLAYER,
     TEXT_WAIT_PLAYERS,
 	TEXT_CREDITS_SCREEN,
+
+    TEXT_LANG_ENGLISH,
+    TEXT_LANG_LATVIAN,
+    TEXT_LANG_RUSSIAN,
+    TEXT_LANG_GERMAN,
 
     TEXT_LAST_ONE, // THIS MUST BE TEH LAST ONE
 };

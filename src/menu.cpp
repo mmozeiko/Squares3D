@@ -410,9 +410,10 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->setTitle(language->get(TEXT_OTHER_OPTIONS), titlePos);
 
     Value valLang("language");
-    valLang.add(L"ENG");
-    valLang.add(L"LAT");
-    valLang.add(L"RUS");
+    valLang.add(language->get(TEXT_LANG_ENGLISH)); // remember to update in menu_options.cpp
+    valLang.add(language->get(TEXT_LANG_LATVIAN));
+    valLang.add(language->get(TEXT_LANG_RUSSIAN));
+    valLang.add(language->get(TEXT_LANG_GERMAN));
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_LANGUAGE), valLang));
 
     BoolValue valSysK("system_keys");

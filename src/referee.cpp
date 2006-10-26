@@ -15,6 +15,7 @@
 #include "random.h"
 #include "audio.h"
 #include "sound.h"
+#include "world.h"
 
 static const float BALL_RESET_TIME = 2.0f;
 //TODO: make universaly proportional to field size?
@@ -104,8 +105,9 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_messages(messages),
     m_haltWait(3),
     m_playersAreHalted(false),
-    m_matchPoints(21),
-    m_sound(new Sound(true))
+    m_matchPoints(1),
+    m_sound(new Sound(true)),
+    m_over(NULL)
 {
     initEvents();
     m_soundGameOver = Audio::instance->loadSound("referee_game_over");
@@ -297,15 +299,24 @@ void Referee::processCriticalEvent()
         }
         else
         {
-            overText = Language::instance->get(TEXT_CONTINUE);
+            if (World::instance->m_current == 3)
+            {
+                overText = Language::instance->get(TEXT_FINISHED_GAME);
+            }
+            else
+            {
+                overText = Language::instance->get(TEXT_CONTINUE);
+            }
         }
             
             
-        m_messages->add2D(new Message(overText, 
-                                      Vector(center.x, center.y - (72 + 32), center.z), 
-                                      brighter(Grey, 3.0f), 
-                                      Font::Align_Center,
-                                      32));
+        m_over = new Message(overText, 
+                             Vector(center.x, center.y - (72 + 32), center.z), 
+                             brighter(Grey, 3.0f), 
+                             Font::Align_Center,
+                             32);
+        m_messages->add2D(m_over);
+
         m_gameOver = true;
         m_scoreBoard->resetCombo();
 

@@ -50,9 +50,10 @@ public:
     Messages*        m_messages;
     ScoreBoard*      m_scoreBoard;
 
+    int            m_current;
+
 private:
     int&           m_unlockable;
-    int            m_current;
 
     bool           m_freeze;
     Profile*       m_userProfile;

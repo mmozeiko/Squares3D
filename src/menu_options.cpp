@@ -13,6 +13,8 @@
 #include "config.h"
 #include "sound.h"
 
+static const string lang[] = { "en", "lv", "ru", "de" };
+
 void OptionEntry::click(int button)
 {
     if ((button == GLFW_MOUSE_BUTTON_LEFT)
@@ -122,10 +124,9 @@ void OptionEntry::reset()
     }
     else if (m_value.m_id == "language")
     {
-        StringVector languages = Language::instance->getAvailable();
-        for (size_t i = 0; i < languages.size(); i++)
+        for (size_t i = 0; i < sizeOfArray(lang); i++)
         {
-            if (languages[i] == Config::instance->m_misc.language)
+            if (lang[i] == Config::instance->m_misc.language)
             {
                 m_value.m_current = i;
                 break;
@@ -234,8 +235,7 @@ void ApplyOptionsEntry::click(int button)
         }
         else if (id == "language")
         {
-            StringVector languages = Language::instance->getAvailable();
-            Config::instance->m_misc.language = languages[(*iter)->getCurrentValueIdx()];
+            Config::instance->m_misc.language = lang[ (*iter)->getCurrentValueIdx() ];
         }
         else if (id == "mouse_sensitivity")
         {

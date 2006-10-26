@@ -482,6 +482,30 @@ void World::render() const
             font->end();
         }
     }
+
+    if (m_referee->m_over != NULL)
+    {
+        Message* m = m_referee->m_over;
+        const Font* font = m_messages->m_fonts.find(m->getFontSize())->second;
+        font->begin();
+        float w = static_cast<float>(font->getWidth(m->getText()));
+        float h = static_cast<float>(font->getHeight(m->getText()));
+
+        const Vector& pos = m->getPosition() - Vector(0.0f, h / 4, 0.0f);
+
+        Vector lower = pos;
+        lower.x -= w / 2;
+        lower.y -= h / 2;
+
+        Vector upper = pos;
+        upper.x += w / 2;
+        upper.y +=  h / 2;
+
+        glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+        Video::instance->renderRoundRect(lower, upper, h / 4);
+
+        font->end();
+    }
     m_messages->render();
 }
 

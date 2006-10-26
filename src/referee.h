@@ -12,6 +12,7 @@ class Messages;
 class ScoreBoard;
 class Sound;
 class SoundBuffer;
+class Message;
 
 typedef map<const Body*, Player*> BodyToPlayerMap;
 
@@ -28,6 +29,8 @@ public:
     const Body*              m_lastTouchedPlayer;
     const Player*            m_humanPlayer;
     bool                     m_gameOver;
+
+    Message*                 m_over;
 
     Referee(Messages* messages, ScoreBoard* scoreBoard);
     ~Referee();
