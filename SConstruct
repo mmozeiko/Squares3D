@@ -105,7 +105,9 @@ env.BuildDir(builddir, "src", duplicate=0)
 sources = [x.replace("src\\", builddir + "\\").replace("src/", builddir+"/") for x in glob("src/*.cpp")]
 
 if not isdebug or removeMMGR:
-  for x in ["Release\\mmgr.cpp", "Release\\mmgr.cpp", "Debug/mmgr.cpp", "Debug/mmgr.cpp", "src/mmgr.cpp"]:
+  for x in ["Release\\mmgr.cpp", "Release/mmgr.cpp",
+            "Debug\\mmgr.cpp", "Debug/mmgr.cpp",
+            "src\\mmgr.cpp", "src/mmgr.cpp"]:
     if x in sources:
       sources.remove(x)
 
