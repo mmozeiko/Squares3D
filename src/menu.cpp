@@ -110,6 +110,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_MULTIPLAYER), "startMulti"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), "playerOptions"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), "options"));
+	submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_RULES), "rules"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CREDITS), "credits"));
     submenu->addEntry(new QuitEntry(this, language->get(TEXT_QUIT_GAME)));
 
@@ -221,6 +222,19 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["credits"] = submenu;
 
+	// Rulez
+    submenu = new Submenu(this);
+    
+    submenu->setTitle(language->get(TEXT_RULES), titlePos);
+
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_RULES_SCREEN), m_fontSmall));
+
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
+
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["rules"] = submenu;
 
 
     // Start Multi Submenu
