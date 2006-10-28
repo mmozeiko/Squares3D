@@ -56,7 +56,7 @@ int main(int, char* argv[])
             short x;
             StandardAlert(kAlertStopAlert, err.c_str(), null, null, &x);
 #else
-            std::cout << "Exception occured (for details see log.txt file):" << endl << exception << endl;
+            std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
 #endif
         }
         File::done();
@@ -73,7 +73,7 @@ int main(int, char* argv[])
             short x;
             StandardAlert(kAlertStopAlert, err.c_str(), null, null, &x);
 #else
-            std::cout << "Exception occured (for details see log.txt file):" << endl << exception << endl;
+            std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
 #endif
     }
 

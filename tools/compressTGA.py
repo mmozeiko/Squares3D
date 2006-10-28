@@ -1,3 +1,5 @@
+raise "ERROR!!! DONT USE THIS SCRIPT!! DANGER"
+
 import os
 
 DATA_PATH = os.path.join("..", "bin", "data")

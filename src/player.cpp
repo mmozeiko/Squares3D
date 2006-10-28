@@ -205,4 +205,3 @@ ControlPacket* Player::getControl() const
 {
     return new ControlPacket(0, m_direction, m_rotation, m_jump, m_kick);
 }
-
