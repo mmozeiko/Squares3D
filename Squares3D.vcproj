@@ -123,7 +123,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="3rdparty\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;XML_STATIC"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;XML_STATIC;_NEWTON_USE_LIB"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
@@ -770,10 +770,6 @@
 			Name="Libraries"
 			>
 			<File
-				RelativePath=".\3rdparty\lib\Newton.lib"
-				>
-			</File>
-			<File
 				RelativePath=".\3rdparty\lib\OpenAL32.lib"
 				>
 			</File>
@@ -806,6 +802,18 @@
 				</File>
 				<File
 					RelativePath=".\3rdparty\lib\glfw_d.lib"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\3rdparty\lib\Newton.lib"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -913,6 +921,18 @@
 						>
 						<Tool
 							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\3rdparty\lib\Newton.static.lib"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
 						/>
 					</FileConfiguration>
 				</File>

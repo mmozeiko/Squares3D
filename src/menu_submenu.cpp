@@ -126,7 +126,7 @@ void Submenu::center(const Vector& centerPos)
 
     m_upper.x = centerPos.x + maxX; //std::max(maxR, maxL);
     m_lower.x = centerPos.x - maxX; //std::max(maxR, maxL);
-    m_lower.y = m_upper.y  - m_height;
+    m_lower.y = m_upper.y  - m_height + m_entries.back()->m_font->getHeight(m_entries.back()->m_string);
 }
 
 void Submenu::setTitle(const wstring& title, const Vector& position)
@@ -172,7 +172,15 @@ void Submenu::render() const
 
         glPushMatrix();
 
-		glTranslatef(m_centerPos.x, entry->m_lowerLeft.z, m_centerPos.z);
+        if (entry->m_align == Font::Align_Center)
+        {
+    		glTranslatef(m_centerPos.x, entry->m_lowerLeft.z, m_centerPos.z);
+        }
+        else
+        {
+            int w = entry->getMaxLeftWidth();
+    		glTranslatef(m_centerPos.x - w, entry->m_lowerLeft.z, m_centerPos.z);
+        }
 
         if (m_activeEntry == i)
         {

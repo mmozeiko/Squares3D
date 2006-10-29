@@ -1,0 +1,1 @@
+@"C:\Program Files\NSIS\makensis.exe" Squares3D.nsi

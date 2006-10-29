@@ -5,7 +5,6 @@
 #include "menu.h"
 
 #include "language.h"
-#include "font.h"
 #include "input.h"
 #include "video.h"
 #include "colors.h"
@@ -128,9 +127,9 @@ int Value::getMaxWidth(const Font* font) const
 
 /*** ENTRY ***/
 
-Entry::Entry(Menu* menu, const wstring& stringIn, const Font* font) : 
+Entry::Entry(Menu* menu, const wstring& stringIn, Font::AlignType align, const Font* font) : 
     m_string(stringIn), m_enabled(true), 
-    m_menu(menu), m_forBounds(false), m_font(font) 
+    m_menu(menu), m_forBounds(false), m_font(font), m_align(align)
 {
     if (m_font == NULL)
     {
@@ -159,7 +158,7 @@ void Entry::setXBound(float minX, float maxX)
 
 void Entry::render() const
 {
-    m_font->render(getString(), Font::Align_Center);
+    m_font->render(getString(), m_align);
 }
 
 int Entry::getMaxLeftWidth() const

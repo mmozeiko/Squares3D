@@ -42,7 +42,6 @@ public:
 Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_font(Font::get("Arial_32pt_bold")),
     m_fontBig(Font::get("Arial_72pt_bold")),
-    m_fontSmall(Font::get("Arial_16pt_bold")),
     m_state(State::Current),
     m_music(NULL),
     m_sound(new Sound(true)),
@@ -55,6 +54,8 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
+
+    m_fontSmall = Font::get( ( resY < 600 ? "Arial_12pt_bold" : "Arial_16pt_bold" ));
 
     m_backGround = new Face();
     m_backGround->vertexes.push_back(Vector::Zero);
@@ -163,6 +164,9 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenuJ->addEntry(new SpacerEntry(this));
     submenuJ->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
 
+    // TODO: hack
+    submenuJ->m_height += 10;
+
     submenuJ->center(submenuPosition);
     m_submenus["startMultiJoinIP"] = submenuJ;
 
@@ -218,6 +222,9 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
 
+    // TODO: hack
+    submenu->m_height += 10;
+
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["credits"] = submenu;
@@ -227,7 +234,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     submenu->setTitle(language->get(TEXT_RULES), titlePos);
 
-    submenu->addEntry(new LabelEntry(this, language->get(TEXT_RULES_SCREEN), m_fontSmall));
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_RULES_SCREEN), Font::Align_Left, m_fontSmall));
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
@@ -248,6 +255,9 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
+
+    // TODO: hack
+    submenu->m_height += 10;
 
     submenu->center(submenuPosition);
     m_submenus["startMulti"] = submenu;
@@ -316,7 +326,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "videoOptionsEasy"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
-    
+   
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["videoOptionsEasy"] = submenu;
@@ -381,6 +391,9 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "videoOptions"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "videoOptionsEasy"));    
     
+    // TODO: hack
+    submenu->m_height -= 20;
+
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["videoOptions"] = submenu;

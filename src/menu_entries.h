@@ -4,8 +4,8 @@
 #include "common.h"
 #include "vmath.h"
 #include "timer.h"
+#include "font.h"
 
-class Font;
 class Menu;
 class Submenu;
 class Entry;
@@ -44,7 +44,7 @@ public:
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(Menu* menu, const wstring& stringIn, const Font* font = NULL);
+    Entry(Menu* menu, const wstring& stringIn, Font::AlignType align = Font::Align_Center, const Font* font = NULL);
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
@@ -69,6 +69,7 @@ public:
 
     const Font* m_font;
 
+    Font::AlignType m_align;
 protected:
     bool m_enabled;
     Menu* m_menu;
@@ -79,7 +80,7 @@ class SubmenuEntry : public Entry
 {
 public: 
     SubmenuEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo, const Font* font = NULL) :
-        Entry(menu, stringIn, font), m_submenuToSwitchTo(submenuToSwitchTo) {}
+      Entry(menu, stringIn, Font::Align_Center, font), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
     void click(int button); 
 
@@ -192,8 +193,8 @@ private:
 class LabelEntry : public Entry
 {
 public: 
-    LabelEntry(Menu* menu, const wstring& label, const Font* font = NULL) :
-      Entry(menu, label, font) { m_enabled = false; }
+    LabelEntry(Menu* menu, const wstring& label, Font::AlignType align = Font::Align_Center, const Font* font = NULL) :
+      Entry(menu, label, align, font) { m_enabled = false; }
 
     wstring getString() const;
     void click(int button) {}
