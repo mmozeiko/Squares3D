@@ -85,7 +85,7 @@ Section "MainSection" SEC01
 
   SetOutPath $TEMP
   File "OpenALwEAX.exe"
-  ExecWait '"$TEMP\OpenALwEAX.exe" /s'
+  ExecWait '"$TEMP\OpenALwEAX.exe"'
   Delete "$TEMP\OpenALwEAX.exe"
   
 ; Shortcuts

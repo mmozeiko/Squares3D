@@ -57,16 +57,18 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
 
     m_fontSmall = Font::get( ( resY < 600 ? "Arial_12pt_bold" : "Arial_16pt_bold" ));
 
+    const float aspect = (1.0f - resY/resX)/2.0f;
+
     m_backGround = new Face();
     m_backGround->vertexes.push_back(Vector::Zero);
     m_backGround->vertexes.push_back(Vector(0.0f, resY, 0.0f));
     m_backGround->vertexes.push_back(Vector(resX, 0.0f, 0.0f));
     m_backGround->vertexes.push_back(Vector(resX, resY, 0.0f));
 
-    m_backGround->uv.push_back(UV(0.0f, 0.0f));
-    m_backGround->uv.push_back(UV(0.0f, 1.0f));
-    m_backGround->uv.push_back(UV(1.0f, 0.0f));
-    m_backGround->uv.push_back(UV(1.0f, 1.0f));
+    m_backGround->uv.push_back(UV(0.0f, aspect));
+    m_backGround->uv.push_back(UV(0.0f, 1.0f - aspect));
+    m_backGround->uv.push_back(UV(1.0f, aspect));
+    m_backGround->uv.push_back(UV(1.0f, 1.0f - aspect));
 
     m_backGroundTexture = Video::instance->loadTexture("background", false);
     m_backGroundTexture->setFilter(Texture::Bilinear);
@@ -306,8 +308,26 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     Value valueRes("resolution");
     for (size_t i = 0; i < resolutions.size(); i++)
     {
-        valueRes.add(wcast<wstring>(resolutions[i].first) 
-                            + L"x" + wcast<wstring>(resolutions[i].second));
+        int x = resolutions[i].first;
+        int y = resolutions[i].second;
+        wstring mode = wcast<wstring>(x) + L"x" + wcast<wstring>(y);
+        if (x*3 == y*4)
+        {
+            mode += L" (4:3)";
+        }
+        else if (x*4 == y*5)
+        {
+            mode += L" (5:4)";
+        }
+        else if (x*9 == y*16)
+        {
+            mode += L" (16:9)";
+        }
+        else if (x*10 == y*16)
+        {
+            mode += L" (16:10)";
+        }
+        valueRes.add(mode);
     }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_RESOLUTION), valueRes));
 
