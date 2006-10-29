@@ -1,6 +1,7 @@
 #include "intro.h"
 #include "input.h"
 #include "texture.h"
+#include "font.h"
 
 static const float FADE_IN_SECS = 2.0f;
 static const float BALL_KICK_SECS = 3.0f;
@@ -115,8 +116,10 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     NewtonBodySetMatrix(floorBody, matrix.m);
 
     m_ballTex = Video::instance->loadTexture("ball");
-    m_logoTex = Video::instance->loadTexture("indago_logo");
-    m_bigLogoTex = Video::instance->loadTexture("logo_big");
+    m_logoTex = Video::instance->loadTexture("indago_logo", false);
+    m_logoTex->setFilter(Texture::Bilinear);
+    m_bigLogoTex = Video::instance->loadTexture("logo_big", false);
+    m_bigLogoTex->setFilter(Texture::Bilinear);
 
     m_cubeListBase = glGenLists(PIECE_XCOUNT * PIECE_YCOUNT);
     // -0.5 .. 0.5
@@ -266,6 +269,27 @@ void Intro::render() const
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
 
+    // background
+    if (m_timePassed > BALL_KICK_SECS)
+    {
+        const Font* font = Font::get("Arial_32pt_bold");
+        const int resX = Video::instance->getResolution().first;
+        const int resY = Video::instance->getResolution().second;
+        const float aspect = 1.0f-static_cast<float>(resY)/static_cast<float>(resX);
+
+        font->begin();
+        glDisable(GL_BLEND);
+        m_bigLogoTex->bind();
+        glBegin(GL_TRIANGLE_STRIP);
+        glTexCoord2f(0.0f, aspect);   glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, resY);
+        glTexCoord2f(1.0f, aspect);   glVertex2i(resX, 0);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(resX, resY);
+        glEnd();
+
+        font->end();
+    }
+
     // cubes
 
     m_logoTex->bind();
@@ -308,18 +332,6 @@ void Intro::render() const
         glEnd();
 
         glPopAttrib();
-    }
-
-    if (m_timePassed > BALL_KICK_SECS)
-    {
-        m_bigLogoTex->bind();
-
-        glBegin(GL_TRIANGLE_STRIP);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(5.0f, -1.0f, 7.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-5.0f, -1.0f, 7.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(5.0f, 5.0f, 7.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-5.0f, 5.0f, 7.0f);
-        glEnd();
     }
 
     if (m_timePassed > FADE_OUT_SECS)
