@@ -209,7 +209,7 @@ void Submenu::render() const
         m_menu->m_fontBig->begin();
         glPushMatrix();
         glTranslatef(m_titlePos.x, m_titlePos.y, 0);
-        glColor3fv(darker(Green, 1.5f).v);
+        glColor3fv(darker(Pink, 1.5f).v);
         m_menu->m_fontBig->render(m_title, Font::Align_Center);
         glPopMatrix();
         m_menu->m_fontBig->end();

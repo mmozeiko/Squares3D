@@ -278,6 +278,9 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
 
+    // TODO: hack
+    submenu->m_height += 10;
+
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["playerOptions"] = submenu;

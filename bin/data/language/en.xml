@@ -38,7 +38,7 @@ Press ENTER to return to retry..
     <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
 
     <!-- Main menu -->
-    <item name="MAIN_MENU"                value="Main Menu"/>
+    <item name="MAIN_MENU"                value="Squares 3D Menu"/>
     <item name="START_SINGLEPLAYER"       value="Start Singleplayer"/>
     <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
