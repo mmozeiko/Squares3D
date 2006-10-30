@@ -1,5 +1,5 @@
 #include <GL/glfw.h>
-#include <AL/al.h>
+#include "openal_includes.h"
 
 #include "menu.h"
 #include "menu_options.h"

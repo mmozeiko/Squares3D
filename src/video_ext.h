@@ -16,7 +16,7 @@
 #define APIENTRYP APIENTRY *
 #endif
 
-#ifndef GL_ARB_multitexture
+//#ifndef GL_ARB_multitexture
 #define GL_TEXTURE0_ARB                   0x84C0
 #define GL_TEXTURE1_ARB                   0x84C1
 #define GL_TEXTURE2_ARB                   0x84C2
@@ -88,29 +88,31 @@ typedef void (APIENTRYP PFNGLMULTITEXCOORD4IVARBPROC) (GLenum target, const GLin
 typedef void (APIENTRYP PFNGLMULTITEXCOORD4SARBPROC) (GLenum target, GLshort s, GLshort t, GLshort r, GLshort q);
 typedef void (APIENTRYP PFNGLMULTITEXCOORD4SVARBPROC) (GLenum target, const GLshort *v);
 
-extern PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
-#endif
+extern PFNGLACTIVETEXTUREARBPROC           pglActiveTextureARB;
 
-#ifndef GL_EXT_texture_filter_anisotropic
+#define glActiveTextureARB pglActiveTextureARB
+//#endif
+
+//#ifndef GL_EXT_texture_filter_anisotropic
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-#endif
+//#endif
 
-#ifndef GL_ARB_depth_texture
+//#ifndef GL_ARB_depth_texture
 #define GL_DEPTH_COMPONENT16_ARB          0x81A5
 #define GL_DEPTH_COMPONENT24_ARB          0x81A6
 #define GL_DEPTH_COMPONENT32_ARB          0x81A7
 #define GL_TEXTURE_DEPTH_SIZE_ARB         0x884A
 #define GL_DEPTH_TEXTURE_MODE_ARB         0x884B
-#endif
+//#endif
 
-#ifndef GL_ARB_shadow
+//#ifndef GL_ARB_shadow
 #define GL_TEXTURE_COMPARE_MODE_ARB       0x884C
 #define GL_TEXTURE_COMPARE_FUNC_ARB       0x884D
 #define GL_COMPARE_R_TO_TEXTURE_ARB       0x884E
-#endif
+//#endif
 
-#ifndef GL_EXT_framebuffer_object
+//#ifndef GL_EXT_framebuffer_object
 #define GL_INVALID_FRAMEBUFFER_OPERATION_EXT                0x0506
 #define GL_MAX_RENDERBUFFER_SIZE_EXT                        0x84E8
 #define GL_FRAMEBUFFER_BINDING_EXT                          0x8CA6
@@ -182,16 +184,22 @@ typedef void (APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) (GLenum target, GLe
 typedef void (APIENTRYP PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) (GLenum target, GLenum attachment, GLenum pname, GLint *params);
 typedef void (APIENTRYP PFNGLGENERATEMIPMAPEXTPROC) (GLenum target);
 
-extern PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
-extern PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
-#endif
+extern PFNGLGENFRAMEBUFFERSEXTPROC         pglGenFramebuffersEXT;
+extern PFNGLBINDFRAMEBUFFEREXTPROC         pglBindFramebufferEXT;
+extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    pglFramebufferTexture2DEXT;
+extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  pglCheckFramebufferStatusEXT;
+extern PFNGLDELETEFRAMEBUFFERSEXTPROC      pglDeleteFramebuffersEXT;
+
+#define glGenFramebuffersEXT        pglGenFramebuffersEXT
+#define glBindFramebufferEXT        pglBindFramebufferEXT
+#define glFramebufferTexture2DEXT   pglFramebufferTexture2DEXT
+#define glCheckFramebufferStatusEXT pglCheckFramebufferStatusEXT
+#define glDeleteFramebuffersEXT     pglDeleteFramebuffersEXT
+//#endif
 
 #include <stddef.h>
 
-#ifndef GL_ARB_vertex_buffer_object
+//#ifndef GL_ARB_vertex_buffer_object
 #define GL_BUFFER_SIZE_ARB                          0x8764
 #define GL_BUFFER_USAGE_ARB                         0x8765
 #define GL_ARRAY_BUFFER_ARB                         0x8892
@@ -224,8 +232,10 @@ extern PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
 #define GL_DYNAMIC_READ_ARB                         0x88E9
 #define GL_DYNAMIC_COPY_ARB                         0x88EA
 
+#ifndef __APPLE__
 typedef ptrdiff_t GLintptrARB;
 typedef ptrdiff_t GLsizeiptrARB;
+#endif
 
 typedef void (APIENTRYP PFNGLBINDBUFFERARBPROC) (GLenum target, GLuint buffer);
 typedef void (APIENTRYP PFNGLDELETEBUFFERSARBPROC) (GLsizei n, const GLuint *buffers);
@@ -239,14 +249,21 @@ typedef GLboolean (APIENTRYP PFNGLUNMAPBUFFERARBPROC) (GLenum target);
 typedef void (APIENTRYP PFNGLGETBUFFERPARAMETERIVARBPROC) (GLenum target, GLenum pname, GLint *params);
 typedef void (APIENTRYP PFNGLGETBUFFERPOINTERVARBPROC) (GLenum target, GLenum pname, GLvoid* *params);
 
-extern PFNGLGENBUFFERSARBPROC              glGenBuffersARB;
-extern PFNGLBINDBUFFERARBPROC              glBindBufferARB;
-extern PFNGLBUFFERDATAARBPROC              glBufferDataARB;
-extern PFNGLDELETEBUFFERSARBPROC           glDeleteBuffersARB;
-extern PFNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
-#endif
+extern PFNGLGENBUFFERSARBPROC              pglGenBuffersARB;
+extern PFNGLBINDBUFFERARBPROC              pglBindBufferARB;
+extern PFNGLBUFFERDATAARBPROC              pglBufferDataARB;
+extern PFNGLDELETEBUFFERSARBPROC           pglDeleteBuffersARB;
+extern PFNGLBUFFERSUBDATAARBPROC           pglBufferSubDataARB;
 
-#ifndef GL_ARB_multisample
+#define glGenBuffersARB     pglGenBuffersARB
+#define glBindBufferARB     pglBindBufferARB
+#define glBufferDataARB     pglBufferDataARB
+#define glDeleteBuffersARB  pglDeleteBuffersARB
+#define glBufferSubDataARB  pglBufferSubDataARB
+
+//#endif
+
+//#ifndef GL_ARB_multisample
 #define GL_MULTISAMPLE_ARB                0x809D
 #define GL_SAMPLE_ALPHA_TO_COVERAGE_ARB   0x809E
 #define GL_SAMPLE_ALPHA_TO_ONE_ARB        0x809F
@@ -258,7 +275,7 @@ extern PFNGLBUFFERSUBDATAARBPROC           glBufferSubDataARB;
 #define GL_MULTISAMPLE_BIT_ARB            0x20000000
 
 typedef void (APIENTRYP PFNGLSAMPLECOVERAGEARBPROC) (GLclampf value, GLboolean invert);
-#endif
+//#endif
 
 // WTF? HACK!!
 #define GL_CLAMP_TO_EDGE                  0x812F

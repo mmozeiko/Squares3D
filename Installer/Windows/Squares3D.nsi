@@ -30,7 +30,7 @@ XPStyle on
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "../license.txt"
+;!insertmacro MUI_PAGE_LICENSE "../license.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Start menu page

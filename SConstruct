@@ -40,6 +40,7 @@ elif p == "darwin":
 
   env = Environment( tools = ["g++", "ar", "link"], ENV = os.environ )
   env.Append( LIBS      = Split("Newton32") )
+  env.Append( CXXFLAGS  = ["-I/System/Library/Frameworks/OpenAL.framework/Versions/Current/Headers"] )
   env.Append( LINKFLAGS = Split("""-framework OpenAL
                                    -framework OpenGL
                                    -framework Carbon

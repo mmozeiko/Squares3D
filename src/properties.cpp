@@ -1,5 +1,5 @@
-#include <AL/al.h>
 #include <Newton.h>
+#include "openal_includes.h"
 
 #include "properties.h"
 #include "property.h"

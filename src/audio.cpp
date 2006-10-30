@@ -1,5 +1,4 @@
-#include <AL/al.h>
-#include <AL/alc.h>
+#include "openal_includes.h"
 
 #include "audio.h"
 #include "config.h"

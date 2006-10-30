@@ -221,7 +221,7 @@ void Intro::control()
     }
     else if (m_ballKicked && m_ball_matrix.row(3).z > BALL_R)
     {
-        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -1.0f).v);
+        NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -2.0f).v);
     }
 }
 

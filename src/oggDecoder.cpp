@@ -1,4 +1,5 @@
-#include <AL/al.h>
+#include "openal_includes.h"
+
 #include "oggDecoder.h"
 
 static size_t ov_read_func(void* ptr, size_t size, size_t nmemb, void* datasource)

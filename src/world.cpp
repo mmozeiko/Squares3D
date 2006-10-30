@@ -1,4 +1,4 @@
-#include <AL/al.h>
+#include "openal_includes.h"
 
 #include "world.h"
 #include "player.h"

@@ -406,24 +406,24 @@ Texture* Video::loadTexture(const string& name, bool mipmap)
 void Video::loadExtensions()
 {
     bool activeTex = false;
-#ifndef GL_ARB_multitexture
+//#ifndef GL_ARB_multitexture
     if (glfwExtensionSupported("GL_ARB_multitexture"))
     {
         activeTex = true;
         loadProc(glActiveTextureARB);
     }
-#else
-    activeTex = true;
-#endif
+//#else
+//    activeTex = true;
+//#endif
 
-#ifndef GL_EXT_texture_filter_anisotropic
+//#ifndef GL_EXT_texture_filter_anisotropic
     if (glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
     {
         m_haveAnisotropy = true;
     }
-#else
-    m_haveAnisotropy = true;
-#endif
+//#else
+//    m_haveAnisotropy = true;
+//#endif
 
     if (m_haveAnisotropy)
     {
@@ -445,7 +445,7 @@ void Video::loadExtensions()
         Config::instance->m_video.anisotropy = 0;
     }
 
-#ifndef GL_EXT_framebuffer_object
+//#ifndef GL_EXT_framebuffer_object
     if (activeTex && glfwExtensionSupported("GL_EXT_framebuffer_object"))
     {
         m_haveShadowsFB = true;
@@ -456,11 +456,11 @@ void Video::loadExtensions()
         loadProc(glCheckFramebufferStatusEXT);
         loadProc(glDeleteFramebuffersEXT);
     }
-#else
-    m_haveShadowsFB = true;
-#endif
+//#else
+//    m_haveShadowsFB = true;
+//#endif
 
-#ifndef GL_ARB_vertex_buffer_object
+//#ifndef GL_ARB_vertex_buffer_object
     if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
     {
         m_haveVBO = true;
@@ -471,7 +471,7 @@ void Video::loadExtensions()
         loadProc(glDeleteBuffersARB);
         loadProc(glBufferSubDataARB);
     }
-#endif
+//#endif
 
     if (activeTex &&
         glfwExtensionSupported("GL_ARB_depth_texture") &&

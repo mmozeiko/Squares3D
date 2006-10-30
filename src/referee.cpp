@@ -1,4 +1,4 @@
-#include <AL/al.h>
+#include "openal_includes.h"
 
 #include "referee.h"
 #include "player.h"

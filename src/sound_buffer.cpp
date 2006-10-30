@@ -1,4 +1,4 @@
-#include <AL/al.h>
+#include "openal_includes.h"
 
 #include "sound_buffer.h"
 

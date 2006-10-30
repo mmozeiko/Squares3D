@@ -52,9 +52,9 @@ int main(int, char* argv[])
             MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
 #elif defined(__APPLE__)
             string err(" Exception occured (for details see log.txt file");
-            err[0] = static_cast<char>(err.size());
+            err[0] = static_cast<char>(err.size()+1);
             short x;
-            StandardAlert(kAlertStopAlert, err.c_str(), null, null, &x);
+            StandardAlert(kAlertStopAlert, err.c_str(), NULL, NULL, &x);
 #else
             std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
 #endif
@@ -69,9 +69,9 @@ int main(int, char* argv[])
          MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
 #elif defined(__APPLE__)
             string err(" Exception occured (for details see log.txt file");
-            err[0] = static_cast<char>(err.size());
+            err[0] = static_cast<char>(err.size()+1);
             short x;
-            StandardAlert(kAlertStopAlert, err.c_str(), null, null, &x);
+            StandardAlert(kAlertStopAlert, err.c_str(), NULL, NULL, &x);
 #else
             std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
 #endif
