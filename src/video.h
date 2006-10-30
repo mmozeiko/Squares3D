@@ -76,6 +76,11 @@ private:
     GLUquadric*   m_quadric;
     GLUquadric*   m_quadricTex;
 
+    unsigned int  m_sphereList;
+    unsigned int  m_sphereHiQList;
+    unsigned int  m_cylinderList;
+    unsigned int  m_coneList;
+
     TextureMap    m_textures;
     IntPair       m_resolution;    
     UIntSet       m_lists;

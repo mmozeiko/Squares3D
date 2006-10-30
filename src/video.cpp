@@ -33,7 +33,11 @@ Video::Video() :
     m_haveShadowsFB(false),
     m_haveVBO(false),
     m_shadowMap3ndPass(false),
-    m_lastBound(NULL)
+    m_lastBound(NULL),
+    m_sphereList(0),
+    m_sphereHiQList(0),
+    m_cylinderList(0),
+    m_coneList(0)
 {
     setInstance(this);
 
@@ -233,6 +237,40 @@ void Video::init()
     }
 
     glEndList();
+
+    m_sphereList = Video::instance->newList();
+    glNewList(m_sphereList, GL_COMPILE);
+        gluSphere(m_quadricTex, 1.0f, 16, 16);
+    glEndList();
+
+    m_sphereHiQList = Video::instance->newList();
+    glNewList(m_sphereHiQList, GL_COMPILE);
+        gluSphere(m_quadricTex, 1.0f, 64, 64);
+    glEndList();
+
+    m_cylinderList = Video::instance->newList();
+    glNewList(m_cylinderList, GL_COMPILE);
+        gluCylinder(m_quadricTex, 1.0f, 1.0f, 1.0f, 16, 16);
+    
+        glPushMatrix();
+        glTranslatef(0.0f, 0.0f, 1.0f);
+        gluDisk(m_quadricTex, 0.0, 1.0f, 16, 16);
+        glPopMatrix();
+
+        glPushMatrix();
+        glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
+        gluDisk(m_quadricTex, 0.0, 1.0f, 16, 16);
+        glPopMatrix();
+    glEndList();
+
+    m_coneList = Video::instance->newList();
+    glNewList(m_coneList, GL_COMPILE);
+        gluCylinder(m_quadricTex, 1.0f, 0.0f, 1.0f, 16, 16);
+        glPushMatrix();
+        glRotatef(180.0, 1.0, 0.0, 0.0);
+        gluDisk(m_quadricTex, 0.0, 1.0f, 16, 16);
+        glPopMatrix();
+    glEndList();
 }
 
 void Video::renderCube() const
@@ -274,36 +312,48 @@ void Video::renderFace(const Face& face) const
 
 void Video::renderSphere(float radius) const
 {
-    gluSphere(m_quadricTex, radius, 16, 16);
+    if (radius != 1.0f)
+    {
+        glPushMatrix();
+        glScalef(radius, radius, radius);
+        glCallList(m_sphereList);
+        glPopMatrix();
+    }
+    else
+    {
+        glCallList(m_sphereList);
+    }
 }
 
 void Video::renderCylinder(float radius, float height) const
 {
-    gluCylinder(m_quadricTex, radius, radius, height, 16, 16);
-    
     glPushMatrix();
-    glTranslatef(0.0f, 0.0f, height);
-    gluDisk(m_quadricTex, 0.0, radius, 16, 16);
-    glPopMatrix();
-
-    glPushMatrix();
-    glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
-    gluDisk(m_quadricTex, 0.0, radius, 16, 16);
+    glScalef(radius, radius, height);
+    glCallList(m_cylinderList);
     glPopMatrix();
 }
 
 void Video::renderCone(float radius, float height) const
 {
-    gluCylinder(m_quadricTex, radius, 0.0f, height, 16, 16);
     glPushMatrix();
-    glRotatef(180.0, 1.0, 0.0, 0.0);
-    gluDisk(m_quadricTex, 0.0, radius, 16, 16);
+    glScalef(radius, 1.0f, height);
+    glCallList(m_coneList);
     glPopMatrix();
 }
 
 void Video::renderSphereHiQ(float radius) const
 {
-    gluSphere(m_quadricTex, radius, 64, 64);
+    if (radius != 1.0f)
+    {
+        glPushMatrix();
+        glScalef(radius, radius, radius);
+        glCallList(m_sphereHiQList);
+        glPopMatrix();
+    }
+    else
+    {
+        glCallList(m_sphereList);
+    }
 }
   
 void Video::renderAxes(float size) const
