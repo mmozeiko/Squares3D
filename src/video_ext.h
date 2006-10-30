@@ -277,6 +277,10 @@ extern PFNGLBUFFERSUBDATAARBPROC           pglBufferSubDataARB;
 typedef void (APIENTRYP PFNGLSAMPLECOVERAGEARBPROC) (GLclampf value, GLboolean invert);
 //#endif
 
+//#ifndef GL_EXT_rescale_normal
+#define GL_RESCALE_NORMAL_EXT             0x803A
+//#endif
+
 // WTF? HACK!!
 #define GL_CLAMP_TO_EDGE                  0x812F
 

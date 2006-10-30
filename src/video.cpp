@@ -454,7 +454,17 @@ Texture* Video::loadTexture(const string& name, bool mipmap)
 }
 
 void Video::loadExtensions()
-{
+{   
+    if (glfwExtensionSupported("GL_EXT_rescale_normal"))
+    {
+        clog << "Video: GL_EXT_rescale_normal supported." << endl;
+        glEnable(GL_RESCALE_NORMAL_EXT);
+    }
+    else
+    {
+        clog << "Video: GL_EXT_rescale_normal unavailable." << endl;
+    }
+
     bool activeTex = false;
 //#ifndef GL_ARB_multitexture
     if (glfwExtensionSupported("GL_ARB_multitexture"))
@@ -465,6 +475,14 @@ void Video::loadExtensions()
 //#else
 //    activeTex = true;
 //#endif
+    if (activeTex)
+    {
+        clog << "Video: GL_ARB_multitexture supported." << endl;
+    }
+    else
+    {
+        clog << "Video: GL_ARB_multitexture unavailable." << endl;
+    }
 
 //#ifndef GL_EXT_texture_filter_anisotropic
     if (glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
@@ -474,6 +492,14 @@ void Video::loadExtensions()
 //#else
 //    m_haveAnisotropy = true;
 //#endif
+    if (m_haveAnisotropy)
+    {
+        clog << "Video: GL_EXT_texture_filter_anisotropic supported." << endl;
+    }
+    else
+    {
+        clog << "Video: GL_EXT_texture_filter_anisotropic unavailable." << endl;
+    }
 
     if (m_haveAnisotropy)
     {
@@ -509,6 +535,14 @@ void Video::loadExtensions()
 //#else
 //    m_haveShadowsFB = true;
 //#endif
+    if (m_haveShadowsFB)
+    {
+        clog << "Video: GL_EXT_framebuffer_object supported." << endl;
+    }
+    else
+    {
+        clog << "Video: GL_EXT_framebuffer_object unavailable." << endl;
+    }
 
 //#ifndef GL_ARB_vertex_buffer_object
     if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
@@ -522,12 +556,29 @@ void Video::loadExtensions()
         loadProc(glBufferSubDataARB);
     }
 //#endif
+    if (m_haveVBO)
+    {
+        clog << "Video: GL_ARB_vertex_buffer_object supported." << endl;
+    }
+    else
+    {
+        clog << "Video: GL_ARB_vertex_buffer_object unavailable." << endl;
+    }
 
     if (activeTex &&
         glfwExtensionSupported("GL_ARB_depth_texture") &&
         glfwExtensionSupported("GL_ARB_shadow"))
     {
         m_haveShadows = true;
+    }
+
+    if (m_haveShadows)
+    {
+        clog << "Video: GL_ARB_shadow and GL_ARB_depth_texture supported." << endl;
+    }
+    else
+    {
+        clog << "Video: GL_ARB_shadow or GL_ARB_depth_texture unavailable." << endl;
     }
 
     if (!m_haveAnisotropy)
