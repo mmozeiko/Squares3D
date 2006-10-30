@@ -1,19 +1,19 @@
 <cpu_profiles>
     <easy>  
         <profile>
-            <name>Dmitris</name>
+            <name>Dimitri</name>
             <collision>Dmitry</collision>
             <properties   speed="0.2" accuracy="0.5" jump="0.3" />
             <color r="0.6"  g="0.0" b="0.99" />
           </profile>
           <profile>
-            <name>Macgyver</name>
+            <name>Mack Gyver</name>
             <collision>player_small</collision>
             <properties   speed="0.4" accuracy="0.3" jump="0.3" />
             <color  r="0.1"  g="0.99" b="0.1" />
           </profile>
           <profile>
-            <name>Chuck Norris</name>
+            <name>Chick Nora</name>
             <collision>player_thin</collision>
             <properties   speed="0.6" accuracy="0.3" jump="0.1" />
             <color r="0.5"  g="0.2" b="0.1" />
@@ -21,19 +21,19 @@
     </easy>
     <normal>
         <profile>
-            <name>Borat</name>
+            <name>Borac</name>
             <collision>Dmitry</collision>
             <properties   speed="0.5" accuracy="0.6" jump="0.4" />
             <color r="0.6"  g="0.0" b="0.99" />
         </profile>
         <profile>
-            <name>Noob</name>
+            <name>Noowb</name>
             <collision>player_small</collision>
             <properties   speed="0.5" accuracy="0.5" jump="0.5" />
             <color  r="0.1"  g="0.99" b="0.1" />
         </profile>
         <profile>
-            <name>Teriks</name>
+            <name>Terik</name>
             <collision>player_thin</collision>
             <properties   speed="0.6" accuracy="0.6" jump="0.3" />
             <color r="0.5"  g="0.2" b="0.1" />
@@ -53,7 +53,7 @@
             <color  r="0.1"  g="0.99" b="0.1" />
         </profile>
         <profile>
-            <name>Mr.T</name>
+            <name>Mr.Tea</name>
             <collision>player_thin</collision>
             <properties   speed="1.0" accuracy="0.7" jump="0.3" />
             <color r="0.5"  g="0.2" b="0.1" />
