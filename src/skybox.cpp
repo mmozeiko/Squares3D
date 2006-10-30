@@ -5,11 +5,11 @@
 
 static const string facesTex[] = { "_FR", "_BK", "_UP"/*, "_DN"*/, "_RT", "_LF" };
 
-SkyBox::SkyBox()
+SkyBox::SkyBox(const string& name)
 {
     for (int i=0; i<5; i++)
     {
-        m_texture[i] = Video::instance->loadTexture("cubemap/skybox" + facesTex[i], false);
+        m_texture[i] = Video::instance->loadTexture("cubemap/" + name + facesTex[i], false);
         m_texture[i]->setWrap(Texture::ClampToEdge);
         m_texture[i]->setFilter(Texture::Bilinear);
     }

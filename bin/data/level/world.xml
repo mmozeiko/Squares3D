@@ -1,6 +1,7 @@
 <xml>
     <gravity x="0.0" y="-9.81" z="0.0"/>
     <music name="world"/>
+    <skybox name="skybox"/>
 
     <link file="common_materials.xml"/>
     <link file="common_properties.xml"/>

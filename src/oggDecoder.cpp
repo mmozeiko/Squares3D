@@ -108,7 +108,11 @@ size_t OggDecoder::decode(char* buffer, const size_t bufferSize)
 
     while (written < bufferSize)
     {
+#ifdef __BIG_ENDIAN__
+        int decodeSize = ov_read(&m_oggFile, buffer + written, static_cast<int>(bufferSize - written), 1, 2, 1, &current_section);
+#else
         int decodeSize = ov_read(&m_oggFile, buffer + written, static_cast<int>(bufferSize - written), 0, 2, 1, &current_section);
+#endif
         if (decodeSize <= 0)
         {
             break;

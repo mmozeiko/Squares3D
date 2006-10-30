@@ -68,8 +68,8 @@ void Player::setPositionRotation(const Vector& position, const Vector& rotation)
 {
     m_body->setTransform(position, rotation);
 
-    float x = FIELDLENGTH * position[0] / std::abs(position[0]);
-    float z = FIELDLENGTH * position[2] / std::abs(position[2]);
+    float x = FIELD_LENGTH * position[0] / std::abs(position[0]);
+    float z = FIELD_LENGTH * position[2] / std::abs(position[2]);
     
     if (x > 0) m_upperRight[0] = x;
     else m_lowerLeft[0] = x;
@@ -154,7 +154,7 @@ void Player::onSetForceAndTorque()
         if (currentVel.y < 3.0f) // to avoid n-jumps (n>2)
         {
             // CHARACTER: jump powaaar!! not higher that 1.5f - 2.5f
-            force.y = 2.0f * timestepInv * m_body->getMass();
+            force.y = 3.0f * timestepInv * m_body->getMass();
         }
         m_isOnGround = false;
     }

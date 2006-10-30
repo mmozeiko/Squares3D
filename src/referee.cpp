@@ -217,7 +217,7 @@ void Referee::resetBall()
             haltCpuPlayers();
             m_haltWait = 1;
         }
-        else 
+        else
         {
             Vector center;
             if (isGroundObject(m_lastTouchedObject))
@@ -404,8 +404,8 @@ void Referee::processPlayerGround(const Body* player)
 
     if (!isPointInRectangle(playerPos, currentPlayer->m_lowerLeft, currentPlayer->m_upperRight)
         && isPointInRectangle(playerPos, 
-                              Vector(- FIELDLENGTH, 0 , - FIELDLENGTH),
-                              Vector(FIELDLENGTH, 0 , FIELDLENGTH)))
+                              Vector(-FIELD_LENGTH, 0, -FIELD_LENGTH),
+                              Vector( FIELD_LENGTH, 0,  FIELD_LENGTH)))
     {
         //clog << "pleijeris " + currentPlayerName + " ir iekaapis cita pleijera laukumaa!!.." << endl;
     }
@@ -426,8 +426,8 @@ void Referee::processBallGround(const Body* groundObject)
     Vector ballPos(m_ball->getPosition());
 
     if (!isPointInRectangle(ballPos, 
-                            Vector(- FIELDLENGTH, 0.0f, - FIELDLENGTH), 
-                            Vector(FIELDLENGTH, 0.0f, FIELDLENGTH))) 
+                            Vector(-FIELD_LENGTH, 0.0f, -FIELD_LENGTH), 
+                            Vector( FIELD_LENGTH, 0.0f,  FIELD_LENGTH))) 
     {
         //critical event
         //BALL HAS HIT THE FIELD OUTSIDE

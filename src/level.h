@@ -40,6 +40,7 @@ public:
     Properties*     m_properties;
     FencesVector    m_fences;
     Music*          m_music;
+    string          m_skyboxName;
 };
 
 

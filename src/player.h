@@ -11,7 +11,7 @@ class Referee;
 class Collision;
 class ControlPacket;
 
-static const float FIELDLENGTH = 3.0f;
+static const float FIELD_LENGTH = 3.0f;
 
 class Player : public Collideable
 {

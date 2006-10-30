@@ -11,7 +11,7 @@
 #include "music.h"
 #include "audio.h"
 
-Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_music(NULL)
+Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_music(NULL), m_skyboxName()
 {
     m_properties = new Properties();
 }
@@ -52,6 +52,10 @@ void Level::load(const string& levelFile, StringSet& loaded)
         else if (node.name == "music")
         {
             m_music = Audio::instance->loadMusic(node.getAttribute("name"));
+        }
+        else if (node.name == "skybox")
+        {
+            m_skyboxName = node.getAttribute("name");
         }
         else if (node.name == "link")
         {
@@ -162,6 +166,10 @@ void Level::load(const string& levelFile, StringSet& loaded)
         {
             throw Exception("Invalid level file, unknown section - " + node.name);
         }
+    }
+    if (m_skyboxName.empty())
+    {
+        throw Exception("Skybox not specified in level file");
     }
 }
 

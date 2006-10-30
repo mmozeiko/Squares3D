@@ -1,71 +1,148 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
     <item name="GAME_OVER"             value="Spēle beigusies!"/>
-    <item name="PLAYER_KICKS_OUT_BALL" value="$1 izsper bumbu ārā (stulbā pakaļa)!&#10;+$2"/>
+    <item name="PLAYER_KICKS_OUT_BALL" value="$1 izsper bumbu ārā!&#10;+$2"/>
     <item name="OUT_FROM_FIELD"        value="Ārā no $1 laukuma!&#10;+$2"/>
     <item name="OUT_FROM_MIDDLE_LINE"  value="Bumba ārā no viduslīnijas!"/>
     <item name="PLAYER_TOUCHES_TWICE"  value="$1 divi pieskārieni!&#10;+$2"/>
     <item name="HITS_COMBO"            value="$1 Uzsitienu kombo!!"/>
     <item name="HITS"                  value="$1 Uzsitieni!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
+    <item name="PLAYER_UNALLOWED"      value="$1 ir par agru pieskāries bumbai!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
 Nospiediet ESCAPE, lai turpinātu
 
-Nospiediet ENTER, lai izietu uz galveno izvēlni..
+Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
     </item>
-    <item name="RESTART">
-Jūs zaudējāt šo spēli..
+    <item name="CONTINUE">
+Apsveicam, Jūs esat pabeidzis šo grūtības līmeni!
 
-Piespiediet ENTER, lai mēģinātu vēlreiz..
+Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
     </item>
+
+    <item name="FINISHED_GAME">
+Apsveicam, jūs esat pabeidzis EXTRA līmeni!
+Tagad Jūs esat nepārspēts kvadrātu čempions.
+Neviens vairs nespēj Jūs pieveikt!
+Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
+    </item>
+
+    <item name="RESTART">
+    Jūs zaudējāt..
+
+    Nospiediet ENTER, lai mēģinātu vēlreiz..
+    </item>
+
+    <item name="WAIT_PLAYERS"             value="Gaida tīkla spēlētājus..."/>
+
     <!-- Main menu -->
+    <item name="MAIN_MENU"                value="Squares 3D Izvēlne"/>
     <item name="START_SINGLEPLAYER"       value="Sākt Spēli"/>
-    <item name="MAIN_MENU"                value="Galvenā Izvēlne"/>
+    <item name="START_MULTIPLAYER"        value="Sākt Tīkla Spēli"/>
     <item name="PLAYER_OPTIONS"           value="Spēlētāja Uzstādījumi"/>
     <item name="OPTIONS"                  value="Uzstādījumi"/>
+    <item name="RULES"                    value="Spēles Noteikumi"/>
+    <item name="CREDITS"                  value="Autori"/>
+    <item name="QUIT_GAME"                value="Iziet no Spēles"/>
+
+    <item name="BACK"                     value="Atgriezties"/>
+
+    <!-- Singleplayer menu -->
+    <item name="EASY"                     value="Viegls Līmenis"/>
+    <item name="NORMAL"                   value="Vidējs Līmenis"/>
+    <item name="HARD"                     value="Grūts Līmenis"/>
+    <item name="EXTRA"                    value="Extra Līmenis"/>
+
+    <!-- Multiplayer menu -->
+    <item name="START_HOST"               value="Izveidot Jaunu Spēli"/>
+    <item name="START_JOIN"               value="Pievienoties Spēlei"/>
+    <item name="BEGIN_GAME"               value="Sākt Spēli"/>
+    <item name="PLAYERS_LIST"             value="Spēlētāju Saraksts:"/>
+    <item name="CONNECT_HOST"             value="Pievienoties"/>
+    <item name="ADDRESS"                  value="Adrese"/>
+    <item name="CONNECTING"               value="Vienojas..."/>
+    <item name="DISCONNECT"               value="Atvienoties"/>
+    <item name="LOCAL_PLAYER"             value=" (Lokāls)"/>
+    <item name="CPU_PLAYER"               value=" (CPU)"/>
+    <item name="REMOTE_PLAYER"            value=" (Tīkla)"/>
+
+    <!-- Player options -->
+    <item name="NAME"                     value="Vārds"/>
+    <item name="COLOR"                    value="Krāsa"/>
+
+    <!-- Options menu -->
     <item name="AUDIO_OPTIONS"            value="Skaņas Uzstādījumi"/>
     <item name="VIDEO_OPTIONS"            value="Attēla Uzstādījumi"/>
-    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus Uzstādījumi"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus Attēla Uzstādījumi"/>
     <item name="OTHER_OPTIONS"            value="Citi Uzstādījumi"/>
-    <item name="CREDITS"                  value="Šautauts savējiem"/>
-    <item name="QUIT_GAME"                value="Beigt Spēli"/>
-    <item name="BACK"                     value="Atpakaļ"/>
-    <item name="SAVE"                     value="Uzstādīt Uzstādījumus"/>
-                                       
-    <!-- Options -->                      
+    <item name="SAVE"                     value="Uzlikt Uzstādījumus"/>
+
+    <!-- Options -->
     <item name="TRUE"                     value="Jā"/>
     <item name="FALSE"                    value="Nē"/>
+    <item name="RESOLUTION"               value="Izšķirtspēja"/>
+    <item name="FULLSCREEN"               value="Pa Visu Ekrānu"/>
+    <item name="VSYNC"                    value="Vertikālā Sinhronizācija"/>
+    <item name="FSAA"                     value="Attēla Izlīdzināšana"/>
+    <item name="ANISOTROPY"               value="Anizotropija"/>
+    <item name="SHADOW_TYPE"              value="Ēnas"/>
+    <item name="SHADOWMAP_SIZE"           value="Ēnu Kvalitāte"/>
+    <item name="SHOW_FPS"                 value="Rādīt FPS"/>
+    <item name="GRASS_DENSITY"            value="Zāļu Daudzums"/>
+    <item name="TERRAIN_DETAIL"           value="Reljefa Detalizācija"/>
+    <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes Detalizācija"/>
+
     <item name="LOW"                      value="Zema"/>
     <item name="MEDIUM"                   value="Vidēja"/>
     <item name="HIGH"                     value="Augsta"/>
     <item name="CUSTOM"                   value="Pēc Izvēles"/>
-    <item name="NOT_SUPPORTED"            value="Nav Pieejama"/>
-                                       
-    <item name="RESOLUTION"               value="Izšķirtspēja"/>
-    <item name="FULLSCREEN"               value="Pilnekrāns"/>
-    <item name="VSYNC"                    value="Vertikālā sinhronizācija"/>
-    <item name="FSAA"                     value="Attēla izlīdzināšana"/>
-    <item name="ANISOTROPY"               value="Anisotropy Filtrs"/>
-    <item name="SHADOW_TYPE"              value="Izmantot Ēnas"/>
-    <item name="SHADOWMAP_SIZE"           value="Ēnu Kvalitāte"/>
-    <item name="SHOW_FPS"                 value="Rādīt Kadrus/sekundē"/>
-    <item name="GRASS_DENSITY"            value="Apzāļojumu Kvalitāte"/>
-    <item name="TERRAIN_DETAIL"           value="Reljefa Kvalitāte"/>
-    <item name="AUDIO"                    value="Skaņa Ieslēgta"/>
-    <item name="LANGUAGE"                 value="Valoda"/>
-    <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes Detalizācija"/>
-    <item name="NAME"                     value="Vārds"/>
-    <item name="COLOR"                    value="Krāsa"/>
+    <item name="NOT_SUPPORTED"            value="Nav Atbalsta"/>
 
-    <item name="RED"                      value="Sarkana"/>
-    <item name="GREEN"                    value="Zaļa"/>
-    <item name="BLUE"                     value="Zila"/>
-    <item name="BLACK"                    value="Melna"/>
-    <item name="WHITE"                    value="Balta"/>
-    <item name="YELLOW"                   value="Dzeltena"/>
-    <item name="CYAN"                     value="Gaišzila"/>
-    <item name="MAGENTA"                  value="Violeta"/>
-    <item name="GREY"                     value="Pelēka"/>
+    <item name="AUDIO"                    value="Skaņa"/>
+    <item name="SYSTEM_KEYS"              value="Sistēmas Taustiņi"/>
+    <item name="LANGUAGE"                 value="Valoda"/>
+    <item name="MOUSE_SENSITIVITY"        value="Peles Jūtīgums"/>
+
+    <item name="MUSIC_VOL"                value="Mūzikas Skaļums"/>
+    <item name="SOUND_VOL"                value="Skaņas Skaļums"/>
+    
+    <item name="CREDITS_SCREEN">
+Programmēšana &amp; Dizains:
+Mārtiņš Možeiko
+Kristaps Straupe
+
+Liels paldies sekojošiem cilvēkiem:
+Atis Straujums (extra līmenis)
+Gustavs Gūtmanis (spēles logo &amp; ikonas)
+Martin Offermann (mūzika &amp; skaņu efekti)
+kā arī pārējiem, kas ir palīdzējuši tapšanas procesā..
+	</item>
+
+	<item name="RULES_SCREEN">
+    Spēli uzsāk ar bumbas izmetienu pret laukuma centru. Spēlētāji drīkst pieskarties bumbai tikai pēc 3. bumbas
+atsitiena no zemes, pretējā gadījumā spēlētājs, kurš pieskāries agrāk, saņem par to mīnuspunktu.
+    Ar katru spēlētāja pieskārienu bumbai, kamēr tā nav nokritusi uz zemes, potenciālo mīnusu skaits tiek palielināts
+par vienu.
+    Spēlētājs saņem mīnusu, kad:
+        * Bumba ir atstājusi laukumu, no viņa laukuma kvadrāta. Spēlētājs saņem tik mīnuspunktus, cik ir bijuši
+          uzsitieni pa bumbu, kamēr tā nav pieskārusies zemei. Ja spēlētājs bija pēdējais, kurš pieskārās bumbai,
+          pirms tā atstāja laukumu no viņa kvadrāta, tad viņš saņem tikai tik mīnuspunktus, cik reizes pats bija
+          pieskāries bumbai gaisā (pēc pēdējā pretinieka pieskāriena, ja tāds bijis), pirms tā atstāja laukumu.
+        * Bumba ir atstājusi laukumu, no paša spēlētāja ķermeņa. Spēlētājs saņem tik mīnuspunktus, cik ir reizes
+          pieskāries bumbai gaisā (pēc pēdējā pretinieka, ja tāds bija pieskāries) pirms izsišanas ārpus laukuma.
+        * Spēlētājs savā laukumā ir pieskāries bumbai vēlreiz, kad tā jau bija pieskārusies zemei. Šajā gadījumā
+          ir viens mīnuspunkts.
+    Kamēr bumba ārpus laukuma nav nokritusi zemē, spēlētājs drīkst to ķert un mēģināt iedabūt atpakaļ laukumā,
+tā, lai tā nepieskaras zemei ārpus laukuma. Kamēr bumba ārpus laukuma nav pieskārusies zemei, tikmēr spēle
+turpinās Objekti, kas ir augstāk par zemi netiek ieskaitīti kā pieskārieni zemei.
+    Ja spēlētājs saņem mīnusu, spēle tiek atsākta ar bumbas izmetienu no spēlētāja laukuma tā, lai bumba atsistos
+spēlētāja laukumā un pēc tam spēlētājam pa diagonāli pretējā laukumā, vai pret tā spēlētāju. Kamēr bumba nav
+atsitusies pret vienu no tiem, pārējie spēlētāji bumbai nedrīkst pieskarties, pretējā gadījumā tie saņem mīnusa punktu.
+    Ja bumba atstāj laukumu no kādas no laukuma viduslīnijām, tad spēli atsāk ar bumbas izmetienu viduslīniju
+krustpunktā, laukuma centrā. Spēlētāji drīkst pieskarties bumbai tikai pēc pirmā atsitiena.
+    Spēlē zaudē tas spēlētājs, kurš pirmais saņem 21 mīnusu punktu.
+	</item>
+
 </xml>

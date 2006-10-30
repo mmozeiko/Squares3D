@@ -9,7 +9,7 @@ class Texture;
 class SkyBox : public NoCopy
 {
 public:
-    SkyBox();
+    SkyBox(const string& name);
 
     void render() const;
 

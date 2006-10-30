@@ -339,10 +339,12 @@ void Network::setCpuProfiles(const vector<Profile*> profiles[], int level)
         temp.assign(profiles[0].begin(), profiles[0].end());
         temp.insert(temp.end(), profiles[1].begin(), profiles[1].end());
         temp.insert(temp.end(), profiles[2].begin(), profiles[2].end());
+        temp.insert(temp.end(), profiles[3].begin(), profiles[3].end());
         
         m_allProfiles[0] = profiles[0];
         m_allProfiles[1] = profiles[1];
         m_allProfiles[2] = profiles[2];
+        m_allProfiles[3] = profiles[3];
     }
     else
     {

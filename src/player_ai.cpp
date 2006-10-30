@@ -51,12 +51,21 @@ void AiPlayer::control()
 
         important = (getFieldCenter() - ballPosition).magnitude() >= 1.0f;
     }
+    bool standOnGround = false;
+    if ((ballPosition - selfPosition).magnitude() >= 2.0f)
+    {
+        standOnGround = true;
+    }
+    if (!isPointInRectangle(ball->getPosition(), m_lowerLeft, m_upperRight))
+    {
+        standOnGround = false;
+    }
 
     // important if going to hit ball, else going to center of players field
 
     Vector dir = ballPosition - selfPosition;
 
-    if (dir.magnitude() < 0.7f && !important) // if inside players field center
+    if (/*standOnGround ||*/ dir.magnitude() < 0.7f && !important) // if inside players field center
     {
         move = false;
     }
@@ -65,7 +74,7 @@ void AiPlayer::control()
         if (important &&                    // if moving towards ball
             dir.magnitude() < 1.0f &&       // and ball is nearby
             (ball->getVelocity().y > 0 || ball->getPosition().y > m_radius*2) &&    // and ball is going upwards or is above gurkjis
-            ball->getPosition().y > 0.3f && // and ball is flying 
+            ball->getPosition().y > 0.4f && // and ball is flying 
             Randoms::getFloat() < m_jumpCoefficient // and very probable random
             )
         {

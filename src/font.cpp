@@ -33,19 +33,19 @@ void Font::unload()
 struct Head
 {
     char fnt[4];
-    short size;
-    short texW;
-    short texH;
-    short height;
-    short count;
-    short maxid;
+    unsigned short size;
+    unsigned short texW;
+    unsigned short texH;
+    unsigned short height;
+    unsigned short count;
+    unsigned short maxid;
 };
 
 struct Char
 {
-    short id;
-    short x;
-    short y;
+    unsigned short id;
+    unsigned short x;
+    unsigned short y;
     char width;
     char height;
     char xoffset;
@@ -71,12 +71,29 @@ Font::Font(const string& filename) : m_texture(0)
     {
         throw Exception("Invalid font file");
     }
+#ifdef __BIG_ENDIAN__
+    head.size = ((head.size & 0xFF) << 8) + (head.size >> 8);
+    head.texW = ((head.texW & 0xFF) << 8) + (head.texW >> 8);
+    head.texH = ((head.texH & 0xFF) << 8) + (head.texH >> 8);
+    head.height = ((head.height & 0xFF) << 8) + (head.height >> 8);
+    head.count = ((head.count & 0xFF) << 8) + (head.count >> 8);
+    head.maxid = ((head.maxid & 0xFF) << 8) + (head.maxid >> 8);
+#endif
+        
     m_count = head.maxid;
     m_height = head.height;
 
     vector<Char> chars(head.count);
     in.read(&chars[0], sizeof(Char)*head.count);
     in.close();
+#ifdef __BIG_ENDIAN__
+    for (int i=0; i<head.count; i++)
+    {
+        chars[i].id = ((chars[i].id & 0xFF) << 8) + (chars[i].id >> 8);
+        chars[i].x = ((chars[i].x & 0xFF) << 8) + (chars[i].x >> 8);
+        chars[i].y = ((chars[i].y & 0xFF) << 8) + (chars[i].y >> 8);
+    }
+#endif
 
     // loading texture
     File::Reader file("/data/font/" + filename + "_00.tga");
@@ -218,6 +235,7 @@ void Font::begin2() const
 void Font::renderPlain(const wstring& text) const
 {
     glPushMatrix();
+
     if (sizeof(wchar_t) == 2)
     {
         glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
@@ -230,6 +248,7 @@ void Font::renderPlain(const wstring& text) const
     {
         assert(false);
     }
+
     glPopMatrix();
 }
 

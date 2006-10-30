@@ -35,10 +35,10 @@ static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
 static const float GRASS_BRIGHTNESS_1 = 0.6f; // shadowed
 static const float GRASS_BRIGHTNESS_2 = 0.7f; // lit
 
-static const Vector playerPositions[4] = {Vector(- FIELDLENGTH / 2, 1.5f, - FIELDLENGTH / 2),
-                                          Vector(- FIELDLENGTH / 2, 1.5f,   FIELDLENGTH / 2),
-                                          Vector(  FIELDLENGTH / 2, 1.5f,   FIELDLENGTH / 2),
-                                          Vector(  FIELDLENGTH / 2, 1.5f, - FIELDLENGTH / 2)
+static const Vector playerPositions[4] = {Vector(- FIELD_LENGTH / 2, 1.5f, - FIELD_LENGTH / 2),
+                                          Vector(- FIELD_LENGTH / 2, 1.5f,   FIELD_LENGTH / 2),
+                                          Vector(  FIELD_LENGTH / 2, 1.5f,   FIELD_LENGTH / 2),
+                                          Vector(  FIELD_LENGTH / 2, 1.5f, - FIELD_LENGTH / 2)
                                           };
 
 template <class World> World* System<World>::instance = NULL;
@@ -172,16 +172,16 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     setLight(Vector(-15.0f, 35.0f, 38.0f));
 
     m_camera = new Camera(Vector(0.0f, 1.0f, 12.0f), 20.0f, 0.0f);
-    m_skybox = new SkyBox();
 }
 
 void World::init()
 {
     if (m_newtonWorld != NULL)
     {
+        delete m_skybox;
+
         delete m_messages;
         delete m_scoreBoard;
-
 
         for each_const(vector<Player*>, m_localPlayers, iter)
         {
@@ -195,6 +195,8 @@ void World::init()
 
         NewtonDestroyAllBodies(m_newtonWorld);
         NewtonDestroy(m_newtonWorld);
+
+        m_skybox = NULL;
 
         m_messages = NULL;
         m_scoreBoard = NULL;
@@ -223,6 +225,8 @@ void World::init()
     {
         makeFence(m_level, m_newtonWorld);
     }
+
+    m_skybox = new SkyBox(m_level->m_skyboxName);
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 

@@ -219,7 +219,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     submenu->setTitle(language->get(TEXT_CREDITS), titlePos);
 
-    submenu->addEntry(new LabelEntry(this, language->get(TEXT_CREDITS_SCREEN)));
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_CREDITS_SCREEN), Font::Align_Left, Font::get("Arial_32pt_bold") ));
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    

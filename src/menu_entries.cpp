@@ -273,7 +273,7 @@ void WorldEntry::click(int button)
     if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         Network::instance->setPlayerProfile(Game::instance->m_userProfile);
-        Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, m_current);
+        Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, m_switchTo);
 
         m_current = m_switchTo;
         m_menu->setState(State::World);

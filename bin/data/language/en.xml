@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <!-- Ingame texts -->
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
     <item name="GAME_OVER"             value="Game has ended!"/>
-    <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out (dumbass)!&#10;+$2"/>
+    <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out!&#10;+$2"/>
     <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
     <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
     <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
@@ -15,24 +15,26 @@
     <item name="ESC_MESSAGE">
 Press ESCAPE to continue
 
-Press ENTER to quit to main menu..
+Press ENTER to quit to Main Menu..
     </item>
+
     <item name="CONTINUE">
 Congratulations, You have cleared this difficulty level!
 
 Press ENTER to return to Main Menu..
     </item>
+
     <item name="FINISHED_GAME">
 Congratulations, You have finished Extra level!
 Now you are The Ultimate Master of Squares.
 No one can defeat You anymore!
 Press ENTER to return to Main Menu..
     </item>
-    REGISTER_TEXT_TYPE(
+
     <item name="RESTART">
 You`ve lost the game..
 
-Press ENTER to return to retry..
+Press ENTER to retry..
     </item>
 		
     <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
@@ -43,6 +45,7 @@ Press ENTER to return to retry..
     <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
     <item name="PLAYER_OPTIONS"           value="Player Options"/>
     <item name="OPTIONS"                  value="Options"/>
+    <item name="RULES"                    value="Game Rules"/>
     <item name="CREDITS"                  value="Credits"/>
     <item name="QUIT_GAME"                value="Quit Game"/>
 
@@ -85,7 +88,7 @@ Press ENTER to return to retry..
     <item name="FULLSCREEN"               value="Fullscreen"/>
     <item name="VSYNC"                    value="Vertical Sync"/>
     <item name="FSAA"                     value="Antialiasing"/>
-    <item name="ANISOTROPY"               value="Anisotropy Filter"/>
+    <item name="ANISOTROPY"               value="Anisotropy"/>
     <item name="SHADOW_TYPE"              value="Use Shadows"/>
     <item name="SHADOWMAP_SIZE"           value="Shadow Quality"/>
     <item name="SHOW_FPS"                 value="Show FPS"/>
@@ -107,17 +110,6 @@ Press ENTER to return to retry..
     <item name="MUSIC_VOL"                value="Music volume"/>
     <item name="SOUND_VOL"                value="Sound volume"/>
 
-    <!-- Colors -->
-    <item name="RED"                      value="Red"/>
-    <item name="GREEN"                    value="Green"/>
-    <item name="BLUE"                     value="Blue"/>
-    <item name="BLACK"                    value="Black"/>
-    <item name="WHITE"                    value="White"/>
-    <item name="YELLOW"                   value="Yellow"/>
-    <item name="CYAN"                     value="Cyan"/>
-    <item name="MAGENTA"                  value="Magenta"/>
-    <item name="GREY"                     value="Grey"/>
-    
     <!-- Languages, do not translate and do not put in other xml files!!! -->
     <item name="LANG_ENGLISH" value="English"/>
     <item name="LANG_LATVIAN" value="Latviešu"/>
@@ -126,46 +118,39 @@ Press ENTER to return to retry..
 
 
     <item name="CREDITS_SCREEN">
-  Programming:
+Programming &amp; Design:
 Mārtiņš Možeiko
 Kristaps Straupe
- Design:
-Mārtiņš Možeiko
-Kristaps Straupe
-Atis Straujums
-Gustavs Gūtmanis
-  Sound:
-Martin Offerman
-	</item>
 
-	<item name="RULES"               value="Rules"/>
+Also credits goes to:
+Atis Straujums (extra level),
+Gustavs Gūtmanis (logo &amp; icon)
+Martin Offermann (music &amp; sound effects)
+other people who have helped us..
+    </item>
+
 	<item name="RULES_SCREEN">
-Spēli uzsāk ar bumbas izmetienu pret laukuma centru.
-Ar katru spēlētāja pieskārienu bumbai, kamēr tā nav nokritusi uz zemi, potenciālo mīnusu
-skaits tiek palielināts par vienu.
-
-Spēlētājs saņem mīnuspunktu, kad:
-* Bumba ir atstājusi laukumu, no viņa laukuma kvadrāta. Spēlētājs saņem tik mīnuspunktus,
-cik ir bijuši uzsitieni pa bumbu, kamēr tā nav pieskārusies zemei. Ja spēlētājs bija pēdējais,
-kurš pieskārās bumbai, pirms tā atstāja laukumu no viņa kvadrāta, tad viņš saņem tikai tik
-mīnuspunktus, cik reizes pats bija pieskāries bumbai gaisā (pēc pēdējā pretinieka), pirms
-tā atstāja laukumu.
-* Bumba ir atstājusi laukumu, no paša spēlētāja ķermeņa. Spēlētājs saņem tik mīnuspunktus,
-cik ir reizes pieskāries bumbai gaisā (pēc pēdējā pretinieka, ja tāds bija pieskāries)
-pirms izsišanas ārpus laukuma.
-* Spēlētājs savā laukumā ir pieskāries bumbai vēlreiz, kad tā jau bija pieskārusies zemei.
-Šajā gadījumā ir viens mīnuspunkts.
-
-Kamēr bumba ārpus laukuma nav nokritusi zemē, spēlētājs drīkst to ķert un mēģināt atdabūt
-atpakaļ laukumā, tā lai tā nepieskaras ārpus laukuma zemei. Kamēr bumba ārpus laukuma nav
-pieskārusies zemei, tikmēr spēle turpinās (objekti, kas ir augstāk par zemi netiek ieskaitīti
-kā pieskārieni zemei).
-Ja spēlētājs saņem mīnusu, spēle tiek atsākta ar bumbas izmetienu no spēlētāja laukuma tā,
-lai bumba atsistos spēlētāja laukumā un pēc tam spēlētājam pa diagonāli pretējā laukumā,
-vai pret tā spēlētāju. Kamēr bumba nav atsitusies pret vienu no tiem, pārējie spēlētāji
-bumbai nedrīkst pieskarties, pretējā gadījumā tie saņem mīnusa punktu.
-Ja bumba atstāj laukumu no kādas no laukuma viduslīnijām, tad spēli atsāk ar bumbas izmetienu
-viduslīniju krustpunktā, laukuma centrā. Spēlē zaudē tas spēlētājs, kurš pirmais saņem
-21 mīnusu punktu.
+    Game begins with a throw of the ball in the middle of the field. Players may not touch the ball before it has hit
+the ground 3 times. Otherwise the player who has touched the ball earlier gets 1 minus point.
+    With each touch of the player to the ball the count of potential minuses is increased by 1 point.
+    Player recieves a minus point when:
+        * Ball has left the field from the player`s field. Player then recieves as many minus points as there have been
+          touches to the ball while it has been in air. If the player was the last one who had hit the ball before it left the
+          field from the player`s square of field, he recieves as many minus points as he had gathered while ball was in
+          the air after the last touch to the ball (if any) by any of opponents.
+        * Ball has left the field from the body of the player. In this scenario the player recieves as many minus points
+          as he had gathered while ball was in the air after the last touch to the ball (if any) by any of opponents.
+        * Player has touched the ball for the second time in his field when the ball has hit the ground between those
+          two touches. The player recieves 1 minus point.
+    While the ball has not hit the ground outside of the field the player may try to catch it and get back into game
+field while keeping it in air. While the ball has not hit the ground outside of the game field, the game continues.
+Objects which are above ground are not counted as ground thus if the ball hits them, the game is not yet stopped.
+    If player recieves the minus point, the game is resumed with a throw of the ball from that player`s field in diagonal
+direction and it has to hit the same player`s field once and only after this event the diagonal player may touch the
+ball while others have to wait for him to touch it or for the ball to hit his (diagonal) field before they can touch the ball.
+If any of players fails to obey this rule he gets 1 minus point.
+    If ball has left the game field from any of middle lines the game is resumed with a throw of the ball in the middle
+of the game field. Players may touch the ball once it has hit the ground.
+    The player who first recieves 21 points loses the game.
 	</item>
 </xml>

@@ -77,7 +77,7 @@ Game::~Game()
     
     saveUserData();
  
-    for (size_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 4; i++)
     {
         for each_const(ProfilesVector, m_cpuProfiles[i], iter)
         {
@@ -417,12 +417,12 @@ void Game::loadCpuData()
     }
     xml.load(in);
     in.close();
-    int checks[3] = {0,0,0};
+    int checks[4] = {0,0,0,0};
 
     for each_const(XMLnodes, xml.childs, iter)
     {
         const XMLnode& node = *iter;
-        if ((node.name == "easy") || (node.name == "normal") || (node.name == "hard"))
+        if ((node.name == "easy") || (node.name == "normal") || (node.name == "hard") || (node.name == "extra"))
         {
             size_t idx;
             if (node.name == "easy")
@@ -433,9 +433,13 @@ void Game::loadCpuData()
             {
                 idx = 1;
             }
-            else
+            else if (node.name == "hard")
             {
                 idx = 2;
+            }
+            else // if (node.name == "extra")
+            {
+                idx = 3;
             }
 
             for each_const(XMLnodes, node.childs, iter)
@@ -459,13 +463,11 @@ void Game::loadCpuData()
         }
     }
 
-    for (size_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 4; i++)
     {
         if (checks[i] < 3)
         {
             throw Exception("Invalid cpu_profiles, there should be at least 3 profiles in each difficulty");
         }
     }
-
-    m_cpuProfiles[3] = m_cpuProfiles[2];
 }
