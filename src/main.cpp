@@ -14,6 +14,8 @@
 #include "utilities.h"
 #include "game.h"
 #include "version.h"
+#include "audio.h"
+#include "video.h"
 
 int main(int, char* argv[])
 {
@@ -33,16 +35,23 @@ int main(int, char* argv[])
         File::init(argv[0]);
         try
         {
-            if (glfwInit() != GL_TRUE)  // MacOSX bug!!
-            {
-                throw Exception("glfwInit failed");
-            }
+#ifdef __linux__
+            audio_setup();
+#endif
+#ifdef __APPLE__
+            video_setup();
+#endif
             do
             {
                 Game().run();
             }
             while (g_needsToReload);
-            glfwTerminate(); // MacOSX bug!!
+#ifdef __linux__
+            audio_finish();
+#endif
+#ifdef __APPLE__
+            video_finish();
+#endif
         }
         catch (string& exception)
         {

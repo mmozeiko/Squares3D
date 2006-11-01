@@ -30,6 +30,9 @@ struct Face
 
 typedef map<string, Texture*> TextureMap;
 
+void video_setup();
+void video_finish();
+
 class Video : public System<Video>, public NoCopy
 {
 public:

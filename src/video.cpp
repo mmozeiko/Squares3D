@@ -26,6 +26,19 @@ static void GLFWCALL sizeCb(int width, int height)
     glLoadIdentity();
 }
 
+void video_setup()
+{
+    if (glfwInit() != GL_TRUE)
+    {
+        throw Exception("glfwInit failed");
+    }
+}
+
+void video_finish()
+{
+    glfwTerminate();
+}
+
 Video::Video() :
     m_haveAnisotropy(false),
     m_maxAnisotropy(0),
@@ -40,6 +53,10 @@ Video::Video() :
     setInstance(this);
 
     clog << "Initializing video." << endl;
+
+#ifndef __APPLE__
+    video_setup();
+#endif
 
     int width = Config::instance->m_video.width;;
     int height = Config::instance->m_video.height;
@@ -148,6 +165,9 @@ Video::~Video()
     m_lists.clear();
 
     glfwCloseWindow();
+#ifndef __APPLE__
+    video_finish();
+#endif
 }
 
 void Video::init()

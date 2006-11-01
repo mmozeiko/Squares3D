@@ -61,8 +61,6 @@ elif p == "darwin":
     postfix = ""
     builddir = "Release"
 
-  env.Append( CXXFLAGS  = ["-fpermissive"] )
-
   additional = []
 
   removeMMGR = True
@@ -86,8 +84,6 @@ elif p == "posix":
 
     postfix = ""
     builddir = "Release"
-
-  env.Append( CXXFLAGS  = ["-fpermissive"] )
 
   additional = []
 

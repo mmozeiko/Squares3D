@@ -8,41 +8,62 @@
 
 template <class Audio> Audio* System<Audio>::instance = NULL;
 
-Audio::Audio()
+static ALCdevice* device;
+static ALCcontext* context;
+
+void audio_setup()
 {
     clog << "Initializing audio." << endl;
 
-    m_device = alcOpenDevice(NULL);
-    if (m_device==NULL)
+    device = alcOpenDevice(NULL);
+    if (device==NULL)
     {
         throw Exception(alcGetString(NULL, alcGetError(NULL)));
     }
 
-    m_context = alcCreateContext(m_device, NULL);
-    if (m_context==NULL)
+    context = alcCreateContext(device, NULL);
+    if (context==NULL)
     {
-        string error = string(alcGetString(m_device, alcGetError(m_device)));
-        alcCloseDevice(m_device);
+        string error = string(alcGetString(device, alcGetError(device)));
+        alcCloseDevice(device);
         throw Exception(error);
     }
-    alcMakeContextCurrent(m_context);
+    alcMakeContextCurrent(context);
 
     int major=0, minor=0;
-    alcGetIntegerv(m_device, ALC_MAJOR_VERSION, 1, &major);
-    alcGetIntegerv(m_device, ALC_MINOR_VERSION, 1, &minor);
+    alcGetIntegerv(device, ALC_MAJOR_VERSION, 1, &major);
+    alcGetIntegerv(device, ALC_MINOR_VERSION, 1, &minor);
 
     clog << " * Version  : " << major << '.' << minor << endl
          << " * Vendor   : " << alGetString(AL_VENDOR) << endl
          << " * Renderer : " << alGetString(AL_RENDERER) << endl
-         << " * Device   : " << alcGetString(m_device, ALC_DEVICE_SPECIFIER) << endl;
+         << " * Device   : " << alcGetString(device, ALC_DEVICE_SPECIFIER) << endl;
+}
+
+void audio_finish()
+{
+    clog << "Closing audio." << endl;
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(context);
+    alcCloseDevice(device);
+}
+
+Audio::Audio()
+{
+#ifndef __linux__
+    audio_setup();
+#endif
+    m_device = device;
+    m_context = context;
 }
 
 Audio::~Audio()
 {
-    clog << "Closing audio." << endl;
-    alcMakeContextCurrent(NULL);
-    alcDestroyContext(m_context);
-    alcCloseDevice(m_device);
+#ifndef __linux__
+    audio_finish();
+#endif
+    m_device = NULL;
+    m_context = NULL;
 }
 
 Music* Audio::loadMusic(const string& filename)
