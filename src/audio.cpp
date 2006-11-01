@@ -48,7 +48,7 @@ Audio::~Audio()
 Music* Audio::loadMusic(const string& filename)
 {
     Music* music = *m_music.insert(new Music(filename)).first;
-    alSourcef(music->m_source, AL_GAIN, Config::instance->m_audio.music_vol/10.0f);
+    alSourcef(music->m_source, AL_GAIN, Config::instance->m_audio.music_vol/15.0f);
     return music;
 }
 

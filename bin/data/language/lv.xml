@@ -12,27 +12,27 @@
     <item name="PLAYER_UNALLOWED"      value="$1 ir par agru pieskāries bumbai!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
-Nospiediet ESCAPE, lai turpinātu
+Nospiediet &lt;ESCAPE&gt; lai turpinātu
 
-Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
+Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
     </item>
     <item name="CONTINUE">
 Apsveicam, Jūs esat pabeidzis šo grūtības līmeni!
 
-Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
+Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
     </item>
 
     <item name="FINISHED_GAME">
 Apsveicam, jūs esat pabeidzis EXTRA līmeni!
 Tagad Jūs esat nepārspēts kvadrātu čempions.
 Neviens vairs nespēj Jūs pieveikt!
-Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
+Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
     </item>
 
     <item name="RESTART">
-    Jūs zaudējāt..
+Jūs zaudējāt..
 
-    Nospiediet ENTER, lai mēģinātu vēlreiz..
+Nospiediet &lt;ENTER&gt; lai mēģinātu vēlreiz..
     </item>
 
     <item name="WAIT_PLAYERS"             value="Gaida tīkla spēlētājus..."/>
@@ -108,17 +108,18 @@ Nospiediet ENTER, lai atgrieztos uz galveno izvēlni..
     <item name="MUSIC_VOL"                value="Mūzikas Skaļums"/>
     <item name="SOUND_VOL"                value="Skaņas Skaļums"/>
     
-    <item name="CREDITS_SCREEN">
-Programmēšana &amp; Dizains:
+    <item name="CREDITS_SCREEN">Programmēšana &amp; Dizains:
 Mārtiņš Možeiko
 Kristaps Straupe
 
 Liels paldies sekojošiem cilvēkiem:
 Atis Straujums (extra līmenis)
 Gustavs Gūtmanis (spēles logo &amp; ikonas)
+Dmitry Chirkov (spēlētāju modelis)
 Martin Offermann (mūzika &amp; skaņu efekti)
-kā arī pārējiem, kas ir palīdzējuši tapšanas procesā..
-	</item>
+Aleksanders Belovs (tulkojums krieviski)
+Dirk Stegmann (tulkojums vāciski)
+Kā arī pārējiem, kas ir palīdzējuši tapšanas procesā!</item>
 
 	<item name="RULES_SCREEN">
     Spēli uzsāk ar bumbas izmetienu pret laukuma centru. Spēlētāji drīkst pieskarties bumbai tikai pēc 3. bumbas

@@ -45,7 +45,10 @@
                 kineticFriction      = "0.5"
                 elasticityCoefficient = "0.3"
                 softnessCoefficient   = "0.85">
-        <sound name="ball_player"/>
+        <sound name="ball_player_1"/>
+        <sound name="ball_player_2"/>
+        <sound name="ball_player_3"/>
+        <sound name="ball_player_4"/>
     </properties>
 
 
@@ -55,8 +58,13 @@
                 kineticFriction      = "0.5"
                 elasticityCoefficient = "0.7"
                 softnessCoefficient   = "0.2">
-        <sound name="ball_ground"/>
-        <sound name="ball_ground"/>
+        <sound name="ball_ground_1"/>
+        <sound name="ball_ground_2"/>
+        <sound name="ball_ground_3"/>
+        <sound name="ball_ground_4"/>
+        <sound name="ball_ground_5"/>
+        <sound name="ball_ground_6"/>
+        <sound name="ball_ground_7"/>
     </properties>
 
     <properties property0 = "football" 
@@ -71,7 +79,12 @@
                 staticFriction       = "1.0"
                 kineticFriction      = "0.7"
                 elasticityCoefficient = "0.8"
-                softnessCoefficient   = "0.4"/>
+                softnessCoefficient   = "0.4">
+        <sound name="ball_brick_1"/>
+        <sound name="ball_brick_2"/>
+        <sound name="ball_brick_3"/>
+    </properties>
+
 
     <!-- misc -->
     
@@ -81,7 +94,10 @@
                 kineticFriction      = "1.0"
                 elasticityCoefficient = "0.3"
                 softnessCoefficient   = "0.3">
-        <sound name="menu_click"/>
+        <sound name="wood_wood_1"/>
+        <sound name="wood_wood_2"/>
+        <sound name="wood_wood_3"/>
+        <sound name="wood_wood_4"/>
     </properties>
     
     <properties property0 = "wood" 
@@ -90,7 +106,8 @@
                 kineticFriction      = "1.0"
                 elasticityCoefficient = "0.4"
                 softnessCoefficient   = "0.5">
-        <sound name="menu_click"/>
+        <sound name="wood_grass_1"/>
+        <sound name="wood_grass_2"/>
     </properties>
 
     <properties property0 = "wood" 
@@ -99,6 +116,8 @@
                 kineticFriction      = "1.0"
                 elasticityCoefficient = "0.4"
                 softnessCoefficient   = "0.5">
-        <sound name="ball_player"/>
+        <sound name="wood_wood_1"/>
+        <sound name="wood_wood_4"/>
+        <sound name="wood_grass_2"/>
     </properties>
 </xml>

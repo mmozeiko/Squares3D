@@ -2,149 +2,163 @@
 <xml>
     <!-- Ingame texts -->
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
-    <item name="GAME_OVER"             value="Game has ended!"/>
-    <item name="PLAYER_KICKS_OUT_BALL" value="$1 kicks the ball out!&#10;+$2"/>
-    <item name="OUT_FROM_FIELD"        value="Out from $1 field!&#10;+$2"/>
-    <item name="OUT_FROM_MIDDLE_LINE"  value="Ball out from middle line!"/>
-    <item name="PLAYER_TOUCHES_TWICE"  value="$1 touches twice!&#10;+$2"/>
-    <item name="HITS_COMBO"            value="$1 Hits combo!!"/>
-    <item name="HITS"                  value="$1 Hits!!"/>
+    <item name="GAME_OVER"             value="Das Spiel ist aus!"/>
+    <item name="PLAYER_KICKS_OUT_BALL" value="$1 schießt den Ball ins Aus!&#10;+$2"/>
+    <item name="OUT_FROM_FIELD"        value="Der Ball geht über das Feld von $1 ins Aus!&#10;+$2"/>
+    <item name="OUT_FROM_MIDDLE_LINE"  value="Der Ball geht über die Mittellinie ins Aus!"/>
+    <item name="PLAYER_TOUCHES_TWICE"  value="$1 berührt den Ball zweimal!&#10;+$2"/>
+    <item name="HITS_COMBO"            value="$1 Berührungen in Folge!!"/>
+    <item name="HITS"                  value="$1 Punkte!!"/>
     <item name="SCORE_MESSAGE"         value="$1: $2"/>
-    <item name="PLAYER_UNALLOWED"      value="$1 touched the ball preliminary!&#10;+$2"/>
+    <item name="PLAYER_UNALLOWED"      value="$1 hat den Ball zu früh berührt!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
-        Press ESCAPE to continue
+Drücke &lt;ESCAPE&gt; um fortzufahren.
 
-        Press ENTER to quit to Main Menu..
+Drücke &lt;ENTER&gt; um das Spiel zu beenden
+und zum Hauptmenü zurückzukehren.
     </item>
 
     <item name="CONTINUE">
-        Congratulations, You have cleared this difficulty level!
+Glückwunsch, Du hast diesen Schwierigkeitsgrad geschafft!
 
-        Press ENTER to return to Main Menu..
+Drücke &lt;ENTER&gt; um zum Hauptmenü zurückzukehren.
     </item>
 
     <item name="FINISHED_GAME">
-        Congratulations, You have finished Extra level!
-        Now you are The Ultimate Master of Squares.
-        No one can defeat You anymore!
-        Press ENTER to return to Main Menu..
+Glückwunsch, Du hast den Extra-Level gemeistert!
+Du bist jetzt der unbesiegbare Squares-Meister.
+Niemand kann Dich mehr bezwingen!
+
+Drücke &lt;ENTER&gt; um zum Hauptmenü zurückzukehren.
     </item>
 
     <item name="RESTART">
-        You`ve lost the game..
+Du hast das Spiel verloren.
 
-        Press ENTER to retry..
+Drücke &lt;ENTER&gt; um es erneut zu versuchen.
     </item>
 
-    <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
+    <item name="WAIT_PLAYERS"             value="Warte bis sich weitere Spieler verbinden..."/>
 
     <!-- Main menu -->
-    <item name="MAIN_MENU"                value="Squares 3D Menu"/>
-    <item name="START_SINGLEPLAYER"       value="Start Singleplayer"/>
-    <item name="START_MULTIPLAYER"        value="Start Multiplayer"/>
-    <item name="PLAYER_OPTIONS"           value="Player Options"/>
-    <item name="OPTIONS"                  value="Options"/>
-    <item name="RULES"                    value="Game Rules"/>
-    <item name="CREDITS"                  value="Credits"/>
-    <item name="QUIT_GAME"                value="Quit Game"/>
+    <item name="MAIN_MENU"                value="Squares 3D Hauptmenü"/>
+    <item name="START_SINGLEPLAYER"       value="Starte als Einzelspieler"/>
+    <item name="START_MULTIPLAYER"        value="Starte mit mehreren Spielern"/>
+    <item name="PLAYER_OPTIONS"           value="Spieler-Einstellungen"/>
+    <item name="OPTIONS"                  value="Spiel-Einstellungen"/>
+    <item name="RULES"                    value="Spielregeln"/>
+    <item name="CREDITS"                  value="Danksagung"/>
+    <item name="QUIT_GAME"                value="Spiel beenden"/>
 
-    <item name="BACK"                     value="Back"/>
+    <item name="BACK"                     value="Zurück"/>
 
     <!-- Singleplayer menu -->
-    <item name="EASY"                     value="Easy Level"/>
-    <item name="NORMAL"                   value="Normal Level"/>
-    <item name="HARD"                     value="Hard Level"/>
-    <item name="EXTRA"                    value="Extra Level"/>
+    <item name="EASY"                     value="Einfacher Schwierigkeitsgrad"/>
+    <item name="NORMAL"                   value="Mittlerer Schwierigkeitsgrad"/>
+    <item name="HARD"                     value="Hoher Schwierigkeitsgrad"/>
+    <item name="EXTRA"                    value="Extra-Level"/>
 
     <!-- Multiplayer menu -->
-    <item name="START_HOST"               value="Host New Game"/>
-    <item name="START_JOIN"               value="Join Game"/>
-    <item name="BEGIN_GAME"               value="Start Game"/>
-    <item name="PLAYERS_LIST"             value="Players list:"/>
-    <item name="CONNECT_HOST"             value="Connect"/>
-    <item name="ADDRESS"                  value="Address"/>
-    <item name="CONNECTING"               value="Connecting..."/>
-    <item name="DISCONNECT"               value="Disconnect"/>
-    <item name="LOCAL_PLAYER"             value=" (Local)"/>
-    <item name="CPU_PLAYER"               value=" (CPU)"/>
-    <item name="REMOTE_PLAYER"            value=" (Remote)"/>
+    <item name="START_HOST"               value="Neues Netzwerkspiel eröffnen"/>
+    <item name="START_JOIN"               value="Mit einem Netzwerkspiel verbinden"/>
+    <item name="BEGIN_GAME"               value="Spiel starten"/>
+    <item name="PLAYERS_LIST"             value="Liste der Spieler:"/>
+    <item name="CONNECT_HOST"             value="Verbinden"/>
+    <item name="ADDRESS"                  value="Netzwerk-Adresse"/>
+    <item name="CONNECTING"               value="Verbindung wird aufgebaut..."/>
+    <item name="DISCONNECT"               value="Verbindung beenden"/>
+    <item name="LOCAL_PLAYER"             value=" (Lokal)"/>
+    <item name="CPU_PLAYER"               value=" (Computer)"/>
+    <item name="REMOTE_PLAYER"            value=" (per Netzwerk verbunden)"/>
 
     <!-- Player options -->
     <item name="NAME"                     value="Name"/>
-    <item name="COLOR"                    value="Color"/>
+    <item name="COLOR"                    value="Farbe"/>
 
     <!-- Options menu -->
-    <item name="AUDIO_OPTIONS"            value="Audio Options"/>
-    <item name="VIDEO_OPTIONS"            value="Video Options"/>
-    <item name="VIDEO_OPTIONS_ADVANCED"   value="Advanced Video Options"/>
-    <item name="OTHER_OPTIONS"            value="Other Options"/>
-    <item name="SAVE"                     value="Apply Settings"/>
+    <item name="AUDIO_OPTIONS"            value="Sound-Einstellungen"/>
+    <item name="VIDEO_OPTIONS"            value="Grafik-Einstellungen"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Erweiterte Grafik-Einstellungen"/>
+    <item name="OTHER_OPTIONS"            value="Weitere Einstellungen"/>
+    <item name="SAVE"                     value="Änderungen anwenden"/>
 
     <!-- Options -->
-    <item name="TRUE"                     value="Yes"/>
-    <item name="FALSE"                    value="No"/>
-    <item name="RESOLUTION"               value="Resolution"/>
-    <item name="FULLSCREEN"               value="Fullscreen"/>
-    <item name="VSYNC"                    value="Vertical Sync"/>
-    <item name="FSAA"                     value="Antialiasing"/>
-    <item name="ANISOTROPY"               value="Anisotropy"/>
-    <item name="SHADOW_TYPE"              value="Use Shadows"/>
-    <item name="SHADOWMAP_SIZE"           value="Shadow Quality"/>
-    <item name="SHOW_FPS"                 value="Show FPS"/>
-    <item name="GRASS_DENSITY"            value="Grass Density"/>
-    <item name="TERRAIN_DETAIL"           value="Terrain Detail"/>
-    <item name="ENVIRONMENT_DETAILS"      value="Environmental Details"/>
+    <item name="TRUE"                     value="Ein"/>
+    <item name="FALSE"                    value="Aus"/>
+    <item name="RESOLUTION"               value="Bildschirmauflösung"/>
+    <item name="FULLSCREEN"               value="Vollbild"/>
+    <item name="VSYNC"                    value="Flimmerunterdrückung (VSync)"/>
+    <item name="FSAA"                     value="Kantenglättung (Antialiasing)"/>
+    <item name="ANISOTROPY"               value="Anisotropisches Filtern"/>
+    <item name="SHADOW_TYPE"              value="Darstellung von Schatten"/>
+    <item name="SHADOWMAP_SIZE"           value="Qualität der Schatten"/>
+    <item name="SHOW_FPS"                 value="Bildrate (FPS) anzeigen"/>
+    <item name="GRASS_DENSITY"            value="Grasdichte"/>
+    <item name="TERRAIN_DETAIL"           value="Landschafts-Detailreichtum"/>
+    <item name="ENVIRONMENT_DETAILS"      value="Umgebungs-Detailreichtum"/>
 
-    <item name="LOW"                      value="Low"/>
-    <item name="MEDIUM"                   value="Medium"/>
-    <item name="HIGH"                     value="High"/>
-    <item name="CUSTOM"                   value="Custom"/>
-    <item name="NOT_SUPPORTED"            value="Not Available"/>
+    <item name="LOW"                      value="Gering"/>
+    <item name="MEDIUM"                   value="Mittel"/>
+    <item name="HIGH"                     value="Hoch"/>
+    <item name="CUSTOM"                   value="Eigene Einstellung"/>
+    <item name="NOT_SUPPORTED"            value="Nicht unterstützt"/>
 
-    <item name="AUDIO"                    value="Audio On"/>
-    <item name="SYSTEM_KEYS"              value="System Keys"/>
-    <item name="LANGUAGE"                 value="Language"/>
-    <item name="MOUSE_SENSITIVITY"        value="Mouse Sensitivity"/>
+    <item name="AUDIO"                    value="Sound aktivieren"/>
+    <item name="SYSTEM_KEYS"              value="System-Funktionstasten"/>
+    <item name="LANGUAGE"                 value="Sprache"/>
+    <item name="MOUSE_SENSITIVITY"        value="Maus-Empfindlichkeit"/>
 
-    <item name="MUSIC_VOL"                value="Music volume"/>
-    <item name="SOUND_VOL"                value="Sound volume"/>
+    <item name="MUSIC_VOL"                value="Lautstärke der Musik"/>
+    <item name="SOUND_VOL"                value="Lautstärke der Effekte"/>
 
 
-    <item name="CREDITS_SCREEN">
-        Programming &amp; Design:
-        Mārtiņš Možeiko
-        Kristaps Straupe
+    <item name="CREDITS_SCREEN">Programmierung &amp; Design:
+Mārtiņš Možeiko
+Kristaps Straupe
 
-        Also credits goes to:
-        Atis Straujums (extra level),
-        Gustavs Gūtmanis (logo &amp; icon)
-        Martin Offermann (music &amp; sound effects)
-        other people who have helped us..
-    </item>
+Weiterer Dank gebührt:
+Atis Straujums (Extra-Level)
+Gustavs Gūtmanis (Logo &amp; Programm-Icon)
+Dmitry Chirkov (spēlētāju modelis)
+Martin Offermann (Musik &amp; Sound-Effekte)
+Alexander Belov (Russische Übersetzung)
+Dirk Stegmann (Deutsche Übersetzung)
+Sowie allen Leuten, die uns geholfen haben.</item>
 
-    <item name="RULES_SCREEN">
-    Game begins with a throw of the ball in the middle of the field. Players may not touch the ball before it has hit
-the ground 3 times. Otherwise the player who has touched the ball earlier gets 1 minus point.
-    With each touch of the player to the ball the count of potential minuses is increased by 1 point.
-    Player recieves a minus point when:
-        * Ball has left the field from the player`s field. Player then recieves as many minus points as there have been
-          touches to the ball while it has been in air. If the player was the last one who had hit the ball before it left the
-          field from the player`s square of field, he recieves as many minus points as he had gathered while ball was in
-          the air after the last touch to the ball (if any) by any of opponents.
-        * Ball has left the field from the body of the player. In this scenario the player recieves as many minus points
-          as he had gathered while ball was in the air after the last touch to the ball (if any) by any of opponents.
-        * Player has touched the ball for the second time in his field when the ball has hit the ground between those
-          two touches. The player recieves 1 minus point.
-    While the ball has not hit the ground outside of the field the player may try to catch it and get back into game
-field while keeping it in air. While the ball has not hit the ground outside of the game field, the game continues.
-Objects which are above ground are not counted as ground thus if the ball hits them, the game is not yet stopped.
-    If player recieves the minus point, the game is resumed with a throw of the ball from that player`s field in diagonal
-direction and it has to hit the same player`s field once and only after this event the diagonal player may touch the
-ball while others have to wait for him to touch it or for the ball to hit his (diagonal) field before they can touch the ball.
-If any of players fails to obey this rule he gets 1 minus point.
-    If ball has left the game field from any of middle lines the game is resumed with a throw of the ball in the middle
-of the game field. Players may touch the ball once it has hit the ground.
-    The player who first recieves 21 points loses the game.
+    <item name="RULES_SCREEN">Zu Beginn des Spiels wird der Ball in der Mitte des Spielfeldes eingeworfen. Die Spieler dürfen den Ball nicht berühren,
+ehe dieser nicht wenigstens drei mal auf dem Boden aufgekommen ist. Sonst erhält derjenige Spieler, welcher den Ball
+zu früh berührt hat, einen Strafpunkt.
+    Mit jeder aufeinanderfolgenden Ballberührung der Spieler, ohne daß der Ball zwischenzeitlich den Boden berührt
+("Luftberührungen"), erhöht sich das angesammelte Strafpunkte-Potenzial, welches schließlich einem der Spieler
+angerechnet werden könnte, um einen Punkt. Erhält einer der Spieler einen oder mehrere Strafpunkte, wird das
+Strafpunkte-Potenzial wieder zurück auf Null gesetzt.
+
+Einem Spieler werden in folgenden Situationen Strafpunkte angerechnet:
+    * Der Ball verläßt das Spielfeld über die Spielfläche dieses Spielers. Der Spieler erhält dann so viele Strafpunkte,
+      wie sich zuvor durch "Luftberührungen" angesammelt haben.
+      Wenn der Spieler jedoch selbst als letztes den Ball berührt, bevor dieser seine Spielfläche verläßt und außerhalb
+      des Spielfeldes den Boden berührt, so erhält er nur so viele Strafpunkte wie er selbst zuletzt (nach etwaigen
+      Berührungen durch andere Spieler) durch aufeinanderfolgende "Luftberührungen" angesammelt hat.
+    * Der Ball springt vom Körper dieses Spielers direkt ins Aus. Auch in dieser Situation erhält der Spieler nur so
+      viele Strafpunkte, wie er selbst zuletzt (nach etwaigen Berührungen durch andere Spieler) durch aufeinanderfolgen-
+      de "Luftberührungen" angesammelt hat.
+    * Der Spieler berührt den Ball ein zweites mal, obwohl dieser zwischenzeitlich auf seiner Spielfläche aufgekommen
+      ist. Der Spieler erhält dafür einen Strafpunkt.
+    Solange der Ball den Boden außerhalb des Spielfeldes nicht berührt hat, dürfen die Spieler versuchen, diesen wieder
+zurück ins Spielfeld zu bugsieren, wobei er weiterhin in der Luft gehalten werden muß. Das Spiel geht solange weiter,
+bis der Ball schließlich außerhalb des Spielfeldes den Boden berührt.
+    Hindernisse und Gegenstände welche sich über Bodenhöhe befinden, gelten selbst nicht als Boden, so daß sie vom Ball
+berührt werden können ohne daß es zum Spielabbruch käme.
+    Wenn ein Spieler Strafpunkte erhält, so wird das Spiel anschließend mit einem Wurf des Balles von dessen Spielfläche
+aus fortgesetzt, wobei der Ball zunächst diese Spielfläche berühren muß. Danach muß der Ball zur diagonal gegenüber-
+liegenden Spielfläche springen, und bevor der Ball diese gegenüberliegende Spielfläche nicht berührt hat, darf der Ball
+lediglich von demjenigen Spieler gespielt werden, dem diese gegenüberliegende Spielfläche gehört; sofort danach darf
+der Ball jedoch auch von allen anderen Spielern berührt werden. Das Mißachten dieser Regel wird mit einem Strafpunkt
+geahndet.
+    Berührt der Ball vor dem Verlassen des Spielfeldes zuletzt eine der Mittellinien statt eine der Spielflächen, so wird
+der Ball in der Mitte des Spielfeldes eingeworfen. Die Spieler dürfen den Ball erst dann spielen, sobald dieser
+wenigstens einmal den Boden berührt hat.
+    Derjenige Spieler, welcher zuerst insgesamt 21 Strafpunkte erhalten hat, verliert das Spiel.
     </item>
 </xml>

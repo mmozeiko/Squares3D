@@ -1,10 +1,13 @@
 #include "messages.h"
 #include "video.h"
 #include "message.h"
+#include "video.h"
 
 Messages::Messages()
 {
-    m_fonts[32] = Font::get("Arial_32pt_bold");
+    // TODO: uuberhack
+    int w = Video::instance->getResolution().first;
+    m_fonts[32] = Font::get(w > 1024 ? "Arial_48pt_bold" : "Arial_32pt_bold");
     m_fonts[72] = Font::get("Arial_72pt_bold");
 }
 

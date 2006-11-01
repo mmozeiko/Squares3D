@@ -37,6 +37,8 @@ void Music::init()
             alSourceQueueBuffers(m_source, 1, &m_buffers[i]);
         }
     }
+    m_position = 0.0f;
+    alSourcef(m_source, AL_GAIN, 0);
 }
 
 Music::~Music()
@@ -70,6 +72,7 @@ void Music::update()
     {
         unsigned int buffer = 0;
         alSourceUnqueueBuffers(m_source, 1, &buffer);
+        m_position += 0.25f;
 
         size_t written = decode(m_buffer, m_bufferSize);
         if (written == 0 && m_looping)
@@ -82,10 +85,17 @@ void Music::update()
             alBufferData(buffer, m_format, m_buffer, static_cast<int>(written), m_frequency);
             alSourceQueueBuffers(m_source, 1, &buffer);
         }
-        
+
         processed--;
     }
+    
+    float f;
+    alGetSourcef(m_source, AL_SEC_OFFSET, &f);
 
+    if (m_position + f < 5.0f)
+    {
+        alSourcef(m_source, AL_GAIN, Config::instance->m_audio.music_vol/15.0f * (m_position + f)/5.0f);
+    }
 
     /*
     int state = 0;

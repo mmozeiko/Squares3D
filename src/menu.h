@@ -44,8 +44,10 @@ public:
     Submenus    m_submenus;
 
     Sound*       m_sound;
+    Sound*       m_sound2;
     SoundBuffer* m_soundOver;
     SoundBuffer* m_soundClick;
+    SoundBuffer* m_soundBackClick;
     SoundBuffer* m_soundChange;
     Vector       m_mousePrevPos;
 

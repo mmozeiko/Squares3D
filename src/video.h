@@ -41,8 +41,8 @@ public:
 
     void renderCube() const;
     void renderFace(const Face& face) const;
-    void renderSphere(float radius = 1.0f) const;
-    void renderSphereHiQ(float radius = 1.0f) const;
+    void renderSphere() const;
+    void renderSphere(float radius) const;
     void renderCylinder(float radius, float height) const;
     void renderCone(float radius, float height) const;
     void renderAxes(float size = 5.0f) const;
@@ -73,11 +73,7 @@ public:
 private:
     void loadExtensions();
 
-    GLUquadric*   m_quadric;
-    GLUquadric*   m_quadricTex;
-
-    unsigned int  m_sphereList;
-    unsigned int  m_sphereHiQList;
+    GLUquadric*   m_quadricTexSphere;
     unsigned int  m_cylinderList;
     unsigned int  m_coneList;
 

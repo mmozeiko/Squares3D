@@ -52,7 +52,9 @@ void AiPlayer::control()
         important = (getFieldCenter() - ballPosition).magnitude() >= 1.0f;
     }
     bool standOnGround = false;
-    if ((ballPosition - selfPosition).magnitude() >= 2.0f)
+    if (ballPosition.y > 1.0f)
+    //if ((ballPosition-selfPosition) % ball->getVelocity() > 0)
+    //if ((ballPosition - selfPosition).magnitude() >= 2.0f)
     {
         standOnGround = true;
     }
@@ -65,7 +67,7 @@ void AiPlayer::control()
 
     Vector dir = ballPosition - selfPosition;
 
-    if (/*standOnGround ||*/ dir.magnitude() < 0.7f && !important) // if inside players field center
+    if (standOnGround || dir.magnitude() < 0.7f && !important) // if inside players field center
     {
         move = false;
     }

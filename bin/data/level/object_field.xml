@@ -3,33 +3,12 @@
 
         <collision id="field" type="tree">
             <face material="pavement" property="pavement">
-                <vertex x="-3.0" y="0.0" z="3.0" u="0.0" v="0.0" />
-                <vertex x="0.0"  y="0.0" z="3.0" u="1.0" v="0.0" />
-                <vertex x="0.0"  y="0.0" z="0.0" u="1.0" v="1.0" />
-                <vertex x="-3.0" y="0.0" z="0.0" u="0.0" v="1.0" />
-            </face>
-
-            <face material="pavement" property="pavement">
-                <vertex x="0.0" y="0.0" z="3.0" u="0.0" v="0.0" />
-                <vertex x="3.0" y="0.0" z="3.0" u="1.0" v="0.0" />
-                <vertex x="3.0" y="0.0" z="0.0" u="1.0" v="1.0" />
-                <vertex x="0.0" y="0.0" z="0.0" u="0.0" v="1.0" />
-            </face>
-
-            <face material="pavement" property="pavement">
-                <vertex x="0.0" y="0.0" z="0.0"  u="0.0" v="0.0" />
-                <vertex x="3.0" y="0.0" z="0.0"  u="1.0" v="0.0" />
-                <vertex x="3.0" y="0.0" z="-3.0" u="1.0" v="1.0" />
-                <vertex x="0.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
-            </face>
-
-            <face material="pavement" property="pavement">
-                <vertex x="-3.0" y="0.0" z="0.0"  u="0.0" v="0.0" />
-                <vertex x="0.0"  y="0.0" z="0.0"  u="1.0" v="0.0" />
-                <vertex x="0.0"  y="0.0" z="-3.0" u="1.0" v="1.0" />
+                <vertex x="-3.0" y="0.0" z="3.0"  u="0.0" v="0.0" />
+                <vertex x="3.0"  y="0.0" z="3.0"  u="1.0" v="0.0" />
+                <vertex x="3.0"  y="0.0" z="-3.0" u="1.0" v="1.0" />
                 <vertex x="-3.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
             </face>
-
+            
             <!--face material="grass" property="grass">
                 <vertex x="-10.0" y="0.0" z="10.0" u="0.0"  v="0.0" />
                 <vertex x="10.0"  y="0.0" z="10.0" u="10.0" v="0.0" />

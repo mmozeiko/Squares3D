@@ -182,10 +182,15 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     Input::instance->startKeyBuffer();
     Input::instance->startButtonBuffer();
 
+    m_quadricTexSphereHiQ = gluNewQuadric();
+    gluQuadricTexture(m_quadricTexSphereHiQ, GLU_TRUE);
+    gluQuadricNormals(m_quadricTexSphereHiQ, GLU_TRUE);
 }
 
 Intro::~Intro()
 {
+    gluDeleteQuadric(m_quadricTexSphereHiQ);
+
     Input::instance->endKeyBuffer();
     Input::instance->endButtonBuffer();
 
@@ -219,7 +224,7 @@ void Intro::control()
         
         m_ballKicked = true;
     }
-    else if (m_ballKicked && m_ball_matrix.row(3).z > BALL_R)
+    else if (m_ballKicked && m_ball_matrix.row(3).z > 0.0f) //BALL_R*2.0f)
     {
         NewtonBodySetVelocity(m_ball_body, Vector(0.0f, 0.0f, -2.0f).v);
     }
@@ -307,7 +312,8 @@ void Intro::render() const
     glPushMatrix();
     glMultMatrixf(m_ball_matrix.m);
     m_ballTex->bind();
-    Video::instance->renderSphereHiQ(BALL_R);
+    glScalef(BALL_R, BALL_R, BALL_R);
+    gluSphere(m_quadricTexSphereHiQ, 1.0f, 64, 64);
     glPopMatrix();
 
     // fade in

@@ -725,6 +725,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\bin\data\level\extra_fences.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\level\extra_object_field.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\bin\data\level\object_field.xml"
 					>
 				</File>

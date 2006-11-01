@@ -36,7 +36,7 @@ class ApplyOptionsEntry : public SubmenuEntry
 {
 public: 
     ApplyOptionsEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo) :
-      SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+      SubmenuEntry(menu, stringIn, false, submenuToSwitchTo) {}
 
     void click(int button);
 };

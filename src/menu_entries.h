@@ -79,12 +79,13 @@ protected:
 class SubmenuEntry : public Entry
 {
 public: 
-    SubmenuEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo, const Font* font = NULL) :
-      Entry(menu, stringIn, Font::Align_Center, font), m_submenuToSwitchTo(submenuToSwitchTo) {}
+    SubmenuEntry(Menu* menu, const wstring& stringIn, bool back, const string&  submenuToSwitchTo, const Font* font = NULL) :
+      Entry(menu, stringIn, Font::Align_Center, font), m_back(back), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
     void click(int button); 
 
 protected:
+    bool   m_back;
     string m_submenuToSwitchTo;
 };
 
@@ -204,7 +205,7 @@ class NewHostEntry : public SubmenuEntry
 {
 public: 
     NewHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
-        SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+        SubmenuEntry(menu, stringIn, false, submenuToSwitchTo) {}
 
     void click(int button); 
 };
@@ -213,7 +214,7 @@ class JoinHostEntry : public SubmenuEntry
 {
 public: 
     JoinHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo, Submenu* owner) :
-        SubmenuEntry(menu, stringIn, submenuToSwitchTo), m_owner(owner) {}
+        SubmenuEntry(menu, stringIn, false, submenuToSwitchTo), m_owner(owner) {}
 
     void click(int button); 
 private:
@@ -224,7 +225,7 @@ class CloseHostEntry : public SubmenuEntry
 {
 public: 
     CloseHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
-        SubmenuEntry(menu, stringIn, submenuToSwitchTo) {}
+        SubmenuEntry(menu, stringIn, true, submenuToSwitchTo) {}
 
     void click(int button); 
 };

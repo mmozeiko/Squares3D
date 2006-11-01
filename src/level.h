@@ -19,6 +19,7 @@ typedef map<string, Collision*>       CollisionsMap;
 typedef map<string, Body*>            BodiesMap;
 typedef set<pair<Face*, Material*> >  FaceSet;
 typedef vector<vector<Vector> >       FencesVector;
+typedef vector<Music*>                MusicVector;
 
 class Level : public NoCopy
 {
@@ -39,7 +40,7 @@ public:
     MaterialsMap    m_materials;
     Properties*     m_properties;
     FencesVector    m_fences;
-    Music*          m_music;
+    MusicVector     m_music;
     string          m_skyboxName;
 };
 

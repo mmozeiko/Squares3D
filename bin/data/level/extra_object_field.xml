@@ -1,0 +1,23 @@
+<xml>
+    <collisions>
+
+        <collision id="field" type="tree">
+            <face material="extra_pavement" property="pavement">
+                <vertex x="-3.0" y="0.0" z="3.0"  u="0.0" v="0.0" />
+                <vertex x="3.0"  y="0.0" z="3.0"  u="1.0" v="0.0" />
+                <vertex x="3.0"  y="0.0" z="-3.0" u="1.0" v="1.0" />
+                <vertex x="-3.0" y="0.0" z="-3.0" u="0.0" v="1.0" />
+            </face>
+
+        </collision>
+
+    </collisions>
+
+    <bodies>
+        <body id="field">
+            <position x="0.0" y="0.01" z="0.0"/>
+            <collision>field</collision>
+        </body>  
+    </bodies>
+
+</xml>

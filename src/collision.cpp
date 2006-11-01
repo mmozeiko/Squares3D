@@ -266,10 +266,8 @@ void CollisionBox::render() const
         glMultMatrixf(m_matrix.m);
     }
 
-    glEnable(GL_NORMALIZE);
     glScalef(m_size.x, m_size.y, m_size.z);
     Video::instance->renderCube();
-    glDisable(GL_NORMALIZE);
 
     glPopMatrix();
 }
@@ -314,10 +312,8 @@ void CollisionSphere::render() const
         glMultMatrixf(m_matrix.m);
     }
 
-    glEnable(GL_NORMALIZE);
     glScalef(m_radius.x, m_radius.y, m_radius.z);
     Video::instance->renderSphere();
-    glDisable(GL_NORMALIZE);
 
     glPopMatrix();
 }

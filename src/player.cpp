@@ -93,16 +93,14 @@ void Player::setKick(bool needKick)
         
         if ( m_timer.read() > 0.4f && dist.magnitude2() < (0.2f+BALL_RADIUS+m_radius)*(0.2f+BALL_RADIUS+m_radius) ) // TODO: (gurkja resnums + bumbas_raadiuss)^2
         {
-            m_referee->process(m_ballBody, m_body);
-
             Properties* prop = World::instance->m_level->m_properties;
             const SoundBuffer* sb = prop->getSB(prop->getPropertyID("player"), prop->getPropertyID("football"));
             prop->play(m_body, sb, true, m_ballBody->getPosition());
 
             // CHARACTER: kick powaaar!
             m_ballBody->setKickForce(Vector(0, 500, 0)); // 400-700
-
             m_timer.reset();
+            m_referee->addDelayedProcess(m_ballBody, m_body, 0.1f);
         }
     }
 }

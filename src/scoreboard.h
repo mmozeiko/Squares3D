@@ -40,7 +40,7 @@ public:
     void registerPlayers(const vector<Player*>& players);
     int addTotalPoints(const string& name);
     int addPoint(const string& name);
-    void incrementCombo(const string& name, const Vector& position);
+    void incrementCombo(const string& name, const Vector& color, const Vector& position);
     int addSelfTotalPoints(const string& name);
     void resetCombo();
     void resetOwnCombo(const string& name);

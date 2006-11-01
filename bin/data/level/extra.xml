@@ -1,6 +1,7 @@
 <xml>
     <gravity x="0.0" y="-6.81" z="0.0"/>
-    <!--music name="extra"/-->
+    <music name="trash80_-_three-four-robot-slojam"/>
+    <music name="trash80_-slskrecords-1mm-_hard-to-follow"/>
     <skybox name="extra"/>
 
     <link file="common_materials.xml"/>
@@ -8,8 +9,9 @@
 
     <link file="extra_collisions.xml"/>
     <link file="extra_bodies.xml"/>
+    <link file="extra_fences.xml"/>
 
     <link file="object_football.xml"/>
-    <link file="object_field.xml"/>
+    <link file="extra_object_field.xml"/>
 
 </xml>

@@ -68,7 +68,7 @@ public:
         const Vector&   position, 
         const Vector&   color, 
         Font::AlignType align = Font::Align_Left,
-        float           timeToLive = 2.0f);
+        float           timeToLive = 3.0f);
     virtual ~FlowingMessage() {}
 
 protected:

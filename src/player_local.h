@@ -14,7 +14,6 @@ public:
 
 private:
     Vector  m_lastMove[2];
-    Vector  m_lastMouse;
     float   m_mouseSens;
 
 };

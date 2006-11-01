@@ -13,28 +13,28 @@
     <item name="PLAYER_UNALLOWED"      value="$1 touched the ball preliminary!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
-Press ESCAPE to continue
+Press &lt;ESCAPE&gt; to continue
 
-Press ENTER to quit to Main Menu..
+Press &lt;ENTER&gt; to quit to Main Menu.
     </item>
 
     <item name="CONTINUE">
 Congratulations, You have cleared this difficulty level!
 
-Press ENTER to return to Main Menu..
+Press &lt;ENTER&gt; to return to Main Menu.
     </item>
 
     <item name="FINISHED_GAME">
 Congratulations, You have finished Extra level!
 Now you are The Ultimate Master of Squares.
 No one can defeat You anymore!
-Press ENTER to return to Main Menu..
+Press &lt;ENTER&gt; to return to Main Menu.
     </item>
 
     <item name="RESTART">
 You`ve lost the game..
 
-Press ENTER to retry..
+Press &lt;ENTER&gt; to retry..
     </item>
 		
     <item name="WAIT_PLAYERS"             value="Waiting for remote players..."/>
@@ -113,21 +113,22 @@ Press ENTER to retry..
     <!-- Languages, do not translate and do not put in other xml files!!! -->
     <item name="LANG_ENGLISH" value="English"/>
     <item name="LANG_LATVIAN" value="Latviešu"/>
-    <item name="LANG_RUSSIAN" value="Russkij"/>
+    <item name="LANG_RUSSIAN" value="Русский"/>
     <item name="LANG_GERMAN"  value="Deutsch"/>
 
 
-    <item name="CREDITS_SCREEN">
-Programming &amp; Design:
+    <item name="CREDITS_SCREEN">Programming &amp; Design:
 Mārtiņš Možeiko
 Kristaps Straupe
 
 Also credits goes to:
 Atis Straujums (extra level),
 Gustavs Gūtmanis (logo &amp; icon)
+Dmitry Chirkov (player model)
 Martin Offermann (music &amp; sound effects)
-other people who have helped us..
-    </item>
+Alexander Belov (Russian translation)
+Dirk Stegmann (German translation)
+And other people who have helped us!</item>
 
 	<item name="RULES_SCREEN">
     Game begins with a throw of the ball in the middle of the field. Players may not touch the ball before it has hit

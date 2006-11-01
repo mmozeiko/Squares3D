@@ -15,7 +15,7 @@
           <profile>
             <name>Chick Nora</name>
             <collision>player_thin</collision>
-            <properties   speed="0.6" accuracy="0.3" jump="0.1" />
+            <properties   speed="0.0" accuracy="0.9" jump="0.1" />
             <color r="0.5"  g="0.2" b="0.1" />
         </profile>
     </easy>
@@ -29,7 +29,7 @@
         <profile>
             <name>Noowb</name>
             <collision>player_small</collision>
-            <properties   speed="0.5" accuracy="0.5" jump="0.5" />
+            <properties  speed="0.5" accuracy="0.5" jump="0.5" />
             <color  r="0.1"  g="0.99" b="0.1" />
         </profile>
         <profile>
@@ -75,20 +75,19 @@
         <profile>
             <name>Herr Tag</name>
             <collision>player_small</collision>
-            <properties   speed="0.8" accuracy="0.8" jump="0.8" />
-            <color  r="0.8"  g="0.8" b="0.2
-				" />
+            <properties   speed="0.2" accuracy="1.0" jump="1.0" />
+            <color  r="0.8"  g="0.8" b="0.2" />
         </profile>
         <profile>
             <name>A.Chalis</name>
             <collision>player_thin</collision>
-            <properties   speed="1.0" accuracy="0.5" jump="0.7" />
+            <properties   speed="0.2" accuracy="1.0" jump="1.0" />
             <color r="0.5"  g="0.5" b="0.5" />
         </profile>
         <profile>
             <name>Undo17</name>
             <collision>Dmitry</collision>
-            <properties   speed="0.5" accuracy="0.9" jump="0.8" />
+            <properties   speed="0.2" accuracy="1.0" jump="1.0" />
             <color r="0.0"  g="0.0" b="1.0" />
         </profile>
     </extra>

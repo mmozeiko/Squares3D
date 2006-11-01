@@ -29,6 +29,7 @@
 #include "colors.h"
 #include "game.h"
 #include "fence.h"
+#include "random.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -275,9 +276,10 @@ void World::init()
     m_scoreBoard->reset();
     Input::instance->startKeyBuffer();
 
-    if (m_level->m_music != NULL)
+
+    if (!m_level->m_music.empty())
     {
-        m_level->m_music->play();
+        m_level->m_music[Randoms::getIntN(static_cast<unsigned int>(m_level->m_music.size()))]->play();
     }
 
     Network::instance->iAmReady();
@@ -379,7 +381,10 @@ void World::updateStep(float delta)
             }
         }
 
-        if (m_ball->getPosition().y < -5.0f)
+        if (m_ball->getPosition().y < -5.0f || 
+            std::abs(m_ball->getPosition().x) > 80.0f ||
+            std::abs(m_ball->getPosition().y) > 80.0f ||
+            std::abs(m_ball->getPosition().z) > 80.0f)
         {
             if (m_referee->m_gameOver)
             {

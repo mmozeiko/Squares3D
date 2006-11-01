@@ -1,6 +1,8 @@
 <xml>
     <gravity x="0.0" y="-9.81" z="0.0"/>
-    <music name="world"/>
+    <music name="8bp037-05-trash80-chip_2_bit"/>
+    <music name="trash80_-_regret-to-inform"/>
+    <music name="trash80_-weeklies-_move-you-feet"/>
     <skybox name="skybox"/>
 
     <link file="common_materials.xml"/>

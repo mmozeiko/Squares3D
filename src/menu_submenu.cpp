@@ -27,6 +27,7 @@ void Submenu::control(int key)
     
     //get mouse position
     const Mouse& mouse = Input::instance->mouse();
+
     int videoHeight = Video::instance->getResolution().second;
     Vector mousePos = Vector(static_cast<float>(mouse.x), 0.0f, static_cast<float>(videoHeight - mouse.y));
 

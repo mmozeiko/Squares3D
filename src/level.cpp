@@ -11,7 +11,7 @@
 #include "music.h"
 #include "audio.h"
 
-Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_music(NULL), m_skyboxName()
+Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_skyboxName()
 {
     m_properties = new Properties();
 }
@@ -51,7 +51,7 @@ void Level::load(const string& levelFile, StringSet& loaded)
         }
         else if (node.name == "music")
         {
-            m_music = Audio::instance->loadMusic(node.getAttribute("name"));
+            m_music.push_back(Audio::instance->loadMusic(node.getAttribute("name")));
         }
         else if (node.name == "skybox")
         {
@@ -189,10 +189,13 @@ Level::~Level()
     }
     delete m_properties;
 
-    if (m_music != NULL)
+    if (!m_music.empty())
     {
-        m_music->stop();
-        Audio::instance->unloadMusic(m_music);
+        m_music[0]->stop();
+        for each_const(MusicVector, m_music, iter)
+        {
+            Audio::instance->unloadMusic(*iter);
+        }
     }
 }
 

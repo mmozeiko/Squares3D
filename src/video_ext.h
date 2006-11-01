@@ -3,7 +3,7 @@
 
 #include <GL/glfw.h>
 
-#include <string> // wtf?? MacOSX hack
+#include "common.h"
 
 #ifndef APIENTRY
 #  if defined(WIN32)

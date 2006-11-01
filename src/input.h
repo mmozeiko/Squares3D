@@ -45,7 +45,6 @@ private:
     bool    m_mouseVisible;
     int     m_mouseMiddleX;
     int     m_mouseMiddleY;
-	Mouse   m_last;
     Mouse   m_mouse;
     IntList m_keyBuffer;
     IntList m_charBuffer;

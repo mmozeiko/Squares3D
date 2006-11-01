@@ -1,4 +1,7 @@
 #include "input.h"
+#ifdef __APPLE__
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 template <class Input> Input* System<Input>::instance = NULL;
 
@@ -30,29 +33,54 @@ void Input::mouseVisible(bool visible)
 {
     if (visible)
     {
+#ifdef __APPLE__
+    	CGAssociateMouseAndMouseCursorPosition(TRUE);
+	    CGDisplayShowCursor(kCGDirectMainDisplay);
+#else
         glfwEnable(GLFW_MOUSE_CURSOR);
-        //glfwSetMousePos(m_mouseMiddleX, m_mouseMiddleY);
+        glfwSetMousePos(m_mouseMiddleX, m_mouseMiddleY);
+#endif
     }
     else
     {
+#ifdef __APPLE__
+	    glfwSetMousePos(m_mouseMiddleX, m_mouseMiddleY);
+        CGDisplayHideCursor(kCGDirectMainDisplay);
+	    CGPoint p;
+	    p.x = m_mouseMiddleX;
+	    p.y = m_mouseMiddleY;
+	    //CGDisplayMoveCursorToPoint(kCGDirectMainDisplay, p);
+	    CGWarpMouseCursorPosition(p);
+	    CGAssociateMouseAndMouseCursorPosition(FALSE);
+#else
         glfwDisable(GLFW_MOUSE_CURSOR);
-        //glfwSetMousePos(0, 0); //m_mouseMiddleX, m_mouseMiddleY);
+        glfwSetMousePos(0, 0);
+#endif
     }
     m_mouseVisible = visible;
 }
 
 void Input::update()
 {
-    glfwGetMousePos(&m_mouse.x, &m_mouse.y);
-    m_mouse.z = glfwGetMouseWheel();
+    //m_mouse.z = glfwGetMouseWheel();
     if (m_mouseVisible == false)
     {
-	    //int x = m_lastX;
-		//int y = m_lastY;
-        //clog << "MOUSE POS = " << m_mouse.x << ' ' << m_mouse.y << endl;
-		//m_mouse.x -= m_mouseMiddleX;
-        //m_mouse.y -= m_mouseMiddleY;
-        //glfwSetMousePos(0, 0); //m_mouseMiddleX, m_mouseMiddleY);
+#ifdef __APPLE__
+ 		CGGetLastMouseDelta(&m_mouse.x, &m_mouse.y);
+        GLFWvidmode mode;
+        glfwGetDesktopMode(&mode);
+	    CGPoint p;
+		p.x = m_mouseMiddleX;
+		p.y = m_mouseMiddleY;
+		CGWarpMouseCursorPosition(p);
+#else
+        glfwGetMousePos(&m_mouse.x, &m_mouse.y);
+        glfwSetMousePos(0, 0);
+#endif
+    }
+    else
+    {
+        glfwGetMousePos(&m_mouse.x, &m_mouse.y);
     }
     
     m_mouse.b = 0;

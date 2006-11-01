@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-static const string g_version = "1.0.0-RC1";
+static const string g_version = "1.0.1";
 
 #endif

@@ -25,11 +25,11 @@ string trim(const string& str)
 
     size_t i = 0;
     size_t j = str.size()-1;
-    while (i<str.size() && std::isspace(str[i]))
+    while (i<str.size() && str[i]>=0 && str[i]<128 && std::isspace(str[i]))
     {
         i++;
     }
-    while (j>i && std::isspace(str[j]))
+    while (j>i && str[i]>=0 && str[i]<128 && std::isspace(str[j]))
     {
         j--;
     }

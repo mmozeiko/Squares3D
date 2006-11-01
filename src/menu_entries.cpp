@@ -295,7 +295,14 @@ void SubmenuEntry::click(int button)
     if ((button == GLFW_MOUSE_BUTTON_LEFT) || (button == GLFW_KEY_ENTER) || (button == GLFW_KEY_KP_ENTER))
     {
         m_menu->setSubmenu(m_submenuToSwitchTo); 
-        m_menu->m_sound->play(m_menu->m_soundClick);
+        if (m_back)
+        {
+            m_menu->m_sound2->play(m_menu->m_soundBackClick);
+        }
+        else
+        {
+            m_menu->m_sound2->play(m_menu->m_soundClick);
+        }
     }
 }
 
@@ -352,7 +359,7 @@ void NetPlayerEntry::click(int button)
         Network::instance->setAiProfile(m_idx, Network::instance->getRandomAI());
         Network::instance->kickClient(m_idx);
 
-        m_menu->m_sound->play(m_menu->m_soundClick);
+        m_menu->m_sound2->play(m_menu->m_soundClick);
     }
     else if (m_idx != Network::instance->getLocalIdx())
     {
@@ -431,7 +438,7 @@ void NetRemotePlayerEntry::render() const
 }
 
 ConnectEntry::ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner) :
-    SubmenuEntry(menu, label, submenuToSwitchTo),
+    SubmenuEntry(menu, label, false, submenuToSwitchTo),
     m_owner(owner)
 {
 }
@@ -440,7 +447,7 @@ void ConnectEntry::click(int button)
 {
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
     {
-        m_menu->m_sound->play(m_menu->m_soundClick);
+        m_menu->m_sound2->play(m_menu->m_soundClick);
         if (Network::instance->connect(Config::instance->m_misc.last_address))
         {
             for each_(Entries, m_owner->m_entries, iter)

@@ -23,6 +23,8 @@ private:
     char* m_buffer;
     size_t m_bufferSize;
 
+    float m_position;
+
     bool m_looping;
 
     void update();

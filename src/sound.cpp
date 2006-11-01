@@ -8,6 +8,7 @@ Sound::Sound(bool interrupt) : m_interrupt(interrupt)
 {
     alGenSources(1, &m_source);
     alSourcef(m_source, AL_GAIN, Config::instance->m_audio.sound_vol/10.0f);
+    alSourcef(m_source, AL_MIN_GAIN, 0.3f * (Config::instance->m_audio.sound_vol/10.0f));
 }
 
 Sound::~Sound()

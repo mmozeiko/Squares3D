@@ -7,8 +7,6 @@
 LocalPlayer::LocalPlayer(const Profile* profile, Level* level) :
     Player(profile, level) //Config::instance->m_misc.mouse_sensitivity)
 {
-    const Mouse& mouse = Input::instance->mouse();
-    m_lastMouse = Vector(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
 }
 
 LocalPlayer::~LocalPlayer()
@@ -21,11 +19,10 @@ void LocalPlayer::control()
     Vector curMouse(static_cast<float>(mouse.x), 0.0f, static_cast<float>(mouse.y));
     if ((mouse.b & 2) == 2)
     {
-        m_lastMouse = curMouse;
         setDirection(Vector::Zero);
         return;
     }
-    Vector direction = curMouse - m_lastMouse;
+    Vector direction = curMouse;
 
     direction.z = -direction.z;
     direction /= 8.9f;
@@ -34,8 +31,6 @@ void LocalPlayer::control()
 
     m_lastMove[0] = m_lastMove[1];
     m_lastMove[1] = direction;
-
-    m_lastMouse = curMouse;
 
     //this disables acceleration
     //direction.norm();

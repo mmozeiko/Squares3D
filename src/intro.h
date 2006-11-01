@@ -36,6 +36,7 @@ private:
 
     NewtonBody*  m_ball_body;
     Matrix       m_ball_matrix;
+    GLUquadric*  m_quadricTexSphereHiQ;
 
     Texture*     m_logoTex;
     Texture*     m_ballTex;

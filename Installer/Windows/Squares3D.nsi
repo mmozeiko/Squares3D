@@ -10,7 +10,7 @@
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Squares3D-1.0-Windows.exe"
+OutFile "Squares3D-1.0.0-Windows.exe"
 SetCompressor /SOLID lzma
 XPStyle on
 
@@ -30,7 +30,7 @@ XPStyle on
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-;!insertmacro MUI_PAGE_LICENSE "../license.txt"
+;!insertmacro MUI_PAGE_LICENSE "../licenses.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Start menu page
@@ -81,7 +81,7 @@ Section "MainSection" SEC01
   File "..\..\bin\data.zip"
   File "..\..\bin\Squares3D.exe"
   File "..\readme.txt"
-  File "..\license.txt"
+  File "..\licenses.txt"
 
   SetOutPath $TEMP
   File "OpenALwEAX.exe"
@@ -124,7 +124,7 @@ Section Uninstall
   !insertmacro MUI_STARTMENU_GETFOLDER "Application" $ICONS_GROUP
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\license.txt"
+  Delete "$INSTDIR\licenses.txt"
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\Squares3D.exe"
   Delete "$INSTDIR\data.zip"

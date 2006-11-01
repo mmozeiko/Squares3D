@@ -45,8 +45,10 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_state(State::Current),
     m_music(NULL),
     m_sound(new Sound(true)),
+    m_sound2(new Sound(true)),
     m_soundOver(NULL),
     m_soundClick(NULL),
+    m_soundBackClick(NULL),
     m_soundChange(NULL),
     m_mousePrevPos(Vector(static_cast<float>(Video::instance->getResolution().first/2),
                           0.0f, 
@@ -55,7 +57,7 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
 
-    m_fontSmall = Font::get( ( resY < 600 ? "Arial_12pt_bold" : "Arial_16pt_bold" ));
+    m_fontSmall = Font::get( ( resY <= 600 ? "Arial_12pt_bold" : "Arial_16pt_bold" ));
 
     const float aspect = (1.0f - resY/resX)/2.0f;
 
@@ -81,9 +83,10 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
 
     m_soundOver = Audio::instance->loadSound("menu_over");
     m_soundClick = Audio::instance->loadSound("menu_click");
+    m_soundBackClick = Audio::instance->loadSound("menu_back");
     m_soundChange =Audio::instance->loadSound("menu_change");
 
-    m_music = Audio::instance->loadMusic("menu");
+    m_music = Audio::instance->loadMusic("menu_soundtrack");
     m_music->play();
 
     Network::instance->m_inMenu = true;
@@ -109,12 +112,13 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->setTitle(language->get(TEXT_MAIN_MENU), titlePos);
 
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_SINGLEPLAYER), "startSingle"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_MULTIPLAYER), "startMulti"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), "playerOptions"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), "options"));
-	submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_RULES), "rules"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CREDITS), "credits"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_SINGLEPLAYER), false, "startSingle"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_MULTIPLAYER), false, "startMulti"));
+    submenu->m_entries.back()->disable();
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), false, "playerOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), false, "options"));
+	submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_RULES), false, "rules"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CREDITS), false, "credits"));
     submenu->addEntry(new QuitEntry(this, language->get(TEXT_QUIT_GAME)));
 
     m_currentSubmenu = submenu;
@@ -145,7 +149,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
         submenu->m_entries.back()->disable();
     }
     submenu->addEntry(new SpacerEntry(this));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
 
     submenu->center(submenuPosition);
     m_submenus["startSingle"] = submenu;
@@ -222,7 +226,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new LabelEntry(this, language->get(TEXT_CREDITS_SCREEN), Font::Align_Left, Font::get("Arial_32pt_bold") ));
 
     submenu->addEntry(new SpacerEntry(this));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));    
 
     // TODO: hack
     submenu->m_height += 10;
@@ -239,7 +243,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new LabelEntry(this, language->get(TEXT_RULES_SCREEN), Font::Align_Left, m_fontSmall));
 
     submenu->addEntry(new SpacerEntry(this));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
 
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -256,7 +260,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new JoinHostEntry(this, language->get(TEXT_START_JOIN), "startMultiJoinIP", submenuJ));
     
     submenu->addEntry(new SpacerEntry(this));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
 
     // TODO: hack
     submenu->m_height += 10;
@@ -276,7 +280,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     ColorValue colorValue("color");
     submenu->addEntry(new ColorEntry(this, language->get(TEXT_COLOR), userProfile->m_color, colorValue));
 
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
 
     // TODO: hack
     submenu->m_height += 10;
@@ -290,12 +294,12 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     
     submenu->setTitle(language->get(TEXT_OPTIONS), titlePos);
 
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_VIDEO_OPTIONS), "videoOptionsEasy"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_AUDIO_OPTIONS), "audioOptions"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OTHER_OPTIONS), "otherOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_VIDEO_OPTIONS), false, "videoOptionsEasy"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_AUDIO_OPTIONS), false, "audioOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OTHER_OPTIONS), false, "otherOptions"));
 
     submenu->addEntry(new SpacerEntry(this));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "main"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));    
 
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -344,11 +348,11 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     valEnvDet.add(language->get(TEXT_CUSTOM));
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_ENVIRONMENT_DETAILS), valEnvDet));
 
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_VIDEO_OPTIONS_ADVANCED), "videoOptions"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_VIDEO_OPTIONS_ADVANCED), false, "videoOptions"));
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "videoOptionsEasy"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "options"));    
    
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -412,7 +416,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "videoOptions"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "videoOptionsEasy"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "videoOptionsEasy"));
     
     // TODO: hack
     submenu->m_height -= 20;
@@ -446,7 +450,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "audioOptions"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "options"));
     
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -486,7 +490,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "otherOptions"));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), "options"));    
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "options"));
 
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
@@ -509,8 +513,10 @@ Menu::~Menu()
     Network::instance->m_inMenu = false;
 
     delete m_sound;
+    delete m_sound2;
     Audio::instance->unloadSound(m_soundOver);
     Audio::instance->unloadSound(m_soundClick);
+    Audio::instance->unloadSound(m_soundBackClick);
     Audio::instance->unloadSound(m_soundChange);
     Audio::instance->unloadMusic(m_music);
 

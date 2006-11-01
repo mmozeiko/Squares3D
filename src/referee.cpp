@@ -17,7 +17,7 @@
 #include "sound.h"
 #include "world.h"
 
-static const float BALL_RESET_TIME = 2.0f;
+static const float BALL_RESET_TIME = 3.0f;
 //TODO: make universaly proportional to field size?
 static const float lineWeight = 0.15f;
 
@@ -107,7 +107,9 @@ Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
     m_playersAreHalted(false),
     m_matchPoints(21),
     m_sound(new Sound(true)),
-    m_over(NULL)
+    m_over(NULL),
+    m_releaseTehOne(NULL),
+    m_releaseTehOneD(NULL)
 {
     initEvents();
     m_soundGameOver = Audio::instance->loadSound("referee_game_over");
@@ -151,6 +153,7 @@ void Referee::update()
             m_mustResetBall = false;
         }
     }
+    updateDelayedProcesses();
 }
 
 Player* Referee::getDiagonalPlayer(const Player* player) const
@@ -194,8 +197,16 @@ void Referee::releaseCpuPlayers()
     m_playersAreHalted = false;
     for each_const(BodyToPlayerMap, m_players, iter)
     {
-        iter->second->release();
+        if (iter->second != m_releaseTehOne)
+        {
+            iter->second->release();
+        }
     }
+}
+
+void Referee::releaseCpuPlayer(Player* player)
+{
+    player->release();
 }
 
 void Referee::resetBall()
@@ -238,8 +249,10 @@ void Referee::resetBall()
             resetPosition = Vector(center.x, resetPosition.y, center.z);
             velocity = (Vector::Zero - resetPosition) * 2;
             Player* exceptPlayer = getDiagonalPlayer(m_lastWhoGotPoint);
-            haltCpuPlayers(exceptPlayer);
+            haltCpuPlayers(); //exceptPlayer);
             m_haltWait = 2;
+            m_releaseTehOne = exceptPlayer;
+            m_releaseTehOneD = m_lastWhoGotPoint;
         }
     }
     else
@@ -331,6 +344,7 @@ void Referee::processCriticalEvent()
         registerFaultTime();
     }
 
+    m_delayedProcesses.clear();
 }
 
 void Referee::registerBall(Ball* ball)
@@ -365,6 +379,36 @@ void Referee::process(const Body* body1, const Body* body2)
             registerPlayerEvent(body1, body2);
         }
 }
+
+void Referee::addDelayedProcess(const Body* body1, const Body* body2, float delay)
+{
+    m_delayedProcesses.push_back(make_pair(make_pair(body1, body2), m_timer.read() + delay));
+}
+
+void Referee::updateDelayedProcesses()
+{
+    DelayedProcessesVector::iterator iter = m_delayedProcesses.begin();
+    float curTime = m_timer.read();
+    while (iter != m_delayedProcesses.end())
+    {
+        if (curTime > iter->second)
+        {
+            process(iter->first.first, iter->first.second);
+            if (m_delayedProcesses.empty())
+            {
+                // if critical process has cleared m_delayedProcesses - break 
+                break;
+            }
+
+            iter = m_delayedProcesses.erase(iter);
+        }
+        else
+        {
+            iter++;
+        }
+    }
+}
+
 
 void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 {
@@ -420,6 +464,16 @@ void Referee::processBallGround(const Body* groundObject)
         {
             releaseCpuPlayers();
         }
+        if (m_haltWait == 1 && m_releaseTehOne != NULL)
+        {
+            releaseCpuPlayer(m_releaseTehOne);
+            m_releaseTehOne = NULL;
+        }
+    }
+    else if (!m_playersAreHalted && (groundObject == m_field) && m_releaseTehOneD != NULL)
+    {
+        releaseCpuPlayer(m_releaseTehOneD);
+        m_releaseTehOneD = NULL;
     }
 
 
@@ -556,13 +610,13 @@ void Referee::processBallPlayer(const Body* player)
     if (m_lastTouchedObject == NULL) // last object is neither ground nor player,
     {
         m_scoreBoard->resetCombo(); //resetting combo in case picked from middle line
-        m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
+        m_scoreBoard->incrementCombo(playerName, m_players.find(player)->second->m_profile->m_color, m_ball->getPosition()); //(+1)
     }
     else if (isGroundObject(m_lastTouchedObject)) // picked from ground inside
     {
         m_scoreBoard->resetCombo(); //clear combo
 
-        m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
+        m_scoreBoard->incrementCombo(playerName, m_players.find(player)->second->m_profile->m_color, m_ball->getPosition()); //(+1)
 
         if ((m_lastFieldOwner == player)
             && (m_lastTouchedPlayer == player)
@@ -602,7 +656,7 @@ void Referee::processBallPlayer(const Body* player)
         {        
             m_scoreBoard->resetOwnCombo(playerName);
         }
-        m_scoreBoard->incrementCombo(playerName, m_ball->getPosition()); //(+1)
+        m_scoreBoard->incrementCombo(playerName, m_players.find(player)->second->m_profile->m_color, m_ball->getPosition()); //(+1)
     }
     
     m_lastTouchedObject = player;

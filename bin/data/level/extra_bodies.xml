@@ -15,21 +15,21 @@
         <body id="cucumberFan1">
             <position x="-8.4" y="1.5" z="1.5"/>
             <rotation x="0.0" y="130.0" z="0.0"/>
-            <collision>player_small</collision>
+            <collision>extra_player_small</collision>
             <collision>smallLegForPlayer_Small</collision>
         </body>
         <body id="cucumberFan2">
             <position x="-7.6" y="1.5" z="2.5"/>
             <rotation x="0.0" y="130.0" z="0.0"/>
-            <collision>player_small</collision>
+            <collision>extra_player_small</collision>
             <collision>smallLegForPlayer_Small</collision>
         </body>
         <body id="cucumberFan3">
-            <position x="8.0" y="1.1" z="2.5"/>
+            <position x="6.0" y="1.1" z="2.5"/>
             <rotation x="0.0" y="-90.0" z="0.0"/>
-            <collision>player_small</collision>
+            <collision>extra_player_small</collision>
             <collision>smallLegForPlayer_Small</collision>
-        </body> 
+        </body>
 
     </bodies>
 </xml>

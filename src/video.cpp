@@ -34,8 +34,6 @@ Video::Video() :
     m_haveVBO(false),
     m_shadowMap3ndPass(false),
     m_lastBound(NULL),
-    m_sphereList(0),
-    m_sphereHiQList(0),
     m_cylinderList(0),
     m_coneList(0)
 {
@@ -127,12 +125,6 @@ Video::Video() :
 
     loadExtensions();
  
-    m_quadric    = gluNewQuadric();
-    m_quadricTex = gluNewQuadric();
-
-    gluQuadricTexture(m_quadricTex, GLU_TRUE);
-    gluQuadricNormals(m_quadricTex, GLU_TRUE);
-
     m_resolution = make_pair(width, height);
 
     for (int i=CIRCLE_DIVISIONS; i>=0; i--)
@@ -146,9 +138,7 @@ Video::~Video()
 {
     clog << "Closing video." << endl;
 
-    gluDeleteQuadric(m_quadricTex);
-    gluDeleteQuadric(m_quadric);
-
+    gluDeleteQuadric(m_quadricTexSphere);
     unloadTextures();
 
     for each_(UIntSet, m_lists, iter)
@@ -238,39 +228,57 @@ void Video::init()
 
     glEndList();
 
-    m_sphereList = Video::instance->newList();
-    glNewList(m_sphereList, GL_COMPILE);
-        gluSphere(m_quadricTex, 1.0f, 16, 16);
-    glEndList();
-
-    m_sphereHiQList = Video::instance->newList();
-    glNewList(m_sphereHiQList, GL_COMPILE);
-        gluSphere(m_quadricTex, 1.0f, 64, 64);
-    glEndList();
+    m_quadricTexSphere = gluNewQuadric();
+    gluQuadricTexture(m_quadricTexSphere, GLU_TRUE);
+    gluQuadricNormals(m_quadricTexSphere, GLU_TRUE);
+/*
 
     m_cylinderList = Video::instance->newList();
     glNewList(m_cylinderList, GL_COMPILE);
-        gluCylinder(m_quadricTex, 1.0f, 1.0f, 1.0f, 16, 16);
+
+        GLUquadric* m_quadricTexCylinder = gluNewQuadric();
+        gluQuadricTexture(m_quadricTexCylinder, GLU_TRUE);
+        gluQuadricNormals(m_quadricTexCylinder, GLU_TRUE);
+        GLUquadric* m_quadricTexDisc = gluNewQuadric();
+        gluQuadricTexture(m_quadricTexDisc, GLU_TRUE);
+        gluQuadricNormals(m_quadricTexDisc, GLU_TRUE);
+
+        gluCylinder(m_quadricTexCylinder, 1.0f, 1.0f, 1.0f, 16, 16);
     
         glPushMatrix();
         glTranslatef(0.0f, 0.0f, 1.0f);
-        gluDisk(m_quadricTex, 0.0, 1.0f, 16, 16);
+        gluDisk(m_quadricTexDisc, 0.0, 1.0f, 16, 16);
         glPopMatrix();
 
         glPushMatrix();
         glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
-        gluDisk(m_quadricTex, 0.0, 1.0f, 16, 16);
+        gluDisk(m_quadricTexDisc, 0.0, 1.0f, 16, 16);
         glPopMatrix();
+
+        gluDeleteQuadric(m_quadricTexCylinder);
+        gluDeleteQuadric(m_quadricTexDisc);
     glEndList();
 
     m_coneList = Video::instance->newList();
     glNewList(m_coneList, GL_COMPILE);
-        gluCylinder(m_quadricTex, 1.0f, 0.0f, 1.0f, 16, 16);
+        GLUquadric* m_quadricTexDisc2 = gluNewQuadric();
+        gluQuadricTexture(m_quadricTexDisc2, GLU_TRUE);
+        gluQuadricNormals(m_quadricTexDisc2, GLU_TRUE);
+        GLUquadric* m_quadricTexCone = gluNewQuadric();
+        gluQuadricTexture(m_quadricTexCone, GLU_TRUE);
+        gluQuadricNormals(m_quadricTexCone, GLU_TRUE);
+
+        gluCylinder(m_quadricTexCone, 1.0f, 0.0f, 1.0f, 16, 16);
         glPushMatrix();
         glRotatef(180.0, 1.0, 0.0, 0.0);
-        gluDisk(m_quadricTex, 0.0, 1.0f, 16, 16);
+        gluDisk(m_quadricTexDisc2, 0.0, 1.0f, 16, 16);
         glPopMatrix();
+
+        gluDeleteQuadric(m_quadricTexCone);
+        gluDeleteQuadric(m_quadricTexDisc2);
+
     glEndList();
+    */
 }
 
 void Video::renderCube() const
@@ -298,67 +306,70 @@ void Video::renderFace(const Face& face) const
     glEnd();
 */
 
-/*  normal rendering:
-    glDisable(GL_LIGHTING);
-    glBegin(GL_LINES);
-    glColor3f(1, 0, 0);
-    glVertex3fv(face.vertexes[0].v);
-    glColor3f(1, 1, 1);
-    glVertex3fv((face.vertexes[0] + face.normal).v);
-    glEnd();
-    glEnable(GL_LIGHTING);
-*/
+    /*// normal rendering:
+    if (face.normal.size() > 0)
+    {
+        glDisable(GL_LIGHTING);
+        glBegin(GL_LINES);
+        glColor3f(1, 0, 0);
+        glVertex3fv(face.vertexes[0].v);
+        glColor3f(1, 1, 1);
+        glVertex3fv((face.vertexes[0] + face.normal[0]).v);
+        glEnd();
+        glEnable(GL_LIGHTING);
+    }
+    */
+}
+
+void Video::renderSphere() const
+{
+    static const int magic[] = {12, 16, 24};
+    const int w = magic[Config::instance->m_video.terrain_detail];
+    gluSphere(m_quadricTexSphere, 1.0f, w, w);
 }
 
 void Video::renderSphere(float radius) const
 {
-    if (radius != 1.0f)
-    {
-        glPushMatrix();
-        glScalef(radius, radius, radius);
-        glCallList(m_sphereList);
-        glPopMatrix();
-    }
-    else
-    {
-        glCallList(m_sphereList);
-    }
-}
+    static const int magic[] = {12, 16, 24};
+    const int w = magic[Config::instance->m_video.terrain_detail];
+    glPushMatrix();
+    gluSphere(m_quadricTexSphere, radius, 12, 12);
+    glPopMatrix();
+} 
 
 void Video::renderCylinder(float radius, float height) const
 {
     glPushMatrix();
     glScalef(radius, radius, height);
-    glCallList(m_cylinderList);
+        gluCylinder(m_quadricTexSphere, 1.0f, 1.0f, 1.0f, 8, 8);
+    
+        glPushMatrix();
+        glTranslatef(0.0f, 0.0f, 1.0f);
+        gluDisk(m_quadricTexSphere, 0.0, 1.0f, 8, 8);
+        glPopMatrix();
+
+        glPushMatrix();
+        glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
+        gluDisk(m_quadricTexSphere, 0.0, 1.0f, 8, 8);
+        glPopMatrix();
     glPopMatrix();
 }
 
 void Video::renderCone(float radius, float height) const
 {
     glPushMatrix();
-    glScalef(radius, 1.0f, height);
-    glCallList(m_coneList);
+    glScalef(radius, radius, height);
+        gluCylinder(m_quadricTexSphere, 1.0f, 0.0f, 1.0f, 8, 8);
+        glPushMatrix();
+        glRotatef(180.0, 1.0, 0.0, 0.0);
+        gluDisk(m_quadricTexSphere, 0.0, 1.0f, 8, 8);
+        glPopMatrix();
     glPopMatrix();
 }
 
-void Video::renderSphereHiQ(float radius) const
-{
-    if (radius != 1.0f)
-    {
-        glPushMatrix();
-        glScalef(radius, radius, radius);
-        glCallList(m_sphereHiQList);
-        glPopMatrix();
-    }
-    else
-    {
-        glCallList(m_sphereList);
-    }
-}
-  
 void Video::renderAxes(float size) const
 {
-    static const float red[] = {1.0, 0.0, 0.0};
+/*    static const float red[] = {1.0, 0.0, 0.0};
     static const float green[] = {0.0, 1.0, 0.0};
     static const float blue[] = {0.0, 0.0, 1.0};
 
@@ -408,7 +419,7 @@ void Video::renderAxes(float size) const
     glPopMatrix();
 
     glPopAttrib();
-}
+*/}
 
 void Video::begin() const
 {
@@ -611,7 +622,7 @@ unsigned int Video::newList()
 
 const IntPairVector& Video::getModes() const
 {
-    static const int commonWidth[] = { 640, 800, 1024, 1280, 1440, 1600, 1680};
+    static const int commonWidth[] = { 800, 1024, 1280, 1440, 1600, 1680};
     static const IntSet commonWidthSet(commonWidth, commonWidth + sizeOfArray(commonWidth));
 
     static IntPairVector modes;
@@ -633,7 +644,14 @@ const IntPairVector& Video::getModes() const
 
             if ( aspectGood && bpp >= 24 && list[i].Height >= 480 && foundIn(commonWidthSet, list[i].Width))
             {
+#ifdef __APPLE__
+                if (list[i].Height > 480)
+                {
+                    modes.push_back(make_pair(list[i].Width, list[i].Height));
+                }
+#else
                 modes.push_back(make_pair(list[i].Width, list[i].Height));
+#endif
             }
         }
         if (modes.empty())

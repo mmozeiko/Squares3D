@@ -4,6 +4,10 @@
             <texture2D name="grass"/>
         </material>
 
+        <material id="extra_ground">
+            <texture2D name="extra_ground"/>
+        </material>
+
         <material id="conifer">
             <texture2D name="conifer"/>
         </material>
@@ -16,12 +20,20 @@
             <texture2D name="player"/>
         </material>
 
+        <material id="extra_penguin">
+            <texture2D name="extra_player"/>
+        </material>
+
         <material id="football">
             <texture2D name="ball"/>
         </material>
 
         <material id="pavement">
             <texture2D name="pavement"/>
+        </material>
+
+        <material id="extra_pavement">
+            <texture2D name="extra_pavement"/>
         </material>
 
         <material id="brick">
@@ -46,6 +58,10 @@
             </colors-->
         </material>
         
+        <material id="extra_stuff">
+            <texture2D name="extra_stuff"/>
+        </material>
+
         <material id="wood">
             <texture2D name="wood"/>
         </material>
