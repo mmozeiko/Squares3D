@@ -240,7 +240,7 @@ void Level::render() const
         if (iter->second->m_id == "field")
         {
             glEnable(GL_POLYGON_OFFSET_FILL);
-            glPolygonOffset(2.0f, -4.0f);
+            glPolygonOffset(1.0f, -1.0f);
         }
         (iter->second)->render();
         if (iter->second->m_id == "field")

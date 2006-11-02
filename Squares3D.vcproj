@@ -797,19 +797,19 @@
 				Name="shaders"
 				>
 				<File
-					RelativePath=".\bin\data\shaders\hdr.fsh.glsl"
-					>
-				</File>
-				<File
-					RelativePath=".\bin\data\shaders\hdr.vsh.glsl"
-					>
-				</File>
-				<File
 					RelativePath=".\bin\data\shaders\hdr_downsample.fsh.glsl"
 					>
 				</File>
 				<File
 					RelativePath=".\bin\data\shaders\hdr_downsample.vsh.glsl"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\shaders\hdr_final.fsh.glsl"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\shaders\hdr_final.vsh.glsl"
 					>
 				</File>
 			</Filter>

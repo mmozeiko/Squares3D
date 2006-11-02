@@ -32,9 +32,10 @@ void HDR::init()
     }
     try
     {
-        m_final = new Shader("hdr");
+        m_final = new Shader("hdr_final");
         m_final->setInt1("tex_source", 0);
         m_final->setInt1("tex_small", 1);
+        m_final->setFloat1("tex_small_size", 256.0f);
         m_final->end();
     }
     catch (const string& exception)
@@ -156,12 +157,6 @@ void HDR::render()
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex);
     glEnable(GL_TEXTURE_2D);
-
-    /*vector<char> data(512*512*3);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
-    FILE* f = fopen("xxx.raw", "wb");
-    fwrite(&data[0], data.size(), 1, f);
-    fclose(f);*/
 
     m_final->begin();
     glBegin(GL_QUADS);

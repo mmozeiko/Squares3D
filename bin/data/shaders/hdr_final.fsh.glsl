@@ -2,11 +2,13 @@
 uniform sampler2D tex_source;
 uniform sampler2D tex_small;
 
-const float offset1 = 1.0/256.0;
-const float offset2 = 2.0/256.0;
+uniform float tex_small_size;
 
 vec4 hdr_getBlurred(vec2 hdr_pos)
 {
+    float offset1 = 1.0/tex_small_size;
+    float offset2 = 2.0/tex_small_size;
+
     vec4 color = 15.0 * texture2D(tex_small, hdr_pos);
     color += 2.0 * texture2D(tex_small, hdr_pos + vec2(-offset2, -offset2));
     color += 4.0 * texture2D(tex_small, hdr_pos + vec2(-offset1, -offset2));

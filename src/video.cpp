@@ -752,6 +752,9 @@ void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) c
 
 void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* level, const Vector& color) const
 {
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, -1.0f);
+            
     float y = 0.01f;
 
     if (isPointInRectangle(pos, Vector(-3, 0, -3), Vector(3, 0, 3)))
@@ -789,4 +792,6 @@ void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* leve
     glPopAttrib();
 
     glPopMatrix();
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }
