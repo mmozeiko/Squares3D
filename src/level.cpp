@@ -237,6 +237,15 @@ void Level::render() const
 {
     for each_const(BodiesMap, m_bodies, iter)
     {
+        if (iter->second->m_id == "field")
+        {
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonOffset(2.0f, -4.0f);
+        }
         (iter->second)->render();
+        if (iter->second->m_id == "field")
+        {
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
     }    
 }
