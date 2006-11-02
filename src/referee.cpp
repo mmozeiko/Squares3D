@@ -261,8 +261,6 @@ void Referee::resetBall()
         //reset coords in center and ball must hit the ground 3 times
         //before it can be touched by players
 
-        m_sound->play(m_soundGameStart);
-
         resetPosition.y *= 3;
         m_haltWait = 3;
         haltCpuPlayers();

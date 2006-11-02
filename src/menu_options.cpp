@@ -57,9 +57,14 @@ void OptionEntry::reset()
     else if (m_value.m_id == "resolution")
     {
         const IntPairVector resolutions = Video::instance->getModes();
+        IntPair currentRes = Video::instance->getResolution();
+
         for (size_t i = 0; i < resolutions.size(); i++)
         {
-            if (Video::instance->getResolution() == resolutions[i])
+            // adjusted with <= because of the non fullscreen resolution reporting deviation
+            // when game window is partly outside of desktop window
+            if ((currentRes.first <= resolutions[i].first)
+                && (currentRes.second <= resolutions[i].second))
             {
                 m_value.m_current = i;
                 break;

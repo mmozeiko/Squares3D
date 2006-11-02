@@ -34,15 +34,15 @@ Construction:
 Done:
 =====
 2006-10-29 Add fence in game - something that can be pushed and destroyed.
-2006-10-29 Main menu background image.
-2006-10-29 Build some nice scenery around game field (like houses, some roads, etc.).
-2006-10-29 Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
+                 Main menu background image.
+                 Build some nice scenery around game field (like houses, some roads, etc.).
+                 Implement nice grass objects and maybe some bushes or even trees (trees are probably be made like models).
 2006-10-26 Fix camera movement speed. // done?
-           Anisotropic filtering.
+                 Anisotropic filtering.
 2006-10-18 Create different players for different difficulty levels.
-           Add sounds to collision events in world.
+                 Add sounds to collision events in world.
 2006-10-16 Implement basic tournament gameplay. (not really tournament but a single level available on 3 difficulty levels)
-           Fill menu system with Options/Multiplayer/Credits/Rules and some other menus you can think of (which are reasonable).
+                 Fill menu system with Options/Multiplayer/Credits/Rules and some other menus you can think of (which are reasonable).
 2006-10-11 Implemented Easy/Normal/Hard system, made singleplayer consist of 1 round.
            Stop those penguins when game has ended (they are very nervous).
 2006-10-08 Make AI players move more randomly.

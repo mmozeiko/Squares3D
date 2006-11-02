@@ -118,6 +118,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), false, "playerOptions"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), false, "options"));
 	submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_RULES), false, "rules"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CONTROLS), false, "controls"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CREDITS), false, "credits"));
     submenu->addEntry(new QuitEntry(this, language->get(TEXT_QUIT_GAME)));
 
@@ -248,6 +249,24 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->center(submenuPosition);
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["rules"] = submenu;
+
+	// Controls
+    submenu = new Submenu(this);
+    
+    submenu->setTitle(language->get(TEXT_CONTROLS), titlePos);
+
+    const Font* controlsFont = Font::get( ( resY <= 600 ? "Arial_16pt_bold" : "Arial_32pt_bold" ));
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_CONTROLS_SCREEN), Font::Align_Left, controlsFont));
+
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
+
+    // TODO: hack
+    submenu->m_height += 10;
+
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["controls"] = submenu;
 
 
     // Start Multi Submenu

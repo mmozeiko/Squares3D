@@ -48,8 +48,10 @@ public:
 
     string getLoserName() const;
 
-    bool m_mustResetBall;
-    bool m_playersAreHalted;
+    bool         m_mustResetBall;
+    bool         m_playersAreHalted;
+    Sound*       m_sound; //for gameover and other sounds exclusive to referee
+    SoundBuffer* m_soundGameStart;
 
 private:
     void initEvents();
@@ -74,9 +76,7 @@ private:
     int          m_matchPoints;
     int          m_haltWait;
     Player*      m_lastWhoGotPoint;
-    Sound*       m_sound; //for gameover and other sounds exclusive to referee
     SoundBuffer* m_soundGameOver;
-    SoundBuffer* m_soundGameStart;
     SoundBuffer* m_soundFault;
 
     Player*      m_releaseTehOne;

@@ -30,6 +30,7 @@
 #include "game.h"
 #include "fence.h"
 #include "random.h"
+#include "hdr.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -63,22 +64,22 @@ State::Type World::progress()
                 if (m_freeze)
                 {
                     m_freeze = false;
-                    m_messages->remove(escMessage);
-                    escMessage = NULL;
+                    m_messages->remove(m_escMessage);
+                    m_escMessage = NULL;
                     return State::Current;
                 }
                 else
                 {
                     m_freeze = true;
                     float resY = static_cast<float>(Video::instance->getResolution().second);
-                    escMessage = new Message(
+                    m_escMessage = new Message(
                                     Language::instance->get(TEXT_ESC_MESSAGE), 
-                                    Vector(static_cast<float>(Video::instance->getResolution().first / 2), 
-                                           resY / 2 + resY / 4, 
+                                    Vector(static_cast<float>(Video::instance->getResolution().first) / 2, 
+                                           resY / 2 + resY / 3, 
                                            0.0f), 
                                     White,
                                     Font::Align_Center);
-                    m_messages->add2D(escMessage);
+                    m_messages->add2D(m_escMessage);
                 }
             }
         }
@@ -160,15 +161,21 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     m_scoreBoard(NULL),
     m_freeze(false),
     m_userProfile(userProfile),
-    escMessage(NULL),
+    m_escMessage(NULL),
     m_framebuffer(NULL),
     m_unlockable(unlockable),
     m_current(current),
-    m_waitMessage(NULL)
+    m_waitMessage(NULL),
+    m_hdr(NULL)
 {
     setInstance(this); // MUST go first
 
     m_framebuffer = new FrameBuffer();
+    if (Video::instance->m_haveShaders)
+    {
+        m_hdr = new HDR();
+        m_hdr->init();
+    }
     setupShadowStuff();
     setLight(Vector(-15.0f, 35.0f, 38.0f));
 
@@ -192,6 +199,7 @@ void World::init()
        
         delete m_ball;
         delete m_referee;
+        delete m_grass;
         delete m_level;
 
         NewtonDestroyAllBodies(m_newtonWorld);
@@ -298,6 +306,8 @@ void World::init()
                         Font::Align_Center);
         m_messages->add2D(m_waitMessage);    
     }
+
+    m_referee->m_sound->play(m_referee->m_soundGameStart);
 }
 
 World::~World()
@@ -329,6 +339,10 @@ World::~World()
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
 
+    if (Video::instance->m_haveShaders)
+    {
+        delete m_hdr;
+    }
     delete m_scoreBoard;
     delete m_messages;
     delete m_skybox;
@@ -428,6 +442,10 @@ void World::render() const
     int shadow_type = Config::instance->m_video.shadow_type;
     if (shadow_type == 0)
     {
+        if (Video::instance->m_haveShaders)
+        {
+            m_hdr->begin();
+        }
         glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
         glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_2*Vector::One).v);
         glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
@@ -450,6 +468,11 @@ void World::render() const
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
 
         m_grass->render();
+        if (Video::instance->m_haveShaders)
+        {
+            m_hdr->end();
+            m_hdr->render();
+        }
     }
     else if (shadow_type == 1)
     {
@@ -463,30 +486,27 @@ void World::render() const
     // text messages are last
     if (m_freeze)
     {
-        if (escMessage != NULL || m_waitMessage != NULL)
+        if (m_escMessage != NULL || m_waitMessage != NULL)
         {
-            Message* m = escMessage;
+            Message* m = m_escMessage;
             if (m == NULL)
             {
                  m = m_waitMessage;
             }
-            const Font* font = m_messages->m_fonts.find(m->getFontSize())->second;
+            int i = m->getFontSize();
+            const Font* font = m_messages->m_fonts.find(i)->second;
             font->begin();
-            float w = static_cast<float>(font->getWidth(m->getText()));
+
+            float w2 = static_cast<float>(font->getWidth(m->getText())) / 2.0f;
             float h = static_cast<float>(font->getHeight(m->getText()));
 
-            const Vector& pos = m->getPosition() - Vector(0.0f, h / 4, 0.0f);
+            const Vector& pos = m->getPosition();
 
-            Vector lower = pos;
-            lower.x -= w / 2;
-            lower.y -= h / 2;
-
-            Vector upper = pos;
-            upper.x += w / 2;
-            upper.y +=  h / 2;
+            Vector lower(pos.x - w2, pos.y - h + i, 0.0f);
+            Vector upper(pos.x + w2, pos.y + i, 0.0f);
 
             glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-            Video::instance->renderRoundRect(lower, upper, h / 4);
+            Video::instance->renderRoundRect(lower, upper, i / 2.0f);
 
             font->end();
         }

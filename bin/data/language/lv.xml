@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
     <item name="GAME_OVER"             value="Spēle beigusies!"/>
@@ -12,6 +12,8 @@
     <item name="PLAYER_UNALLOWED"      value="$1 ir par agru pieskāries bumbai!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
+Pauze
+        
 Nospiediet &lt;ESCAPE&gt; lai turpinātu
 
 Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
@@ -134,7 +136,9 @@ par vienu.
         * Bumba ir atstājusi laukumu, no paša spēlētāja ķermeņa. Spēlētājs saņem tik mīnuspunktus, cik ir reizes
           pieskāries bumbai gaisā (pēc pēdējā pretinieka, ja tāds bija pieskāries) pirms izsišanas ārpus laukuma.
         * Spēlētājs savā laukumā ir pieskāries bumbai vēlreiz, kad tā jau bija pieskārusies zemei. Šajā gadījumā
-          ir viens mīnuspunkts.
+          ir viens mīnuspunkts. Ja spēlētājs savā laukumā jau vienreiz ir pieskāries bumbai viņš drīkst atkārtoti
+          tai pieskarties tikai tad, kad tā ir sasniegusi vai pārkāpusi spēlētāja laukuma robežas (laukuma līnijas
+          ir ieskaitītas), vai tai ir pieskāries kāds cits spēlētājs.
     Kamēr bumba ārpus laukuma nav nokritusi zemē, spēlētājs drīkst to ķert un mēģināt iedabūt atpakaļ laukumā,
 tā, lai tā nepieskaras zemei ārpus laukuma. Kamēr bumba ārpus laukuma nav pieskārusies zemei, tikmēr spēle
 turpinās Objekti, kas ir augstāk par zemi netiek ieskaitīti kā pieskārieni zemei.

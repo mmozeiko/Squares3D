@@ -1,4 +1,4 @@
-﻿Readme for Squares 3D release for Indago 2006 game contest (version 1.0.0).
+﻿Readme for Squares 3D release for Indago 2006 game contest (version 1.0.1).
 
 System requirements:
 - Runs fairly well on systems above 1 GHz and video cards above GeForce 2.
@@ -18,9 +18,9 @@ Known issues:
   Solution would be to enable vertical synchronization in advanced video options. Enabling vertical
   synchronization is not recommended if you`re getting low fps.
 - Multiplayer is disabled right now.
-- CPU player`s arificial intelligence has some weak spots in certain situations and might get
-stuck into repeating sequence.
-
+- Under Linux and MacOSX user must have write access rights to folder where Squares 3D executable file
+  or bundle is located. You can simple keep the game in some folder on Desktop.
+  
 If game runs slow (at unplayable frame rate) it is recommended to turn down video options to lowest
 detalization. Slowest video effects are usage of shadows and grass density. These two are the first
 options to tweak down in case of poor performance. Also using AntiAliasing and Anisotropic filtration
@@ -36,7 +36,7 @@ Squares team.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------
 
-Squares 3D "izlasi mani" Indago 2006 spēļu konkursam (versija 1.0.0).
+Squares 3D "izlasi mani" Indago 2006 spēļu konkursam (versija 1.0.1).
 
 Sistēmas prasības:
 - Spēle iet visnotaļ labi uz sistēmām ar 1 GHz vai ātrāku procesoru un videokarti GeForce 2 vai labāku.
@@ -56,9 +56,9 @@ Zināmās problēmas:
   šo problēmu uzstādiet vertikālo sinhronizāciju par ieslēgtu. Tā ir atrodama spēles papildus video
   uzstādījumos. Ja spēle iet lēni (zems FPS), tad lietot vertikālo sinhronizāciju nav ieteicams.
 - Vairakspāletāju režīms pašlaik nav pieejams.
-- Datora vadīto spēlētāju intelekts pieklibo dažās situācijās un var nonākt stavoklī, kad bez spēlētāja
-  iejaukšanās tas sāk atkārtoties vienādā notikumu virknē.
-
+- Linux un MacOSX lietotājam jābūt rakstīšanas tiesībām folderim, kurā atrodas Squares 3D izpildāmais
+  fails vai bundle. Spēli var vienkārši turēt uz Desktopa kādā folderī.
+  
 Ja spēle iet leni (par maz kadru sekundē), tad ir ieteicams uzstādīt video opcijas uz zemākajiem
 uzstādījumiem. Visvairāk resursus prasa ēnu lietošana un zāļu daudzums spēles pasaulē. Šie abi
 ustādījumi ir pirmie, kurus vajadzētu pieregulēt, ja spēle neiet pietiekami ātri. Arī AntiAliasing

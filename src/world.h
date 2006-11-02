@@ -21,6 +21,7 @@ class FrameBuffer;
 class Grass;
 class Profile;
 class Game;
+class HDR;
 
 typedef vector<Profile*> ProfilesVector;
 
@@ -57,7 +58,7 @@ private:
 
     bool           m_freeze;
     Profile*       m_userProfile;
-    Message*       escMessage;
+    Message*       m_escMessage;
 
     void renderScene() const;
 
@@ -71,6 +72,7 @@ private:
     unsigned int     m_shadowSize;
     bool             m_withFBO;
     FrameBuffer*     m_framebuffer;
+    HDR*             m_hdr;
 
     void setLight(const Vector& position);
 

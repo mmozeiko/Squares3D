@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <!-- Ingame texts -->
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
@@ -13,6 +13,8 @@
     <item name="PLAYER_UNALLOWED"      value="$1 hat den Ball zu früh berührt!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
+Pause
+        
 Drücke &lt;ESCAPE&gt; um fortzufahren.
 
 Drücke &lt;ENTER&gt; um das Spiel zu beenden
@@ -120,7 +122,7 @@ Kristaps Straupe
 Weiterer Dank gebührt:
 Atis Straujums (Extra-Level)
 Gustavs Gūtmanis (Logo &amp; Programm-Icon)
-Dmitry Chirkov (spēlētāju modelis)
+Dmitry Chirkov (Spielerfiguren)
 Martin Offermann (Musik &amp; Sound-Effekte)
 Alexander Belov (Russische Übersetzung)
 Dirk Stegemann (Deutsche Übersetzung)

@@ -632,6 +632,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\hdr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\hdr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\shader.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\shader.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\skybox.cpp"
 						>
 					</File>

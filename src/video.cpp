@@ -46,9 +46,7 @@ Video::Video() :
     m_haveShadowsFB(false),
     m_haveVBO(false),
     m_shadowMap3ndPass(false),
-    m_lastBound(NULL),
-    m_cylinderList(0),
-    m_coneList(0)
+    m_lastBound(NULL)
 {
     setInstance(this);
 
@@ -155,7 +153,6 @@ Video::~Video()
 {
     clog << "Closing video." << endl;
 
-    gluDeleteQuadric(m_quadricTexSphere);
     unloadTextures();
 
     for each_(UIntSet, m_lists, iter)
@@ -515,6 +512,42 @@ void Video::loadExtensions()
         clog << "Video: GL_ARB_multitexture unavailable." << endl;
     }
 
+    if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
+        glfwExtensionSupported("GL_ARB_vertex_shader"))
+    {
+        m_haveShaders = true;
+
+        loadProc(glCreateShaderObjectARB);
+        loadProc(glShaderSourceARB);
+        loadProc(glCompileShaderARB);
+
+        loadProc(glCreateProgramObjectARB);
+        loadProc(glAttachObjectARB);
+        loadProc(glLinkProgramARB);
+        loadProc(glUseProgramObjectARB);
+
+        loadProc(glGetObjectParameterivARB);
+        loadProc(glGetInfoLogARB);
+
+        //loadProc(glDetachObjectARB);
+        loadProc(glDeleteObjectARB);
+
+        loadProc(glGetUniformLocationARB);
+        loadProc(glUniform1iARB);
+        loadProc(glUniform1fARB);
+        loadProc(glUniform4fvARB);
+        //loadProc(glUniformMatrix4fvARB);
+        
+        //loadProc(glVertexAttrib2fARB);
+        //loadProc(glVertexAttrib3fvARB);
+
+        clog << "Video: GL_ARB_fragment_shader and GL_ARB_vertex_shader supported." << endl;
+    }
+    else
+    {
+        clog << "Video: GL_ARB_fragment_shader or GL_ARB_vertex_shader unavailable." << endl;
+    }
+    
 //#ifndef GL_EXT_texture_filter_anisotropic
     if (glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
     {

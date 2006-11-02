@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <!-- Ingame texts -->
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
@@ -13,6 +13,8 @@
     <item name="PLAYER_UNALLOWED"      value="$1 touched the ball preliminary!&#10;+$2"/>
 
     <item name="ESC_MESSAGE">
+Pause
+
 Press &lt;ESCAPE&gt; to continue
 
 Press &lt;ENTER&gt; to quit to Main Menu.
@@ -142,7 +144,9 @@ the ground 3 times. Otherwise the player who has touched the ball earlier gets 1
         * Ball has left the field from the body of the player. In this scenario the player recieves as many minus points
           as he had gathered while ball was in the air after the last touch to the ball (if any) by any of opponents.
         * Player has touched the ball for the second time in his field when the ball has hit the ground between those
-          two touches. The player recieves 1 minus point.
+          two touches. The player recieves 1 minus point. If player has touched the ball once in his field, he may touch it
+          again when it has left the bounds (field lines included) of his field or the ball has been touched by another
+          player.
     While the ball has not hit the ground outside of the field the player may try to catch it and get back into game
 field while keeping it in air. While the ball has not hit the ground outside of the game field, the game continues.
 Objects which are above ground are not counted as ground thus if the ball hits them, the game is not yet stopped.
@@ -154,4 +158,23 @@ If any of players fails to obey this rule he gets 1 minus point.
 of the game field. Players may touch the ball once it has hit the ground.
     The player who first recieves 21 points loses the game.
 	</item>
+
+    <item name="CONTROLS" value="Controls"/>
+    <item name="CONTROLS_SCREEN">
+        Ingame controls:
+        * Use your mouse to move around
+        * Press left mouse button to make combo
+        * Press space key to jump
+        * Press and hold right mouse button to rotate camera with mouse
+        * Press Escape during game to bring up pause screen. Press
+          enter key while in pause screen to quit to main menu or
+          escape key to resume the game
+
+        Menu controls:
+        * Navigate through menu using up / down keys or mouse
+        * Press enter key or left mouse button to enter or accept
+          selected menu entry
+        * Use right / left keys or left / right mouse buttons to
+          cycle forward and backward through options entries items
+    </item>
 </xml>

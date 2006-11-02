@@ -65,9 +65,10 @@ public:
     Texture* loadTexture(const string& name, bool mipmap = true);
 
     bool m_haveAnisotropy;
-    int m_maxAnisotropy;
+    int  m_maxAnisotropy;
     bool m_haveShadows;
     bool m_haveShadowsFB;
+    bool m_haveShaders;
 
     bool m_haveVBO;
 
@@ -77,8 +78,6 @@ private:
     void loadExtensions();
 
     GLUquadric*   m_quadricTexSphere;
-    unsigned int  m_cylinderList;
-    unsigned int  m_coneList;
 
     TextureMap    m_textures;
     IntPair       m_resolution;    

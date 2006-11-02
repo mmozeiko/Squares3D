@@ -17,7 +17,7 @@ public:
     void bind() const;
     void unbind() const;
 
-    unsigned int attachColorTex();
+    unsigned int attachColorTex(bool hdr = false);
     unsigned int attachDepthTex();
 
 private:
