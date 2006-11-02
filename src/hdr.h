@@ -22,9 +22,12 @@ public:
     void render();
 
 private:
-    int m_width;
-    int m_height;
+    bool m_valid;
+
+    float m_h;
+    float m_w;
     
+    Shader* m_downsample;
     Shader* m_final;
 
     GLuint m_sourceTex;

@@ -5,40 +5,76 @@
 #include "video_ext.h"
 
 HDR::HDR() :
-    m_width(0),
-    m_height(0),
+    m_downsample(NULL),
     m_final(NULL),
     m_sourceTex(0),
     m_downsampledTex(0),
     m_fboSource(NULL),
-    m_fboDownsampled(NULL)
+    m_fboDownsampled(NULL),
+    m_w(0.0f),
+    m_h(0.0f),
+    m_valid(false)
 {
 }
 
 void HDR::init()
 {
-    //m_blur = new Shader("hdr_blur");
-    //m_blur->setInt1("tex_hdr", 0);
-
-    m_final = new Shader("hdr_final");
-    m_final->setInt1("tex_source", 0);
-    m_final->setInt1("tex_blur", 1);
+    try
+    {
+        m_downsample = new Shader("hdr_downsample");
+        m_downsample->setInt1("tex_source", 0);
+    }
+    catch (const string& exception)
+    {
+        clog << "HDR not supported: " << exception << endl;
+        return;
+    }
+    try
+    {
+        m_final = new Shader("hdr");
+        m_final->setInt1("tex_source", 0);
+        m_final->setInt1("tex_small", 1);
+    }
+    catch (const string& exception)
+    {
+        clog << "HDR not supported: " << exception << endl;
+        return;
+    }
 
     m_fboSource = new FrameBuffer();
     m_fboDownsampled = new FrameBuffer();
 
-    m_fboSource->create(1024);
+    int m = std::max(Video::instance->getResolution().first, Video::instance->getResolution().second);
+    int pow2 = 1;
+    while (pow2 < m)
+    {
+        pow2 <<= 1;
+    }
+    
+    m_w = Video::instance->getResolution().first / static_cast<float>(pow2);
+    m_h = Video::instance->getResolution().second / static_cast<float>(pow2);
+
+    m_fboSource->create(pow2);
     m_sourceTex = m_fboSource->attachColorTex();
-    m_fboSource->attachDepthTex();
-    clog << "VALID = " << m_fboSource->isValid() << endl;
+    m_fboSource->attachDepthTex(true);
+    if (!m_fboSource->isValid())
+    {
+        return;
+    }
 
     m_fboDownsampled->create(256);
     m_downsampledTex = m_fboDownsampled->attachColorTex(true);
-    clog << "VALID = " << m_fboDownsampled->isValid() << endl;
+    if (!m_fboDownsampled->isValid())
+    {
+        return;
+    }
+
+    m_valid = true;
 }
 
 HDR::~HDR()
 {
+    if (m_downsample != NULL) delete m_downsample;
     if (m_final != NULL) delete m_final;
     if (m_fboSource != NULL) delete m_fboSource;
     if (m_fboDownsampled != NULL) delete m_fboDownsampled;
@@ -46,16 +82,31 @@ HDR::~HDR()
 
 void HDR::begin()
 {
+    if (!m_valid)
+    {
+        return;
+    }
+    
     m_fboSource->bind();
 }
 
 void HDR::end()
 {
+    if (!m_valid)
+    {
+        return;
+    }
+    
     m_fboSource->unbind();
 }
 
 void HDR::render()
 {
+    if (!m_valid)
+    {
+        return;
+    }
+    
     glDisable(GL_CULL_FACE);
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
@@ -64,9 +115,6 @@ void HDR::render()
     glGetIntegerv(GL_VIEWPORT, m_view);
 
     glViewport(0, 0, 256, 256);
-
-    float w_aspect = Video::instance->getResolution().first / 1024.0f;
-    float h_aspect = Video::instance->getResolution().second / 1024.0f;
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -82,47 +130,16 @@ void HDR::render()
     glEnable(GL_TEXTURE_2D);
 
     m_fboDownsampled->bind();
-    glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f);        glVertex2i(0, 0);
-        glTexCoord2f(1.0f, 0.0f);        glVertex2i(1, 0);
-        glTexCoord2f(1.0f, 1.0f);        glVertex2i(1, 1);
-        glTexCoord2f(0.0f, 1.0f);        glVertex2i(0, 1);
-    glEnd();
-    m_fboDownsampled->unbind();
-
-    //int GL_TEXTURE_RECTANGLE_ARB = 0x84F5;
-   /*
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, m_downsampledTex);
-
-    m_fboH->bind();
-    m_blur->setFloat4("blur_offset", Vector(4.0f/512.0f, 0, 0, 1));
-    m_blur->begin();
-    glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f);        glVertex2i(0, 0);
-        glTexCoord2f(1.0f, 0.0f);        glVertex2i(1, 0);
-        glTexCoord2f(1.0f, 1.0f);        glVertex2i(1, 1);
-        glTexCoord2f(0.0f, 1.0f);        glVertex2i(0, 1);
-    glEnd();
-
-    m_blur->end();
-    m_fboH->unbind();
-
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, m_blurHtex);
-    m_fboV->bind();
-    m_blur->setFloat4("blur_offset", Vector(0, 4.0f/512.0f, 0, 1));
-    m_blur->begin();
+    m_downsample->begin();
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);
         glTexCoord2f(1.0f, 0.0f); glVertex2i(1, 0);
         glTexCoord2f(1.0f, 1.0f); glVertex2i(1, 1);
         glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 1);
     glEnd();
+    m_downsample->end();
+    m_fboDownsampled->unbind();
 
-    m_blur->end();
-    m_fboV->unbind();
-*/
     glViewport(m_view[0], m_view[1], m_view[2], m_view[3]);
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -131,12 +148,18 @@ void HDR::render()
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex);
     glEnable(GL_TEXTURE_2D);
 
+    /*vector<char> data(512*512*3);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
+    FILE* f = fopen("xxx.raw", "wb");
+    fwrite(&data[0], data.size(), 1, f);
+    fclose(f);*/
+
     m_final->begin();
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f);         glVertex2i(-1, -1);  
-        glTexCoord2f(w_aspect, 0.0f);     glVertex2i(1, -1); 
-        glTexCoord2f(w_aspect, h_aspect); glVertex2i(1, 1);  
-        glTexCoord2f(0.0f, h_aspect);     glVertex2i(-1, 1);   
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);  
+        glTexCoord2f(m_w, 0.0f);  glVertex2i(1, 0); 
+        glTexCoord2f(m_w, m_h);   glVertex2i(1, 1);  
+        glTexCoord2f(0.0f, m_h);  glVertex2i(0, 1);   
     glEnd();
     m_final->end();
 

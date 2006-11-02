@@ -18,7 +18,7 @@ public:
     void unbind() const;
 
     unsigned int attachColorTex(bool hdr = false);
-    unsigned int attachDepthTex();
+    unsigned int attachDepthTex(bool hdr = false);
 
 private:
     unsigned int m_size;

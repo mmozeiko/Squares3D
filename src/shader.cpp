@@ -74,7 +74,6 @@ void Shader::checkShaderStatus(GLhandleARB handle, int status)
         int charsWritten;
         glGetInfoLogARB(handle, infologLength, (GLsizei*)&charsWritten, &infoLog[0]);
         string error(infoLog.begin(), infoLog.end());
-        clog << Exception(error) << endl;
         throw Exception(error);
     }
     else

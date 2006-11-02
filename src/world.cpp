@@ -171,11 +171,10 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     setInstance(this); // MUST go first
 
     m_framebuffer = new FrameBuffer();
-    if (Video::instance->m_haveShaders)
-    {
-        m_hdr = new HDR();
-        m_hdr->init();
-    }
+
+    m_hdr = new HDR();
+    m_hdr->init();
+
     setupShadowStuff();
     setLight(Vector(-15.0f, 35.0f, 38.0f));
 
@@ -339,10 +338,7 @@ World::~World()
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
 
-    if (Video::instance->m_haveShaders)
-    {
-        delete m_hdr;
-    }
+    delete m_hdr;
     delete m_scoreBoard;
     delete m_messages;
     delete m_skybox;
@@ -442,10 +438,7 @@ void World::render() const
     int shadow_type = Config::instance->m_video.shadow_type;
     if (shadow_type == 0)
     {
-        if (Video::instance->m_haveShaders)
-        {
-            m_hdr->begin();
-        }
+        m_hdr->begin();
         glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
         glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_2*Vector::One).v);
         glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
@@ -468,11 +461,8 @@ void World::render() const
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
 
         m_grass->render();
-        if (Video::instance->m_haveShaders)
-        {
-            m_hdr->end();
-            m_hdr->render();
-        }
+        m_hdr->end();
+        m_hdr->render();
     }
     else if (shadow_type == 1)
     {
