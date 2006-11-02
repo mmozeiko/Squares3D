@@ -1,6 +1,6 @@
 //
 uniform sampler2D tex_source;
-const float hdr_eps = 0.86;
+const float hdr_eps = 0.85;
 
 void main(void)
 {

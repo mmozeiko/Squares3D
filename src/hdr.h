@@ -31,10 +31,14 @@ private:
     Shader* m_final;
 
     GLuint m_sourceTex;
-    GLuint m_downsampledTex;
+    GLuint m_downsampledTex256;
+    GLuint m_downsampledTex128;
+    GLuint m_downsampledTex64;
 
     FrameBuffer* m_fboSource;
-    FrameBuffer* m_fboDownsampled;
+    FrameBuffer* m_fboDownsampled256;
+    FrameBuffer* m_fboDownsampled128;
+    FrameBuffer* m_fboDownsampled64;
 };
 
 #endif

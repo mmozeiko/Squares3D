@@ -31,9 +31,12 @@ Shader::Shader(const string& name)
     shaders[1].assign(v.begin(), v.end());
         
     GLhandleARB objs[2] = {
-        m_vhandle = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB),
-        m_fhandle = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB),
+        glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB),
+        glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB),
     };
+
+    m_vhandle = objs[0];
+    m_fhandle = objs[1];
 
     for (int i=0; i<2; ++i)
     {

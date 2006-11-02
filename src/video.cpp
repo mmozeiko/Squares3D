@@ -46,7 +46,8 @@ Video::Video() :
     m_haveShadowsFB(false),
     m_haveVBO(false),
     m_shadowMap3ndPass(false),
-    m_lastBound(NULL)
+    m_lastBound(NULL),
+    m_haveShaders(false)
 {
     setInstance(this);
 
@@ -513,8 +514,11 @@ void Video::loadExtensions()
         clog << "Video: GL_ARB_multitexture unavailable." << endl;
     }
 
-    if (glfwExtensionSupported("GL_ARB_fragment_shader") && 
-        glfwExtensionSupported("GL_ARB_vertex_shader"))
+    if (activeTex &&
+        glfwExtensionSupported("GL_ARB_fragment_shader") && 
+        glfwExtensionSupported("GL_ARB_vertex_shader") &&
+        glfwExtensionSupported("GL_ARB_shader_objects") &&
+        glfwExtensionSupported("GL_ARB_shading_language_100"))
     {
         m_haveShaders = true;
 
@@ -530,23 +534,22 @@ void Video::loadExtensions()
         loadProc(glGetObjectParameterivARB);
         loadProc(glGetInfoLogARB);
 
-        //loadProc(glDetachObjectARB);
         loadProc(glDeleteObjectARB);
 
         loadProc(glGetUniformLocationARB);
         loadProc(glUniform1iARB);
         loadProc(glUniform1fARB);
         loadProc(glUniform4fvARB);
-        //loadProc(glUniformMatrix4fvARB);
-        
-        //loadProc(glVertexAttrib2fARB);
-        //loadProc(glVertexAttrib3fvARB);
-
-        clog << "Video: GL_ARB_fragment_shader and GL_ARB_vertex_shader supported." << endl;
+    }
+    
+    clog << "Video: GL_ARB_fragment_shader, GL_ARB_vertex_shader, GL_ARB_shader_objects, GL_ARB_shading_language_100 ";
+    if (m_haveShaders)
+    {
+         clog << "supported." << endl;
     }
     else
     {
-        clog << "Video: GL_ARB_fragment_shader or GL_ARB_vertex_shader unavailable." << endl;
+        clog << "unavailable." << endl;
     }
     
 //#ifndef GL_EXT_texture_filter_anisotropic
@@ -659,6 +662,11 @@ void Video::loadExtensions()
     if (!m_haveShadowsFB)
     {
         Config::instance->m_video.shadowmap_size = 0;
+    }
+
+    if (!m_haveShaders)
+    {
+        Config::instance->m_video.use_hdr = false;
     }
 }
 

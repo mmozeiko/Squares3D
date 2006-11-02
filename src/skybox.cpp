@@ -64,6 +64,7 @@ void SkyBox::render() const
 
     modelview.m30 = modelview.m31 = modelview.m32 = 0.0f;
     glLoadMatrixf(modelview.m);
+    //glTranslatef(0.0f, -0.05f, 0.0f); // move skybox a little bit down, if needed
 
     glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT | GL_DEPTH_BUFFER_BIT);
 
