@@ -10,6 +10,7 @@
 #include "profile.h"
 #include "music.h"
 #include "audio.h"
+#include "config.h"
 
 Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_skyboxName()
 {
@@ -237,13 +238,13 @@ void Level::render() const
 {
     for each_const(BodiesMap, m_bodies, iter)
     {
-        if (iter->second->m_id == "field")
+        if (Config::instance->m_video.use_hdr && iter->second->m_id == "field")
         {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glPolygonOffset(1.0f, -1.0f);
         }
         (iter->second)->render();
-        if (iter->second->m_id == "field")
+        if (Config::instance->m_video.use_hdr && iter->second->m_id == "field")
         {
             glDisable(GL_POLYGON_OFFSET_FILL);
         }

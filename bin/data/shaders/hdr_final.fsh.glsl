@@ -35,7 +35,7 @@ vec4 hdr_getBlurred(vec2 hdr_pos)
     color += 4.0 * texture2D(tex_small, hdr_pos + vec2(+offset1, +offset2));
     color += 2.0 * texture2D(tex_small, hdr_pos + vec2(+offset2, +offset2));
     
-    return color / 115.0;
+    return color / 130.0;
 }
 
 void main(void)

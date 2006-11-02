@@ -752,8 +752,11 @@ void Video::renderRoundRect(const Vector& lower, const Vector& upper, float r) c
 
 void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* level, const Vector& color) const
 {
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1.0f, -1.0f);
+    if (Config::instance->m_video.use_hdr)
+    {
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(1.0f, -1.0f);
+    }
             
     float y = 0.01f;
 
@@ -793,5 +796,8 @@ void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* leve
 
     glPopMatrix();
 
-    glDisable(GL_POLYGON_OFFSET_FILL);
+    if (Config::instance->m_video.use_hdr)
+    {
+        glDisable(GL_POLYGON_OFFSET_FILL);
+    }
 }

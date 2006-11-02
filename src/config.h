@@ -17,6 +17,7 @@ struct VideoConfig
     bool show_fps;
     int  grass_density;
     int  terrain_detail;
+    bool use_hdr;
 };
 
 struct AudioConfig

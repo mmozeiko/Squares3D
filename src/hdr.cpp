@@ -3,6 +3,7 @@
 #include "framebuffer.h"
 #include "video.h"
 #include "video_ext.h"
+#include "config.h"
 
 HDR::HDR() :
     m_downsample(NULL),
@@ -19,6 +20,11 @@ HDR::HDR() :
 
 void HDR::init()
 {
+    if (Config::instance->m_video.use_hdr == false)
+    {
+        return;
+    }
+
     try
     {
         m_downsample = new Shader("hdr_downsample");
@@ -28,6 +34,7 @@ void HDR::init()
     catch (const string& exception)
     {
         clog << "HDR not supported: " << exception << endl;
+        Config::instance->m_video.use_hdr = false;
         return;
     }
     try
@@ -41,6 +48,7 @@ void HDR::init()
     catch (const string& exception)
     {
         clog << "HDR not supported: " << exception << endl;
+        Config::instance->m_video.use_hdr = false;
         return;
     }
 
@@ -69,6 +77,7 @@ void HDR::init()
     m_fboSource->attachDepthTex(true);
     if (!m_fboSource->isValid())
     {
+        Config::instance->m_video.use_hdr = false;
         return;
     }
 
@@ -76,6 +85,7 @@ void HDR::init()
     m_downsampledTex = m_fboDownsampled->attachColorTex(true);
     if (!m_fboDownsampled->isValid())
     {
+        Config::instance->m_video.use_hdr = false;
         return;
     }
 

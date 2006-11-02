@@ -7,7 +7,7 @@ template <class Config> Config* System<Config>::instance = NULL;
 
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, false, 0, 0, 1, 1, false, 1, 1 };
+const VideoConfig Config::defaultVideo = { 800, 600, false, true, 0, 0, 1, 1, false, 1, 1, false };
 const AudioConfig Config::defaultAudio = { true, 5, 5 };
 const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost" };
 
@@ -121,6 +121,10 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                     }
                     m_video.terrain_detail = terrain_detail;
                 }
+                else if (node.name == "use_hdr")
+                {
+                    m_video.use_hdr = cast<int>(node.value)==1;
+                }
                 else
                 {
                     string line = cast<string>(node.line);
@@ -223,6 +227,7 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("show_fps", cast<string>(m_video.show_fps ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("grass_density", cast<string>(m_video.grass_density)));
     xml.childs.back().childs.push_back(XMLnode("terrain_detail", cast<string>(m_video.terrain_detail)));
+    xml.childs.back().childs.push_back(XMLnode("use_hdr", cast<string>(m_video.use_hdr ? 1 : 0)));
 
     xml.childs.push_back(XMLnode("audio"));
     xml.childs.back().childs.push_back(XMLnode("enabled", cast<string>(m_audio.enabled ? 1 : 0)));
