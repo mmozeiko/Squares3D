@@ -21,7 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0, static_cast<float>(width)/static_cast<float>(height), 0.1, 102.4);
+    gluPerspective(45.0, static_cast<float>(width)/static_cast<float>(height), 0.1, 51.2);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }

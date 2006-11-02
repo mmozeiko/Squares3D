@@ -9,7 +9,7 @@ public:
     FrameBuffer();
     ~FrameBuffer();
 
-    void create(unsigned int size);
+    void create(unsigned int sizeX, unsigned int sizeY);
     void destroy();
 
     bool isValid() const;
@@ -21,7 +21,8 @@ public:
     unsigned int attachDepthTex(bool hdr = false);
 
 private:
-    unsigned int m_size;
+    unsigned int m_sizeX;
+    unsigned int m_sizeY;
     unsigned int m_colorTex;
     unsigned int m_shadowTex;
     unsigned int m_frameBuffer;

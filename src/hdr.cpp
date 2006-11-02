@@ -23,6 +23,7 @@ void HDR::init()
     {
         m_downsample = new Shader("hdr_downsample");
         m_downsample->setInt1("tex_source", 0);
+        m_downsample->end();
     }
     catch (const string& exception)
     {
@@ -34,6 +35,7 @@ void HDR::init()
         m_final = new Shader("hdr");
         m_final->setInt1("tex_source", 0);
         m_final->setInt1("tex_small", 1);
+        m_final->end();
     }
     catch (const string& exception)
     {
@@ -44,17 +46,24 @@ void HDR::init()
     m_fboSource = new FrameBuffer();
     m_fboDownsampled = new FrameBuffer();
 
-    int m = std::max(Video::instance->getResolution().first, Video::instance->getResolution().second);
-    int pow2 = 1;
-    while (pow2 < m)
+    const int x = Video::instance->getResolution().first;
+    int pow2x = 1;
+    while (pow2x < x)
     {
-        pow2 <<= 1;
+        pow2x <<= 1;
     }
     
-    m_w = Video::instance->getResolution().first / static_cast<float>(pow2);
-    m_h = Video::instance->getResolution().second / static_cast<float>(pow2);
+    const int y = Video::instance->getResolution().second;
+    int pow2y = 1;
+    while (pow2y < y)
+    {
+        pow2y <<= 1;
+    }
+    
+    m_w = Video::instance->getResolution().first / static_cast<float>(pow2x);
+    m_h = Video::instance->getResolution().second / static_cast<float>(pow2y);
 
-    m_fboSource->create(pow2);
+    m_fboSource->create(pow2x, pow2y);
     m_sourceTex = m_fboSource->attachColorTex();
     m_fboSource->attachDepthTex(true);
     if (!m_fboSource->isValid())
@@ -62,7 +71,7 @@ void HDR::init()
         return;
     }
 
-    m_fboDownsampled->create(256);
+    m_fboDownsampled->create(256, 256);
     m_downsampledTex = m_fboDownsampled->attachColorTex(true);
     if (!m_fboDownsampled->isValid())
     {
@@ -132,10 +141,10 @@ void HDR::render()
     m_fboDownsampled->bind();
     m_downsample->begin();
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(1, 0);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(1, 1);
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 1);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
+        glTexCoord2f(m_w, 0.0f);  glVertex2f(m_w,  0.0f);
+        glTexCoord2f(m_w, m_h);   glVertex2f(m_w,  m_h);
+        glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, m_h);
     glEnd();
     m_downsample->end();
     m_fboDownsampled->unbind();
@@ -157,8 +166,8 @@ void HDR::render()
     m_final->begin();
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);  
-        glTexCoord2f(m_w, 0.0f);  glVertex2i(1, 0); 
-        glTexCoord2f(m_w, m_h);   glVertex2i(1, 1);  
+        glTexCoord2f(m_w,  0.0f); glVertex2i(1, 0); 
+        glTexCoord2f(m_w,  m_h);  glVertex2i(1, 1);  
         glTexCoord2f(0.0f, m_h);  glVertex2i(0, 1);   
     glEnd();
     m_final->end();

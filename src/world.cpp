@@ -469,8 +469,11 @@ void World::render() const
         // shadow mapping
 
         shadowMapPass1();
+        m_hdr->begin();
         shadowMapPass2();
         shadowMapPass3();
+        m_hdr->end();
+        m_hdr->render();
     }
 
     // text messages are last
@@ -577,7 +580,7 @@ void World::setupShadowStuff()
     {
         while (!valid)
         {
-            m_framebuffer->create(m_shadowSize);
+            m_framebuffer->create(m_shadowSize, m_shadowSize);
             m_framebuffer->attachColorTex();
             m_shadowTex = m_framebuffer->attachDepthTex();
             valid = m_framebuffer->isValid();
