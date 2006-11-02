@@ -412,11 +412,20 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     valShadS.add(language->get(TEXT_LOW));
     valShadS.add(language->get(TEXT_MEDIUM));
     valShadS.add(language->get(TEXT_HIGH));
-    if (Video::instance->m_haveShadows == false)
+    if (!Video::instance->m_haveShadows)
     {
         valShadS.add(language->get(TEXT_NOT_SUPPORTED));
     }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_SHADOWMAP_SIZE), valShadS));
+
+	Value valHDR("use_hdr");
+	valHDR.add(language->get(TEXT_FALSE));
+	valHDR.add(language->get(TEXT_TRUE));
+	if (!Video::instance->m_haveShaders)
+    {
+        valHDR.add(language->get(TEXT_NOT_SUPPORTED));
+    }
+    submenu->addEntry(new OptionEntry(this, language->get(TEXT_USE_HDR), valHDR));
 
     Value valGD("grass_density");
     valGD.add(language->get(TEXT_LOW));

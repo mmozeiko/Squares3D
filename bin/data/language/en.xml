@@ -94,6 +94,7 @@ Press &lt;ENTER&gt; to retry..
     <item name="SHADOW_TYPE"              value="Use Shadows"/>
     <item name="SHADOWMAP_SIZE"           value="Shadow Quality"/>
     <item name="SHOW_FPS"                 value="Show FPS"/>
+	<item name="USE_HDR"                  value="Use HDR"/>
     <item name="GRASS_DENSITY"            value="Grass Density"/>
     <item name="TERRAIN_DETAIL"           value="Terrain Detail"/>
     <item name="ENVIRONMENT_DETAILS"      value="Environmental Details"/>

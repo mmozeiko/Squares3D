@@ -123,8 +123,8 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 }
                 else if (node.name == "use_hdr")
                 {
-                    m_video.use_hdr = cast<int>(node.value)==1;
-                }
+                    m_video.use_hdr = cast<int>(node.value) == 1;
+	            }
                 else
                 {
                     string line = cast<string>(node.line);

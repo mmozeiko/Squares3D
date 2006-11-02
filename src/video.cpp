@@ -550,6 +550,7 @@ void Video::loadExtensions()
     else
     {
         clog << "unavailable." << endl;
+		Config::instance->m_video.use_hdr = false;
     }
     
 //#ifndef GL_EXT_texture_filter_anisotropic

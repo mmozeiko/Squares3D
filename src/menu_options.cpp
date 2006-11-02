@@ -111,6 +111,19 @@ void OptionEntry::reset()
             m_value.m_current = Config::instance->m_video.shadowmap_size;
         }
     }
+    else if (m_value.m_id == "use_hdr")
+    {
+        if (!Video::instance->m_haveShaders)
+        {
+            m_enabled = false;
+            m_value.m_current = 1; //not supported
+        }
+        else
+        {
+            m_value.m_current = static_cast<int>(Config::instance->m_video.use_hdr);
+        }
+
+    }
     else if (m_value.m_id == "show_fps")
     {
         m_value.m_current = Config::instance->m_video.show_fps ? 1 : 0;
@@ -226,6 +239,13 @@ void ApplyOptionsEntry::click(int button)
         {
             Config::instance->m_video.show_fps = (*iter)->getCurrentValueIdx()==1;
         }
+		else if (id == "use_hdr")
+		{
+            if (Video::instance->m_haveShaders)
+            {
+                Config::instance->m_video.use_hdr = (*iter)->getCurrentValueIdx() == 1;
+            }
+		}
         else if (id == "grass_density")
         {
             Config::instance->m_video.grass_density = (*iter)->getCurrentValueIdx();
