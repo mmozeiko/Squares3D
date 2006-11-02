@@ -1,7 +1,8 @@
 #include "video_ext.h"
 
 //#ifndef GL_ARB_multitexture
-PFNGLACTIVETEXTUREARBPROC           pglActiveTextureARB = NULL;
+PFNGLACTIVETEXTUREARBPROC   pglActiveTextureARB = NULL;
+PFNGLMULTITEXCOORD2FARBPROC pglMultiTexCoord2fARB = NULL;
 //#endif
 
 //#ifndef GL_EXT_framebuffer_object

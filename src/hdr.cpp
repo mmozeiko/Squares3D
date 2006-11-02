@@ -149,13 +149,15 @@ void HDR::render()
     glBindTexture(GL_TEXTURE_2D, m_sourceTex);
     glEnable(GL_TEXTURE_2D);
 
+    const float tmp = 1.0f/Video::instance->getResolution().second;
+
     m_fboDownsampled->bind();
     m_downsample->begin();
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
-        glTexCoord2f(m_w, 0.0f);  glVertex2f(m_w,  0.0f);
-        glTexCoord2f(m_w, m_h);   glVertex2f(m_w,  m_h);
-        glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, m_h);
+        glTexCoord2f(m_w, 0.0f);  glVertex2f(1.0f, 0.0f);
+        glTexCoord2f(m_w, m_h);   glVertex2f(1.0f, 1.0f);
+        glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, 1.0f);
     glEnd();
     m_downsample->end();
     m_fboDownsampled->unbind();
@@ -170,10 +172,10 @@ void HDR::render()
 
     m_final->begin();
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, 0);  
-        glTexCoord2f(m_w,  0.0f); glVertex2i(1, 0); 
-        glTexCoord2f(m_w,  m_h);  glVertex2i(1, 1);  
-        glTexCoord2f(0.0f, m_h);  glVertex2i(0, 1);   
+        glTexCoord2f(0.0f, 0.0f); glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 0.0f); glVertex2i(0, 0);  
+        glTexCoord2f(m_w, 0.0f);  glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1.0f, 0.0f); glVertex2i(1, 0); 
+        glTexCoord2f(m_w, m_h);   glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1.0f, 1.0f); glVertex2i(1, 1);  
+        glTexCoord2f(0.0f, m_h);  glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f); glVertex2i(0, 1);   
     glEnd();
     m_final->end();
 

@@ -88,9 +88,11 @@ typedef void (APIENTRYP PFNGLMULTITEXCOORD4IVARBPROC) (GLenum target, const GLin
 typedef void (APIENTRYP PFNGLMULTITEXCOORD4SARBPROC) (GLenum target, GLshort s, GLshort t, GLshort r, GLshort q);
 typedef void (APIENTRYP PFNGLMULTITEXCOORD4SVARBPROC) (GLenum target, const GLshort *v);
 
-extern PFNGLACTIVETEXTUREARBPROC           pglActiveTextureARB;
+extern PFNGLACTIVETEXTUREARBPROC   pglActiveTextureARB;
+extern PFNGLMULTITEXCOORD2FARBPROC pglMultiTexCoord2fARB;
 
 #define glActiveTextureARB pglActiveTextureARB
+#define glMultiTexCoord2fARB pglMultiTexCoord2fARB
 //#endif
 
 //#ifndef GL_EXT_texture_filter_anisotropic
