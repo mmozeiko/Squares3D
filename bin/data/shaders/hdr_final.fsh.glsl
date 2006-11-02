@@ -41,9 +41,9 @@ vec4 hdr_getBlurred(vec2 hdr_pos, sampler2D tex_small, float tex_small_size, flo
 void main(void)
 {
     vec4 pix_source = texture2D(tex_source, gl_TexCoord[0].xy);
-    vec4 pix_blur = hdr_getBlurred(gl_TexCoord[1].xy, tex_small_256, 256.0, 140.0);
-    pix_blur += hdr_getBlurred(gl_TexCoord[1].xy, tex_small_128, 128.0, 130.0);
-    //pix_blur += hdr_getBlurred(gl_TexCoord[1].xy, tex_small_64, 64.0, 90.0);
+    vec4 pix_blur = hdr_getBlurred(gl_TexCoord[1].xy, tex_small_256, 256.0, 130.0);
+    pix_blur += hdr_getBlurred(gl_TexCoord[1].xy, tex_small_128, 128.0, 115.0);
+    pix_blur += hdr_getBlurred(gl_TexCoord[1].xy, tex_small_64, 64.0, 180.0);
     
     gl_FragColor = pix_source + pix_blur;
 }
