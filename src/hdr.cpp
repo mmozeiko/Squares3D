@@ -7,8 +7,7 @@
 
 HDR::HDR() :
     m_downsample(NULL),
-    m_blurH(NULL),
-    m_blurV(NULL),
+    m_blur(NULL),
     m_final(NULL),
     m_sourceTex(0),
     m_downsampledTex256_0(0),
@@ -49,22 +48,9 @@ void HDR::init()
 
     try
     {
-        m_blurH = new Shader("hdr_blurH");
-        m_blurH->setInt1("tex_source", 0);
-        m_blurH->end();
-    }
-    catch (const string& exception)
-    {
-        clog << "HDR not supported: " << exception << endl;
-        Config::instance->m_video.use_hdr = false;
-        return;
-    }
-
-    try
-    {
-        m_blurV = new Shader("hdr_blurV");
-        m_blurV->setInt1("tex_source", 0);
-        m_blurV->end();
+        m_blur = new Shader("hdr_blur");
+        m_blur->setInt1("tex_source", 0);
+        m_blur->end();
     }
     catch (const string& exception)
     {
@@ -144,8 +130,7 @@ void HDR::init()
 HDR::~HDR()
 {
     if (m_downsample != NULL) delete m_downsample;
-    if (m_blurH != NULL) delete m_blurH;
-    if (m_blurV != NULL) delete m_blurV;
+    if (m_blur != NULL) delete m_blur;
     if (m_final != NULL) delete m_final;
     if (m_fboSource != NULL) delete m_fboSource;
     if (m_fboDownsampled256 != NULL) delete m_fboDownsampled256;
@@ -246,12 +231,11 @@ void HDR::render()
 
 
 
-    m_blurH->begin();
+    m_blur->begin();
+    m_blur->setFloat4("tex_offset", Vector(1.0f/256.0f, 0.0f, 0.0f, 0.0f));
 
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex256_0);
 
-    m_blurH->setFloat1("tex_small_size", 256.0f);
-    m_blurH->setFloat1("divider", 115.0f * 2.0f);
     glViewport(0, 0, 256, 256);
     m_fboDownsampled256->bind();
     glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
@@ -265,8 +249,7 @@ void HDR::render()
 
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex128_0);
 
-    m_blurH->setFloat1("tex_small_size", 128.0f);
-    m_blurH->setFloat1("divider", 115.0f * 1.5f);
+    m_blur->setFloat4("tex_offset", Vector(1.0f/128.0f, 0.0f, 0.0f, 0.0f));
     glViewport(0, 0, 128, 128);
     m_fboDownsampled128->bind();
     glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
@@ -280,8 +263,7 @@ void HDR::render()
 
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex64_0);
 
-    m_blurH->setFloat1("tex_small_size", 64.0f);
-    m_blurH->setFloat1("divider", 115.0f);
+    m_blur->setFloat4("tex_offset", Vector(1.0f/64.0f, 0.0f, 0.0f, 0.0f));
     glViewport(0, 0, 64, 64);
     m_fboDownsampled64->bind();
     glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
@@ -293,16 +275,15 @@ void HDR::render()
     glEnd();
     m_fboDownsampled64->unbind();
 
-    m_blurH->end();
+    m_blur->end();
 
 
 
-    m_blurV->begin();
+    m_blur->begin();
 
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex256_1);
 
-    m_blurV->setFloat1("tex_small_size", 256.0f);
-    m_blurV->setFloat1("divider", 115.0f * 2.0f);
+    m_blur->setFloat4("tex_offset", Vector(0.0f, 1.0f/256.0f, 0.0f, 0.0f));
     glViewport(0, 0, 256, 256);
     m_fboDownsampled256->bind();
     glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
@@ -316,8 +297,7 @@ void HDR::render()
 
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex128_1);
 
-    m_blurV->setFloat1("tex_small_size", 128.0f);
-    m_blurV->setFloat1("divider", 115.0f * 1.5f);
+    m_blur->setFloat4("tex_offset", Vector(0.0f, 1.0f/128.0f, 0.0f, 0.0f));
     glViewport(0, 0, 128, 128);
     m_fboDownsampled128->bind();
     glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
@@ -331,8 +311,7 @@ void HDR::render()
 
     glBindTexture(GL_TEXTURE_2D, m_downsampledTex64_1);
 
-    m_blurV->setFloat1("tex_small_size", 64.0f);
-    m_blurV->setFloat1("divider", 115.0f);
+    m_blur->setFloat4("tex_offset", Vector(0.0f, 1.0f/64.0f, 0.0f, 0.0f));
     glViewport(0, 0, 64, 64);
     m_fboDownsampled64->bind();
     glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
@@ -344,7 +323,7 @@ void HDR::render()
     glEnd();
     m_fboDownsampled64->unbind();
 
-    m_blurV->end();
+    m_blur->end();
 
 
 

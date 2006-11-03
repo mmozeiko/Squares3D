@@ -757,6 +757,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\bin\data\language\ru.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\bin\data\level\world.xml"
 					>
 				</File>
@@ -786,10 +790,6 @@
 				</File>
 				<File
 					RelativePath=".\bin\data\language\lv.xml"
-					>
-				</File>
-				<File
-					RelativePath=".\bin\data\language\ru.xml"
 					>
 				</File>
 			</Filter>
