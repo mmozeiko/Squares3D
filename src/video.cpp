@@ -21,7 +21,7 @@ static void GLFWCALL sizeCb(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0, static_cast<float>(width)/static_cast<float>(height), 0.1, 51.2);
+    gluPerspective(45.0, static_cast<float>(width)/static_cast<float>(height), 0.1, 102.4);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -665,6 +665,23 @@ void Video::loadExtensions()
         Config::instance->m_video.shadowmap_size = 0;
     }
 
+    if (activeTex)
+    {
+        GLint maxTexUnits;
+        glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &maxTexUnits);
+        clog << "Video: maximum texture units = " << maxTexUnits << endl;
+
+        if (maxTexUnits < 4 && m_haveShaders)
+        {
+            m_haveShaders = false;
+        }
+        else if (maxTexUnits < 2)
+        {
+            m_haveShadows = false;
+            m_haveShadowsFB = false;
+        }
+    }
+
     if (!m_haveShaders)
     {
         Config::instance->m_video.use_hdr = false;
@@ -705,16 +722,9 @@ const IntPairVector& Video::getModes() const
             	list[i].Height*16 == list[i].Width*9 ||
             	list[i].Height*16 == list[i].Width*10);
 
-            if ( aspectGood && bpp >= 24 && list[i].Height >= 480 && foundIn(commonWidthSet, list[i].Width))
+            if ( aspectGood && bpp >= 24 && foundIn(commonWidthSet, list[i].Width))
             {
-#ifdef __APPLE__
-                if (list[i].Height > 480)
-                {
-                    modes.push_back(make_pair(list[i].Width, list[i].Height));
-                }
-#else
                 modes.push_back(make_pair(list[i].Width, list[i].Height));
-#endif
             }
         }
         if (modes.empty())

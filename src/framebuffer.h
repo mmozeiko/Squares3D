@@ -18,12 +18,14 @@ public:
     void unbind() const;
 
     unsigned int attachColorTex(bool hdr = false);
+    unsigned int attachColorTex1(bool hdr = false);
     unsigned int attachDepthTex(bool hdr = false);
 
 private:
     unsigned int m_sizeX;
     unsigned int m_sizeY;
     unsigned int m_colorTex;
+    unsigned int m_colorTex1;
     unsigned int m_shadowTex;
     unsigned int m_frameBuffer;
 };

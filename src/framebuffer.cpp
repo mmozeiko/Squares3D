@@ -6,6 +6,7 @@ FrameBuffer::FrameBuffer() :
     m_sizeX(0),
     m_sizeY(0),
     m_colorTex(0),
+    m_colorTex1(0),
     m_shadowTex(0),
     m_frameBuffer(0)
 {
@@ -32,6 +33,12 @@ void FrameBuffer::destroy()
     {
         glDeleteTextures(1, (GLuint*)&m_colorTex);
         m_colorTex = 0;
+    }
+
+    if (m_colorTex1 != 0) 
+    {
+        glDeleteTextures(1, (GLuint*)&m_colorTex1);
+        m_colorTex1 = 0;
     }
 
     if (m_shadowTex != 0)
@@ -89,6 +96,31 @@ unsigned int FrameBuffer::attachColorTex(bool hdr)
     glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_colorTex, 0);
 
     return m_colorTex;
+}
+
+unsigned int FrameBuffer::attachColorTex1(bool hdr)
+{
+    glGenTextures(1, (GLuint*)&m_colorTex1);
+    if (hdr)
+    {
+        glBindTexture(GL_TEXTURE_2D, m_colorTex1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_sizeX, m_sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    else
+    {
+        glBindTexture(GL_TEXTURE_2D, m_colorTex1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_sizeX, m_sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D, m_colorTex1, 0);
+
+    return m_colorTex1;
 }
 
 unsigned int FrameBuffer::attachDepthTex(bool hdr)

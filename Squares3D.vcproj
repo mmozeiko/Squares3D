@@ -797,6 +797,14 @@
 				Name="shaders"
 				>
 				<File
+					RelativePath=".\bin\data\shaders\hdr_blur.fsh.glsl"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\shaders\hdr_blur.vsh.glsl"
+					>
+				</File>
+				<File
 					RelativePath=".\bin\data\shaders\hdr_downsample.fsh.glsl"
 					>
 				</File>

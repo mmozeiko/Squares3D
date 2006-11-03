@@ -162,16 +162,16 @@ of the game field. Players may touch the ball once it has hit the ground.
 
     <item name="CONTROLS" value="Controls"/>
     <item name="CONTROLS_SCREEN">
-        Ingame controls:
+Ingame controls:
         * Use your mouse to move around
         * Press left mouse button to make combo
         * Press space key to jump
         * Press and hold right mouse button to rotate camera with mouse
-        * Press Escape during game to bring up pause screen. Press
+        * Press escape during game to bring up pause screen. Use 
           enter key while in pause screen to quit to main menu or
           escape key to resume the game
 
-        Menu controls:
+Menu controls:
         * Navigate through menu using up / down keys or mouse
         * Press enter key or left mouse button to enter or accept
           selected menu entry

@@ -28,12 +28,16 @@ private:
     float m_w;
     
     Shader* m_downsample;
+    Shader* m_blur;
     Shader* m_final;
 
     GLuint m_sourceTex;
-    GLuint m_downsampledTex256;
-    GLuint m_downsampledTex128;
-    GLuint m_downsampledTex64;
+    GLuint m_downsampledTex256_0;
+    GLuint m_downsampledTex128_0;
+    GLuint m_downsampledTex64_0;
+    GLuint m_downsampledTex256_1;
+    GLuint m_downsampledTex128_1;
+    GLuint m_downsampledTex64_1;
 
     FrameBuffer* m_fboSource;
     FrameBuffer* m_fboDownsampled256;

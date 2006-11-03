@@ -7,11 +7,15 @@
 
 HDR::HDR() :
     m_downsample(NULL),
+    m_blur(NULL),
     m_final(NULL),
     m_sourceTex(0),
-    m_downsampledTex256(0),
-    m_downsampledTex128(0),
-    m_downsampledTex64(0),
+    m_downsampledTex256_0(0),
+    m_downsampledTex128_0(0),
+    m_downsampledTex64_0(0),
+    m_downsampledTex256_1(0),
+    m_downsampledTex128_1(0),
+    m_downsampledTex64_1(0),
     m_fboSource(NULL),
     m_fboDownsampled256(NULL),
     m_fboDownsampled128(NULL),
@@ -41,6 +45,20 @@ void HDR::init()
         Config::instance->m_video.use_hdr = false;
         return;
     }
+
+    try
+    {
+        m_blur = new Shader("hdr_blur");
+        m_blur->setInt1("tex_source", 0);
+        m_blur->end();
+    }
+    catch (const string& exception)
+    {
+        clog << "HDR not supported: " << exception << endl;
+        Config::instance->m_video.use_hdr = false;
+        return;
+    }
+
     try
     {
         m_final = new Shader("hdr_final");
@@ -89,11 +107,17 @@ void HDR::init()
     }
 
     m_fboDownsampled256->create(256, 256);
-    m_downsampledTex256 = m_fboDownsampled256->attachColorTex(true);
+    m_downsampledTex256_0 = m_fboDownsampled256->attachColorTex(true);
+    m_downsampledTex256_1 = m_fboDownsampled256->attachColorTex1(true);
+    
     m_fboDownsampled128->create(128, 128);
-    m_downsampledTex128 = m_fboDownsampled128->attachColorTex(true);
-    m_fboDownsampled64->create(64, 64);
-    m_downsampledTex64 = m_fboDownsampled64->attachColorTex(true);
+    m_downsampledTex128_0 = m_fboDownsampled128->attachColorTex(true);
+    m_downsampledTex128_1 = m_fboDownsampled128->attachColorTex1(true);
+    
+    m_fboDownsampled64->create(64, 64);   
+    m_downsampledTex64_0 = m_fboDownsampled64->attachColorTex(true);
+    m_downsampledTex64_1 = m_fboDownsampled64->attachColorTex1(true);
+    
     if (!m_fboDownsampled256->isValid() || !m_fboDownsampled128->isValid() || !m_fboDownsampled64->isValid())
     {
         Config::instance->m_video.use_hdr = false;
@@ -106,6 +130,7 @@ void HDR::init()
 HDR::~HDR()
 {
     if (m_downsample != NULL) delete m_downsample;
+    if (m_blur != NULL) delete m_blur;
     if (m_final != NULL) delete m_final;
     if (m_fboSource != NULL) delete m_fboSource;
     if (m_fboDownsampled256 != NULL) delete m_fboDownsampled256;
@@ -139,6 +164,9 @@ void HDR::render()
     {
         return;
     }
+
+    GLint draw_buffer;
+    glGetIntegerv(GL_DRAW_BUFFER, &draw_buffer);
     
     glDisable(GL_CULL_FACE);
     glDisable(GL_LIGHTING);
@@ -157,13 +185,18 @@ void HDR::render()
     glLoadIdentity();
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, m_sourceTex);
     glEnable(GL_TEXTURE_2D);
 
+    glBindTexture(GL_TEXTURE_2D, m_sourceTex);
+
+
+
+    
     m_downsample->begin();
 
     glViewport(0, 0, 256, 256);
     m_fboDownsampled256->bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
         glTexCoord2f(m_w, 0.0f);  glVertex2f(1.0f, 0.0f);
@@ -172,10 +205,56 @@ void HDR::render()
     glEnd();
     m_fboDownsampled256->unbind();
 
-    glBindTexture(GL_TEXTURE_2D, m_downsampledTex256);
-
     glViewport(0, 0, 128, 128);
     m_fboDownsampled128->bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
+        glTexCoord2f(m_w, 0.0f);  glVertex2f(1.0f, 0.0f);
+        glTexCoord2f(m_w, m_h);   glVertex2f(1.0f, 1.0f);
+        glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, 1.0f);
+    glEnd();
+    m_fboDownsampled128->unbind();
+
+    glViewport(0, 0, 64, 64);
+    m_fboDownsampled64->bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
+        glTexCoord2f(m_w, 0.0f);  glVertex2f(1.0f, 0.0f);
+        glTexCoord2f(m_w, m_h);   glVertex2f(1.0f, 1.0f);
+        glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, 1.0f);
+    glEnd();
+    m_fboDownsampled64->unbind();
+
+    m_downsample->end();
+
+
+
+    m_blur->begin();
+
+    glBindTexture(GL_TEXTURE_2D, m_downsampledTex256_0);
+
+    m_blur->setFloat1("tex_small_size", 256.0f);
+    m_blur->setFloat1("divider", 115.0f * 2.0f);
+    glViewport(0, 0, 256, 256);
+    m_fboDownsampled256->bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(1.0f, 1.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 1.0f);
+    glEnd();
+    m_fboDownsampled256->unbind();
+
+    glBindTexture(GL_TEXTURE_2D, m_downsampledTex128_0);
+
+    m_blur->setFloat1("tex_small_size", 128.0f);
+    m_blur->setFloat1("divider", 115.0f * 1.5f);
+    glViewport(0, 0, 128, 128);
+    m_fboDownsampled128->bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
         glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);
@@ -184,10 +263,13 @@ void HDR::render()
     glEnd();
     m_fboDownsampled128->unbind();
 
-    glBindTexture(GL_TEXTURE_2D, m_downsampledTex256);
+    glBindTexture(GL_TEXTURE_2D, m_downsampledTex64_0);
 
+    m_blur->setFloat1("tex_small_size", 64.0f);
+    m_blur->setFloat1("divider", 115.0f);
     glViewport(0, 0, 64, 64);
     m_fboDownsampled64->bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
         glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);
@@ -196,28 +278,44 @@ void HDR::render()
     glEnd();
     m_fboDownsampled64->unbind();
 
-    m_downsample->end();
+    m_blur->end();
 
-    glViewport(m_view[0], m_view[1], m_view[2], m_view[3]);
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glBindTexture(GL_TEXTURE_2D, m_sourceTex);
+
     glActiveTextureARB(GL_TEXTURE1_ARB);
-    glBindTexture(GL_TEXTURE_2D, m_downsampledTex256);
+    glBindTexture(GL_TEXTURE_2D, m_downsampledTex256_1);
     glEnable(GL_TEXTURE_2D);
+    
     glActiveTextureARB(GL_TEXTURE2_ARB);
-    glBindTexture(GL_TEXTURE_2D, m_downsampledTex128);
+    glBindTexture(GL_TEXTURE_2D, m_downsampledTex128_1);
     glEnable(GL_TEXTURE_2D);
+    
     glActiveTextureARB(GL_TEXTURE3_ARB);
-    glBindTexture(GL_TEXTURE_2D, m_downsampledTex64);
+    glBindTexture(GL_TEXTURE_2D, m_downsampledTex64_1);
     glEnable(GL_TEXTURE_2D);
+
+    glViewport(m_view[0], m_view[1], m_view[2], m_view[3]);
+    glDrawBuffer(draw_buffer);
 
     m_final->begin();
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 0.0f); glVertex2i(0, 0);  
-        glTexCoord2f(m_w, 0.0f);  glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1.0f, 0.0f); glVertex2i(1, 0); 
-        glTexCoord2f(m_w, m_h);   glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1.0f, 1.0f); glVertex2i(1, 1);  
-        glTexCoord2f(0.0f, m_h);  glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f); glVertex2i(0, 1);   
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0.0f, 0.0f);
+        glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 0.0f);
+        glVertex2f(0.0f, 0.0f);  
+
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, m_w,  0.0f);
+        glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1.0f, 0.0f);
+        glVertex2f(1.0f, 0.0f); 
+
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, m_w,  m_h);
+        glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1.0f, 1.0f);
+        glVertex2f(1.0f, 1.0f);  
+        
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0.0f, m_h);
+        glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f);
+        glVertex2f(0.0f, 1.0f);   
     glEnd();
     m_final->end();
 
