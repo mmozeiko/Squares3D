@@ -99,6 +99,7 @@ Drücke &lt;ENTER&gt; um es erneut zu versuchen.
     <item name="GRASS_DENSITY"            value="Grasdichte"/>
     <item name="TERRAIN_DETAIL"           value="Landschafts-Detailreichtum"/>
     <item name="ENVIRONMENT_DETAILS"      value="Umgebungs-Detailreichtum"/>
+    <item name="USE_HDR"                  value="HDR"/>
 
     <item name="LOW"                      value="Gering"/>
     <item name="MEDIUM"                   value="Mittel"/>

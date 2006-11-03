@@ -7,7 +7,7 @@ template <class Config> Config* System<Config>::instance = NULL;
 
 const string Config::CONFIG_FILE = "/config.xml";
 
-const VideoConfig Config::defaultVideo = { 800, 600, false, true, 0, 0, 1, 1, false, 1, 1, false };
+const VideoConfig Config::defaultVideo = { 800, 600, true, true, 0, 0, 1, 1, false, 1, 1, false };
 const AudioConfig Config::defaultAudio = { true, 5, 5 };
 const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost" };
 

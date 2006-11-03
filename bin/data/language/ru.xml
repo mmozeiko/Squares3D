@@ -92,6 +92,7 @@
     <item name="FSAA"                     value="Сглаживание изображения"/>
     <item name="ANISOTROPY"               value="Анизотропия"/>
     <item name="SHADOW_TYPE"              value="Рисовать тени"/>
+    <item name="USE_HDR"                  value="Исползывать HDR"/>
     <item name="SHADOWMAP_SIZE"           value="Качество теней"/>
     <item name="SHOW_FPS"                 value="Показывать FPS"/>
     <item name="GRASS_DENSITY"            value="Плотность травы"/>

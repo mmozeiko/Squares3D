@@ -90,6 +90,7 @@ Nospiediet &lt;ENTER&gt; lai mēģinātu vēlreiz..
     <item name="FSAA"                     value="Attēla Izlīdzināšana"/>
     <item name="ANISOTROPY"               value="Anizotropija"/>
     <item name="SHADOW_TYPE"              value="Ēnas"/>
+    <item name="USE_HDR"                  value="HDR"/>
     <item name="SHADOWMAP_SIZE"           value="Ēnu Kvalitāte"/>
     <item name="SHOW_FPS"                 value="Rādīt FPS"/>
     <item name="GRASS_DENSITY"            value="Zāļu Daudzums"/>
