@@ -16,6 +16,11 @@ string getDateTime()
     return buf;
 }
 
+bool is_space(char c)
+{
+    return c=='\n' || c=='\t' || c==' ' || c=='\r';
+}
+
 string trim(const string& str)
 {
     if (str.empty())
@@ -25,11 +30,11 @@ string trim(const string& str)
 
     size_t i = 0;
     size_t j = str.size()-1;
-    while (i<str.size() && str[i]>=0 && str[i]<128 && std::isspace(str[i]))
+    while (i<str.size() && str[i]>=0 && str[i]<128 && is_space(str[i]))
     {
         i++;
     }
-    while (j>i && str[i]>=0 && str[i]<128 && std::isspace(str[j]))
+    while (j>i && str[i]>=0 && str[i]<128 && is_space(str[j]))
     {
         j--;
     }
