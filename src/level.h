@@ -42,6 +42,9 @@ public:
     FencesVector    m_fences;
     MusicVector     m_music;
     string          m_skyboxName;
+
+    float           m_hdr_eps;
+    Vector          m_hdr_mul;
 };
 
 

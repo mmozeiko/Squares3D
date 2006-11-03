@@ -162,11 +162,11 @@ void Grass::render() const
 
     m_grassTex->bind();
 
-    glPushAttrib(GL_ENABLE_BIT | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glAlphaFunc(GL_GEQUAL, 0.3f);
     glEnable(GL_ALPHA_TEST);

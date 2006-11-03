@@ -27,10 +27,6 @@ static const string USER_PROFILE_FILE = "/user.xml";
 static const unsigned int M1 = 0x0BADC0DE;
 static const unsigned int M2 = 0xDEADBEEF;
 
-//#define MAKE_MOVIE
-#define MOVIE_WIDTH 640
-#define MOVIE_HEIGHT 480
-
 bool   g_needsToReload = false;
 string g_optionsEntry;
 
@@ -39,7 +35,8 @@ Game::Game() :
     m_unlockable(-1),
     m_current(0),
     m_userProfile(NULL),
-    m_state(NULL)
+    m_state(NULL),
+    m_screenLast(false)
 {
     // these and only these objects are singletons,
     // they all have public static instance attribute
@@ -98,19 +95,16 @@ Game::~Game()
     delete m_config;
 }
 
-#ifdef MAKE_MOVIE
+static const int BMP_BITS_OFF = 54;
 
-#define BMP_BITS_OFF 54
-#define BMP_SIZE (BMP_BITS_OFF + MOVIE_HEIGHT*MOVIE_WIDTH*3)
-
-static const unsigned char header[] = {
+static unsigned char header[] = {
     'B', 'M',
-    BMP_SIZE&0xFF, (BMP_SIZE>>8)&0xFF, (BMP_SIZE>>16)&0xFF, 0,  // size
+    0, 0, 0, 0,  // size
     0, 0, 0, 0,  // reserved
     BMP_BITS_OFF, 0, 0, 0,  // offset to bits
     40, 0, 0, 0, // header size
-    MOVIE_WIDTH&0xFF, MOVIE_WIDTH>>8, 0, 0,  // width
-    MOVIE_HEIGHT&0xFF, MOVIE_HEIGHT>>8, 0, 0,  // height
+    0, 0, 0, 0,  // width
+    0, 0, 0, 0,  // height
     1, 0,        // planes
     24, 0,       // bits
     0, 0, 0, 0,  // compression
@@ -121,34 +115,35 @@ static const unsigned char header[] = {
     0, 0, 0, 0,  // important count
 };
 
-static unsigned char data[MOVIE_WIDTH*MOVIE_HEIGHT*3];
-
-#endif
-
 void Game::saveScreenshot(const FPS& fps) const
 {
-#ifdef MAKE_MOVIE
+    int x = Video::instance->getResolution().first;
+    int y = Video::instance->getResolution().second;
+
+    *reinterpret_cast<unsigned int*>(&header[2]) = BMP_BITS_OFF + x*y*3;
+    *reinterpret_cast<unsigned int*>(&header[18]) = x;
+    *reinterpret_cast<unsigned int*>(&header[22]) = y;
+
+    vector<unsigned char> data(x*y*3);
+
     string frames = cast<string>(fps.frames());
     while (frames.size() < 4)
     {
         frames = '0' + frames;
     }
     
-    glReadPixels(0, 0, MOVIE_WIDTH, MOVIE_HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, data);
+    static const int GL_BGR = 0x80E0;
+    glReadPixels(0, 0, x, y, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
 
-    FILE* f = fopen(("movie/frame" + frames + ".bmp").c_str(), "wb");
+    FILE* f = fopen(("screenshot_" + frames + ".bmp").c_str(), "wb");
     fwrite(header, sizeof(header), 1, f);
-    fwrite(data, MOVIE_HEIGHT*MOVIE_WIDTH*3, 1, f);
+    fwrite(&data[0], x*y*3, 1, f);
     fclose(f);
-#endif
 }
 
 void Game::run()
 {
     clog << "Starting game..." << endl;
-#ifdef MAKE_MOVIE
-    PHYSFS_mkdir("movie");
-#endif
 
     m_video->init();
 
@@ -171,13 +166,9 @@ void Game::run()
 
         m_state->control();
 
-#ifdef MAKE_MOVIE
-        float deltaTime = 1.0f/25.0f;
-#else
         float newTime = timer.read();
         float deltaTime = newTime - currentTime;
         currentTime = newTime;
-#endif
         
         //if (deltaTime > 0.01f) deltaTime = 0.01f; // TODO: REMOVE!!!!!
 
@@ -216,17 +207,21 @@ void Game::run()
         
         fps.update();
 
-#ifndef MAKE_MOVIE
         if (Config::instance->m_video.show_fps)
         {
             fps.render();
         }
-#endif
         glfwSwapBuffers();
 
-#ifdef MAKE_MOVIE
-        saveScreenshot(fps);
-#endif
+        if (Input::instance->key('S') && m_screenLast==false)
+        {
+            saveScreenshot(fps);
+            m_screenLast = true;
+        }
+        if (m_screenLast && Input::instance->key('S')==false)
+        {
+            m_screenLast = false;
+        }
 
         State::Type newState = m_state->progress();
 

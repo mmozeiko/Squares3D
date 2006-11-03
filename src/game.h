@@ -49,6 +49,7 @@ private:
     bool        m_fixedTimestep;
     int         m_unlockable;
     int         m_current;
+    bool        m_screenLast;
 
     State* switchState(const State::Type newState);
     void loadCpuData();

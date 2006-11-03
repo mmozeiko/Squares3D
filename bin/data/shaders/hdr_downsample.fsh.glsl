@@ -1,6 +1,7 @@
 //
 uniform sampler2D tex_source;
-const float hdr_eps = 0.89;
+uniform float hdr_eps;
+uniform vec4 hdr_mul;
 
 void main(void)
 {
@@ -10,5 +11,5 @@ void main(void)
         srcpixel = vec4(0, 0, 0, 0);
     }
     
-    gl_FragColor = srcpixel;
+    gl_FragColor = hdr_mul * srcpixel;
 }

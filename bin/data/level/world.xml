@@ -5,6 +5,11 @@
     <music name="trash80_-weeklies-_move-you-feet"/>
     <skybox name="skybox"/>
 
+    <hdr>
+      <eps value="0.89"/>
+      <mul r="1.0" g="1.0" b="0.8"/>
+    </hdr>
+
     <link file="common_materials.xml"/>
     <link file="common_properties.xml"/>
 

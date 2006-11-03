@@ -12,7 +12,8 @@
 #include "audio.h"
 #include "config.h"
 
-Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_skyboxName()
+Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_skyboxName(),
+    m_hdr_eps(0.89f), m_hdr_mul(1.0f, 1.0f, 1.0f, 1.0f)
 {
     m_properties = new Properties();
 }
@@ -46,7 +47,26 @@ void Level::load(const string& levelFile, StringSet& loaded)
     for each_const(XMLnodes, xml.childs, iter)
     {
         const XMLnode& node = *iter;
-        if (node.name == "gravity")
+        if (node.name == "hdr")
+        {
+            for each_const(XMLnodes, node.childs, iter)
+            {
+                const XMLnode& node = *iter;
+                if (node.name == "eps")
+                {
+                    m_hdr_eps = node.getAttribute<float>("value");
+                }
+                else if (node.name == "mul")
+                {
+                    m_hdr_mul = node.getAttributesInVector("rgb");
+                }
+                else
+                {
+                    throw Exception("Invalid hdr, unknown node - " + node.name);
+                }
+            }
+        }
+        else if (node.name == "gravity")
         {
             m_gravity = node.getAttributesInVector("xyz");
         }
@@ -241,7 +261,7 @@ void Level::render() const
         if (Config::instance->m_video.use_hdr && iter->second->m_id == "field")
         {
             glEnable(GL_POLYGON_OFFSET_FILL);
-            glPolygonOffset(1.0f, -1.0f);
+            glPolygonOffset(-1.0f, -1.0f);
         }
         (iter->second)->render();
         if (Config::instance->m_video.use_hdr && iter->second->m_id == "field")

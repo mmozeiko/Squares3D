@@ -4,6 +4,11 @@
     <music name="trash80_-slskrecords-1mm-_hard-to-follow"/>
     <skybox name="extra"/>
 
+    <hdr>
+      <eps value="0.84"/>
+      <mul r="0.2" g="1.0" b="0.2"/>
+    </hdr>
+
     <link file="common_materials.xml"/>
     <link file="common_properties.xml"/>
 

@@ -62,6 +62,10 @@
             <texture2D name="extra_stuff"/>
         </material>
 
+        <material id="extra_stuff_white">
+            <texture2D name="extra_stuff_white"/>
+        </material>
+
         <material id="wood">
             <texture2D name="wood"/>
         </material>

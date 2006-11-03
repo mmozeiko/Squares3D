@@ -235,6 +235,7 @@ void World::init()
     }
 
     m_skybox = new SkyBox(m_level->m_skyboxName);
+    m_hdr->updateFromLevel(m_level->m_hdr_eps, m_level->m_hdr_mul);
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
@@ -461,8 +462,6 @@ void World::render() const
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
 
         m_grass->render();
-        m_hdr->end();
-        m_hdr->render();
     }
     else if (shadow_type == 1)
     {
@@ -472,9 +471,9 @@ void World::render() const
         m_hdr->begin();
         shadowMapPass2();
         shadowMapPass3();
-        m_hdr->end();
-        m_hdr->render();
     }
+    m_hdr->end();
+    m_hdr->render();
 
     // text messages are last
     if (m_freeze)

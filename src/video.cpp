@@ -775,7 +775,7 @@ void Video::renderSimpleShadow(float r, const Vector& pos, const Collision* leve
     if (Config::instance->m_video.use_hdr)
     {
         glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(1.0f, -1.5f);
+        glPolygonOffset(-1.0f, -1.5f);
     }
             
     float y = 0.01f;

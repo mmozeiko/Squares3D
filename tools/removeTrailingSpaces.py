@@ -18,4 +18,5 @@ for root, dir, files in os.walk(SRC_PATH):
   for f in files:
     name = os.path.join(root, f)
     if name[-4:] == ".cpp" or name[-2:] == ".h":
+      print name
       process(name, name)
