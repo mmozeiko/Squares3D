@@ -116,7 +116,7 @@ void OptionEntry::reset()
         if (!Video::instance->m_haveShaders)
         {
             m_enabled = false;
-            m_value.m_current = 1; //not supported
+            m_value.m_current = 2; //not supported
         }
         else
         {
