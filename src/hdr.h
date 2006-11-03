@@ -28,7 +28,8 @@ private:
     float m_w;
     
     Shader* m_downsample;
-    Shader* m_blur;
+    Shader* m_blurH;
+    Shader* m_blurV;
     Shader* m_final;
 
     GLuint m_sourceTex;
