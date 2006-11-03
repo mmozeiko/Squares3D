@@ -132,8 +132,8 @@ void Game::saveScreenshot(const FPS& fps) const
         frames = '0' + frames;
     }
     
-    static const int GL_BGR = 0x80E0;
-    glReadPixels(0, 0, x, y, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
+    static const int GL_BGR__ = 0x80E0;
+    glReadPixels(0, 0, x, y, GL_BGR__, GL_UNSIGNED_BYTE, &data[0]);
 
     FILE* f = fopen(("screenshot_" + frames + ".bmp").c_str(), "wb");
     fwrite(header, sizeof(header), 1, f);

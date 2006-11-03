@@ -10,7 +10,7 @@
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Squares3D-1.0.1-Windows.exe"
+OutFile "Squares3D-1.0.2-Windows.exe"
 SetCompressor /SOLID lzma
 XPStyle on
 
