@@ -121,9 +121,9 @@ void Camera::update(float delta)
         m_angleY += LOOK_SPEED * m_targetRotation.y;
         m_angleX += LOOK_SPEED * m_targetRotation.x;
         
-        if (m_angleX < 5.0f * DEG_IN_RAD)
+        if (m_angleX < 7.0f * DEG_IN_RAD)
         {
-            m_angleX = 5.0f * DEG_IN_RAD;
+            m_angleX = 7.0f * DEG_IN_RAD;
         }
         else if (m_angleX > 60.0f * DEG_IN_RAD)
         {
