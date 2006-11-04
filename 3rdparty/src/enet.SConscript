@@ -1,5 +1,5 @@
 #
-Import("env lib postfix")
+Import("env lib suffix")
 
 sources = Split("packet.c peer.c protocol.c host.c list.c memory.c")
 
@@ -11,4 +11,4 @@ if p == "win32":
 else:
   sources += ["unix.c"]
 
-env.StaticLibrary(lib + "/enet" + postfix, sources)
+env.StaticLibrary(lib + "/enet" + suffix, ["enet/" + x for x in sources])

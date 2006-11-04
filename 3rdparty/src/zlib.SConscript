@@ -1,5 +1,5 @@
 #
-Import("env lib postfix")
+Import("env lib suffix")
 
 headers = Split("crc32.h deflate.h inffast.h inffixed.h inflate.h inftrees.h trees.h zutil.h")
 
@@ -17,5 +17,5 @@ if p == "win32a":
 else:
   sources += ["inffast.c"]
 
-e.StaticLibrary(lib + "/zlib" + postfix, sources)
+e.StaticLibrary(lib + "/zlib" + suffix, ["zlib/" + x for x in sources])
                        

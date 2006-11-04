@@ -1,5 +1,5 @@
 #
-Import("env lib postfix")
+Import("env lib suffix")
 
 headers = Split("""nametab.h utf8tab.h winconfig.h xmlrole.h 
                    xmltok.h xmltok_impl.h ascii.h asciitab.h
@@ -18,4 +18,4 @@ if p == "win32":
 else:
   e.Append( CPPDEFINES = ["HAVE_MEMMOVE"] )
 
-e.StaticLibrary(lib + "/expat" + postfix, sources)
+e.StaticLibrary(lib + "/expat" + suffix, ["expat/" + x for x in sources])

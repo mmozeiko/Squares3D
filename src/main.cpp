@@ -3,6 +3,7 @@
 #include <windows.h>
 #elif defined(__APPLE__)
 #include <Carbon/Carbon.h>
+#include <CoreServices/CoreServices.h>
 #endif
 
 #include <GL/glfw.h>
@@ -16,6 +17,23 @@
 #include "version.h"
 #include "audio.h"
 #include "video.h"
+
+void display_exception(const string& exception)
+{
+    clog << "Exception occured :" << endl
+         << "  " << exception << endl;
+#if defined(WIN32)
+    MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
+#elif defined(__APPLE__)
+    Str255 err;
+    CopyCStringToPascal("Exception occured (for details see log.txt file)", err);
+    short x;
+    StandardAlert(kAlertStopAlert, err, NULL, NULL, &x);
+#else
+    std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
+              << "  " << exception << endl;
+#endif
+}
 
 int main(int, char* argv[])
 {
@@ -53,37 +71,15 @@ int main(int, char* argv[])
             video_finish();
 #endif
         }
-        catch (string& exception)
+        catch (const string& exception)
         {
-            clog << "Exception occured :" << endl
-                 << "  " << exception << endl;
-#if defined(WIN32)
-            MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
-#elif defined(__APPLE__)
-            string err(" Exception occured (for details see log.txt file");
-            err[0] = static_cast<char>(err.size()+1);
-            short x;
-            StandardAlert(kAlertStopAlert, (const unsigned char*)err.c_str(), NULL, NULL, &x);
-#else
-            std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
-#endif
+            display_exception(exception);
         }
         File::done();
     }
-    catch (string& exception)
+    catch (const string& exception)
     {
-        clog << "Exception occured :" << endl
-             << "  " << exception << endl;
-#ifdef WIN32
-         MessageBox(NULL, ("Exception occured (for details see log.txt file):\n" + exception).c_str(), "Squares 3D", MB_ICONERROR);
-#elif defined(__APPLE__)
-            string err(" Exception occured (for details see log.txt file");
-            err[0] = static_cast<char>(err.size()+1);
-            short x;
-            StandardAlert(kAlertStopAlert, (const unsigned char*)err.c_str(), NULL, NULL, &x);
-#else
-            std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
-#endif
+        display_exception(exception);
     }
 
     clog << "Finished: " << getDateTime() << endl;

@@ -1,10 +1,17 @@
 #
 import os
-from glob import glob
 
 p = str( Platform() )
 
 isdebug = ARGUMENTS.get('debug', 0)
+
+if isdebug:
+    suffix = "_d"
+    builddir = "Debug"
+
+else:
+    suffix = ""
+    builddir = "Release"
 
 if p == "win32":
   env = Environment( tools = ["masm", "msvc", "msvs", "mslib", "mslink"] )
@@ -21,20 +28,12 @@ if p == "win32":
     env.Append( LINKFLAGS  = ["/SUBSYSTEM:CONSOLE", "/DEBUG", '/PDB:"bin\\Squares3D_d.pdb"'] )
     env.Append( CPPDEFINES = ["_DEBUG"] )
 
-    postfix = "_d"
-    builddir = "Debug"
-
   else:
     env.Append( CXXFLAGS   = ["/O2", "/Ot", "/GL", "/FD", "/MT", "/GS-"] )
     env.Append( LINKFLAGS  = ["/LTCG", "/SUBSYSTEM:WINDOWS", "/ENTRY:mainCRTStartup", "/OPT:REF", "/OPT:ICF"] )
     env.Append( CPPDEFINES = ["NDEBUG"] )
 
-    postfix = ""
-    builddir = "Release"
-
   additional = env.RES(builddir + "/resource.rc")
-
-  removeMMGR = False
 
 elif p == "darwin":
 
@@ -48,22 +47,21 @@ elif p == "darwin":
                                    -framework IOKit""") )
 
   if isdebug:
-    env.Append( CXXFLAGS   = ["-O0", "-g"] )
+    env.Append( CXXFLAGS   = Split("-O0 -g") )
     env.Append( CXXFLAGS   = ["-D_DEBUG"] )
 
-    postfix = "_d"
-    builddir = "Debug"
-
   else:
-    env.Append( CXXFLAGS  = ["-O2"] )
+    env.Append( CCFLAGS   = Split("""-pipe
+                                     -Os
+                                     -fvisibility=hidden
+                                     -fvisibility-inlines-hidden
+                                     -mmacosx-version-min=10.4
+                                     -mdynamic-no-pic
+                                     -isysroot /Developer/SDKs/MacOSX10.4u.sdk""") )
     env.Append( CXXFLAGS  = ["-DNDEBUG"] )
-
-    postfix = ""
-    builddir = "Release"
+    env.Append( LINKFLAGS = Split("-mmacosx-version-min=10.4") )
 
   additional = []
-
-  removeMMGR = True
 
 elif p == "posix":
 
@@ -72,22 +70,14 @@ elif p == "posix":
   env.Append( LIBS = Split("GLU GL X11 openal") )
 
   if isdebug:
-    env.Append( CXXFLAGS   = ["-O0", "-g"] )
+    env.Append( CXXFLAGS   = Split("-O0 -g -pipe") )
     env.Append( CXXFLAGS   = ["-D_DEBUG"] )
 
-    postfix = "_d"
-    builddir = "Debug"
-
   else:
-    env.Append( CXXFLAGS  = ["-O2"] )
+    env.Append( CXXFLAGS  = Split("-O2 -pipe") )
     env.Append( CXXFLAGS  = ["-DNDEBUG"] )
 
-    postfix = ""
-    builddir = "Release"
-
   additional = []
-
-  removeMMGR = True
 
 else:
   raise "Not implemented!"
@@ -95,17 +85,38 @@ else:
 env.Append(  CXXFLAGS = ["-I3rdparty/include"] )
 env.Append(  CXXFLAGS = ["-DXML_STATIC"] )
 env.Append(  LIBPATH  = ["3rdparty/lib"] )
-env.Prepend( LIBS     = [x+postfix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
 
-env.BuildDir(builddir, "src", duplicate=0)
+if p == "darwin":
 
-sources = [x.replace("src\\", builddir + "\\").replace("src/", builddir+"/") for x in glob("src/*.cpp")]
+  e = env.Copy()
+  s = suffix
+  b = builddir
+  
+  suffix = s + "_ppc"
+  builddir = b + "_ppc"
 
-if not isdebug or removeMMGR:
-  for x in ["Release\\mmgr.cpp", "Release/mmgr.cpp",
-            "Debug\\mmgr.cpp", "Debug/mmgr.cpp",
-            "src\\mmgr.cpp", "src/mmgr.cpp"]:
-    if x in sources:
-      sources.remove(x)
+  env.Append( CCFLAGS   = Split("-arch ppc -mtune=G5") )
+  env.Append( LINKFLAGS = Split("-arch ppc") )
+  env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  env.BuildDir(builddir, "src", duplicate=0)
+  SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)
 
-env.Program("bin/Squares3D" + postfix, sources + additional)
+
+  env = e
+  suffix = s + "_i386"
+  builddir = b + "_i386"
+
+  env.Append( CCFLAGS   = Split("-arch i386") )
+  env.Append( LINKFLAGS = Split("-arch i386") )
+  env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  env.BuildDir(builddir, "src", duplicate=0)
+  SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)
+
+  env.Command("bin/Squares3D" + s,
+              ["bin/Squares3D" + s + "_i386", "bin/Squares3D" + s + "_ppc"],
+              "lipo -create bin/Squares3D%s_i386 bin/Squares3D%s_ppc -output bin/Squares3D%s" % (s, s, s) )
+ 
+else:
+
+  env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)

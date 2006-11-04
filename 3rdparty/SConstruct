@@ -4,7 +4,17 @@ import os
 #
 p = str( Platform() )
 
+all_libs = ["zlib", "physfs", "ogg", "vorbis", "vorbisfile", "expat", "glfw", "enet"]
+
 isdebug = ARGUMENTS.get('debug', 0) # debug=1 ?
+
+if isdebug:
+  suffix = "_d"
+  builddir = "Debug"
+
+else:
+  suffix = ""
+  builddir = "Release"
 
 if p == "win32":
   env = Environment( tools = ["masm", "msvc", "msvs", "mslib", "mslink"] )
@@ -14,16 +24,10 @@ if p == "win32":
     env.Append( CCFLAGS    = ["/Od", "/MTd", "/EHsc", "/Z7"] )
     env.Append( CPPDEFINES = ["_DEBUG"] )
 
-    postfix = "_d"
-    builddir = "Debug"
-
   else:
     env.Append( CCFLAGS    = ["/O2", "/Ot", "/GL", "/FD", "/MT", "/GS-"] )
     env.Append( ARFLAGS    = ["/LTCG"] )
     env.Append( CPPDEFINES = ["NDEBUG"] )
-
-    postfix = ""
-    builddir = "Release"
 
 elif p == "darwin":
 
@@ -31,20 +35,17 @@ elif p == "darwin":
   env.Append( CPPDEFINES = ["_LIB"] )
 
   if isdebug:
-    env.Append( CCFLAGS   = ["-O0", "-g"] )
+    env.Append( CCFLAGS   = Split("-O0 -g -pipe") )
     env.Append( CPPDEFINES = ["_DEBUG"] )
 
-    postfix = "_d"
-    builddir = "Debug"
-
   else:
-    env.Append( CCFLAGS   = ["-O2"] )
+    env.Append( CCFLAGS   = Split("""-pipe
+                                     -Os
+                                     -fvisibility=hidden
+                                     -mmacosx-version-min=10.4
+                                     -mdynamic-no-pic
+                                     -isysroot /Developer/SDKs/MacOSX10.4u.sdk""") )
     env.Append( CPPDEFINES = ["NDEBUG"] )
-
-    postfix = ""
-    builddir = "Release"
-
-  additional = []
 
 elif p == "posix":
 
@@ -52,20 +53,12 @@ elif p == "posix":
   env.Append( CPPDEFINES = ["_LIB"] )
 
   if isdebug:
-    env.Append( CCFLAGS   = ["-O0", "-g"] )
+    env.Append( CCFLAGS   = Split("-O0 -g -pipe") )
     env.Append( CPPDEFINES = ["_DEBUG"] )
 
-    postfix = "_d"
-    builddir = "Debug"
-
   else:
-    env.Append( CCFLAGS   = ["-O2"] )
+    env.Append( CCFLAGS   = Split("-Os -pipe") )
     env.Append( CPPDEFINES = ["NDEBUG"] )
-
-    postfix = ""
-    builddir = "Release"
-
-  additional = []
 
 else:
   raise "Not Implemented!"
@@ -74,8 +67,34 @@ env.Append( CPPPATH = ["#include"])
 
 lib = "#lib"
 
-for project in ["zlib", "physfs", "ogg", "vorbis", "vorbisfile", "expat", "glfw", "enet"]:
-  x = SConscript("src/" + project + "/SConscript", 
-             exports="env lib postfix", 
-             build_dir = builddir + "/" + project,
-             duplicate=0)
+
+if p == "darwin":
+
+  e = env.Copy()
+  s = suffix
+  env.Append( CCFLAGS   = Split("-arch ppc -mtune=G5") )
+  suffix = s + "_ppc"
+
+  for project in all_libs:
+    SConscript("src/" + project + ".SConscript", 
+               exports="env lib suffix", 
+               build_dir = builddir + "_ppc",
+               duplicate=0)
+
+
+  env = e
+  env.Append( CCFLAGS   = Split("-arch i386") )
+  suffix = s + "_i386"
+  for project in all_libs:
+    SConscript("src/" + project + ".SConscript", 
+               exports="env lib suffix", 
+               build_dir = builddir + "_i386",
+               duplicate=0)
+
+else:
+  
+  for project in all_libs:
+    SConscript("src/" + project + ".SConscript", 
+               exports="env lib suffix", 
+               build_dir = builddir,
+               duplicate=0)

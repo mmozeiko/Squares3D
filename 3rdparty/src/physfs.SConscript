@@ -1,5 +1,5 @@
 #
-Import("env lib postfix")
+Import("env lib suffix")
 
 headers = Split("physfs_internal.h")
 
@@ -14,11 +14,10 @@ if p == "win32":
 
 elif p=="darwin":
   sources += Split("unix.c posix.c")
-  e.Append( CCFLAGS = ["-msse2"] )
 
 else:
   sources += Split("unix.c posix.c")
 
 e.Append( CPPDEFINES = Split("PHYSFS_SUPPORTS_ZIP PHYSFS_NO_CDROM_SUPPORT") )
 
-e.StaticLibrary(lib + "/physfs" + postfix, sources)
+e.StaticLibrary(lib + "/physfs" + suffix, ["physfs/" + x for x in sources])

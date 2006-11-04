@@ -1,5 +1,5 @@
 #
-Import("env lib postfix")
+Import("env lib suffix")
 
 platformsrc = Split("""enable.c fullscreen.c glext.c init.c
                        joystick.c thread.c time.c window.c""")
@@ -30,8 +30,8 @@ elif p=="posix":
 else:
   raise "Unsupported platform!"
 
-e.Append( CPPPATH = [".", platformdir] )
+e.Append( CPPPATH = ["glfw", "glfw/" + platformdir] )
 
 sources += [platformdir + "/" + platformdir + "_" + x for x in platformsrc]
 
-e.StaticLibrary(lib + "/glfw" + postfix, sources)
+e.StaticLibrary(lib + "/glfw" + suffix, ["glfw/" + x for x in sources])

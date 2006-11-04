@@ -1,5 +1,5 @@
 #
-Import("env lib postfix")
+Import("env lib suffix")
 
 headers = Split("""masking.h mdct.h misc.h lsp.h backends.h
                    bitrate.h codebook.h codec_internal.h
@@ -13,4 +13,4 @@ sources = Split("""analysis.c mdct.c bitrate.c block.c lsp.c
                    registry.c res0.c sharedbook.c smallft.c
                    synthesis.c window.c""")
 
-env.StaticLibrary(lib + "/vorbis" + postfix, sources)
+env.StaticLibrary(lib + "/vorbis" + suffix, ["vorbis/" + x for x in sources])
