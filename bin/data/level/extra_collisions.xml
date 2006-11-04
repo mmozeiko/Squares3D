@@ -58,12 +58,11 @@
             <offset x="0.0" y="0.0" z="0.0" />
             <rotation x="25.0" y="0.0" z="90.0" />
         </collision>
-        <collision id="fenceTop" type="sphere" mass="10.0" material="extra_stuff_white" property="brick">
-            <radius x="0.15" y="0.15" z="0.15"/>
+        <collision id="fenceTop" type="box" mass="10.0" material="extra_stuff_white" property="brick">
+            <size x="0.2" y="0.2" z="0.2"/>
             <offset x="0.0" y="0.5" z="0.0" />
-            <rotation x="0.0" y="53.0" z="45.0" />
+            <rotation x="0.0" y="0.0" z="0.0" />
         </collision>
-
     </collisions>
 </xml>
 

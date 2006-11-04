@@ -269,6 +269,12 @@
             <rotation x="0.0" y="-45.0" z="0.0"/>
             <collision>tower_top</collision>
         </body-->
-        
-    </bodies>
+
+		<!--body id="indago_banner">
+			<position x="8.0" y="1.5" z="0.0"/>
+			<rotation x="0.0" y="100.0" z="0.0"/>
+			<collision>banner</collision>
+		</body-->
+		
+	</bodies>
 </xml>
