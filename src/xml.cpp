@@ -177,8 +177,8 @@ public:
          
             if (XML_ParseBuffer(m_parser, static_cast<int>(read), m_reader.eof() || read==0 ? 1 : 0) == XML_STATUS_ERROR)
             {
-                size_t c = XML_GetErrorColumnNumber(m_parser);
-                size_t l = XML_GetErrorLineNumber(m_parser);
+                int c = static_cast<int>(XML_GetErrorColumnNumber(m_parser));
+                int l = static_cast<int>(XML_GetErrorLineNumber(m_parser));
                 const XML_LChar* err = XML_ErrorString(XML_GetErrorCode(m_parser));
                 throw Exception("XML parser error (" + cast<string>(l) + ", " + cast<string>(c) + "): " + string(err));
             }

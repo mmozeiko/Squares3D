@@ -18,12 +18,12 @@ public:
     static void unload();
 
     bool hasChar(int ch) const;
-    int getWidth(const wstring& text) const;
+    int getWidth(const string& text) const;
     int getHeight() const;
-    int getHeight(const wstring& text) const;
+    int getHeight(const string& text) const;
 
     void begin(bool shadowed = true, const Vector& shadow = Vector(0.1f, 0.1f, 0.1f), float shadowWidth = 1.5f) const;
-    void render(const wstring& text, AlignType align = Align_Left) const;
+    void render(const string& text, AlignType align = Align_Left) const;
     void end() const;
 
     void begin2() const;
@@ -43,7 +43,7 @@ private:
     mutable bool      m_shadowed;
     mutable float     m_shadowWidth;
     
-    void renderPlain(const wstring& text) const;
+    void renderPlain(const string& text) const;
 };
 
 #endif

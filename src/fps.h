@@ -26,7 +26,7 @@ private:
     unsigned int m_totalFrames;
     const Timer& m_timer;
     const Font*  m_font;
-    wstring      m_fps;
+    string       m_fps;
     int          m_width;
     
     Vector       m_color;

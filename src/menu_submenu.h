@@ -20,7 +20,7 @@ public:
     Vector  m_centerPos;
 
     Submenu(Menu* menu) :
-        m_activeEntry(0), m_height(0), m_title(L""),
+        m_activeEntry(0), m_height(0), m_title(""),
         m_menu(menu) {}
     ~Submenu();
 
@@ -29,13 +29,13 @@ public:
     void render() const;
     void control(int key);
     void onChar(int ch);
-    void setTitle(const wstring& title, const Vector& position);
+    void setTitle(const string& title, const Vector& position);
     void activateNextEntry(bool moveDown);
 
     Vector  m_upper;
     Vector  m_lower;
 
-    wstring m_title;
+    string  m_title;
     Vector  m_titlePos;
 
 private:

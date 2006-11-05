@@ -11,13 +11,13 @@ class Menu;
 class OptionEntry : public Entry
 {
 public: 
-    OptionEntry(Menu* menu, const wstring& stringIn, const Value& value) :
+    OptionEntry(Menu* menu, const string& stringIn, const Value& value) :
         Entry(menu, stringIn), m_value(value) {}
 
     void click(int button);
-    wstring getString() const                      { return m_string +  L":  " + m_value.getCurrent(); }
+    string getString() const                       { return m_string +  ":  " + m_value.getCurrent(); }
     string getValueID() const                      { return m_value.m_id; }
-    wstring getValue() const                       { return m_value.getCurrent(); }
+    string getValue() const                        { return m_value.getCurrent(); }
     int getCurrentValueIdx() const                 { return static_cast<int>(m_value.m_current); }
     void reset();
     
@@ -35,7 +35,7 @@ protected:
 class ApplyOptionsEntry : public SubmenuEntry
 {
 public: 
-    ApplyOptionsEntry(Menu* menu, const wstring& stringIn, const string&  submenuToSwitchTo) :
+    ApplyOptionsEntry(Menu* menu, const string& stringIn, const string&  submenuToSwitchTo) :
       SubmenuEntry(menu, stringIn, false, submenuToSwitchTo) {}
 
     void click(int button);

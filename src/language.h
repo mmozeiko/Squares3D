@@ -97,7 +97,7 @@ enum TextType
     TEXT_LAST_ONE, // THIS MUST BE TEH LAST ONE
 };
 
-typedef map<TextType, wstring> TextTypeMap;
+typedef map<TextType, string> TextTypeMap;
 typedef map<string, TextType> StrToTextTypeMap;
 
 class Language : public System<Language>, public NoCopy

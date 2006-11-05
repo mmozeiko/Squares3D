@@ -21,17 +21,19 @@ if p == "win32":
   env.Append( LINKFLAGS  = ["/INCREMENTAL:NO", "/MANIFEST:NO", "/MACHINE:X86"] )
   env.Append( LIBS       = Split("""advapi32 user32 kernel32
                                     gdi32 winmm opengl32 glu32
-                                    ws2_32 Newton OpenAL32""") )
+                                    ws2_32 OpenAL32""") )
 
   if isdebug:
+    env.Append( LIBS       = ["Newton.lib"] )
     env.Append( CXXFLAGS   = ["/Od", "/MTd", "/EHsc", "/Z7"] )
     env.Append( LINKFLAGS  = ["/SUBSYSTEM:CONSOLE", "/DEBUG", '/PDB:"bin\\Squares3D_d.pdb"'] )
     env.Append( CPPDEFINES = ["_DEBUG"] )
 
   else:
+    env.Append( LIBS       = ["Newton.static.lib"] )
     env.Append( CXXFLAGS   = ["/O2", "/Ot", "/GL", "/FD", "/MT", "/GS-"] )
     env.Append( LINKFLAGS  = ["/LTCG", "/SUBSYSTEM:WINDOWS", "/ENTRY:mainCRTStartup", "/OPT:REF", "/OPT:ICF"] )
-    env.Append( CPPDEFINES = ["NDEBUG"] )
+    env.Append( CPPDEFINES = ["NDEBUG", "_NEWTON_USE_LIB"] )
 
   additional = env.RES(builddir + "/resource.rc")
 
@@ -114,9 +116,10 @@ if p == "darwin":
 
   env.Command("bin/Squares3D" + s,
               ["bin/Squares3D" + s + "_i386", "bin/Squares3D" + s + "_ppc"],
-              "lipo -create bin/Squares3D%s_i386 bin/Squares3D%s_ppc -output bin/Squares3D%s" % (s, s, s) )
+              "lipo -create bin/Squares3D%s_i386 bin/Squares3D%s_ppc -output Installer/MacOSX/Squares3D.app/Contents/MacOS/Squares3D" % (s, s) )
  
 else:
 
   env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  env.BuildDir(builddir, "src", duplicate=0)
   SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)

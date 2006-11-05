@@ -179,7 +179,7 @@ void HDR::render()
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
 
-    int m_view[4];
+    GLint m_view[4];
     glGetIntegerv(GL_VIEWPORT, m_view);
 
     glMatrixMode(GL_PROJECTION);

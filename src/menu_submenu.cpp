@@ -130,7 +130,7 @@ void Submenu::center(const Vector& centerPos)
     m_lower.y = m_upper.y  - m_height + m_entries.back()->m_font->getHeight(m_entries.back()->m_string);
 }
 
-void Submenu::setTitle(const wstring& title, const Vector& position)
+void Submenu::setTitle(const string& title, const Vector& position)
 {
     m_title = title;
     m_titlePos = position;

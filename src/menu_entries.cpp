@@ -17,20 +17,20 @@
 
 /*** COLORVALUE ***/
 
-static const pair<wstring, Vector> namesToColors[] = { 
-      make_pair(L"Red", Red),
-      make_pair(L"Green", Green),
-      make_pair(L"Blue", Blue),
-      make_pair(L"Black", Black),
-      make_pair(L"White", White),
-      make_pair(L"Yellow", Yellow),
-      make_pair(L"Cyan", Cyan),
-      make_pair(L"Magenta", Magenta),
-      make_pair(L"Grey", Grey),
-      make_pair(L"Pink", Pink)
-      };
+static const pair<string, Vector> namesToColors[] = { 
+      make_pair("Red", Red),
+      make_pair("Green", Green),
+      make_pair("Blue", Blue),
+      make_pair("Black", Black),
+      make_pair("White", White),
+      make_pair("Yellow", Yellow),
+      make_pair("Cyan", Cyan),
+      make_pair("Magenta", Magenta),
+      make_pair("Grey", Grey),
+      make_pair("Pink", Pink)
+};
 
-typedef map<wstring, Vector> Colors;
+typedef map<string, Vector> Colors;
 
 static Colors colors(namesToColors, namesToColors + sizeOfArray(namesToColors));
 
@@ -38,19 +38,19 @@ ColorValue::ColorValue(const string& id) : Value(id)
 {
     for each_const(Colors, colors, iter)
     {
-        Value::add(wcast<wstring>(iter->first));        
+        Value::add(iter->first);        
     }
 }
 
 void ColorValue::setCurrent(const Vector& color)
 {
-    wstring colorName = Language::instance->get(TEXT_CUSTOM);
+    string colorName = Language::instance->get(TEXT_CUSTOM);
     bool wasInColorDict = false;
     for each_const(Colors, colors, iter)
     {
         if (iter->second == color)
         {
-            colorName = wcast<wstring>(iter->first);
+            colorName = iter->first;
             wasInColorDict = true;
             break;
         }
@@ -72,11 +72,11 @@ void ColorValue::setCurrent(const Vector& color)
 
 /*** VALUE ***/
 
-wstring Value::getCurrent() const
+string Value::getCurrent() const
 {
     if (m_values.empty())
     {
-        return L"";
+        return "";
     }
     return m_values[m_current];
 }
@@ -127,7 +127,7 @@ int Value::getMaxWidth(const Font* font) const
 
 /*** ENTRY ***/
 
-Entry::Entry(Menu* menu, const wstring& stringIn, Font::AlignType align, const Font* font) : 
+Entry::Entry(Menu* menu, const string& stringIn, Font::AlignType align, const Font* font) : 
     m_string(stringIn), m_enabled(true), 
     m_menu(menu), m_forBounds(false), m_font(font), m_align(align)
 {
@@ -175,14 +175,14 @@ int Entry::getMaxRightWidth() const
 
 void ColorEntry::render() const
 {
-    wstring stringToRender = m_string + L":  ";
+    string stringToRender = m_string + ":  ";
     Vector color = colors.find(m_value.getCurrent())->second;
     m_font->render(stringToRender, Font::Align_Right);
 
     glColor3f(color.x, color.y, color.z);
     
     const float h = static_cast<float>(m_font->getHeight());
-    const float d = static_cast<float>(m_font->getWidth(L" ")); 
+    const float d = static_cast<float>(m_font->getWidth(" ")); 
     
     // uuber magic numbers
     Video::instance->renderRoundRect(
@@ -209,16 +209,16 @@ void ColorEntry::click(int button)
 
 int ColorEntry::getMaxRightWidth() const
 {
-    return 100 + m_font->getWidth(L" ");
+    return 100 + m_font->getWidth(" ");
 }
 
 /*** WRITEABLE ENTRY ***/
 
 void WritableEntry::render() const
 {
-    m_font->render(m_string + L":  ", Font::Align_Right);
+    m_font->render(m_string + ":  ", Font::Align_Right);
 
-    wstring stringToRender = wcast<wstring>(m_binding);
+    string stringToRender = m_binding;
     if (m_ownerSubmenu->m_entries[m_ownerSubmenu->m_activeEntry] == this)
     {
         if (fmodf(m_timer.read(), 1.0f) > 0.5f)
@@ -235,14 +235,14 @@ void WritableEntry::click(int key)
     {
         if (m_binding.size() > 0)
         {
-            m_binding.erase(m_binding.end()-1);
+            m_binding.erase(m_binding.end()-1); // TODO: UTF-8 warning!!
         }
     }
 }
 
 void WritableEntry::onChar(int ch)
 { 
-    // if we want unicode text, then remove ch<=127, and change m_binding type to wstring
+    // if we want unicode text, then remove ch<=127
     int x = m_maxBindingSize;
     if (x == -1)
     {
@@ -263,7 +263,7 @@ int WritableEntry::getMaxRightWidth() const
         x = 15 - static_cast<int>(m_string.size());
     }
 
-    return m_font->getWidth(L"M") * x;
+    return m_font->getWidth("M") * x;
 }
 
 /*** WORLDENTRY ***/
@@ -306,22 +306,22 @@ void SubmenuEntry::click(int button)
     }
 }
 
-wstring LabelEntry::getString() const
+string LabelEntry::getString() const
 {
     glColor3fv(Vector::One.v);
     return m_string;
 }
 
-wstring NetPlayerEntry::getString() const
+string NetPlayerEntry::getString() const
 {
     if (m_forBounds)
     {
-        return L"MMMMMMMMMMMMMMM";
+        return "MMMMMMMMMMMMMMM";
     }
 
     const vector<Profile*>& profiles = Network::instance->getCurrentProfiles();
 
-    wstring type;
+    string type;
     if (m_idx == Network::instance->getLocalIdx())
     {
         type = Language::instance->get(TEXT_LOCAL_PLAYER);
@@ -335,7 +335,7 @@ wstring NetPlayerEntry::getString() const
         type = Language::instance->get(TEXT_REMOTE_PLAYER);
     }
 
-    return wcast<wstring>(profiles[m_idx]->m_name) + type;
+    return profiles[m_idx]->m_name + type;
 }
 
 void NetPlayerEntry::render() const
@@ -402,16 +402,16 @@ void CloseHostEntry::click(int button)
 }
 
 
-wstring NetRemotePlayerEntry::getString() const
+string NetRemotePlayerEntry::getString() const
 {
     if (m_forBounds)
     {
-        return L"MMMMMMMMMMMMMMM";
+        return "MMMMMMMMMMMMMMM";
     }
 
     const vector<Profile*>& profiles = Network::instance->getCurrentProfiles();
 
-    wstring type;
+    string type;
     if (m_idx == Network::instance->getLocalIdx())
     {
         type = Language::instance->get(TEXT_LOCAL_PLAYER);
@@ -421,7 +421,7 @@ wstring NetRemotePlayerEntry::getString() const
         type = Language::instance->get(TEXT_REMOTE_PLAYER);
     }
 
-    return wcast<wstring>(profiles[m_idx]->m_name) + type;
+    return profiles[m_idx]->m_name + type;
 }
 
 void NetRemotePlayerEntry::click(int button)
@@ -437,7 +437,7 @@ void NetRemotePlayerEntry::render() const
     glPopMatrix();
 }
 
-ConnectEntry::ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner) :
+ConnectEntry::ConnectEntry(Menu* menu, const string& label, const string& submenuToSwitchTo, Submenu* owner) :
     SubmenuEntry(menu, label, false, submenuToSwitchTo),
     m_owner(owner)
 {

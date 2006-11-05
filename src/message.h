@@ -13,7 +13,7 @@ class Message : public NoCopy
     friend class Messages;
 public:
     Message(
-        const wstring&  message, 
+        const string&   message, 
         const Vector&   position, 
         const Vector&   color, 
         Font::AlignType align = Font::Align_Left,
@@ -22,7 +22,7 @@ public:
 
     const Vector&   getPosition() const { return m_position; }
 
-    virtual wstring getText() const;
+    virtual string getText() const;
     virtual int     getFontSize() const { return m_fontSize; }
     
 protected:
@@ -33,7 +33,7 @@ protected:
 
     virtual void render(const Font* font) const;
 
-    wstring         m_text;
+    string          m_text;
     Vector          m_position;
     Vector          m_color;
     Font::AlignType m_align;
@@ -44,7 +44,7 @@ class BlinkingMessage : public Message
 {
 public:
     BlinkingMessage(
-        const wstring&  message, 
+        const string&   message, 
         const Vector&   position, 
         const Vector&   color, 
         Font::AlignType align = Font::Align_Left,
@@ -64,7 +64,7 @@ class FlowingMessage : public Message
 {
 public:
     FlowingMessage(
-        const wstring&  message, 
+        const string&   message, 
         const Vector&   position, 
         const Vector&   color, 
         Font::AlignType align = Font::Align_Left,
@@ -85,7 +85,7 @@ class ScoreMessage : public Message
 {
 public:
     ScoreMessage(
-        const wstring&  message, 
+        const string&   message, 
         const Vector&   position, 
         const Vector&   color,
         int             score,
@@ -96,14 +96,14 @@ public:
 
 protected:
 
-    wstring getText() const;
+    string getText() const;
 };
 
 class ComboMessage : public Message
 {
 public:
     ComboMessage(
-        const wstring&  message, 
+        const string&   message, 
         const Vector&   position, 
         const Vector&   color,
         int             points,
@@ -118,7 +118,7 @@ public:
 
 protected:
     int m_previousPoints;
-    wstring getText() const;
+    string getText() const;
 };
 
 #endif

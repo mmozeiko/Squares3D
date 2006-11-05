@@ -132,7 +132,7 @@ Font::Font(const string& filename) : m_texture(0)
     
     
     m_listbase = glGenLists(m_count);
-    m_widths.resize(m_count);
+    m_widths.resize(m_count, -1);
 
     int idx = 0;
     int pos = 0;
@@ -192,7 +192,7 @@ void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
         GL_DEPTH_BUFFER_BIT |
         GL_ENABLE_BIT |
         GL_LIGHTING_BIT |
-        GL_LIST_BIT |
+//        GL_LIST_BIT |
         GL_TRANSFORM_BIT |
         GL_POLYGON_BIT);
 
@@ -213,7 +213,7 @@ void Font::begin(bool shadowed, const Vector& shadow, float shadowWidth) const
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
 
-    glListBase(m_listbase);
+    //glListBase(m_listbase);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -231,44 +231,109 @@ void Font::begin2() const
     glBindTexture(GL_TEXTURE_2D, m_texture);
 }
 
+static const signed char extra_utf8_bytes[256] = {
+    /* 0xxxxxxx */
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
 
-void Font::renderPlain(const wstring& text) const
+    /* 10wwwwww */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+
+    /* 110yyyyy */
+    1, 1, 1, 1, 1, 1, 1, 1,     1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1,     1, 1, 1, 1, 1, 1, 1, 1,
+
+    /* 1110zzzz */
+    2, 2, 2, 2, 2, 2, 2, 2,     2, 2, 2, 2, 2, 2, 2, 2,
+
+    /* 11110yyy */
+    3, 3, 3, 3, 3, 3, 3, 3,     -1, -1, -1, -1, -1, -1, -1, -1,
+};
+
+static const int extra_utf8_bits[4] = {
+    0,
+    12416,      /* (0xC0 << 6) + (0x80) */
+    925824,     /* (0xE0 << 12) + (0x80 << 6) + (0x80) */
+    63447168,   /* (0xF0 << 18) + (0x80 << 12) + (0x80 << 6) + 0x80 */
+};
+
+inline unsigned int nextUTF8char(const char* & x)
+{
+    unsigned int c = static_cast<unsigned char>(*x++);
+    int extra = extra_utf8_bytes[c];
+    switch (extra)
+    {
+        case -1: c = 0; break;
+        case 3: c = (c << 6) + static_cast<unsigned char>(*x++);
+        case 2: c = (c << 6) + static_cast<unsigned char>(*x++);
+        case 1: c = (c << 6) + static_cast<unsigned char>(*x++);
+                c -= extra_utf8_bits[extra];
+    }
+    return c;
+}
+/*
+#define WRITE_UTF8(zOut, c) {                          \
+  if( c<0x00080 ){                                     \
+    *zOut++ = (c&0xFF);                                \
+  }                                                    \
+  else if( c<0x00800 ){                                \
+    *zOut++ = 0xC0 + ((c>>6)&0x1F);                    \
+    *zOut++ = 0x80 + (c & 0x3F);                       \
+  }                                                    \
+  else if( c<0x10000 ){                                \
+    *zOut++ = 0xE0 + ((c>>12)&0x0F);                   \
+    *zOut++ = 0x80 + ((c>>6) & 0x3F);                  \
+    *zOut++ = 0x80 + (c & 0x3F);                       \
+  }else{                                               \
+    *zOut++ = 0xF0 + ((c>>18) & 0x07);                 \
+    *zOut++ = 0x80 + ((c>>12) & 0x3F);                 \
+    *zOut++ = 0x80 + ((c>>6) & 0x3F);                  \
+    *zOut++ = 0x80 + (c & 0x3F);                       \
+  }                                                    \
+}
+*/
+void Font::renderPlain(const string& text) const
 {
     glPushMatrix();
+    const char* x = text.c_str();
 
-    if (sizeof(wchar_t) == 2)
+    while (unsigned int c = nextUTF8char(x))
     {
-        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
+        if (c < static_cast<unsigned int>(m_widths.size()) && m_widths[c] != -1)
+        {
+            glCallList(m_listbase + c);
+        }
     }
-    else if (sizeof(wchar_t) == 4)
-    {
-        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_INT, text.c_str());
-    }
-    else
-    {
-        assert(false);
-    }
+//        glCallLists(static_cast<unsigned int>(text.size()), GL_UNSIGNED_SHORT, text.c_str());
 
     glPopMatrix();
 }
 
-void Font::render(const wstring& text, AlignType align) const
+void Font::render(const string& text, AlignType align) const
 {
     Vector shadowColor(m_shadow);
-    //clog << shadowColor << endl;
     Vector forAlpha;
     glGetFloatv(GL_CURRENT_COLOR, forAlpha.v);
     shadowColor.w = forAlpha.w;
     //
 
     size_t pos, begin = 0;
-    wstring line;
+    string line;
     float linePos = 0.0f;
     int width;
     while (begin < text.size())
     {
-        pos = text.find(L'\n', begin);
-        if (pos == wstring::npos)
+        pos = text.find('\n', begin);
+        if (pos == string::npos)
         {
             pos = text.size();
         }
@@ -324,15 +389,16 @@ void Font::end() const
     glPopAttrib();
 }
 
-int Font::getWidth(const wstring& text) const
+int Font::getWidth(const string& text) const
 {
     int maxWidth = 0;
     int width = 0;
-    for (size_t i=0; i<text.size(); i++)
+    const char* x = text.c_str();
+    while (unsigned int c = nextUTF8char(x))
     {
-        if (text[i] < m_widths.size())
+        if (c < static_cast<unsigned int>(m_widths.size()) && m_widths[c] != -1)
         {
-            if (text[i] == L'\n')
+            if (c == '\n')
             {
                 if (width > maxWidth)
                 {
@@ -340,7 +406,7 @@ int Font::getWidth(const wstring& text) const
                 }
                 width = 0;
             }
-            width += m_widths[text[i]];
+            width += m_widths[c];
         }
     }
     if (width > maxWidth)
@@ -350,9 +416,9 @@ int Font::getWidth(const wstring& text) const
     return maxWidth;
 }
 
-bool isEndline(const wchar_t& t)
+bool isEndline(const char& t)
 {
-    return t == L'\n';
+    return t == '\n';
 }
 
 int Font::getHeight() const
@@ -360,7 +426,7 @@ int Font::getHeight() const
     return m_height;
 }
 
-int Font::getHeight(const wstring& text) const
+int Font::getHeight(const string& text) const
 {
     return static_cast<int>(m_height * (1 + std::count_if(text.begin(), text.end(), isEndline)));
 }

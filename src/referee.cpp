@@ -303,7 +303,7 @@ void Referee::processCriticalEvent()
         // TODOTODO: network...
         // ...
 
-        wstring overText;
+        string overText;
         if (maxScore.first == m_humanPlayer->m_profile->m_name)
         {
             overText = Language::instance->get(TEXT_RESTART);

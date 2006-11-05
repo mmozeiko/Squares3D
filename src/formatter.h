@@ -6,31 +6,23 @@
 class Formatter : public NoCopy
 {
 public:
-    Formatter(const wstring& txt);
+    Formatter(const string& txt);
 
     template <typename T>
     inline Formatter& operator () (T value);
 
-    inline Formatter& operator () (const string& value);
-
-    operator wstring ();
+    operator string ();
 
 private:
-    wstring m_txt;
+    string m_txt;
 
-    void updateFirst(const wstring& value);
+    void updateFirst(const string& value);
 };
 
 template <typename T>
 Formatter& Formatter::operator () (T value)
 {
-    updateFirst(wcast<wstring>(value));
-    return *this;
-}
-
-inline Formatter& Formatter::operator () (const string& value)
-{
-    updateFirst(wstring(value.begin(), value.end()));
+    updateFirst(cast<string>(value));
     return *this;
 }
 

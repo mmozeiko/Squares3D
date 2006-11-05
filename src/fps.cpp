@@ -33,7 +33,7 @@ void FPS::update()
         m_fps = Language::instance->get(TEXT_FPS_DISPLAY)(fps);
         if (fps-std::floor(fps) == 0.0f)
         {
-            m_fps += L".0";
+            m_fps += ".0";
         }
         m_width = m_font->getWidth(m_fps);
         m_time = curTime;

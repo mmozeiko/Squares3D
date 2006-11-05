@@ -127,7 +127,7 @@ int ScoreBoard::addSelfTotalPoints(const string& name)
 
 void ScoreBoard::incrementCombo(const string& name, const Vector& color, const Vector& position)
 {
-    m_messages->add3D(new FlowingMessage(L"+1", position, color, Font::Align_Center, 1.5f));
+    m_messages->add3D(new FlowingMessage("+1", position, color, Font::Align_Center, 1.5f));
     m_joinedCombo++;
     Account& acc = m_scores.find(name)->second;
     acc.m_combo++;

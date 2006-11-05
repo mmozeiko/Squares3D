@@ -302,7 +302,11 @@ extern PFNGLBUFFERSUBDATAARBPROC           pglBufferSubDataARB;
 #define GL_OBJECT_SHADER_SOURCE_LENGTH_ARB 0x8B88
 
 typedef char GLcharARB;		/* native character */
+#ifdef __APPLE__
+typedef void* GLhandleARB;	/* shader object handle */
+#else
 typedef unsigned int GLhandleARB;	/* shader object handle */
+#endif
 
 typedef void (APIENTRYP PFNGLDELETEOBJECTARBPROC) (GLhandleARB obj);
 typedef GLhandleARB (APIENTRYP PFNGLGETHANDLEARBPROC) (GLenum pname);

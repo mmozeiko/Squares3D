@@ -4,9 +4,9 @@
 #include "font.h"
 #include "video.h"
 
-#define FADESPEED 2
+static const float FADE_SPEED = 2.0f;
 
-Message::Message(const wstring&        message, 
+Message::Message(const string&         message, 
                  const Vector&         position, 
                  const Vector&         color, 
                  const Font::AlignType align,
@@ -19,7 +19,7 @@ Message::Message(const wstring&        message,
 {
 }
 
-wstring Message::getText() const
+string Message::getText() const
 {
     return m_text;
 }
@@ -46,7 +46,7 @@ void Message::render(const Font* font) const
 }
 
 BlinkingMessage::BlinkingMessage(
-        const wstring&  message, 
+        const string&   message, 
         const Vector&   position, 
         const Vector&   color, 
         Font::AlignType align,
@@ -89,7 +89,7 @@ bool BlinkingMessage::applyDelta(float delta)
 }
 
 FlowingMessage::FlowingMessage(
-                    const wstring&  message, 
+                    const string&   message, 
                     const Vector&   position, 
                     const Vector&   color, 
                     Font::AlignType align,
@@ -117,7 +117,7 @@ bool FlowingMessage::applyDelta(float delta)
     return m_timeToLive <= 0.0f;
 }
 
-ScoreMessage::ScoreMessage(const wstring&  message, 
+ScoreMessage::ScoreMessage(const string&   message, 
                            const Vector&   position, 
                            const Vector&   color,
                            int             score,
@@ -127,12 +127,12 @@ ScoreMessage::ScoreMessage(const wstring&  message,
 {
 }
 
-wstring ScoreMessage::getText() const
+string ScoreMessage::getText() const
 {
     return Formatter(m_text)(m_score);
 }
 
-ComboMessage::ComboMessage(const wstring&  message, 
+ComboMessage::ComboMessage(const string&   message, 
                            const Vector&   position, 
                            const Vector&   color,
                            int             points,
@@ -144,7 +144,7 @@ ComboMessage::ComboMessage(const wstring&  message,
 {
 }
 
-wstring ComboMessage::getText() const
+string ComboMessage::getText() const
 {
     return Formatter(m_text)(m_previousPoints);
 }
@@ -155,7 +155,7 @@ bool ComboMessage::applyDelta(float delta)
     {
         if (m_color.w > 0.0f)
         {
-            m_color.w -= delta * FADESPEED;
+            m_color.w -= delta * FADE_SPEED;
         }
     }
     else

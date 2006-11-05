@@ -168,11 +168,11 @@ void OptionEntry::reset()
 void OptionEntry::render() const
 {
     glPushMatrix();
-    m_font->render(m_string + L":", Font::Align_Right);
+    m_font->render(m_string + ":", Font::Align_Right);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(static_cast<float>(m_font->getWidth(L"  ")), 0.0f, 0.0f);
+    glTranslatef(static_cast<float>(m_font->getWidth("  ")), 0.0f, 0.0f);
     m_font->render(getValue(), Font::Align_Left);
     glPopMatrix();
 }
@@ -283,10 +283,10 @@ void ApplyOptionsEntry::click(int button)
 
 int OptionEntry::getMaxLeftWidth() const
 {
-    return m_font->getWidth(m_string) + m_font->getWidth(L":");
+    return m_font->getWidth(m_string) + m_font->getWidth(":");
 }
 
 int OptionEntry::getMaxRightWidth() const
 {
-    return  m_font->getWidth(L"  ") +  m_value.getMaxWidth(m_font);
+    return  m_font->getWidth("  ") +  m_value.getMaxWidth(m_font);
 }

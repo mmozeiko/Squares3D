@@ -11,16 +11,16 @@ class Submenu;
 class Entry;
 
 typedef vector<Entry*> Entries;
-typedef vector<wstring> Values;
+typedef vector<string> Values;
 
 class Value
 {
     friend class OptionEntry;
 public:
     Value(const string& id) : m_current(0), m_id(id) {}
-    void add(const wstring& string)                  { m_values.push_back(string); }
+    void add(const string& str)                      { m_values.push_back(str); }
     
-    wstring getCurrent() const;
+    string getCurrent() const;
     void activateNext(bool forward);
     int getMaxWidth(const Font* font) const;
 
@@ -40,18 +40,18 @@ public:
 class Entry : public NoCopy
 {
 public: 
-    wstring     m_string;
+    string      m_string;
     Vector      m_lowerLeft;
     Vector      m_upperRight;
 
-    Entry(Menu* menu, const wstring& stringIn, Font::AlignType align = Font::Align_Center, const Font* font = NULL);
+    Entry(Menu* menu, const string& stringIn, Font::AlignType align = Font::Align_Center, const Font* font = NULL);
     virtual ~Entry() {}
 
     virtual void click(int button) = 0;
     virtual void onChar(int ch) {}
-    virtual wstring getString() const                    { return m_string;   }
+    virtual string getString() const                     { return m_string;   }
     virtual string getValueID() const                    { return "";         }
-    virtual wstring getValue() const                     { return L"";        }
+    virtual string getValue() const                      { return "";         }
     virtual int getCurrentValueIdx() const               { return -1;         }
     virtual void reset()                                 {}
     virtual int  getHeight()                             { return 1;          }
@@ -79,7 +79,7 @@ protected:
 class SubmenuEntry : public Entry
 {
 public: 
-    SubmenuEntry(Menu* menu, const wstring& stringIn, bool back, const string&  submenuToSwitchTo, const Font* font = NULL) :
+    SubmenuEntry(Menu* menu, const string& stringIn, bool back, const string&  submenuToSwitchTo, const Font* font = NULL) :
       Entry(menu, stringIn, Font::Align_Center, font), m_back(back), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
     void click(int button); 
@@ -92,7 +92,7 @@ protected:
 class ColorEntry : public Entry
 {
 public: 
-    ColorEntry(Menu* menu, const wstring& label, Vector& binding, const ColorValue& value) :
+    ColorEntry(Menu* menu, const string& label, Vector& binding, const ColorValue& value) :
       Entry(menu, label), m_binding(binding), m_value(value)
     {
         m_value.setCurrent(binding); 
@@ -111,7 +111,7 @@ private:
 class WritableEntry : public Entry
 {
 public: 
-    WritableEntry(Menu* menu, const wstring& label, string& binding, const Submenu* ownerSubmenu, int maxBindingSize = -1) :
+    WritableEntry(Menu* menu, const string& label, string& binding, const Submenu* ownerSubmenu, int maxBindingSize = -1) :
       Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding), m_maxBindingSize(maxBindingSize) {}
 
     void render() const;
@@ -130,7 +130,7 @@ private:
 class WorldEntry : public Entry
 {
 public: 
-    WorldEntry(Menu* menu, const wstring& stringIn, int switchTo, int& current) :
+    WorldEntry(Menu* menu, const string& stringIn, int switchTo, int& current) :
         Entry(menu, stringIn),
         m_switchTo(switchTo),
         m_current(current)
@@ -146,7 +146,7 @@ private:
 class QuitEntry : public Entry
 {
 public: 
-    QuitEntry(Menu* menu, const wstring& stringIn) : Entry(menu, stringIn) {}
+    QuitEntry(Menu* menu, const string& stringIn) : Entry(menu, stringIn) {}
     
     void click(int button);
 };
@@ -154,9 +154,9 @@ public:
 class SpacerEntry : public Entry
 {
 public: 
-    SpacerEntry(Menu* menu) : Entry(menu, L"") { disable(); }
+    SpacerEntry(Menu* menu) : Entry(menu, "") { disable(); }
     void click(int button)     {}
-    wstring getString() const  { return L""; }
+    string getString() const   { return ""; }
     bool isEnabled() const     { return false; }
     void enable()              { }
 };
@@ -167,9 +167,9 @@ public:
 class NetPlayerEntry : public Entry
 {
 public: 
-    NetPlayerEntry(Menu* menu, int idx) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_idx(idx) {}
+    NetPlayerEntry(Menu* menu, int idx) : Entry(menu, "MMMMMMMMMMMMMMM"), m_idx(idx) {}
 
-    wstring getString() const;
+    string getString() const;
     void click(int button);
     void render() const;
 
@@ -181,9 +181,9 @@ private:
 class NetRemotePlayerEntry : public Entry
 {
 public: 
-    NetRemotePlayerEntry(Menu* menu, int idx) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_idx(idx) { disable(); }
+    NetRemotePlayerEntry(Menu* menu, int idx) : Entry(menu, "MMMMMMMMMMMMMMM"), m_idx(idx) { disable(); }
 
-    wstring getString() const;
+    string getString() const;
     void click(int button);
     void render() const;
 
@@ -194,17 +194,17 @@ private:
 class LabelEntry : public Entry
 {
 public: 
-    LabelEntry(Menu* menu, const wstring& label, Font::AlignType align = Font::Align_Center, const Font* font = NULL) :
+    LabelEntry(Menu* menu, const string& label, Font::AlignType align = Font::Align_Center, const Font* font = NULL) :
       Entry(menu, label, align, font) { m_enabled = false; }
 
-    wstring getString() const;
+    string getString() const;
     void click(int button) {}
 };
 
 class NewHostEntry : public SubmenuEntry
 {
 public: 
-    NewHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
+    NewHostEntry(Menu* menu, const string& stringIn, const string& submenuToSwitchTo) :
         SubmenuEntry(menu, stringIn, false, submenuToSwitchTo) {}
 
     void click(int button); 
@@ -213,7 +213,7 @@ public:
 class JoinHostEntry : public SubmenuEntry
 {
 public: 
-    JoinHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo, Submenu* owner) :
+    JoinHostEntry(Menu* menu, const string& stringIn, const string& submenuToSwitchTo, Submenu* owner) :
         SubmenuEntry(menu, stringIn, false, submenuToSwitchTo), m_owner(owner) {}
 
     void click(int button); 
@@ -224,7 +224,7 @@ private:
 class CloseHostEntry : public SubmenuEntry
 {
 public: 
-    CloseHostEntry(Menu* menu, const wstring& stringIn, const string& submenuToSwitchTo) :
+    CloseHostEntry(Menu* menu, const string& stringIn, const string& submenuToSwitchTo) :
         SubmenuEntry(menu, stringIn, true, submenuToSwitchTo) {}
 
     void click(int button); 
@@ -233,7 +233,7 @@ public:
 class ConnectEntry : public SubmenuEntry
 {
 public: 
-    ConnectEntry(Menu* menu, const wstring& label, const string& submenuToSwitchTo, Submenu* owner);
+    ConnectEntry(Menu* menu, const string& label, const string& submenuToSwitchTo, Submenu* owner);
     void click(int button);
 
 private:
@@ -243,7 +243,7 @@ private:
 class MultiWorldEntry : public Entry
 {
 public: 
-    MultiWorldEntry(Menu* menu, const wstring& stringIn) :
+    MultiWorldEntry(Menu* menu, const string& stringIn) :
         Entry(menu, stringIn)
    {}
     
@@ -256,9 +256,9 @@ TODO: no time now
 class NetChatEntry : public Entry
 {
 public: 
-    NetChatEntry(Menu* menu) : Entry(menu, L"MMMMMMMMMMMMMMM"), m_font(Font::get("Arial_16pt_bold") {}
+    NetChatEntry(Menu* menu) : Entry(menu, "MMMMMMMMMMMMMMM"), m_font(Font::get("Arial_16pt_bold") {}
 
-    wstring getString() const;
+    string getString() const;
     void click(int button);
     void render(const Font* font) const;
     void onChar(int ch);

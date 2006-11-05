@@ -336,22 +336,22 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     {
         int x = resolutions[i].first;
         int y = resolutions[i].second;
-        wstring mode = wcast<wstring>(x) + L"x" + wcast<wstring>(y);
+        string mode = cast<string>(x) + "x" + cast<string>(y);
         if (x*3 == y*4)
         {
-            mode += L" (4:3)";
+            mode += " (4:3)";
         }
         else if (x*4 == y*5)
         {
-            mode += L" (5:4)";
+            mode += " (5:4)";
         }
         else if (x*9 == y*16)
         {
-            mode += L" (16:9)";
+            mode += " (16:9)";
         }
         else if (x*10 == y*16)
         {
-            mode += L" (16:10)";
+            mode += " (16:10)";
         }
         valueRes.add(mode);
     }
@@ -386,18 +386,18 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_VSYNC), valVS));
 
     Value valFSAA("fsaa_samples");
-    valFSAA.add(L"0");
-    valFSAA.add(L"2");
-    valFSAA.add(L"4");
-    valFSAA.add(L"6");
-    valFSAA.add(L"8");
+    valFSAA.add("0");
+    valFSAA.add("2");
+    valFSAA.add("4");
+    valFSAA.add("6");
+    valFSAA.add("8");
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_FSAA), valFSAA));
 
     Value valAn("anisotropy");
-    valAn.add(L"0");
+    valAn.add("0");
     for (int i=1; i<=Video::instance->m_maxAnisotropy; i++)
     {
-        valAn.add(wcast<wstring>(1<<i));
+        valAn.add(cast<string>(1<<i));
     }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_ANISOTROPY), valAn));
     if (Video::instance->m_haveAnisotropy == false)
@@ -465,14 +465,14 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     Value valMV("music_vol");
     for (int i=0; i<10; i++)
     {
-        valMV.add(wcast<wstring>(i));
+        valMV.add(cast<string>(i));
     }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_MUSIC_VOL), valMV));
 
     Value valSV("sound_vol");
     for (int i=0; i<10; i++)
     {
-        valSV.add(wcast<wstring>(i));
+        valSV.add(cast<string>(i));
     }
     submenu->addEntry(new OptionEntry(this, language->get(TEXT_SOUND_VOL), valSV));
 

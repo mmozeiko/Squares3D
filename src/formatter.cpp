@@ -1,32 +1,32 @@
 #include "formatter.h"
 
-Formatter::Formatter(const wstring& txt) : m_txt(txt)
+Formatter::Formatter(const string& txt) : m_txt(txt)
 {
 }
    
-Formatter::operator wstring ()
+Formatter::operator string ()
 {
     return m_txt;
 }
 
-void Formatter::updateFirst(const wstring& value)
+void Formatter::updateFirst(const string& value)
 {
     size_t offset = 0;
-    size_t pos = m_txt.find(L"$");
-    while (pos != wstring::npos)
+    size_t pos = m_txt.find('$');
+    while (pos != string::npos)
     {
         if (pos == m_txt.size()-1)
         {
             break;
         }
 
-        if (m_txt[pos+1] == L'$')
+        if (m_txt[pos+1] == '$')
         {
             offset = pos+2;
         }
         else
         {
-            int num = m_txt[pos+1] - L'0';
+            int num = m_txt[pos+1] - '0';
             if (num == 1)
             {
                 m_txt = m_txt.substr(0, pos) + value + m_txt.substr(pos+2, m_txt.size());
@@ -39,6 +39,6 @@ void Formatter::updateFirst(const wstring& value)
             }
         }
 
-        pos = m_txt.find(L"$", offset);
+        pos = m_txt.find('$', offset);
     }
 }
