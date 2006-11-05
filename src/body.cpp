@@ -3,8 +3,6 @@
 #include "game.h"
 #include "xml.h"
 #include "world.h"
-#include "video.h"
-#include "video_ext.h"
 #include "level.h"
 #include "properties.h"
 #include "geometry.h"

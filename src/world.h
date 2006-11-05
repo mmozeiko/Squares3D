@@ -6,6 +6,7 @@
 #include "vmath.h"
 #include "system.h"
 #include "state.h"
+#include "video.h"
 
 class Camera;
 class Player;

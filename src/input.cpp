@@ -1,7 +1,9 @@
-#include "input.h"
 #ifdef __APPLE__
 #include <ApplicationServices/ApplicationServices.h>
 #endif
+
+#include "input.h"
+#include "video.h"
 
 template <class Input> Input* System<Input>::instance = NULL;
 

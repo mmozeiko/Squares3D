@@ -1,6 +1,4 @@
 #include "framebuffer.h"
-#include "video.h"
-#include "video_ext.h"
 
 FrameBuffer::FrameBuffer() :
     m_sizeX(0),

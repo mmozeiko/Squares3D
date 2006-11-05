@@ -2,6 +2,7 @@
 #define __FRAMEBUFFER_H__
 
 #include "common.h"
+#include "video.h"
 
 class FrameBuffer : public NoCopy
 {

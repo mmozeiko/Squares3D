@@ -1,7 +1,5 @@
 #include "collision.h"
 #include "xml.h"
-#include "video.h"
-#include "video_ext.h"
 #include "material.h"
 #include "level.h"
 #include "property.h"

@@ -1,4 +1,3 @@
-#include <GL/glfw.h>
 #include "openal_includes.h"
 
 #include "menu.h"

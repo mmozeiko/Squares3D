@@ -1,10 +1,8 @@
-#include <GL/glfw.h>
-
+#include <GLee.h>
 #include "texture.h"
 #include "file.h"
 #include "vmath.h"
 #include "config.h"
-#include "video_ext.h"
 
 Texture::Texture(const string& name, bool mipmaps) : m_size(0)
 {

@@ -4,6 +4,7 @@ import os
 p = str( Platform() )
 
 isdebug = ARGUMENTS.get('debug', 0)
+all_libs = Split("enet expat glfw glee vorbisfile vorbis ogg physfs zlib")
 
 if isdebug:
     suffix = "_d"
@@ -99,7 +100,7 @@ if p == "darwin":
 
   env.Append( CCFLAGS   = Split("-arch ppc -mtune=G5") )
   env.Append( LINKFLAGS = Split("-arch ppc") )
-  env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  env.Prepend( LIBS     = [x+suffix for x in all_libs] )
   env.BuildDir(builddir, "src", duplicate=0)
   SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)
 
@@ -110,7 +111,7 @@ if p == "darwin":
 
   env.Append( CCFLAGS   = Split("-arch i386") )
   env.Append( LINKFLAGS = Split("-arch i386") )
-  env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  env.Prepend( LIBS     = [x+suffix for x in all_libs] )
   env.BuildDir(builddir, "src", duplicate=0)
   SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)
 
@@ -120,6 +121,6 @@ if p == "darwin":
  
 else:
 
-  env.Prepend( LIBS     = [x+suffix for x in Split("enet expat glfw vorbisfile vorbis ogg physfs zlib")] )
+  env.Prepend( LIBS     = [x+suffix for x in all_libs] )
   env.BuildDir(builddir, "src", duplicate=0)
   SConscript("SConscript", exports="env additional isdebug suffix builddir", duplicate=0)

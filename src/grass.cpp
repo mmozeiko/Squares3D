@@ -5,7 +5,6 @@
 #include "random.h"
 #include "geometry.h"
 #include "config.h"
-#include "video_ext.h"
 
 Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_grassTex(NULL)
 {

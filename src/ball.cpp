@@ -1,4 +1,3 @@
-#include <GL/glfw.h>
 #include <Newton.h>
 
 #include "ball.h"

@@ -1,7 +1,12 @@
 #ifndef __VIDEO_H__
 #define __VIDEO_H__
 
+#define Font FontX11
+#include <GLee.h>
+#undef min // WINAPI hacks
+#undef max
 #include <GL/glfw.h>
+#undef Font
 
 #include "common.h"
 #include "vmath.h"

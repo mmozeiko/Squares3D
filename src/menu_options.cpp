@@ -1,5 +1,3 @@
-#include <GL/glfw.h>
-
 #include "menu_options.h"
 #include "menu_submenu.h"
 #include "menu.h"

@@ -2,13 +2,14 @@
 #define __TEXTURE_H__
 
 #include <GL/glfw.h>
-
 #include "common.h"
 
 namespace File
 {
     class Reader;
 }
+
+#undef None
 
 class Texture : public NoCopy
 {

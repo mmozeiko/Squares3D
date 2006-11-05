@@ -1,7 +1,4 @@
-#include <GL/glfw.h>
-
 #include "video.h"
-#include "video_ext.h"
 #include "config.h"
 #include "file.h"
 #include "level.h"
@@ -484,91 +481,43 @@ Texture* Video::loadTexture(const string& name, bool mipmap)
 
 void Video::loadExtensions()
 {   
-    if (glfwExtensionSupported("GL_EXT_rescale_normal"))
+    /*if (*/GLeeInit();/* == GL_FALSE)
     {
-        clog << "Video: GL_EXT_rescale_normal supported." << endl;
+        throw Exception("GLeeInit() failed: " + string(GLeeGetErrorString()));
+    }*/
+
+    clog << "Video: GL_EXT_rescale_normal ";
+    if (GLEE_EXT_rescale_normal)
+    {
+        clog << "supported." << endl;
         glEnable(GL_RESCALE_NORMAL_EXT);
     }
     else
     {
-        clog << "Video: GL_EXT_rescale_normal unavailable." << endl;
-    }
-
-    bool activeTex = false;
-//#ifndef GL_ARB_multitexture
-    if (glfwExtensionSupported("GL_ARB_multitexture"))
-    {
-        activeTex = true;
-        loadProc(glActiveTextureARB);
-        loadProc(glMultiTexCoord2fARB);
-    }
-//#else
-//    activeTex = true;
-//#endif
-    if (activeTex)
-    {
-        clog << "Video: GL_ARB_multitexture supported." << endl;
-    }
-    else
-    {
-        clog << "Video: GL_ARB_multitexture unavailable." << endl;
-    }
-
-    if (activeTex &&
-        glfwExtensionSupported("GL_ARB_fragment_shader") && 
-        glfwExtensionSupported("GL_ARB_vertex_shader") &&
-        glfwExtensionSupported("GL_ARB_shader_objects") &&
-        glfwExtensionSupported("GL_ARB_shading_language_100"))
-    {
-        m_haveShaders = true;
-
-        loadProc(glCreateShaderObjectARB);
-        loadProc(glShaderSourceARB);
-        loadProc(glCompileShaderARB);
-
-        loadProc(glCreateProgramObjectARB);
-        loadProc(glAttachObjectARB);
-        loadProc(glLinkProgramARB);
-        loadProc(glUseProgramObjectARB);
-
-        loadProc(glGetObjectParameterivARB);
-        loadProc(glGetInfoLogARB);
-
-        loadProc(glDeleteObjectARB);
-
-        loadProc(glGetUniformLocationARB);
-        loadProc(glUniform1iARB);
-        loadProc(glUniform1fARB);
-        loadProc(glUniform4fvARB);
-    }
-    
-    clog << "Video: GL_ARB_fragment_shader, GL_ARB_vertex_shader, GL_ARB_shader_objects, GL_ARB_shading_language_100 ";
-    if (m_haveShaders)
-    {
-         clog << "supported." << endl;
-    }
-    else
-    {
         clog << "unavailable." << endl;
-		Config::instance->m_video.use_hdr = false;
     }
-    
-//#ifndef GL_EXT_texture_filter_anisotropic
-    if (glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
-    {
-        m_haveAnisotropy = true;
-    }
-//#else
-//    m_haveAnisotropy = true;
-//#endif
-    if (m_haveAnisotropy)
-    {
-        clog << "Video: GL_EXT_texture_filter_anisotropic supported." << endl;
-    }
-    else
-    {
-        clog << "Video: GL_EXT_texture_filter_anisotropic unavailable." << endl;
-    }
+
+    bool activeTex = (GLEE_ARB_multitexture==GL_TRUE);
+    clog << "Video: GL_ARB_multitexture " << (activeTex ? "supported." : "unavailable.") << endl;
+
+    m_haveAnisotropy = (GLEE_EXT_texture_filter_anisotropic==GL_TRUE);
+    clog << "Video: GL_EXT_texture_filter_anisotropic " << (m_haveAnisotropy ? "supported." : "unavailable.") << endl;
+
+    m_haveShadowsFB = (GLEE_EXT_framebuffer_object==GL_TRUE);
+    clog << "Video: GL_EXT_framebuffer_object " << (m_haveShadowsFB ? "supported." : "unavailable.") << endl;
+
+    m_haveShaders = activeTex && m_haveShadowsFB && (GLEE_ARB_fragment_shader==GL_TRUE) &&
+                                 (GLEE_ARB_vertex_shader==GL_TRUE) &&
+                                 (GLEE_ARB_shader_objects==GL_TRUE) &&
+                                 (GLEE_ARB_shading_language_100==GL_TRUE);  
+    clog << "Video: GL_ARB_fragment_shader, GL_ARB_vertex_shader, GL_ARB_shader_objects, GL_ARB_shading_language_100 " 
+         << (m_haveShaders ? "supported." : "unavailable.") << endl;
+
+    m_haveVBO = (GLEE_ARB_vertex_buffer_object==GL_TRUE);
+    clog << "Video: GL_ARB_vertex_buffer_object " << (m_haveVBO ? "supported." : "unavailable.") << endl;
+
+    m_haveShadows = activeTex && (GLEE_ARB_depth_texture==GL_TRUE) && (GLEE_ARB_shadow==GL_TRUE);
+    clog << "Video: GL_ARB_shadow and GL_ARB_depth_texture " << (m_haveShadows ? "supported." : "unavailable.") << endl;
 
     if (m_haveAnisotropy)
     {
@@ -586,71 +535,6 @@ void Video::loadExtensions()
         }
     }
     else
-    {
-        Config::instance->m_video.anisotropy = 0;
-    }
-
-//#ifndef GL_EXT_framebuffer_object
-    if (activeTex && glfwExtensionSupported("GL_EXT_framebuffer_object"))
-    {
-        m_haveShadowsFB = true;
-
-        loadProc(glGenFramebuffersEXT);
-        loadProc(glBindFramebufferEXT);
-        loadProc(glFramebufferTexture2DEXT);
-        loadProc(glCheckFramebufferStatusEXT);
-        loadProc(glDeleteFramebuffersEXT);
-    }
-//#else
-//    m_haveShadowsFB = true;
-//#endif
-    if (m_haveShadowsFB)
-    {
-        clog << "Video: GL_EXT_framebuffer_object supported." << endl;
-    }
-    else
-    {
-        clog << "Video: GL_EXT_framebuffer_object unavailable." << endl;
-    }
-
-//#ifndef GL_ARB_vertex_buffer_object
-    if (glfwExtensionSupported("GL_ARB_vertex_buffer_object"))
-    {
-        m_haveVBO = true;
-
-        loadProc(glGenBuffersARB);
-        loadProc(glBindBufferARB);
-        loadProc(glBufferDataARB);
-        loadProc(glDeleteBuffersARB);
-        loadProc(glBufferSubDataARB);
-    }
-//#endif
-    if (m_haveVBO)
-    {
-        clog << "Video: GL_ARB_vertex_buffer_object supported." << endl;
-    }
-    else
-    {
-        clog << "Video: GL_ARB_vertex_buffer_object unavailable." << endl;
-    }
-
-    if (activeTex &&
-        glfwExtensionSupported("GL_ARB_depth_texture") &&
-        glfwExtensionSupported("GL_ARB_shadow"))
-    {
-        m_haveShadows = true;
-    }
-
-    if (m_haveShadows)
-    {
-        clog << "Video: GL_ARB_shadow and GL_ARB_depth_texture supported." << endl;
-    }
-    else
-    {
-        clog << "Video: GL_ARB_shadow or GL_ARB_depth_texture unavailable." << endl;
-    }
-
-    if (!m_haveAnisotropy)
     {
         Config::instance->m_video.anisotropy = 0;
     }

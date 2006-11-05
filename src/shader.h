@@ -1,10 +1,9 @@
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
-#include <GL/glfw.h>
 #include "common.h"
 #include "vmath.h"
-#include "video_ext.h"
+#include "video.h"
 
 class Video;
 

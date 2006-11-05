@@ -80,14 +80,11 @@ Section "MainSection" SEC01
   SetOverwrite ifnewer
   File "..\..\bin\data.zip"
   File "..\..\bin\Squares3D.exe"
+  File "..\..\bin\OpenAL32.dll"
+  File "..\..\bin\wrap_oal.dll"
   File "..\readme.txt"
   File "..\licenses.txt"
-
-  SetOutPath $TEMP
-  File "OpenALwEAX.exe"
-  ExecWait '"$TEMP\OpenALwEAX.exe" /s'
-  Delete "$TEMP\OpenALwEAX.exe"
-  
+ 
 ; Shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
@@ -128,6 +125,8 @@ Section Uninstall
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\Squares3D.exe"
   Delete "$INSTDIR\data.zip"
+  Delete "$INSTDIR\OpenAL32.dll"
+  Delete "$INSTDIR\wrap_oal.dll"
 
   Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Website.lnk"

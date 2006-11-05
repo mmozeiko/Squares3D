@@ -6,7 +6,6 @@
 #include <CoreServices/CoreServices.h>
 #endif
 
-#include <GL/glfw.h>
 #include <fstream>
 
 #include "common.h"
@@ -30,7 +29,7 @@ void display_exception(const string& exception)
     short x;
     StandardAlert(kAlertStopAlert, err, NULL, NULL, &x);
 #else
-    std::cout << "Exception occured (for details see log.txt file):" << endl << endl;
+    std::cout << "Exception occured (for details see log.txt file):" << endl << endl
               << "  " << exception << endl;
 #endif
 }

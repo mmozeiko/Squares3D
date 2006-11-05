@@ -3,8 +3,6 @@
 #include "world.h"
 #include "player.h"
 #include "camera.h"
-#include "video.h"
-#include "video_ext.h"
 #include "audio.h"
 #include "player_local.h"
 #include "player_ai.h"

@@ -1,5 +1,3 @@
-#include <GL/glfw.h>
-
 #include "network.h"
 #include "random.h"
 #include "body.h"

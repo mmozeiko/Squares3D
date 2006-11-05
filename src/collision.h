@@ -4,6 +4,7 @@
 #include <Newton.h>
 #include "common.h"
 #include "vmath.h"
+#include "video.h"
 
 class Body;
 class XMLnode;

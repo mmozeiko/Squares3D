@@ -1,5 +1,3 @@
-#include <GL/glfw.h>
-
 #include "skybox.h"
 #include "texture.h"
 

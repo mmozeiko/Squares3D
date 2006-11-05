@@ -1,8 +1,6 @@
 #include "hdr.h"
 #include "shader.h"
 #include "framebuffer.h"
-#include "video.h"
-#include "video_ext.h"
 #include "config.h"
 
 HDR::HDR() :

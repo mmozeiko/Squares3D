@@ -1,5 +1,4 @@
 #include <GL/glfw.h>
-
 #include "font.h"
 #include "file.h"
 #include "vmath.h"

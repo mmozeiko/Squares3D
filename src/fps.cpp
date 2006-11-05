@@ -1,10 +1,10 @@
 #include <cmath>
 
+#include "video.h"
 #include "fps.h"
 #include "font.h"
 #include "timer.h"
 #include "config.h"
-#include "video.h"
 #include "language.h"
 
 FPS::FPS(const Timer& timer, const Font* font, const Vector& color)

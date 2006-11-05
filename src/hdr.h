@@ -3,8 +3,7 @@
 
 #include "common.h"
 #include "vmath.h"
-
-#include "video_ext.h"
+#include "video.h"
 
 class Shader;
 class FrameBuffer;

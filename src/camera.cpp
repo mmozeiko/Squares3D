@@ -1,5 +1,3 @@
-#include <GL/glfw.h>
-
 #include "camera.h"
 #include "input.h"
 #include "world.h"

@@ -57,7 +57,7 @@ elif p == "posix":
     env.Append( CPPDEFINES = ["_DEBUG"] )
 
   else:
-    env.Append( CCFLAGS   = Split("-Os -pipe") )
+    env.Append( CCFLAGS   = Split("-O2 -pipe") )
     env.Append( CPPDEFINES = ["NDEBUG"] )
 
 else:

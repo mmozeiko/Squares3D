@@ -1,6 +1,5 @@
 #include "shader.h"
 #include "video.h"
-#include "video_ext.h"
 #include "file.h"
 
 Shader::Shader(const string& name)
