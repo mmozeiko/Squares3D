@@ -2,6 +2,7 @@
 #include "input.h"
 #include "texture.h"
 #include "font.h"
+#include "mesh.h"
 
 static const float FADE_IN_SECS = 2.0f;
 static const float BALL_KICK_SECS = 3.0f;
@@ -28,7 +29,7 @@ static void OnForce(const NewtonBody* body)
     NewtonBodyAddForce(body, gravity.v);
 }
 
-Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
+Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false), m_mesh(NULL)
 {
     m_newtonWorld = NewtonCreate(NULL, NULL);
 
@@ -182,14 +183,12 @@ Intro::Intro() : m_timePassed(0), m_nextState(false), m_ballKicked(false)
     Input::instance->startKeyBuffer();
     Input::instance->startButtonBuffer();
 
-    m_quadricTexSphereHiQ = gluNewQuadric();
-    gluQuadricTexture(m_quadricTexSphereHiQ, GLU_TRUE);
-    gluQuadricNormals(m_quadricTexSphereHiQ, GLU_TRUE);
+    m_mesh = new SphereMesh(Vector(BALL_R, BALL_R, BALL_R), 64, 64);
 }
 
 Intro::~Intro()
 {
-    gluDeleteQuadric(m_quadricTexSphereHiQ);
+    delete m_mesh;
 
     Input::instance->endKeyBuffer();
     Input::instance->endButtonBuffer();
@@ -312,8 +311,7 @@ void Intro::render() const
     glPushMatrix();
     glMultMatrixf(m_ball_matrix.m);
     m_ballTex->bind();
-    glScalef(BALL_R, BALL_R, BALL_R);
-    gluSphere(m_quadricTexSphereHiQ, 1.0f, 64, 64);
+    m_mesh->render();
     glPopMatrix();
 
     // fade in

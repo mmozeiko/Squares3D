@@ -60,8 +60,8 @@ void Material::bind() const
 {
     m_texture->bind();
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, m_cSpecular.v);
-    glMaterialfv(GL_FRONT, GL_EMISSION, m_cEmission.v);
-    glMaterialf(GL_FRONT, GL_SHININESS, m_cShine);
+    //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, m_cAmbient.v);
+    //glMaterialfv(GL_FRONT, GL_SPECULAR, m_cSpecular.v);
+    //glMaterialfv(GL_FRONT, GL_EMISSION, m_cEmission.v);
+    //glMaterialf(GL_FRONT, GL_SHININESS, m_cShine);
 }

@@ -641,6 +641,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\mesh.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\mesh.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\shader.cpp"
 						>
 					</File>

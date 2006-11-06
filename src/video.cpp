@@ -18,7 +18,16 @@ static void GLFWCALL sizeCb(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0, static_cast<float>(width)/static_cast<float>(height), 0.1, 102.4);
+
+    const float fov = 45.0f;
+    const float aspect = static_cast<float>(width)/static_cast<float>(height);
+    const float top = std::tan(fov/2 * DEG_IN_RAD) * 0.1f;
+    const float bottom = -top;
+    const float left = aspect * bottom;
+    const float right = aspect * top;
+
+    glFrustum(left, right, bottom, top, 0.1, 102.4);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -242,58 +251,6 @@ void Video::init()
     }
 
     glEndList();
-
-    m_quadricTexSphere = gluNewQuadric();
-    gluQuadricTexture(m_quadricTexSphere, GLU_TRUE);
-    gluQuadricNormals(m_quadricTexSphere, GLU_TRUE);
-/*
-
-    m_cylinderList = Video::instance->newList();
-    glNewList(m_cylinderList, GL_COMPILE);
-
-        GLUquadric* m_quadricTexCylinder = gluNewQuadric();
-        gluQuadricTexture(m_quadricTexCylinder, GLU_TRUE);
-        gluQuadricNormals(m_quadricTexCylinder, GLU_TRUE);
-        GLUquadric* m_quadricTexDisc = gluNewQuadric();
-        gluQuadricTexture(m_quadricTexDisc, GLU_TRUE);
-        gluQuadricNormals(m_quadricTexDisc, GLU_TRUE);
-
-        gluCylinder(m_quadricTexCylinder, 1.0f, 1.0f, 1.0f, 16, 16);
-    
-        glPushMatrix();
-        glTranslatef(0.0f, 0.0f, 1.0f);
-        gluDisk(m_quadricTexDisc, 0.0, 1.0f, 16, 16);
-        glPopMatrix();
-
-        glPushMatrix();
-        glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
-        gluDisk(m_quadricTexDisc, 0.0, 1.0f, 16, 16);
-        glPopMatrix();
-
-        gluDeleteQuadric(m_quadricTexCylinder);
-        gluDeleteQuadric(m_quadricTexDisc);
-    glEndList();
-
-    m_coneList = Video::instance->newList();
-    glNewList(m_coneList, GL_COMPILE);
-        GLUquadric* m_quadricTexDisc2 = gluNewQuadric();
-        gluQuadricTexture(m_quadricTexDisc2, GLU_TRUE);
-        gluQuadricNormals(m_quadricTexDisc2, GLU_TRUE);
-        GLUquadric* m_quadricTexCone = gluNewQuadric();
-        gluQuadricTexture(m_quadricTexCone, GLU_TRUE);
-        gluQuadricNormals(m_quadricTexCone, GLU_TRUE);
-
-        gluCylinder(m_quadricTexCone, 1.0f, 0.0f, 1.0f, 16, 16);
-        glPushMatrix();
-        glRotatef(180.0, 1.0, 0.0, 0.0);
-        gluDisk(m_quadricTexDisc2, 0.0, 1.0f, 16, 16);
-        glPopMatrix();
-
-        gluDeleteQuadric(m_quadricTexCone);
-        gluDeleteQuadric(m_quadricTexDisc2);
-
-    glEndList();
-    */
 }
 
 void Video::renderCube() const
@@ -334,52 +291,6 @@ void Video::renderFace(const Face& face) const
         glEnable(GL_LIGHTING);
     }
     */
-}
-
-void Video::renderSphere() const
-{
-    static const int magic[] = {12, 16, 24};
-    const int w = magic[Config::instance->m_video.terrain_detail];
-    gluSphere(m_quadricTexSphere, 1.0f, w, w);
-}
-
-void Video::renderSphere(float radius) const
-{
-    static const int magic[] = {12, 16, 24};
-    const int w = magic[Config::instance->m_video.terrain_detail];
-    glPushMatrix();
-    gluSphere(m_quadricTexSphere, radius, 12, 12);
-    glPopMatrix();
-} 
-
-void Video::renderCylinder(float radius, float height) const
-{
-    glPushMatrix();
-    glScalef(radius, radius, height);
-        gluCylinder(m_quadricTexSphere, 1.0f, 1.0f, 1.0f, 8, 8);
-    
-        glPushMatrix();
-        glTranslatef(0.0f, 0.0f, 1.0f);
-        gluDisk(m_quadricTexSphere, 0.0, 1.0f, 8, 8);
-        glPopMatrix();
-
-        glPushMatrix();
-        glRotatef(-180.0f, 1.0f, 0.0f, 0.0f);
-        gluDisk(m_quadricTexSphere, 0.0, 1.0f, 8, 8);
-        glPopMatrix();
-    glPopMatrix();
-}
-
-void Video::renderCone(float radius, float height) const
-{
-    glPushMatrix();
-    glScalef(radius, radius, height);
-        gluCylinder(m_quadricTexSphere, 1.0f, 0.0f, 1.0f, 8, 8);
-        glPushMatrix();
-        glRotatef(180.0, 1.0, 0.0, 0.0);
-        gluDisk(m_quadricTexSphere, 0.0, 1.0f, 8, 8);
-        glPopMatrix();
-    glPopMatrix();
 }
 
 void Video::renderAxes(float size) const
@@ -485,17 +396,6 @@ void Video::loadExtensions()
     {
         throw Exception("GLeeInit() failed: " + string(GLeeGetErrorString()));
     }*/
-
-    clog << "Video: GL_EXT_rescale_normal ";
-    if (GLEE_EXT_rescale_normal)
-    {
-        clog << "supported." << endl;
-        glEnable(GL_RESCALE_NORMAL_EXT);
-    }
-    else
-    {
-        clog << "unavailable." << endl;
-    }
 
     bool activeTex = (GLEE_ARB_multitexture==GL_TRUE);
     clog << "Video: GL_ARB_multitexture " << (activeTex ? "supported." : "unavailable.") << endl;

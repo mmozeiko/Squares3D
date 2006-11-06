@@ -66,11 +66,11 @@
             <texture2D name="extra_stuff_white"/>
         </material>
 
-		<!--material id="extra_stuff_indago_logo">
-			<texture2D name="indago_logo"/>
-		</material-->
+        <!--material id="extra_stuff_indago_logo">
+            <texture2D name="indago_logo"/>
+        </material-->
 		
-		<material id="wood">
+        <material id="wood">
             <texture2D name="wood"/>
         </material>
 

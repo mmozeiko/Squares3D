@@ -8,11 +8,14 @@ static const float LOOK_SPEED = 0.2f;
 static const float MOVE_SPEED = 10.0f;
 
 Camera::Camera(const Vector& pos, float angleX, float angleY) :
+    m_targetRotation(),
+    m_targetDirection(),
     m_pos(-pos), 
     m_angleX(angleX * DEG_IN_RAD), 
     m_angleY(angleY * DEG_IN_RAD),
     m_strafeRotation(Matrix::rotateY(-M_PI/2)),
     m_scaleMatrix(Matrix::scale(Vector(1.0f, 1.0f, -1.0f))),
+    m_matrix(),
     m_lastDown(false),
     m_uuberCamera(false),
     m_lastUuberKey(false),

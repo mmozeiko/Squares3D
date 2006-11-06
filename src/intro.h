@@ -10,6 +10,7 @@
 
 class Game;
 class Texture;
+class Mesh;
 
 class Intro : public State
 {
@@ -36,12 +37,13 @@ private:
 
     NewtonBody*  m_ball_body;
     Matrix       m_ball_matrix;
-    GLUquadric*  m_quadricTexSphereHiQ;
 
     Texture*     m_logoTex;
     Texture*     m_ballTex;
     Texture*     m_bigLogoTex;
     unsigned int m_cubeListBase;
+
+    Mesh*        m_mesh;
 
     void renderCube(int idx) const;
 };

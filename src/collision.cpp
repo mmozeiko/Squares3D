@@ -9,6 +9,7 @@
 #include "config.h"
 #include "geometry.h"
 #include "input.h"
+#include "mesh.h"
 
 class CollisionConvex : public Collision
 {
@@ -35,9 +36,12 @@ class CollisionSphere : public CollisionConvex
 {
 public:
     CollisionSphere(const XMLnode& node, const Level* level);
+    ~CollisionSphere();
     void render() const;
 
     float getRadius() const { return m_radius.x; }
+
+    Mesh* m_mesh;
 
     Vector m_radius;      // (1.0f, 1.0f, 1.0f)
 };
@@ -46,7 +50,10 @@ class CollisionCylinder : public CollisionConvex
 {
 public:
     CollisionCylinder(const XMLnode& node, const Level* level);
+    ~CollisionCylinder();
     void render() const;
+
+    Mesh* m_mesh;
 
     float m_radius;      // 1.0f
     float m_height;      // 1.0f
@@ -56,7 +63,10 @@ class CollisionCone : public CollisionConvex
 {
 public:
     CollisionCone(const XMLnode& node, const Level* level);
+    ~CollisionCone();
     void render() const;
+
+    Mesh* m_mesh;
 
     float m_radius;      // 1.0f
     float m_height;      // 1.0f
@@ -107,6 +117,7 @@ private:
 };
 
 Collision::Collision(const XMLnode& node) :
+    m_newtonCollision(NULL),
     m_origin(),
     m_inertia(),
     m_mass(0.0f)
@@ -176,8 +187,10 @@ Collision* Collision::create(const XMLnode& node, Level* level)
 
 CollisionConvex::CollisionConvex(const XMLnode& node, const Level* level) :
     Collision(node),
+    m_material(NULL),
     m_hasOffset(false),
-    m_material(NULL)
+    m_matrix(),
+    m_propertyID(0)
 {
     Vector offset(0.0f, 0.0f, 0.0f);
     Vector rotation(0.0f, 0.0f, 0.0f);
@@ -297,7 +310,15 @@ CollisionSphere::CollisionSphere(const XMLnode& node, const Level* level) :
         ),
         m_propertyID,
         mass);
+
+    m_mesh = new SphereMesh(m_radius, 12, 12);
 }
+
+CollisionSphere::~CollisionSphere()
+{
+    delete m_mesh;
+}
+
 
 void CollisionSphere::render() const
 {
@@ -310,8 +331,7 @@ void CollisionSphere::render() const
         glMultMatrixf(m_matrix.m);
     }
 
-    glScalef(m_radius.x, m_radius.y, m_radius.z);
-    Video::instance->renderSphere();
+    m_mesh->render();
 
     glPopMatrix();
 }
@@ -349,7 +369,15 @@ CollisionCylinder::CollisionCylinder(const XMLnode& node, const Level* level) :
         ),
         m_propertyID,
         mass);
+
+    m_mesh = new CylinderMesh(m_radius, m_height, 4, 12);
 }
+
+CollisionCylinder::~CollisionCylinder()
+{
+    delete m_mesh;
+}
+
 
 void CollisionCylinder::render() const
 {
@@ -363,7 +391,7 @@ void CollisionCylinder::render() const
     }
     glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
     glTranslatef(0.0f, 0.0f, -m_height/2.0f);
-    Video::instance->renderCylinder(m_radius, m_height);
+    m_mesh->render();
 
     glPopMatrix();
 }
@@ -401,6 +429,13 @@ CollisionCone::CollisionCone(const XMLnode& node, const Level* level) :
         ),
         m_propertyID,
         mass);
+
+    m_mesh = new ConeMesh(m_radius, m_height, 4, 12);
+}
+
+CollisionCone::~CollisionCone()
+{
+    delete m_mesh;
 }
 
 void CollisionCone::render() const
@@ -415,7 +450,7 @@ void CollisionCone::render() const
     }
     glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
     glTranslatef(0.0f, 0.0f, -m_height/2.0f);
-    Video::instance->renderCone(m_radius, m_height);
+    m_mesh->render();
 
     glPopMatrix();
 }

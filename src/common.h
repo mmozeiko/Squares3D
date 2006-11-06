@@ -48,6 +48,7 @@ typedef set<uint>           UIntSet;
 typedef set<int>            IntSet;
 typedef vector<int>         IntVector;
 typedef list<int>           IntList;
+typedef vector<unsigned short> UShortVector;
 
 template <typename To, typename From>
 inline To cast(const From& from)

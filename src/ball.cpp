@@ -19,7 +19,10 @@ void TriggerFlags::loadDefaults()
     m_hasTriggered = false;
 }
 
-Ball::Ball(Body* body, const Collision* levelCollision) : m_body(body), m_levelCollision(levelCollision)
+Ball::Ball(Body* body, const Collision* levelCollision) :
+    m_referee(NULL),
+    m_body(body),
+    m_levelCollision(levelCollision)
 {
     m_body->setCollideable(this);
     setPosition0();

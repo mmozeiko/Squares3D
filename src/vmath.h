@@ -195,6 +195,11 @@ inline Vector operator * (float num, const Vector& vec)
     return Vector(num*vec.x, num*vec.y, num*vec.z);
 }
 
+inline Vector operator * (const Vector& first, const Vector& second)
+{
+    return Vector(first.x*second.x, first.y*second.y, first.z*second.z);
+}
+
 inline Vector operator / (const Vector& vec, float num)
 {
     if (num == 0.0f)

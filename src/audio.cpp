@@ -48,7 +48,7 @@ void audio_finish()
     alcCloseDevice(device);
 }
 
-Audio::Audio()
+Audio::Audio() : m_device(NULL), m_context(NULL) 
 {
 #ifndef __linux__
     audio_setup();

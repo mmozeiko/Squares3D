@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile", "vorbisfile.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "expat.vcproj", "{299C1AED-4171-493B-8AF2-AF7331E9B07B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glee", "glee.vcproj", "{19047FBC-1385-40BB-ADB6-867B7D62FE61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +57,10 @@ Global
 		{299C1AED-4171-493B-8AF2-AF7331E9B07B}.Debug|Win32.Build.0 = Debug|Win32
 		{299C1AED-4171-493B-8AF2-AF7331E9B07B}.Release|Win32.ActiveCfg = Release|Win32
 		{299C1AED-4171-493B-8AF2-AF7331E9B07B}.Release|Win32.Build.0 = Release|Win32
+		{19047FBC-1385-40BB-ADB6-867B7D62FE61}.Debug|Win32.ActiveCfg = Debug|Win32
+		{19047FBC-1385-40BB-ADB6-867B7D62FE61}.Debug|Win32.Build.0 = Debug|Win32
+		{19047FBC-1385-40BB-ADB6-867B7D62FE61}.Release|Win32.ActiveCfg = Release|Win32
+		{19047FBC-1385-40BB-ADB6-867B7D62FE61}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
