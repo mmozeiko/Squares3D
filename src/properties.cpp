@@ -122,8 +122,8 @@ void Properties::play(Body* body, const pair<byte, SoundBuffer*>* buffer, bool i
 
     Network::instance->addSoundPacket(buffer->first, position);
 
-    //iterI->sound->play(buffer->second);
-    //iterI->sound->update(position, body->getVelocity());
+    iterI->sound->play(buffer->second);
+    iterI->sound->update(position, body->getVelocity());
 
     m_active.push_back(*iterI);
     m_idle.erase(iterI);
