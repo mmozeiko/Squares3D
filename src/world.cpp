@@ -376,6 +376,11 @@ void World::updateStep(float delta)
     // updateStep is called more than one time in frame
     m_level->m_properties->update();
 
+    if (Network::instance->m_isSingle == false && Network::instance->m_isServer == false)
+    {
+        return;
+    }
+
     if (!m_freeze)
     {
         m_ball->triggerBegin();

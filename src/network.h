@@ -14,6 +14,7 @@
 #include "common.h"
 #include "timer.h"
 #include "system.h"
+#include "vmath.h"
 
 class Body;
 class Profile;
@@ -23,7 +24,18 @@ class Packet;
 class Menu;
 class RemotePlayer;
 
-typedef vector<Body*> ActiveBodyVector;
+struct ActiveBody
+{
+    Body*  body;
+
+    float  lastTime;
+    float  currentTime;
+
+    Matrix lastPosition;
+    Matrix currentPosition;
+};
+
+typedef vector<ActiveBody*> ActiveBodyVector;
 
 typedef map<ENetPeer*, int> PlayerMap;
 
@@ -96,6 +108,7 @@ private:
 
     int              m_ready_count;
     Timer            m_timer;
+    Timer            m_bodyTimer;
 
 
     void send(ENetPeer* peer, const Packet& packet, bool important);

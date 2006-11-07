@@ -113,7 +113,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_SINGLEPLAYER), false, "startSingle"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_MULTIPLAYER), false, "startMulti"));
-    submenu->m_entries.back()->disable();
+    //submenu->m_entries.back()->disable();
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_PLAYER_OPTIONS), false, "playerOptions"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_OPTIONS), false, "options"));
 	submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_RULES), false, "rules"));

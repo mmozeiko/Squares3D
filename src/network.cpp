@@ -137,6 +137,10 @@ void Network::close()
     m_needToBeginGame = false;
     m_needToQuitGame = false;
     m_playing = false;
+    for each_const(ActiveBodyVector, m_activeBodies, it)
+    {
+        delete *it;
+    }
     m_activeBodies.clear();
 
     for each_const(set<Profile*>, m_garbage, iter)
@@ -167,7 +171,7 @@ void Network::update()
 
     if (m_playing && !m_needToQuitGame)
     {
-        if (m_timer.read() > 0.1f) // 100ms (10fps)
+        if (m_timer.read() > 0.05f) // 100ms (10fps)
         {
             // update local player to remote players
             ControlPacket* packet = m_players[m_localIdx]->getControl();
@@ -181,7 +185,7 @@ void Network::update()
 
                 for (size_t i=0; i<m_activeBodies.size(); i++)
                 {
-                    UpdatePacket p(static_cast<byte>(i), m_activeBodies[i]);
+                    UpdatePacket p(static_cast<byte>(i), m_activeBodies[i]->body);
                     for each_(PlayerMap, m_clients, client)
                     {
                         send(client->first, p, false);
@@ -194,7 +198,7 @@ void Network::update()
 
                 for (size_t i=0; i<m_activeBodies.size(); i++)
                 {
-                    if (m_players[m_localIdx]->m_body == m_activeBodies[i])
+                    if (m_players[m_localIdx]->m_body == m_activeBodies[i]->body)
                     {
                         UpdatePacket p(static_cast<byte>(i), m_players[m_localIdx]->m_body);
                         send(m_server, p, false);
@@ -205,6 +209,27 @@ void Network::update()
             delete packet;
             
             m_timer.reset();
+        }
+
+        if (m_isServer == false)
+        {
+
+            float nowTime = m_bodyTimer.read();
+
+            for each_const(ActiveBodyVector, m_activeBodies, it)
+            {
+                const ActiveBody* ab = *it;
+                // lastTime .. currentTime .. nowTime
+                // lastPos  .. curPos      .. x??
+
+                if (ab->currentTime - ab->lastTime != 0.0f)
+                {
+                    Vector x = ab->currentPosition.row(3) + (ab->currentPosition.row(3) - ab->lastPosition.row(3)) / (ab->currentTime - ab->lastTime) * (nowTime - ab->currentTime);
+
+                    ab->body->setTransform(x, Vector::Zero);
+                }
+            }
+
         }
     }
 
@@ -314,7 +339,11 @@ void Network::update()
 
 void Network::add(Body* body)
 {
-    m_activeBodies.push_back(body);
+    ActiveBody* ac = new ActiveBody();
+    ac-> body = body;
+    ac->lastTime = ac->currentTime = m_bodyTimer.read();
+    ac->currentPosition = ac->lastPosition = body->m_matrix;
+    m_activeBodies.push_back(ac);
 }
 
 const vector<Profile*>& Network::getCurrentProfiles() const
@@ -589,7 +618,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         {
             // only for remote client
             UpdatePacket p(packet);
-            m_activeBodies[p.m_idx]->update(p);
+            m_activeBodies[p.m_idx]->body->update(p);
         }
         else if (type == Packet::ID_CONTROL)
         {
@@ -683,18 +712,23 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         {
             // recieve update from server, update body
             UpdatePacket p(packet);
-            
+
             // ignore update, if server tries to update this client player body
-            if (m_players[m_localIdx]->m_body != m_activeBodies[p.m_idx])
+            if (m_players[m_localIdx]->m_body != m_activeBodies[p.m_idx]->body)
             {
-                m_activeBodies[p.m_idx]->update(p);
+                ActiveBody* & ab = m_activeBodies[p.m_idx];
+                ab->lastPosition = ab->currentPosition;
+                ab->lastTime = ab->currentTime;
+                ab->currentTime = m_bodyTimer.read();
+                ab->currentPosition = p.m_position;
+
+                ab->body->setTransform(ab->currentPosition.row(3), Vector::Zero);
             }
         }
         else if (type == Packet::ID_CONTROL)
         {
-            // recieve control from remote player (on server, or other client), update player
-            ControlPacket p(packet);
-            m_players[p.m_idx]->control(p);
+            // not possible
+            clog << "WARNING: " << Exception("invalid client packet type = ID_CONTROL") << endl;
         }
         else
         {
