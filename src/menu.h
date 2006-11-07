@@ -18,6 +18,8 @@ class Sound;
 class SoundBuffer;
 class Game;
 
+extern string g_neededVersion;
+
 typedef map<string, Submenu*> Submenus;
 
 class Menu : public State

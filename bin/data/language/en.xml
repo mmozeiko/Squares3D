@@ -163,19 +163,31 @@ of the game field. Players may touch the ball once it has hit the ground.
     <item name="CONTROLS" value="Controls"/>
     <item name="CONTROLS_SCREEN">
 Ingame controls:
-        * Use your mouse to move around
-        * Press left mouse button to make combo
-        * Press space key to jump
-        * Press and hold right mouse button to rotate camera with mouse
-        * Press escape during game to bring up pause screen. Use 
-          enter key while in pause screen to quit to main menu or
-          escape key to resume the game
+  * Use your mouse to move around
+  * Press left mouse button to make combo
+  * Press space key to jump
+  * Press and hold right mouse button to rotate camera with mouse
+  * Press escape during game to bring up pause screen. Use 
+    enter key while in pause screen to quit to main menu or
+    escape key to resume the game
 
 Menu controls:
-        * Navigate through menu using up / down keys or mouse
-        * Press enter key or left mouse button to enter or accept
-          selected menu entry
-        * Use right / left keys or left / right mouse buttons to
-          cycle forward and backward through options entries items
+  * Navigate through menu using up / down keys or mouse
+  * Press enter key or left mouse button to enter or accept
+    selected menu entry
+  * Use right / left keys or left / right mouse buttons to
+    cycle forward and backward through options entries items
+</item>
+
+    <item name="PLAYER_KICKED"     value="You have been kicked from server!"/>
+    <item name="SERVER_FULL"       value="Server is full (max 4 players)!"/>
+    <item name="SERVER_DISCONNECT" value="Server has been disconnected!"/>
+    <item name="PLAYER_NAME_TAKEN" value="Player with your name&#10;already exists on server!"/>
+    <item name="INFORMATION"       value="Info"/>
+    <item name="SERVER_VERSION">
+Incompatible game versions!
+Server has version: $1    
+You have version: $2    
     </item>
+
 </xml>

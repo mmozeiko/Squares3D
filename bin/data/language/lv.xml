@@ -150,23 +150,36 @@ atsitusies pret vienu no tiem, pārējie spēlētāji bumbai nedrīkst pieskarti
 krustpunktā, laukuma centrā. Spēlētāji drīkst pieskarties bumbai tikai pēc pirmā atsitiena.
     Spēlē zaudē tas spēlētājs, kurš pirmais saņem 21 mīnusu punktu.
 	</item>
-	<item name="CONTROLS" value="Vadība"/>
-	<item name="CONTROLS_SCREEN">
+	
+    <item name="CONTROLS" value="Vadība"/>
+	
+    <item name="CONTROLS_SCREEN">
 Spēles vadība:
-        * Lietojiet peli, lai kustētos apkārt
-        * Spiediet peles kreiso taustiņu, lai taisītu kombo
-        * Spiediet space taustiņu, lai izdarītu palēcienu
-        * Nospiediet un turiet peles labo taustiņu, lai rotētu
-          kameru ar peli
-        * Nospiediet escape taustiņu, lai nopauzētu spēli. Kad
-          spēle ir nopauzēta, spiediet vēlreiz escape, lai turpinātu
-          vai enter taustiņu, lai iziet uz izvēlni.
+  * Lietojiet peli, lai kustētos apkārt
+  * Spiediet peles kreiso taustiņu, lai taisītu kombo
+  * Spiediet space taustiņu, lai izdarītu palēcienu
+  * Nospiediet un turiet peles labo taustiņu, lai rotētu
+    kameru ar peli
+  * Nospiediet escape taustiņu, lai nopauzētu spēli. Kad
+    spēle ir nopauzēta, spiediet vēlreiz escape, lai turpinātu
+    vai enter taustiņu, lai iziet uz izvēlni.
 
 Izvēlnes vadība:
-        * Pārvietojies pa izvēlni ar uz augšu / uz leju taustiņiem vai peli
-        * Nospiediet enter taustiņu, vai kreiso peles taustiņu, lai
-          ieietu izvēlētajā izvēlē, vai lai akceptētu izmaiņas
-        * Spiediet pa kreisi / pa labi taustiņus vai kreiso / labo peles
-          pogu, lai pārmainītu uzstādījumu izvēles turp un atpakaļ
-	</item>
+   * Pārvietojies pa izvēlni ar uz augšu / uz leju taustiņiem vai peli
+   * Nospiediet enter taustiņu, vai kreiso peles taustiņu, lai
+     ieietu izvēlētajā izvēlē, vai lai akceptētu izmaiņas
+   * Spiediet pa kreisi / pa labi taustiņus vai kreiso / labo peles
+     pogu, lai pārmainītu uzstādījumu izvēles turp un atpakaļ
+</item>
+
+    <item name="PLAYER_KICKED"     value="Jūs tikāt izmests no servera!"/>
+    <item name="SERVER_FULL"       value="Serveris ir pilns (maksimāli 4 spēlētāji)!"/>
+    <item name="SERVER_DISCONNECT" value="Konekcija ar serveri pārtrūka!"/>
+    <item name="PLAYER_NAME_TAKEN" value="Spēlētājs ar jūsu vārdu&#10;jau ir pievienojies serverī!"/>
+    <item name="INFORMATION"       value="Info"/>
+    <item name="SERVER_VERSION">
+Nesavietojamas spēles versijas!
+Servera spēles versija: $1
+Jūsu speles versija: $2
+    </item>
 </xml>

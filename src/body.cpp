@@ -81,6 +81,11 @@ void Body::setKickForce(const Vector& force)
     m_kickForce = force;
 }
 
+void Body::setMatrix(const Matrix& matrix)
+{
+    NewtonBodySetMatrix(m_newtonBody, matrix.m);
+}
+
 void Body::setTransform(const Vector& position, const Vector& rotation)
 {
     NewtonSetEulerAngle(rotation.v, m_matrix.m);
@@ -241,6 +246,11 @@ void Body::setCollideable(Collideable* collideable)
     m_collideable = collideable;
 }
 
+bool Body::isMovable()
+{
+    return (m_totalMass != 0);
+}
+
 void Body::onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed)
 {
     if (m_collideable != NULL)
@@ -269,7 +279,5 @@ const Vector& Body::getInertia() const
 
 void Body::update(const UpdatePacket& packet)
 {
-    NewtonBodySetVelocity(m_newtonBody, packet.m_speed.v);
-    NewtonBodySetOmega(m_newtonBody, packet.m_omega.v);
     NewtonBodySetMatrix(m_newtonBody, packet.m_position.m);
 }

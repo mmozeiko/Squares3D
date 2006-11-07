@@ -99,7 +99,6 @@ Drücke &lt;ENTER&gt; um es erneut zu versuchen.
     <item name="GRASS_DENSITY"            value="Grasdichte"/>
     <item name="TERRAIN_DETAIL"           value="Landschafts-Detailreichtum"/>
     <item name="ENVIRONMENT_DETAILS"      value="Umgebungs-Detailreichtum"/>
-    <item name="USE_HDR"                  value="HDR"/>
 
     <item name="LOW"                      value="Gering"/>
     <item name="MEDIUM"                   value="Mittel"/>
@@ -147,7 +146,9 @@ Einem Spieler werden in folgenden Situationen Strafpunkte angerechnet:
       viele Strafpunkte, wie er selbst zuletzt (nach etwaigen Berührungen durch andere Spieler) durch aufeinanderfolgen-
       de "Luftberührungen" angesammelt hat.
     * Der Spieler berührt den Ball ein zweites mal, obwohl dieser zwischenzeitlich auf seiner Spielfläche aufgekommen
-      ist. Der Spieler erhält dafür einen Strafpunkt.
+      ist. Der Spieler erhält dafür einen Strafpunkt. If player has touched the ball once in his field, he may touch it
+      again when it has left the bounds (field lines included) of his field or the ball has been touched by player.
+
     Solange der Ball den Boden außerhalb des Spielfeldes nicht berührt hat, dürfen die Spieler versuchen, diesen wieder
 zurück ins Spielfeld zu bugsieren, wobei er weiterhin in der Luft gehalten werden muß. Das Spiel geht solange weiter,
 bis der Ball schließlich außerhalb des Spielfeldes den Boden berührt.
@@ -164,4 +165,37 @@ der Ball in der Mitte des Spielfeldes eingeworfen. Die Spieler dürfen den Ball 
 wenigstens einmal den Boden berührt hat.
     Derjenige Spieler, welcher zuerst insgesamt 21 Strafpunkte erhalten hat, verliert das Spiel.
     </item>
+
+    <!-- ALSO ONE SENTENCE IN RULES_SCREEN (look up) -->
+    <item name="USE_HDR"  value="HDR"/>      <!-- HDR means Hight Dynamic Rendering -->
+    <item name="CONTROLS" value="Controls"/>
+    <item name="CONTROLS_SCREEN">
+Ingame controls:
+  * Use your mouse to move around
+  * Press left mouse button to make combo
+  * Press space key to jump
+  * Press and hold right mouse button to rotate camera with mouse
+  * Press escape during game to bring up pause screen. Use
+    enter key while in pause screen to quit to main menu or
+    escape key to resume the game
+
+Menu controls:
+  * Navigate through menu using up / down keys or mouse
+  * Press enter key or left mouse button to enter or accept
+    selected menu entry
+  * Use right / left keys or left / right mouse buttons to
+    cycle forward and backward through options entries items
+</item>
+
+    <item name="PLAYER_KICKED"     value="You have been kicked from server!"/>
+    <item name="SERVER_FULL"       value="Server is full (max 4 players)!"/>
+    <item name="SERVER_DISCONNECT" value="Server has been disconnected!"/>
+    <item name="PLAYER_NAME_TAKEN" value="Player with your name&#10;already exists on server!"/>
+    <item name="INFORMATION"       value="Info"/>
+    <item name="SERVER_VERSION">
+        Incompatible game versions!
+        Server has version: $1
+        You have version: $2
+    </item>
+
 </xml>

@@ -22,43 +22,46 @@ class Referee : public NoCopy
 {
 public:
 
-    BodyToPlayerMap          m_players;
-    Ball*                    m_ball;
-    const Body*              m_ground;
-    const Body*              m_field;
-    const Body*              m_lastFieldOwner;
-    const Body*              m_lastTouchedObject;
-    const Body*              m_lastTouchedPlayer;
-    const Player*            m_humanPlayer;
-    bool                     m_gameOver;
+    bool          m_gameOver;
+    Message*      m_over;
+    const Body*   m_ground;
+    const Body*   m_field;
+    const Player* m_humanPlayer;
+    bool          m_playersAreHalted;
 
-    Message*                 m_over;
+    Sound*        m_sound; //for gameover and other sounds exclusive to referee
+    SoundBuffer*  m_soundGameStart;
 
     Referee(Messages* messages, ScoreBoard* scoreBoard);
     ~Referee();
+
+    bool isGroundObject(const Body* body) const;
 
     void registerBall(Ball* ball);
     void registerPlayers(const vector<Player*> players);
     void process(const Body* body1, const Body* body2);
     void update();
-    void resetBall();
-    void registerBallEvent(const Body* ground, const Body* otherBody);
-    bool isGroundObject(const Body* body) const;
     void addDelayedProcess(const Body* body1, const Body* body2, float delay);
 
     string getLoserName() const;
 
-    bool         m_mustResetBall;
-    bool         m_playersAreHalted;
-    Sound*       m_sound; //for gameover and other sounds exclusive to referee
-    SoundBuffer* m_soundGameStart;
 
 private:
+    bool m_mustResetBall;
+
+    BodyToPlayerMap m_players;
+    Ball*           m_ball;
+    const Body*     m_lastFieldOwner;
+    const Body*     m_lastTouchedObject;
+    const Body*     m_lastTouchedPlayer;
+
     void initEvents();
+    void resetBall();
     void haltCpuPlayers(const Player* except = NULL);
     void releaseCpuPlayers();
     void releaseCpuPlayer(Player* player);
     Player* getDiagonalPlayer(const Player* player) const;
+    void registerBallEvent(const Body* ground, const Body* otherBody);
     void processBallPlayer(const Body* otherBody);
     void processBallGround(const Body* groundObject);
     void registerFaultTime();
@@ -66,7 +69,6 @@ private:
     void registerPlayerEvent(const Body* player, const Body* other);
     void processPlayerGround(const Body* player);
     void updateDelayedProcesses();
-
 
     Vector       m_ballResetPosition; 
     Vector       m_ballResetVelocity;

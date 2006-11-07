@@ -4,6 +4,7 @@
 #include "collision.h"
 #include "vmath.h"
 #include "body.h"
+#include "network.h"
 
 static const float fenceWidth = 0.3f;
 static const float fenceHeight = 1.0f;
@@ -36,6 +37,10 @@ void makeFence(Level* level, const NewtonWorld* newtonWorld)
                 const string bodyID = "fence" + cast<string>(fencesVectorIdx) + "_" + cast<string>(i) + "_" + cast<string>(j);
 
                 Body* body = new Body(bodyID, level, fencePartsCollisions);
+                if (Network::instance->m_isSingle == false)
+                {
+                    NewtonBodySetMassMatrix(body->m_newtonBody, 0, 0, 0, 0);
+                }
                 body->m_soundable = true;
 
                 Vector position = Vector(startPoint + delta * static_cast<float>(j));

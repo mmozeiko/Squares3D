@@ -213,12 +213,12 @@ void Game::run()
         }
         glfwSwapBuffers();
 
-        if (Input::instance->key('S') && m_screenLast==false)
+        if (Input::instance->key(GLFW_KEY_F12) && m_screenLast==false)
         {
             saveScreenshot(fps);
             m_screenLast = true;
         }
-        if (m_screenLast && Input::instance->key('S')==false)
+        if (m_screenLast && Input::instance->key(GLFW_KEY_F12)==false)
         {
             m_screenLast = false;
         }

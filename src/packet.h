@@ -18,28 +18,34 @@ public:
         ID_PLACE = 3,
         ID_KICK  = 4,
         ID_CHAT  = 5,
+        ID_KICKPLACES  = 6,
+        ID_KICKNAME    = 7,
 
-        ID_START = 6,
-        ID_READY = 7,
+        ID_START = 8,
+        ID_READY = 9,
 
         // game
-        ID_UPDATE  = 8,
-        ID_CONTROL = 9,
+        ID_UPDATE  = 10,
+        ID_CONTROL = 11,
+        ID_REFEREE_PROCESS = 12,
+        ID_SOUND = 13,
     };
 
     const bytes& data() const;
+    virtual ~Packet() {}
 
 protected:
     Packet(int type);
     Packet(const bytes& data);
-    virtual ~Packet() {}
 
     byte   readByte();
+    short  readShort();
     int    readInt();
     float  readFloat();
     string readString();
 
     void writeByte(byte x);
+    void writeShort(short x);
     void writeInt(int x);
     void writeFloat(float x);
     void writeString(const string& x);
@@ -70,19 +76,28 @@ public:
     UpdatePacket(byte idx, const Body* body);
 
     Matrix m_position;
-    Vector m_speed;
-    Vector m_omega;
     byte   m_idx;
+};
+
+class RefereeProcessPacket : public Packet
+{
+public:
+    RefereeProcessPacket(const bytes& data);
+    RefereeProcessPacket(int idx1, int idx2);
+
+    int m_idx1;
+    int m_idx2;
 };
 
 class JoinPacket : public Packet
 {
 public:
     JoinPacket(const bytes& data);
-    JoinPacket(int idx, Profile* profile);
+    JoinPacket(int idx, const string& version, Profile* profile);
     ~JoinPacket();
 
     int      m_idx;
+    string   m_version;
     Profile* m_profile;
 };
 
@@ -93,6 +108,20 @@ public:
     KickPacket(const string& reason);
 
     string m_reason;
+};
+
+class KickNamesPacket : public Packet
+{
+public:
+    KickNamesPacket(const bytes& data);
+    KickNamesPacket();
+};
+
+class KickPlacesPacket : public Packet
+{
+public:
+    KickPlacesPacket(const bytes& data);
+    KickPlacesPacket();
 };
 
 class SetPlacePacket : public Packet
@@ -115,9 +144,7 @@ class StartPacket : public Packet
 {
 public:
     StartPacket(const bytes& data);
-    StartPacket(int ai_count);
-
-    int m_ai_count;
+    StartPacket();
 };
 
 class ReadyPacket : public Packet
@@ -125,6 +152,16 @@ class ReadyPacket : public Packet
 public:
     ReadyPacket(const bytes& data);
     ReadyPacket();
+};
+
+class SoundPacket : public Packet
+{
+public:
+    SoundPacket(const bytes& data);
+    SoundPacket(byte id, const Vector& position);
+
+    byte   m_id;
+    Vector m_position;
 };
 
 #endif

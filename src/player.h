@@ -30,8 +30,8 @@ public:
     void setPositionRotation(const Vector& position, const Vector& rotation);
 
     virtual void control() = 0;
-    virtual void control(const ControlPacket& packet) {}
-    ControlPacket* getControl() const;
+    virtual void control(const ControlPacket& packet) = 0;
+    virtual ControlPacket* getControl(int idx);
 
     Vector getPosition() const;
     Vector getFieldCenter() const;
@@ -73,6 +73,9 @@ protected:
 
     const Collision* m_levelCollision;
     Body*            m_ballBody;
+
+private:
+    ControlPacket* m_packet;
 };
 
 #endif

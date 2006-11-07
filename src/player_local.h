@@ -11,10 +11,13 @@ public:
     ~LocalPlayer();
 
     void control();
+    void control(const ControlPacket& packet);
+    ControlPacket* getControl(int idx);
 
 private:
-    Vector  m_lastMove[2];
-    float   m_mouseSens;
+    Vector         m_lastMove[2];
+    float          m_mouseSens;
+    ControlPacket* m_cpacket;
 
 };
 

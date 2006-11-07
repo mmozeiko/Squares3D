@@ -3,14 +3,20 @@
 #include "camera.h"
 #include "world.h"
 #include "config.h"
+#include "network.h"
+#include "packet.h"
 
 LocalPlayer::LocalPlayer(const Profile* profile, Level* level) :
-    Player(profile, level) //Config::instance->m_misc.mouse_sensitivity)
+    Player(profile, level), m_cpacket(NULL) //Config::instance->m_misc.mouse_sensitivity)
 {
 }
 
 LocalPlayer::~LocalPlayer()
 {
+    if (m_cpacket != NULL)
+    {
+        delete m_cpacket;
+    }
 }
 
 void LocalPlayer::control()
@@ -37,9 +43,6 @@ void LocalPlayer::control()
 
     Vector finalDirection = Matrix::rotateY(World::instance->m_camera->angleY()) * direction;
 
-    setDirection(finalDirection);
-    setJump(Input::instance->key(GLFW_KEY_SPACE));
-
     Body* ball = World::instance->m_level->getBody("football");
 
     Vector ballPosition = ball->getPosition();
@@ -50,8 +53,34 @@ void LocalPlayer::control()
     Vector rotation;
     rotation.y = ( rot % dir );
 
-    setRotation(rotation/5.0f);
+    bool jump = Input::instance->key(GLFW_KEY_SPACE);
+    bool kick = (mouse.b & 1) == 1;
+    rotation /= 5.0f;
 
-    // .. kick
-    setKick(mouse.b & 1);
+    if (Network::instance->m_isSingle || Network::instance->m_isServer)
+    {
+        setDirection(finalDirection);
+        setJump(jump);
+        setRotation(rotation);
+        setKick(kick);
+    }
+    else
+    {
+        if (m_cpacket != NULL)
+        {
+            delete m_cpacket;
+        }
+        
+        m_cpacket = new ControlPacket(Network::instance->getLocalIdx(), finalDirection, rotation, jump, kick);
+    }
+}
+
+void LocalPlayer::control(const ControlPacket& packet)
+{
+    clog << "LocalPlayer::control - invalid call" << endl;
+}
+
+ControlPacket* LocalPlayer::getControl(int idx)
+{
+    return m_cpacket;
 }

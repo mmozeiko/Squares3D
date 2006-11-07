@@ -16,6 +16,7 @@ public:
     void release();
 
     void control();
+    void control(const ControlPacket& packet);
 };
 
 #endif

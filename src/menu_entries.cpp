@@ -12,6 +12,7 @@
 #include "profile.h"
 #include "game.h"
 #include "config.h"
+#include "version.h"
 
 /*** COLORVALUE ***/
 
@@ -304,6 +305,12 @@ void SubmenuEntry::click(int button)
     }
 }
 
+string FormatterEntry::getString() const
+{
+    glColor3fv(Vector::One.v);
+    return Formatter(m_string)(g_neededVersion)(g_version);
+}
+
 string LabelEntry::getString() const
 {
     glColor3fv(Vector::One.v);
@@ -392,7 +399,7 @@ void JoinHostEntry::click(int button)
 
 void CloseHostEntry::click(int button) 
 {
-    if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
+    if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1 || button == GLFW_KEY_ESC)
     {
         Network::instance->close();
     }

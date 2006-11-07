@@ -12,6 +12,7 @@
 #include "sound_buffer.h"
 #include "random.h"
 #include "audio.h"
+#include "network.h"
 
 struct MaterialContact : NoCopy
 {
@@ -30,7 +31,7 @@ struct MaterialContact : NoCopy
     float  maxSpeed;
 };
 
-Properties::Properties() : m_uniqueID(2)
+Properties::Properties() : m_uniqueID(2), m_soundBufID(0)
 {
     NewtonWorld* world = World::instance->m_newtonWorld;
     int defaultID = NewtonMaterialGetDefaultGroupID(world);
@@ -68,7 +69,7 @@ Properties::~Properties()
     {
         for each_(SoundBufferVector, iter->second, iter2)
         {
-            Audio::instance->unloadSound(*iter2);
+            Audio::instance->unloadSound(iter2->second);
         }
     }
 }
@@ -90,7 +91,7 @@ void Properties::update()
     }
 }
 
-void Properties::play(Body* body, const SoundBuffer* buffer, bool important, const Vector& position)
+void Properties::play(Body* body, const pair<byte, SoundBuffer*>* buffer, bool important, const Vector& position)
 {
     if (buffer == NULL)
     {
@@ -119,8 +120,48 @@ void Properties::play(Body* body, const SoundBuffer* buffer, bool important, con
         return;
     }
 
+    Network::instance->addSoundPacket(buffer->first, position);
+
+    //iterI->sound->play(buffer->second);
+    //iterI->sound->update(position, body->getVelocity());
+
+    m_active.push_back(*iterI);
+    m_idle.erase(iterI);
+}
+
+void Properties::play(byte id, const Vector& position)
+{
+    SoundBuffer* buffer = NULL;
+    for each_const(SoundBufMap, m_soundBufs, iter)
+    {
+        for each_const(SoundBufferVector, iter->second, iter2)
+        {
+            if (iter2->first == id)
+            {
+                buffer = iter2->second;
+                break;
+            }
+        }
+        if (buffer != NULL)
+        {
+            break;
+        }
+    }
+
+    if (buffer == NULL)
+    {
+        return;
+    }
+
+    // check for free space
+    if (m_idle.size() == 0)
+    {
+        return;
+    }
+    SoundableList::iterator iterI = m_idle.begin();
+
     iterI->sound->play(buffer);
-    iterI->sound->update(position, body->getVelocity());
+    iterI->sound->update(position, Vector::Zero);
 
     m_active.push_back(*iterI);
     m_idle.erase(iterI);
@@ -223,7 +264,7 @@ void Properties::load(const XMLnode& node)
     {
         if (n->name == "sound")
         {
-            vec.push_back(Audio::instance->loadSound(n->getAttribute("name")));
+            vec.push_back(make_pair(m_soundBufID++, Audio::instance->loadSound(n->getAttribute("name"))));
         }
         else
         {
@@ -274,7 +315,7 @@ const Property* Properties::get(int id0, int id1) const
     }
 }
     
-const SoundBuffer* Properties::getSB(int id0, int id1) const
+const pair<byte, SoundBuffer*>* Properties::getSB(int id0, int id1) const
 {
     SoundBufMap::const_iterator iter = m_soundBufs.find(makepID(id0, id1));
     
@@ -284,7 +325,7 @@ const SoundBuffer* Properties::getSB(int id0, int id1) const
         if (vec.size() > 0)
         {
             int r = Randoms::getIntN(static_cast<int>(vec.size()));
-            return vec[r];
+            return &vec[r];
         }
     }
 

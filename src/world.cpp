@@ -142,6 +142,10 @@ State::Type World::progress()
             
             Network::instance->m_needToBeginGame = false;
         }
+        if (Network::instance->m_disconnected)
+        {
+            return State::Menu;
+        }
     }
 
     return State::Current;
@@ -176,7 +180,6 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     setupShadowStuff();
     setLight(Vector(-15.0f, 35.0f, 38.0f));
 
-    m_camera = new Camera(Vector(0.0f, 1.0f, 12.0f), 20.0f, 0.0f);
 }
 
 void World::init()
@@ -266,6 +269,9 @@ void World::init()
     if (!Network::instance->m_isSingle)
     {
         Network* net = Network::instance;
+
+        net->setReferee(m_referee);
+
         net->add(m_ball->m_body);
 
         for each_const(vector<Player*>, players, iter)
@@ -273,10 +279,13 @@ void World::init()
             net->add((*iter)->m_body);
         }
 
-        net->add(m_level->getBody("seat"));
-        net->add(m_level->getBody("cucumberFan1"));
-        net->add(m_level->getBody("cucumberFan2"));
-        net->add(m_level->getBody("cucumberFan3"));
+        net->add(m_level->getBody("field"));
+        net->add(m_level->getBody("level"));
+
+        NewtonBodySetMassMatrix(m_level->getBody("seat")->m_newtonBody, 0, 0, 0, 0);
+        NewtonBodySetMassMatrix(m_level->getBody("cucumberFan1")->m_newtonBody, 0, 0, 0, 0);
+        NewtonBodySetMassMatrix(m_level->getBody("cucumberFan2")->m_newtonBody, 0, 0, 0, 0);
+        NewtonBodySetMassMatrix(m_level->getBody("cucumberFan3")->m_newtonBody, 0, 0, 0, 0);
     }
 
     m_scoreBoard->reset();
@@ -306,6 +315,9 @@ void World::init()
     }
 
     m_referee->m_sound->play(m_referee->m_soundGameStart);
+
+    float angleAdjust = Network::instance->getLocalIdx() * 90.0f;
+    m_camera = new Camera(Vector(0.0f, 1.0f, 12.0f), 20.0f, 0.0f + angleAdjust);
 }
 
 World::~World()
@@ -375,6 +387,7 @@ void World::updateStep(float delta)
 {
     // updateStep is called more than one time in frame
     m_level->m_properties->update();
+    //
 
     if (Network::instance->m_isSingle == false && Network::instance->m_isServer == false)
     {
@@ -408,9 +421,7 @@ void World::updateStep(float delta)
             }
             else
             {
-                m_referee->registerBallEvent(m_ball->m_body, m_level->getBody("level")); 
-                m_referee->resetBall();
-                m_referee->m_mustResetBall = false;
+                m_referee->process(m_ball->m_body, m_level->getBody("level")); 
             }
         }
 

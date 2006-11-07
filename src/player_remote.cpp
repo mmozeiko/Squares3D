@@ -25,10 +25,10 @@ void RemotePlayer::control()
     setDirection(m_netDirection);
     setRotation(m_netRotation);
     setJump(m_netJump);
-    setJump(m_netKick);
+    setKick(m_netKick);
     
-    m_netDirection /= 2.0f;
-    m_netRotation /= 2.0f;
+    //m_netDirection /= 2.0f;
+    //m_netRotation /= 2.0f;
 }
 
 void RemotePlayer::control(const ControlPacket& packet)

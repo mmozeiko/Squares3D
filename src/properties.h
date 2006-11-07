@@ -24,9 +24,9 @@ struct Soundable
     bool   important;
 };
 
-typedef list<Soundable>             SoundableList;
-typedef vector<SoundBuffer*>        SoundBufferVector;
-typedef map<pID, SoundBufferVector> SoundBufMap;
+typedef list<Soundable>                   SoundableList;
+typedef vector<pair<byte, SoundBuffer*> > SoundBufferVector;
+typedef map<pID, SoundBufferVector>       SoundBufMap;
 
 class Properties : public NoCopy
 {
@@ -40,7 +40,7 @@ public:
     void load(const XMLnode& node);
     void loadDefault(const XMLnode& node);
     const Property* get(int id0, int id1) const;
-    const SoundBuffer* getSB(int id0, int id1) const;
+    const pair<byte, SoundBuffer*>* getSB(int id0, int id1) const;
 
     int  getUndefined() const;              // 0
     int  getInvisible() const;              // 1
@@ -49,13 +49,16 @@ public:
     int  getPropertyID(const string& name) const; // >=3
     bool hasPropertyID(int id) const; // id>=3
 
-    void play(Body* body, const SoundBuffer* buffer, bool important, const Vector& position);
+    void play(Body* body, const pair<byte, SoundBuffer*>* buffer, bool important, const Vector& position);
     bool isPlaying(Body* body) const;
+
+    void play(byte id, const Vector& position);
 
 private:
     int                 m_uniqueID;
     PropertiesMap       m_properties;
     SoundBufMap         m_soundBufs;
+    byte                m_soundBufID;
     IntMap              m_propertiesID;
     MaterialContact*    m_materialContact;
 

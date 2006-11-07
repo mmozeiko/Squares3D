@@ -22,22 +22,24 @@ class Level;
 class Player;
 class Packet;
 class Menu;
+class Referee;
 class RemotePlayer;
+class RefereeProcessPacket;
+class SoundPacket;
 
 struct ActiveBody
 {
     Body*  body;
 
-    float  lastTime;
-    float  currentTime;
-
     Matrix lastPosition;
-    Matrix currentPosition;
 };
 
 typedef vector<ActiveBody*> ActiveBodyVector;
 
 typedef map<ENetPeer*, int> PlayerMap;
+
+typedef vector<const RefereeProcessPacket*> PacketBuffer;
+typedef vector<const SoundPacket*>          SoundPacketBuffer;
 
 class Network : public System<Network>, public NoCopy
 {
@@ -68,11 +70,16 @@ public:
     bool isLocal(int idx) const;
 
     void setMenuEntries(Menu* menu, const string& lobbySubmenu, const string& joinSubmenu);
+    
+    void setReferee(Referee* referee);
 
     void updateAiProfile(int idx);
     void kickClient(int idx);
     void startGame(); // server->client, when starting world
     void iAmReady();  // client->server, when world is loaded
+
+    void addPacketToBuffer(const Body* b1, const Body* b2);
+    void addSoundPacket(byte id, const Vector& position);
 
     bool m_needDisconnect;
     bool m_disconnected;
@@ -91,9 +98,9 @@ private:
     ENetPeer* m_server;
 
     ActiveBodyVector m_activeBodies;
-    PlayerMap     m_clients;
+    PlayerMap        m_clients;
 
-    vector<Profile*> m_allProfiles[3];
+    vector<Profile*> m_allProfiles[4];
     vector<Profile*> m_profiles;
     int              m_localIdx;
     bool             m_aiIdx[4];
@@ -110,7 +117,13 @@ private:
     Timer            m_timer;
     Timer            m_bodyTimer;
 
+    PacketBuffer      m_packetsBuffer;
+    SoundPacketBuffer m_soundBuffer;
 
+    Referee*         m_referee;
+    bool             m_clientReady[4];
+
+    void sendUpdatePacket();
     void send(ENetPeer* peer, const Packet& packet, bool important);
     void processPacket(ENetPeer* peer, const bytes& packet);
 };

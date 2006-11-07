@@ -1,6 +1,7 @@
 #include "packet.h"
 #include "profile.h"
 #include "body.h"
+#include "version.h"
 
 Packet::Packet(int type) :
     m_data(),
@@ -25,6 +26,18 @@ byte Packet::readByte()
         return 0;
     }
     return m_data[m_pos++];
+}
+
+short Packet::readShort()
+{
+    if (m_pos+2 > m_size)
+    {
+        clog << "WARNING: " << Exception("m_pos+2 > m_size") << endl;
+        return 0;
+    }
+    short x = m_data[m_pos++] << 0;
+    x |= (m_data[m_pos++] << 8);
+    return x;
 }
 
 int Packet::readInt()
@@ -70,6 +83,13 @@ void Packet::writeByte(byte x)
 {
     m_data.push_back(x);
     m_size++;
+}
+
+void Packet::writeShort(short x)
+{
+    m_data.push_back((x >> 0) & 0xFF);
+    m_data.push_back((x >> 8) & 0xFF);
+    m_size += 2;
 }
 
 void Packet::writeInt(int x)
@@ -141,18 +161,38 @@ ControlPacket::ControlPacket(byte idx, const Vector& direction, const Vector& ro
 JoinPacket::JoinPacket(const bytes& data) : Packet(data), m_profile(NULL)
 {
     m_idx = readInt();
+    m_version = readString();
     m_profile = new Profile();
     m_profile->m_name = readString();
     m_profile->m_collisionID = readString();
-    m_profile->m_color = Vector(readFloat(), readFloat(), readFloat());
+    float x = readFloat();
+    float y = readFloat();
+    float z = readFloat();
+    m_profile->m_color = Vector(x, y, z);
     m_profile->m_accuracy = readFloat();
     m_profile->m_jump = readFloat();
     m_profile->m_speed = readFloat();
 }
 
-JoinPacket::JoinPacket(int idx, Profile* profile) : Packet(ID_JOIN), m_profile(NULL)
+RefereeProcessPacket::RefereeProcessPacket(int idx1, int idx2) :
+    Packet(ID_REFEREE_PROCESS),
+    m_idx1(idx1),
+    m_idx2(idx2)
+{
+    writeByte(static_cast<byte>(idx1));
+    writeByte(static_cast<byte>(idx2));
+}
+
+RefereeProcessPacket::RefereeProcessPacket(const bytes& data) : Packet(data)
+{
+    m_idx1 = static_cast<int>(readByte());
+    m_idx2 = static_cast<int>(readByte());
+}
+
+JoinPacket::JoinPacket(int idx, const string& version, Profile* profile) : Packet(ID_JOIN), m_profile(NULL)
 {
     writeInt(idx);
+    writeString(g_version);
     writeString(profile->m_name);
     writeString(profile->m_collisionID);
     writeFloat(profile->m_color.x);
@@ -181,6 +221,22 @@ KickPacket::KickPacket(const string& reason) : Packet(ID_KICK)
     writeString(reason);
 }
 
+KickNamesPacket::KickNamesPacket(const bytes& data) : Packet(data)
+{
+}
+
+KickPlacesPacket::KickPlacesPacket() : Packet(ID_KICKPLACES)
+{
+}
+
+KickPlacesPacket::KickPlacesPacket(const bytes& data) : Packet(data)
+{
+}
+
+KickNamesPacket::KickNamesPacket() : Packet(ID_KICKNAME)
+{
+}
+
 SetPlacePacket::SetPlacePacket(const bytes& data) : Packet(data)
 {
     m_idx = readInt();
@@ -201,12 +257,10 @@ QuitPacket::QuitPacket() : Packet(ID_QUIT)
 
 StartPacket::StartPacket(const bytes& data) : Packet(data)
 {
-    m_ai_count = readByte();
 }
 
-StartPacket::StartPacket(int ai_count) : Packet(ID_START)
+StartPacket::StartPacket() : Packet(ID_START)
 {
-    writeByte(ai_count);
 }
 
 ReadyPacket::ReadyPacket(const bytes& data) : Packet(data)
@@ -220,33 +274,46 @@ ReadyPacket::ReadyPacket() : Packet(ID_READY)
 UpdatePacket::UpdatePacket(const bytes& data) : Packet(data)
 {
     m_idx = readByte();
-    for (int i=0; i<16; i++)
-    {
-        m_position[i] = readFloat();
-    }
-    m_speed.x = readFloat();
-    m_speed.y = readFloat();
-    m_speed.z = readFloat();
-    m_omega.x = readFloat();
-    m_omega.y = readFloat();
-    m_omega.z = readFloat();
+
+    float euler[3];
+    m_position = Matrix::identity();
+    euler[0] = readShort()/512.0f;
+    euler[1] = readShort()/512.0f;
+    euler[2] = readShort()/512.0f;
+    NewtonSetEulerAngle(euler, m_position.m);
+    m_position[12] = readShort()/512.0f;
+    m_position[13] = readShort()/512.0f;
+    m_position[14] = readShort()/512.0f;
 }
 
 UpdatePacket::UpdatePacket(byte idx, const Body* body) : Packet(ID_UPDATE)
 {
     writeByte(idx);
     m_position = body->m_matrix;
-    m_speed = body->getVelocity();
-    NewtonBodyGetOmega(body->m_newtonBody, m_omega.v);
 
-    for (int i=0; i<16; i++)
-    {
-        writeFloat(m_position[i]);
-    }
-    writeFloat(m_speed.x);
-    writeFloat(m_speed.y);
-    writeFloat(m_speed.z);
-    writeFloat(m_omega.x);
-    writeFloat(m_omega.y);
-    writeFloat(m_omega.z);
+    float euler[3];
+    NewtonGetEulerAngle(m_position.m, euler);
+
+    writeShort(static_cast<short>(std::floor(euler[0]*512.0f)));
+    writeShort(static_cast<short>(std::floor(euler[1]*512.0f)));
+    writeShort(static_cast<short>(std::floor(euler[2]*512.0f)));
+    writeShort(static_cast<short>(std::floor(m_position[12]*512.0f)));
+    writeShort(static_cast<short>(std::floor(m_position[13]*512.0f)));
+    writeShort(static_cast<short>(std::floor(m_position[14]*512.0f)));
+}
+
+SoundPacket::SoundPacket(const bytes& data) : Packet(data)
+{
+    m_id = readByte();
+    m_position.x = readShort()*512.0f;
+    m_position.y = readShort()*512.0f;
+    m_position.z = readShort()*512.0f;
+}
+
+SoundPacket::SoundPacket(byte id, const Vector& position) : Packet(ID_SOUND)
+{
+    writeByte(id);
+    writeShort(static_cast<short>(std::floor(position.x*512.0f)));
+    writeShort(static_cast<short>(std::floor(position.y*512.0f)));
+    writeShort(static_cast<short>(std::floor(position.z*512.0f)));
 }

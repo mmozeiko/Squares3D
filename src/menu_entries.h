@@ -82,7 +82,7 @@ public:
     SubmenuEntry(Menu* menu, const string& stringIn, bool back, const string&  submenuToSwitchTo, const Font* font = NULL) :
       Entry(menu, stringIn, Font::Align_Center, font), m_back(back), m_submenuToSwitchTo(submenuToSwitchTo) {}
 
-    void click(int button); 
+    virtual void click(int button); 
 
 protected:
     bool   m_back;
@@ -195,6 +195,16 @@ class LabelEntry : public Entry
 {
 public: 
     LabelEntry(Menu* menu, const string& label, Font::AlignType align = Font::Align_Center, const Font* font = NULL) :
+      Entry(menu, label, align, font) { m_enabled = false; }
+
+    string getString() const;
+    void click(int button) {}
+};
+
+class FormatterEntry : public Entry
+{
+public: 
+    FormatterEntry(Menu* menu, const string& label, Font::AlignType align = Font::Align_Center, const Font* font = NULL) :
       Entry(menu, label, align, font) { m_enabled = false; }
 
     string getString() const;

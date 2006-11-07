@@ -35,6 +35,7 @@ public:
     void render() const;
     
     void setTransform(const Vector& position, const Vector& rotation);
+    void setMatrix(const Matrix& matrix);
     void setKickForce(const Vector& force);
 
     Vector getPosition() const;
@@ -50,6 +51,8 @@ public:
 
     void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
     void onCollideHull(const Body* other);
+
+    bool isMovable();
 
     string              m_id;
     NewtonBody*         m_newtonBody;        

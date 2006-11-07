@@ -16,6 +16,7 @@
 #include "audio.h"
 #include "sound.h"
 #include "world.h"
+#include "network.h"
 
 static const float BALL_RESET_TIME = 3.0f;
 //TODO: make universaly proportional to field size?
@@ -266,7 +267,6 @@ void Referee::resetBall()
         haltCpuPlayers();
     }
 
-    //m_ball->set
     m_ball->m_body->setTransform(resetPosition, Vector::Zero);
     NewtonBodySetOmega(m_ball->m_body->m_newtonBody, Vector::Zero.v);
     NewtonBodySetVelocity(m_ball->m_body->m_newtonBody, velocity.v);
@@ -321,12 +321,15 @@ void Referee::processCriticalEvent()
         }
             
             
-        m_over = new Message(overText, 
-                             Vector(center.x, center.y - (72 + 32), center.z), 
-                             brighter(Grey, 3.0f), 
-                             Font::Align_Center,
-                             32);
-        m_messages->add2D(m_over);
+        if (Network::instance->m_isSingle)
+        {
+            m_over = new Message(overText, 
+                                 Vector(center.x, center.y - (72 + 32), center.z), 
+                                 brighter(Grey, 3.0f), 
+                                 Font::Align_Center,
+                                 32);
+            m_messages->add2D(m_over);
+        }
 
         m_gameOver = true;
         m_scoreBoard->resetCombo();
@@ -368,14 +371,22 @@ void Referee::registerPlayers(const vector<Player*> players)
 
 void Referee::process(const Body* body1, const Body* body2)
 {
-        if (body1 == m_ball->m_body)
+    if (body1 == m_ball->m_body)
+    {
+        if (Network::instance->m_isServer)
         {
-            registerBallEvent(body1, body2);
+            Network::instance->addPacketToBuffer(body1, body2);
         }
-        if (foundIn(m_players, body1))
+        registerBallEvent(body1, body2);
+    }
+    if (foundIn(m_players, body1))
+    {
+        if (Network::instance->m_isServer)
         {
-            registerPlayerEvent(body1, body2);
+            Network::instance->addPacketToBuffer(body1, body2);
         }
+        registerPlayerEvent(body1, body2);
+    }
 }
 
 void Referee::addDelayedProcess(const Body* body1, const Body* body2, float delay)
@@ -440,6 +451,11 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 
 void Referee::processPlayerGround(const Body* player)
 {
+    //if (Network::instance->m_isServer)
+    //{
+    //    Network::instance->addPacketToBuffer(player, m_ground);
+    //}
+
     Vector playerPos = player->getPosition();
     string currentPlayerName = player->m_id;
     Player* currentPlayer = m_players.find(player)->second;
@@ -455,6 +471,12 @@ void Referee::processPlayerGround(const Body* player)
 
 void Referee::processBallGround(const Body* groundObject)
 {
+    //if (Network::instance->m_isServer)
+    //{
+    //    Network::instance->addPacketToBuffer(m_ball->m_body, groundObject);
+    //}
+
+
     if (m_playersAreHalted && (groundObject == m_field))
     {
         m_haltWait--;
@@ -569,6 +591,12 @@ void Referee::processBallGround(const Body* groundObject)
 
 void Referee::processBallPlayer(const Body* player)
 {
+    //if (Network::instance->m_isServer)
+    //{
+    //    Network::instance->addPacketToBuffer(m_ball->m_body, player);
+    //}
+
+
     //ball + player
 
     string playerName = player->m_id;

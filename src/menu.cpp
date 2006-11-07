@@ -28,6 +28,8 @@
 #include "music.h"
 #include "sound_buffer.h"
 
+string g_neededVersion;
+
 class BoolValue : public Value
 {
 public:
@@ -278,7 +280,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new JoinHostEntry(this, language->get(TEXT_START_JOIN), "startMultiJoinIP", submenuJ));
     
     submenu->addEntry(new SpacerEntry(this));
-    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
+    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "main"));
 
     // TODO: hack
     submenu->m_height += 10;
@@ -523,6 +525,68 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["otherOptions"] = submenu;
 
+    
+    // Info: Kicked Submenu
+    submenu = new Submenu(this);
+    submenu->setTitle(language->get(TEXT_INFORMATION), titlePos);
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_PLAYER_KICKED)));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "startMulti"));
+    // TODO: hack
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["infoKick"] = submenu;
+    
+    // Info: Server full Submenu
+    submenu = new Submenu(this);
+    submenu->setTitle(language->get(TEXT_INFORMATION), titlePos);
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_SERVER_FULL)));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "startMulti"));
+    // TODO: hack
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["infoServerFull"] = submenu;
+
+    // Info: Server disconnect Submenu
+    submenu = new Submenu(this);
+    submenu->setTitle(language->get(TEXT_INFORMATION), titlePos);
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_SERVER_DISCONNECT)));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "main"));
+    // TODO: hack
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["infoDisconnect"] = submenu;
+
+    // Info: Name taken Submenu
+    submenu = new Submenu(this);
+    submenu->setTitle(language->get(TEXT_INFORMATION), titlePos);
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_PLAYER_NAME_TAKEN)));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "startMulti"));
+    // TODO: hack
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["infoNameTaken"] = submenu;
+
+    // Info: Server version Submenu
+    submenu = new Submenu(this);
+    submenu->setTitle(language->get(TEXT_INFORMATION), titlePos);
+    submenu->addEntry(new FormatterEntry(this, language->get(TEXT_SERVER_VERSION)));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "startMulti"));
+    // TODO: hack
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["infoServerVersion"] = submenu;
+
+    
     titleY += m_font->getHeight() / 2;
     titleY = std::min(titleY, resY - static_cast<float>(m_fontBig->getHeight()));
     

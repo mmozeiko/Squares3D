@@ -121,3 +121,8 @@ void AiPlayer::control()
 
     setDirection(resultDir);
 }
+
+void AiPlayer::control(const ControlPacket& packet)
+{
+    clog << "AiPlayer::control - invalid call" << endl;
+}
