@@ -627,14 +627,16 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_QUIT)
         {
             // client is quitting
+            //clog << "Client is quitting" << endl;
             if (foundIn(m_clients, peer))
             {
                 int idx = m_clients[peer];
+                //clog << "erasing old, and joinging some ai, idx=" << idx << endl;
                 m_clients.erase(peer);
                 m_aiIdx[idx] = true;
                 m_profiles[idx] = getRandomAI();
 
-                for each_(PlayerMap, m_clients, client)
+                for each_const(PlayerMap, m_clients, client)
                 {
                     send(client->first, JoinPacket(idx, g_version, m_profiles[idx]), true);
                 }
@@ -869,13 +871,14 @@ void Network::updateAiProfile(int idx)
 
 void Network::kickClient(int idx)
 {
-    ENetPeer* eraseable;
+    ENetPeer* eraseable = NULL;
     for each_(PlayerMap, m_clients, client)
     {
         if (client->second == idx)
         {
             eraseable = client->first;
             send(client->first, KickPacket("kick"), true);
+            break;
         }
         else
         {

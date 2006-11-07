@@ -360,6 +360,7 @@ void NetPlayerEntry::click(int button)
 
     if (m_idx != Network::instance->getLocalIdx() && !Network::instance->isLocal(m_idx))
     {
+        clog << "Kicking m_idx=" << m_idx << endl;
         // kick
         Network::instance->setAiProfile(m_idx, Network::instance->getRandomAI());
         Network::instance->kickClient(m_idx);

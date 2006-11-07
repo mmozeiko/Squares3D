@@ -146,8 +146,7 @@ Einem Spieler werden in folgenden Situationen Strafpunkte angerechnet:
       viele Strafpunkte, wie er selbst zuletzt (nach etwaigen Berührungen durch andere Spieler) durch aufeinanderfolgen-
       de "Luftberührungen" angesammelt hat.
     * Der Spieler berührt den Ball ein zweites mal, obwohl dieser zwischenzeitlich auf seiner Spielfläche aufgekommen
-      ist. Der Spieler erhält dafür einen Strafpunkt. If player has touched the ball once in his field, he may touch it
-      again when it has left the bounds (field lines included) of his field or the ball has been touched by player.
+      ist. Der Spieler erhält dafür einen Strafpunkt. 
 
     Solange der Ball den Boden außerhalb des Spielfeldes nicht berührt hat, dürfen die Spieler versuchen, diesen wieder
 zurück ins Spielfeld zu bugsieren, wobei er weiterhin in der Luft gehalten werden muß. Das Spiel geht solange weiter,
@@ -166,36 +165,38 @@ wenigstens einmal den Boden berührt hat.
     Derjenige Spieler, welcher zuerst insgesamt 21 Strafpunkte erhalten hat, verliert das Spiel.
     </item>
 
-    <!-- ALSO ONE SENTENCE IN RULES_SCREEN (look up) -->
-    <item name="USE_HDR"  value="HDR"/>      <!-- HDR means Hight Dynamic Rendering -->
-    <item name="CONTROLS" value="Controls"/>
+    <!-- If player has touched the ball once in his field, he may touch it
+      again when it has left the bounds (field lines included) of his field or the ball has been touched by player.
+       -->
+    <item name="USE_HDR"  value="HDR-Rendering "/><!--Verbesserte Farbhandhabung-->
+    <item name="CONTROLS" value="Steuerung"/>
     <item name="CONTROLS_SCREEN">
-Ingame controls:
-  * Use your mouse to move around
-  * Press left mouse button to make combo
-  * Press space key to jump
-  * Press and hold right mouse button to rotate camera with mouse
-  * Press escape during game to bring up pause screen. Use
-    enter key while in pause screen to quit to main menu or
-    escape key to resume the game
+Spielsteuerung:
+  * Mit der Maus kannst Du den Spieler bewegen
+  * Halte die linke Maustaste gedrückt, um den Ball in der Luft zu halten
+  * Drücke die Leertaste um zu springen
+  * Halte die rechte Maustaste gedrückt, um die Kamera um den Spieler zu drehen
+  * Drücke während des Spiels die &lt;ESCAPE&gt;-Taste zum Pausieren. Erneutes
+    Drücken der &lt;ESCAPE&gt;-Taste setzt das Spiel fort, während die
+    &lt;ENTER&gt;-Taste das laufende Spiel beendet und zum Hauptmenü zurückführt.
 
-Menu controls:
-  * Navigate through menu using up / down keys or mouse
-  * Press enter key or left mouse button to enter or accept
-    selected menu entry
-  * Use right / left keys or left / right mouse buttons to
-    cycle forward and backward through options entries items
+Menübedienung:
+  * Mit den Pfeil-hoch- und Pfeil-runter-Tasten können Menüpunkte selektiert werden
+  * Drücke die &lt;ENTER&gt;-Taste oder den linken Mausknopf,
+    um einen selektierten Menüpunkt zu öffnen oder zu ändern
+  * Drücke die Pfeil-links- und Pfeil-rechts-Tasten bzw. den
+    linken und rechten Mausknopf, um Einstellungen zu ändern
 </item>
 
-    <item name="PLAYER_KICKED"     value="You have been kicked from server!"/>
-    <item name="SERVER_FULL"       value="Server is full (max 4 players)!"/>
-    <item name="SERVER_DISCONNECT" value="Server has been disconnected!"/>
-    <item name="PLAYER_NAME_TAKEN" value="Player with your name&#10;already exists on server!"/>
+    <item name="PLAYER_KICKED"     value="Du wurdest vom Server hinausgeworfen!"/>
+    <item name="SERVER_FULL"       value="Der Server läßt nicht mehr als 4 Spieler zu!"/>
+    <item name="SERVER_DISCONNECT" value="Die Verbindung zum Server wurde getrennt!"/>
+    <item name="PLAYER_NAME_TAKEN" value="Es hat sich bereits ein Spieler Deines Namens&#10;bereits mit dem Server verbunden!"/>
     <item name="INFORMATION"       value="Info"/>
     <item name="SERVER_VERSION">
-        Incompatible game versions!
-        Server has version: $1
-        You have version: $2
+Inkompatible Programm-Versionen!
+Version des Spiele-Servers: $1
+Version Deines Spiels: $2
     </item>
 
 </xml>
