@@ -168,7 +168,7 @@ wenigstens einmal den Boden berührt hat.
     <!-- If player has touched the ball once in his field, he may touch it
       again when it has left the bounds (field lines included) of his field or the ball has been touched by player.
        -->
-    <item name="USE_HDR"  value="HDR-Rendering "/><!--Verbesserte Farbhandhabung-->
+    <item name="USE_HDR"  value="HDR-Rendering"/><!-- Verbesserte Farbhandhabung-->
     <item name="CONTROLS" value="Steuerung"/>
     <item name="CONTROLS_SCREEN">
 Spielsteuerung:

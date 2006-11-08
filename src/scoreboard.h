@@ -38,10 +38,10 @@ class ScoreBoard : public NoCopy
 public:
     ScoreBoard(Messages* messages);
     void registerPlayers(const vector<Player*>& players);
-    int addTotalPoints(const string& name);
-    int addPoint(const string& name);
+    int getTotalPoints(const string& name);
+    void addPoints(const string& name, int points);
     void incrementCombo(const string& name, const Vector& color, const Vector& position);
-    int addSelfTotalPoints(const string& name);
+    int getSelfTotalPoints(const string& name);
     void resetCombo();
     void resetOwnCombo(const string& name);
     void reset();

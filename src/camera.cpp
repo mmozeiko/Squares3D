@@ -63,11 +63,13 @@ void Camera::control()
 
             m_targetDirection.norm();
         }
-        else
-        {
-            //m_targetDirection.z = delta.z;
-        }
+    }
 
+    m_targetDirection = Vector::Zero;
+
+    if (m_uuberCamera == false)
+    {
+        m_targetDirection.z = static_cast<float>(mouse.z);
     }
 
     if (Input::instance->key(GLFW_KEY_BACKSPACE) && m_lastUuberKey==false)
@@ -119,12 +121,37 @@ void Camera::update(float delta)
         m_targetRotation *= delta;
         m_targetDirection *= delta;
 
+        float t = 50.0f * LOOK_SPEED * m_targetDirection.z;
+        if (t > 0)
+        {
+            m_pos *= 1.0f - t;
+        }
+        else if (t < 0)
+        {
+            m_pos *= 1.0f - t;
+
+        }
+        if (m_pos.z > 0.0f)
+        {
+            m_pos.z = -m_pos.z;
+        }
+        if (m_pos.magnitude2() < 4.0f*4.0f)
+        {
+            m_pos.norm();
+            m_pos *= 4.0f;
+        }
+        else if (m_pos.magnitude2() > 17.0f*17.0f)
+        {
+            m_pos.norm();
+            m_pos *= 17.0f;
+        }
+
         m_angleY += LOOK_SPEED * m_targetRotation.y;
         m_angleX += LOOK_SPEED * m_targetRotation.x;
         
-        if (m_angleX < 7.0f * DEG_IN_RAD)
+        if (m_angleX < 9.0f * DEG_IN_RAD)
         {
-            m_angleX = 7.0f * DEG_IN_RAD;
+            m_angleX = 9.0f * DEG_IN_RAD;
         }
         else if (m_angleX > 60.0f * DEG_IN_RAD)
         {

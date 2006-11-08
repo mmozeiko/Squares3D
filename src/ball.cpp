@@ -1,7 +1,7 @@
 #include <Newton.h>
 
 #include "ball.h"
-#include "referee.h"
+#include "referee_local.h"
 #include "collision.h"
 #include "world.h"
 #include "video.h"

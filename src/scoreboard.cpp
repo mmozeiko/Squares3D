@@ -1,5 +1,5 @@
 #include "scoreboard.h"
-#include "referee.h"
+#include "referee_local.h"
 #include "messages.h"
 #include "message.h"
 #include "video.h"
@@ -107,24 +107,20 @@ void ScoreBoard::reset()
     resetCombo();
 }
 
-int ScoreBoard::addTotalPoints(const string& name)
+int ScoreBoard::getTotalPoints(const string& name)
 {
-    Account& acc = m_scores.find(name)->second;
-    acc.m_total += m_joinedCombo;
     return m_joinedCombo;
 }
 
-int ScoreBoard::addPoint(const string& name)
+void ScoreBoard::addPoints(const string& name, int points)
 {
     Account& acc = m_scores.find(name)->second;
-    acc.m_total += 1;
-    return 1;
+    acc.m_total += points;
 }
 
-int ScoreBoard::addSelfTotalPoints(const string& name)
+int ScoreBoard::getSelfTotalPoints(const string& name)
 {
     Account& acc = m_scores.find(name)->second;
-    acc.m_total += acc.m_combo;
     return acc.m_combo;
 }
 

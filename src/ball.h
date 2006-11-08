@@ -4,7 +4,7 @@
 #include "common.h"
 #include "body.h"
 
-class Referee;
+class RefereeLocal;
 class Collision;
 
 struct TriggerFlags
@@ -40,7 +40,7 @@ public:
 
     void renderShadow(const Vector& lightPosition) const;
 
-    Referee*            m_referee;
+    RefereeLocal*            m_referee;
     Body*               m_body;
 
 private:

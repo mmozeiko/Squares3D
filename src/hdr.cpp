@@ -20,7 +20,7 @@ HDR::HDR() :
     }
 }
 
-void HDR::updateFromLevel(float eps, const Vector& mul)
+void HDR::updateFromLevel(float eps, float exp, const Vector& mul)
 {
     if (!m_valid)
     {
@@ -31,6 +31,10 @@ void HDR::updateFromLevel(float eps, const Vector& mul)
     m_downsample->setFloat1("hdr_eps", eps);
     m_downsample->setFloat4("hdr_mul", mul);
     m_downsample->end();
+
+    m_final->begin();
+    m_final->setFloat1("hdr_exposure", exp);
+    m_final->end();
 }
 
 void HDR::init()

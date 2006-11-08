@@ -27,8 +27,11 @@ public:
         // game
         ID_UPDATE  = 10,
         ID_CONTROL = 11,
-        ID_REFEREE_PROCESS = 12,
+        ID_REFEREE = 12,
         ID_SOUND = 13,
+        ID_INCCOMBO = 14,
+        ID_RESETCOMBO = 15,
+        ID_RESETOWNCOMBO = 16
     };
 
     const bytes& data() const;
@@ -79,14 +82,40 @@ public:
     byte   m_idx;
 };
 
-class RefereeProcessPacket : public Packet
+class RefereePacket : public Packet
 {
 public:
-    RefereeProcessPacket(const bytes& data);
-    RefereeProcessPacket(int idx1, int idx2);
+    RefereePacket(const bytes& data);
+    RefereePacket(int faultID, int bodyID, int points);
 
-    int m_idx1;
-    int m_idx2;
+    int m_faultID;
+    int m_bodyID;
+    int m_points;
+};
+
+class ComboIncPacket : public Packet
+{
+public:
+    ComboIncPacket(const bytes& data);
+    ComboIncPacket(int bodyID);
+
+    int m_bodyID;
+};
+
+class ComboResetOwnPacket : public Packet
+{
+public:
+    ComboResetOwnPacket(const bytes& data);
+    ComboResetOwnPacket(int bodyID);
+
+    int m_bodyID;
+};
+
+class ComboResetPacket : public Packet
+{
+public:
+    ComboResetPacket(const bytes& data);
+    ComboResetPacket();
 };
 
 class JoinPacket : public Packet

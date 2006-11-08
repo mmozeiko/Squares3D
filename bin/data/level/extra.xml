@@ -6,6 +6,7 @@
 
     <hdr>
       <eps value="0.84"/>
+      <exp value="-0.8"/>
       <mul r="0.2" g="1.0" b="0.2"/>
     </hdr>
 

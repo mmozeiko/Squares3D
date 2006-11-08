@@ -13,7 +13,8 @@ class Player;
 class SkyBox;
 class Level;
 class Music;
-class Referee;
+class RefereeLocal;
+class RefereeBase;
 class Ball;
 class Messages;
 class Message;
@@ -48,7 +49,7 @@ public:
     Level*           m_level;
     vector<Player*>  m_localPlayers;
     Ball*            m_ball;
-    Referee*         m_referee;
+    RefereeBase*     m_referee;
     Messages*        m_messages;
     ScoreBoard*      m_scoreBoard;
 

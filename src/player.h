@@ -7,7 +7,7 @@
 #include "level.h"
 #include "timer.h"
 
-class Referee;
+class RefereeBase;
 class Collision;
 class ControlPacket;
 
@@ -42,7 +42,7 @@ public:
     void onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed);
     void onSetForceAndTorque();
     
-    Referee*          m_referee;
+    RefereeBase*      m_referee;
     Body*             m_body;
     const Profile*    m_profile;
 

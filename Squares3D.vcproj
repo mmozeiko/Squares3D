@@ -258,11 +258,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\referee.cpp"
+					RelativePath=".\src\referee_base.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\referee.h"
+					RelativePath=".\src\referee_base.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\referee_local.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\referee_local.h"
 					>
 				</File>
 				<File

@@ -4,7 +4,7 @@
 #include "player.h"
 #include "video.h"
 #include "world.h"
-#include "referee.h"
+#include "referee_local.h"
 #include "input.h"
 #include "xml.h"
 #include "collision.h"
@@ -125,7 +125,7 @@ Vector Player::getFieldCenter() const
 
 void Player::setDirection(const Vector& direction)
 {
-    m_direction = 0.8f * m_speedCoefficient * direction + 0.2f*m_direction;
+    m_direction = 0.8f * m_speedCoefficient * direction + 0.2f * m_direction;
 }
 
 void Player::setRotation(const Vector& rotation)
@@ -179,7 +179,7 @@ void Player::onSetForceAndTorque()
 
     const Vector targetOmega = m_rotation;
     Vector torque = 0.5f * (targetOmega - omega) * timestepInv * m_body->getInertia().y;
-    NewtonBodyAddTorque (m_body->m_newtonBody, torque.v);
+    NewtonBodyAddTorque(m_body->m_newtonBody, torque.v);
 }
 
 void Player::onCollide(const Body* other, const NewtonMaterial* material, const Vector& position, float speed)

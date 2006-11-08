@@ -1,3 +1,11 @@
+Squares 3D licence:
+-------------------
+Not for sale or rent. This version (1.1.0) Squares 3D must be available for free.
+You are not allowed to modify or reverse engineer Squares 3D executable file.
+When distributing Squares 3D game, you must include this licence and unmodified
+copyrights of game (Credits screen).
+
+
 Used 3rd party library (in alphabetic order) licenses:
 
 enet (2003-03-11)

@@ -13,7 +13,8 @@
 #include "file.h"
 #include "skybox.h"
 #include "properties.h"
-#include "referee.h"
+#include "referee_local.h"
+#include "referee_base.h"
 #include "ball.h"
 #include "messages.h"
 #include "message.h"
@@ -236,29 +237,38 @@ void World::init()
     }
 
     m_skybox = new SkyBox(m_level->m_skyboxName);
-    m_hdr->updateFromLevel(m_level->m_hdr_eps, m_level->m_hdr_mul);
+    m_hdr->updateFromLevel(m_level->m_hdr_eps, m_level->m_hdr_exp, m_level->m_hdr_mul);
 
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
-
-    m_referee = new Referee(m_messages, m_scoreBoard);
-    m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
-    m_referee->m_ground = m_level->getBody("level"); //referee now can recognize ground outside
 
     const vector<Player*>& players = Network::instance->createPlayers(m_level);
 
     m_localPlayers = players;
 
-    m_referee->m_humanPlayer = players[Network::instance->getLocalIdx()];
+    m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
+
+    if (Network::instance->m_isSingle || Network::instance->m_isServer)
+    {
+        m_referee = new RefereeLocal(m_messages, m_scoreBoard);
+        m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
+        m_referee->m_ground = m_level->getBody("level");; //referee now can recognize ground outside
+        
+        //this is for correct registering when waiting for ball bounce in referee
+        //it is handled specifically in Ball OnCollide
+        m_ball->addBodyToFilter(m_referee->m_field);
+        m_ball->addBodyToFilter(m_referee->m_ground);
+
+        m_referee->registerBall(m_ball);
+
+        m_referee->m_humanPlayer = players[Network::instance->getLocalIdx()];
+    }
+    else
+    {
+        //client referee
+        m_referee = new RefereeBase(m_messages, m_scoreBoard);
+    }
 
     m_referee->registerPlayers(m_localPlayers);
-
-    m_ball = new Ball(m_level->getBody("football"), m_level->m_collisions["level"]);
-    m_referee->registerBall(m_ball);
-
-    //this is for correct registering when waiting for ball bounce in referee
-    //it is handled specifically in Ball OnCollide
-    m_ball->addBodyToFilter(m_referee->m_field);
-    m_ball->addBodyToFilter(m_referee->m_ground);
 
     for (size_t i = 0; i < m_localPlayers.size(); i++)
     {

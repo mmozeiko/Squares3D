@@ -9,7 +9,7 @@ const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, true, true, 0, 0, 1, 1, false, 1, 1, true };
 const AudioConfig Config::defaultAudio = { true, 5, 5 };
-const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost" };
+const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost", 12321, 40.0f };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
 {
@@ -193,6 +193,23 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
                 {
                     m_misc.last_address = node.value;
                 }
+                else if (node.name == "net_port")
+                {
+                    m_misc.net_port = cast<int>(node.value);
+                }
+                else if (node.name == "net_fps")
+                {
+                    float net_fps = cast<float>(node.value);
+                    if (net_fps < 10.0f)
+                    {
+                        net_fps = 10.0f;
+                    }
+                    else if (net_fps > 100.0f)
+                    {
+                        net_fps = 100.0f;
+                    }
+                    m_misc.net_fps = net_fps;
+                }
                 else
                 {
                     string line = cast<string>(node.line);
@@ -238,6 +255,8 @@ Config::~Config()
     xml.childs.back().childs.push_back(XMLnode("system_keys", cast<string>(m_misc.system_keys ? 1 : 0)));
     xml.childs.back().childs.push_back(XMLnode("language", m_misc.language));
     xml.childs.back().childs.push_back(XMLnode("last_address", m_misc.last_address));
+    xml.childs.back().childs.push_back(XMLnode("net_port", cast<string>(m_misc.net_port)));
+    xml.childs.back().childs.push_back(XMLnode("net_fps", cast<string>(m_misc.net_fps)));
     //xml.childs.back().childs.push_back(XMLnode("mouse_sensitivity", cast<string>(m_misc.mouse_sensitivity)));
 
     File::Writer out(CONFIG_FILE);

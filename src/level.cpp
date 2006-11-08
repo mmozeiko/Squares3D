@@ -13,7 +13,7 @@
 #include "config.h"
 
 Level::Level() : m_gravity(0.0f, -9.81f, 0.0f), m_skyboxName(),
-    m_hdr_eps(0.89f), m_hdr_mul(1.0f, 1.0f, 1.0f, 1.0f)
+    m_hdr_eps(0.60f), m_hdr_exp(-0.35f), m_hdr_mul(1.0f, 1.0f, 0.8f, 1.0f)
 {
     m_properties = new Properties();
 }
@@ -55,6 +55,10 @@ void Level::load(const string& levelFile, StringSet& loaded)
                 if (node.name == "eps")
                 {
                     m_hdr_eps = node.getAttribute<float>("value");
+                }
+                else if (node.name == "exp")
+                {
+                    m_hdr_exp = node.getAttribute<float>("value");
                 }
                 else if (node.name == "mul")
                 {

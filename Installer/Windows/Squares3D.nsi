@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Squares 3D"
-!define PRODUCT_VERSION "1.0.2"
+!define PRODUCT_VERSION "1.1.0"
 !define PRODUCT_WEB_SITE "http://indago.gamez.lv/i2006/?id=51"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Squares3D.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -10,7 +10,7 @@
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Squares3D-1.0.2-Windows.exe"
+OutFile "Squares3D-1.1.0-Windows.exe"
 SetCompressor /SOLID lzma
 XPStyle on
 

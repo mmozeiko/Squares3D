@@ -21,21 +21,13 @@ RemotePlayer::~RemotePlayer()
 
 void RemotePlayer::control()
 {
-    // use these from status
-    setDirection(m_netDirection);
-    setRotation(m_netRotation);
-    setJump(m_netJump);
-    setKick(m_netKick);
-    
-    //m_netDirection /= 2.0f;
-    //m_netRotation /= 2.0f;
 }
 
 void RemotePlayer::control(const ControlPacket& packet)
 {
     // update status from packet
-    m_netDirection = packet.m_netDirection;
-    m_netRotation = packet.m_netRotation;
-    m_netJump = packet.m_netJump;
-    m_netKick = packet.m_netKick;
+    setDirection(packet.m_netDirection);
+    setRotation(packet.m_netRotation);
+    setJump(packet.m_netJump);
+    setKick(packet.m_netKick);
 }

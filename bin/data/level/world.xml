@@ -6,7 +6,8 @@
     <skybox name="skybox"/>
 
     <hdr>
-      <eps value="0.89"/>
+      <eps value="0.60"/>
+      <exp value="-0.35"/>
       <mul r="1.0" g="1.0" b="0.8"/>
     </hdr>
 

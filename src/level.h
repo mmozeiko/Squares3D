@@ -44,6 +44,7 @@ public:
     string          m_skyboxName;
 
     float           m_hdr_eps;
+    float           m_hdr_exp;
     Vector          m_hdr_mul;
 };
 

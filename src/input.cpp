@@ -64,7 +64,8 @@ void Input::mouseVisible(bool visible)
 
 void Input::update()
 {
-    //m_mouse.z = glfwGetMouseWheel();
+    m_mouse.z = glfwGetMouseWheel();
+    glfwSetMouseWheel(0);
     if (m_mouseVisible == false)
     {
 #ifdef __APPLE__

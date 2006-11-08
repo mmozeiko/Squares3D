@@ -133,12 +133,12 @@ const bytes& Packet::data() const
 
 ControlPacket::ControlPacket(const bytes& data) : Packet(data)
 {
-    m_netDirection.x = readFloat();
-    m_netDirection.y = readFloat();
-    m_netDirection.z = readFloat();
-    m_netRotation.x = readFloat();
-    m_netRotation.y = readFloat();
-    m_netRotation.z = readFloat();
+    m_netDirection.x = readShort()/512.0f;
+    m_netDirection.y = readShort()/512.0f;
+    m_netDirection.z = readShort()/512.0f;
+    m_netRotation.x = readShort()/512.0f;
+    m_netRotation.y = readShort()/512.0f;
+    m_netRotation.z = readShort()/512.0f;
     m_netJump = readByte()==1;
     m_netKick = readByte()==1;
     m_idx = readByte();
@@ -147,12 +147,12 @@ ControlPacket::ControlPacket(const bytes& data) : Packet(data)
 ControlPacket::ControlPacket(byte idx, const Vector& direction, const Vector& rotation, bool jump, bool kick)
     : Packet(ID_CONTROL)
 {
-    writeFloat(direction.x);
-    writeFloat(direction.y);
-    writeFloat(direction.z);
-    writeFloat(rotation.x);
-    writeFloat(rotation.y);
-    writeFloat(rotation.z);
+    writeShort(static_cast<short>(direction.x*512.0f));
+    writeShort(static_cast<short>(direction.y*512.0f));
+    writeShort(static_cast<short>(direction.z*512.0f));
+    writeShort(static_cast<short>(rotation.x*512.0f));
+    writeShort(static_cast<short>(rotation.y*512.0f));
+    writeShort(static_cast<short>(rotation.z*512.0f));
     writeByte(jump ? 1 : 0);
     writeByte(kick ? 1 : 0);
     writeByte(idx);
@@ -174,19 +174,50 @@ JoinPacket::JoinPacket(const bytes& data) : Packet(data), m_profile(NULL)
     m_profile->m_speed = readFloat();
 }
 
-RefereeProcessPacket::RefereeProcessPacket(int idx1, int idx2) :
-    Packet(ID_REFEREE_PROCESS),
-    m_idx1(idx1),
-    m_idx2(idx2)
+RefereePacket::RefereePacket(int faultID, int bodyID, int points) :
+    Packet(ID_REFEREE)
 {
-    writeByte(static_cast<byte>(idx1));
-    writeByte(static_cast<byte>(idx2));
+    writeByte(static_cast<byte>(faultID));
+    writeByte(static_cast<byte>(bodyID));
+    writeByte(static_cast<byte>(points));
 }
 
-RefereeProcessPacket::RefereeProcessPacket(const bytes& data) : Packet(data)
+RefereePacket::RefereePacket(const bytes& data) : Packet(data)
 {
-    m_idx1 = static_cast<int>(readByte());
-    m_idx2 = static_cast<int>(readByte());
+    m_faultID = static_cast<int>(readByte());
+    m_bodyID = static_cast<int>(readByte());
+    m_points = static_cast<int>(readByte());
+}
+
+ComboIncPacket::ComboIncPacket(int bodyID) :
+    Packet(ID_INCCOMBO)
+{
+    writeByte(static_cast<byte>(bodyID));
+}
+
+ComboIncPacket::ComboIncPacket(const bytes& data) : Packet(data)
+{
+    m_bodyID = static_cast<int>(readByte());
+}
+
+ComboResetOwnPacket::ComboResetOwnPacket(int bodyID) :
+    Packet(ID_RESETOWNCOMBO)
+{
+    writeByte(static_cast<byte>(bodyID));
+}
+
+ComboResetOwnPacket::ComboResetOwnPacket(const bytes& data) : Packet(data)
+{
+    m_bodyID = static_cast<int>(readByte());
+}
+
+ComboResetPacket::ComboResetPacket() :
+    Packet(ID_RESETCOMBO)
+{
+}
+
+ComboResetPacket::ComboResetPacket(const bytes& data) : Packet(data)
+{
 }
 
 JoinPacket::JoinPacket(int idx, const string& version, Profile* profile) : Packet(ID_JOIN), m_profile(NULL)

@@ -33,6 +33,8 @@ struct MiscConfig
     string language;
     float mouse_sensitivity;
     string last_address;
+    int net_port;
+    float net_fps;
 };
 
 

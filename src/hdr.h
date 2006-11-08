@@ -17,7 +17,7 @@ public:
     ~HDR();
 
     void init();
-    void updateFromLevel(float eps, const Vector& mul);
+    void updateFromLevel(float eps, float exp, const Vector& mul);
 
     void begin();
     void end();

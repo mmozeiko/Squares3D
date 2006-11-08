@@ -22,7 +22,7 @@ class Level;
 class Player;
 class Packet;
 class Menu;
-class Referee;
+class RefereeBase;
 class RemotePlayer;
 class RefereeProcessPacket;
 class SoundPacket;
@@ -38,8 +38,7 @@ typedef vector<ActiveBody*> ActiveBodyVector;
 
 typedef map<ENetPeer*, int> PlayerMap;
 
-typedef vector<const RefereeProcessPacket*> PacketBuffer;
-typedef vector<const SoundPacket*>          SoundPacketBuffer;
+typedef vector<const Packet*> PacketBuffer;
 
 class Network : public System<Network>, public NoCopy
 {
@@ -71,15 +70,22 @@ public:
 
     void setMenuEntries(Menu* menu, const string& lobbySubmenu, const string& joinSubmenu);
     
-    void setReferee(Referee* referee);
+    void setReferee(RefereeBase* referee);
 
     void updateAiProfile(int idx);
     void kickClient(int idx);
     void startGame(); // server->client, when starting world
     void iAmReady();  // client->server, when world is loaded
 
-    void addPacketToBuffer(const Body* b1, const Body* b2);
     void addSoundPacket(byte id, const Vector& position);
+    void addResetOwnComboPacket(const Body* b1);
+    void addResetComboPacket();
+    void addIncrementComboPacket(const Body* b1);
+    void addRefereePacket(int faultID, const Body* b1, int points);
+
+    Body* getBodyByName(const string& name) const;
+    int getBodyIdx(const Body* body) const;
+
 
     bool m_needDisconnect;
     bool m_disconnected;
@@ -117,11 +123,12 @@ private:
     Timer            m_timer;
     Timer            m_bodyTimer;
 
-    PacketBuffer      m_packetsBuffer;
-    SoundPacketBuffer m_soundBuffer;
+    PacketBuffer     m_packetsBuffer;
 
-    Referee*         m_referee;
+    RefereeBase*     m_referee;
     bool             m_clientReady[4];
+
+    float            m_netfps;
 
     void sendUpdatePacket();
     void send(ENetPeer* peer, const Packet& packet, bool important);

@@ -1,6 +1,6 @@
 #include "openal_includes.h"
 
-#include "referee.h"
+#include "referee_local.h"
 #include "player.h"
 #include "body.h"
 #include "ball.h"
@@ -9,14 +9,11 @@
 #include "message.h"
 #include "scoreboard.h"
 #include "video.h"
-#include "language.h"
-#include "colors.h"
 #include "profile.h"
 #include "random.h"
-#include "audio.h"
-#include "sound.h"
 #include "world.h"
 #include "network.h"
+#include "colors.h"
 
 static const float BALL_RESET_TIME = 3.0f;
 //TODO: make universaly proportional to field size?
@@ -91,60 +88,43 @@ bool isBallInField(const Vector& position,
     return isPointInRectangle(position, _lowerLeft, _upperRight);
 }
 
-Referee::Referee(Messages* messages, ScoreBoard* scoreBoard) :
+RefereeLocal::RefereeLocal(Messages* messages, ScoreBoard* scoreBoard) :
+    RefereeBase(messages, scoreBoard),
     m_ball(NULL),
-    m_ground(NULL),
-    m_field(NULL),
     m_lastFieldOwner(NULL),
     m_lastTouchedPlayer(NULL),
     m_lastWhoGotPoint(NULL),
-    m_humanPlayer(NULL),
-    m_gameOver(false),
     m_mustResetBall(false),
     m_timer(),
-    m_scoreBoard(scoreBoard),
-    m_messages(messages),
     m_haltWait(3),
     m_playersAreHalted(false),
-    m_matchPoints(21),
-    m_sound(new Sound(true)),
-    m_over(NULL),
     m_releaseTehOne(NULL),
     m_releaseTehOneD(NULL)
 {
+    m_humanPlayer = NULL;
+    m_gameOver = false;
+    m_over = NULL;
+    m_ground = NULL;
+    m_field = NULL;
     initEvents();
-    m_soundGameOver = Audio::instance->loadSound("referee_game_over");
-    m_soundGameStart = Audio::instance->loadSound("referee_game_start");
-    m_soundFault = Audio::instance->loadSound("referee_fault");
-
-    m_sound->update(Vector::Zero, Vector::Zero);
 }
 
-Referee::~Referee()
-{
-    Audio::instance->unloadSound(m_soundGameOver);
-    Audio::instance->unloadSound(m_soundGameStart);
-    Audio::instance->unloadSound(m_soundFault);
-        
-    delete m_sound;
-}
-
-string Referee::getLoserName() const
+string RefereeLocal::getLoserName() const
 {
     return m_scoreBoard->getMostScoreData().first;
 }
-bool Referee::isGroundObject(const Body* body) const
+bool RefereeLocal::isGroundObject(const Body* body) const
 {
     return ((body == m_ground) || (body == m_field));
 }
 
-void Referee::registerFaultTime()
+void RefereeLocal::registerFaultTime()
 {
     m_timer.reset();
     m_mustResetBall = true;
 }
 
-void Referee::update()
+void RefereeLocal::update()
 {
     if (m_mustResetBall && !m_gameOver)
     {
@@ -157,7 +137,7 @@ void Referee::update()
     updateDelayedProcesses();
 }
 
-Player* Referee::getDiagonalPlayer(const Player* player) const
+Player* RefereeLocal::getDiagonalPlayer(const Player* player) const
 {
     Vector dFieldCenter;
     Player* returnPtr = NULL;
@@ -175,7 +155,7 @@ Player* Referee::getDiagonalPlayer(const Player* player) const
     return returnPtr;
 }
 
-void Referee::haltCpuPlayers(const Player* except)
+void RefereeLocal::haltCpuPlayers(const Player* except)
 {
     m_playersAreHalted = true;
     for each_const(BodyToPlayerMap, m_players, iter)
@@ -192,7 +172,7 @@ void Referee::haltCpuPlayers(const Player* except)
     }
 }
 
-void Referee::releaseCpuPlayers()
+void RefereeLocal::releaseCpuPlayers()
 {
     m_haltWait = 0;
     m_playersAreHalted = false;
@@ -205,12 +185,12 @@ void Referee::releaseCpuPlayers()
     }
 }
 
-void Referee::releaseCpuPlayer(Player* player)
+void RefereeLocal::releaseCpuPlayer(Player* player)
 {
     player->release();
 }
 
-void Referee::resetBall()
+void RefereeLocal::resetBall()
 {
     float random = static_cast<float>(Randoms::getIntN(2) + 1) / 50;
     Vector resetPosition(random, 1.8f, random);
@@ -273,36 +253,19 @@ void Referee::resetBall()
     initEvents();
 }
 
-void Referee::initEvents()
+void RefereeLocal::initEvents()
 {
     m_lastFieldOwner    = NULL;
     m_lastTouchedObject = NULL;
     m_lastTouchedPlayer = NULL;
     m_lastTouchedPosition = Vector::Zero;
-    m_scoreBoard->resetCombo();
 }
 
-void Referee::processCriticalEvent()
+void RefereeLocal::processCriticalEvent()
 {
     StringIntPair maxScore = m_scoreBoard->getMostScoreData();
     if (maxScore.second >= m_matchPoints)
     {
-        m_sound->play(m_soundGameOver);
-
-        Vector center = Vector(static_cast<float>(Video::instance->getResolution().first) / 2,
-                               static_cast<float>(Video::instance->getResolution().second) / 2,
-                               0.0f);
-        m_messages->add2D(new BlinkingMessage(Language::instance->get(TEXT_GAME_OVER), 
-                                              center, 
-                                              Red, 
-                                              Font::Align_Center,
-                                              72,
-                                              0.8f));
-
-        
-        // TODOTODO: network...
-        // ...
-
         string overText;
         if (maxScore.first == m_humanPlayer->m_profile->m_name)
         {
@@ -320,7 +283,10 @@ void Referee::processCriticalEvent()
             }
         }
             
-            
+        Vector center = Vector(static_cast<float>(Video::instance->getResolution().first) / 2,
+                               static_cast<float>(Video::instance->getResolution().second) / 2,
+                               0.0f);
+
         if (Network::instance->m_isSingle)
         {
             m_over = new Message(overText, 
@@ -332,7 +298,6 @@ void Referee::processCriticalEvent()
         }
 
         m_gameOver = true;
-        m_scoreBoard->resetCombo();
 
         for each_const(BodyToPlayerMap, m_players, iter)
         {
@@ -341,60 +306,37 @@ void Referee::processCriticalEvent()
     }
     else
     {
-        m_sound->play(m_soundFault);
         registerFaultTime();
     }
 
     m_delayedProcesses.clear();
 }
 
-void Referee::registerBall(Ball* ball)
+void RefereeLocal::registerBall(Ball* ball)
 {
     ball->m_referee = this;
     m_ball = ball;
     resetBall();
 }
 
-void Referee::registerPlayers(const vector<Player*> players)
-{
-    for each_const(vector<Player*>, players, iter)
-    {
-        Player* player = *iter;
-        m_players[player->m_body] = *iter;
-        player->m_referee = this;
-        
-        player->m_body->m_soundable = true;
-        player->m_body->m_important = true;
-    }
-    m_scoreBoard->registerPlayers(players);
-}
-
-void Referee::process(const Body* body1, const Body* body2)
+void RefereeLocal::process(const Body* body1, const Body* body2)
 {
     if (body1 == m_ball->m_body)
     {
-        if (Network::instance->m_isServer)
-        {
-            Network::instance->addPacketToBuffer(body1, body2);
-        }
         registerBallEvent(body1, body2);
     }
     if (foundIn(m_players, body1))
     {
-        if (Network::instance->m_isServer)
-        {
-            Network::instance->addPacketToBuffer(body1, body2);
-        }
         registerPlayerEvent(body1, body2);
     }
 }
 
-void Referee::addDelayedProcess(const Body* body1, const Body* body2, float delay)
+void RefereeLocal::addDelayedProcess(const Body* body1, const Body* body2, float delay)
 {
     m_delayedProcesses.push_back(make_pair(make_pair(body1, body2), m_timer.read() + delay));
 }
 
-void Referee::updateDelayedProcesses()
+void RefereeLocal::updateDelayedProcesses()
 {
     DelayedProcessesVector::iterator iter = m_delayedProcesses.begin();
     float curTime = m_timer.read();
@@ -419,7 +361,7 @@ void Referee::updateDelayedProcesses()
 }
 
 
-void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
+void RefereeLocal::registerPlayerEvent(const Body* player, const Body* otherBody)
 {
     if (isGroundObject(otherBody))
     {
@@ -431,7 +373,7 @@ void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
     }
 }
 
-void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
+void RefereeLocal::registerBallEvent(const Body* ball, const Body* otherBody)
 {
    if (isGroundObject(otherBody))
     {
@@ -449,7 +391,7 @@ void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
     }
 }
 
-void Referee::processPlayerGround(const Body* player)
+void RefereeLocal::processPlayerGround(const Body* player)
 {
     //if (Network::instance->m_isServer)
     //{
@@ -469,7 +411,7 @@ void Referee::processPlayerGround(const Body* player)
     }
 }
 
-void Referee::processBallGround(const Body* groundObject)
+void RefereeLocal::processBallGround(const Body* groundObject)
 {
     //if (Network::instance->m_isServer)
     //{
@@ -512,16 +454,10 @@ void Referee::processBallGround(const Body* groundObject)
             if (foundIn(m_players, m_lastTouchedObject))
             {
                 //player has kicked the ball out
-                int points = m_scoreBoard->addSelfTotalPoints(m_lastTouchedObject->m_id);
+                int points = m_scoreBoard->getSelfTotalPoints(m_lastTouchedObject->m_id);
                 
-                m_messages->add3D(new FlowingMessage(
-                    Language::instance->get(
-                                        TEXT_PLAYER_KICKS_OUT_BALL)
-                                        (m_lastTouchedObject->m_id)
-                                        (points),
-                    m_lastTouchedObject->getPosition(),
-                    Red,
-                    Font::Align_Center));
+                scoreBoardCritical(0, m_lastTouchedObject, points, m_ball->getPosition());
+
                 m_lastWhoGotPoint = m_players.find(m_lastTouchedObject)->second;
             }
 
@@ -529,40 +465,33 @@ void Referee::processBallGround(const Body* groundObject)
             {
                 string owner = m_lastFieldOwner->m_id;
                 
-                int points;
+                int points = 1;
 
                 if (m_lastTouchedPlayer != NULL)
                 {
                     if (m_lastFieldOwner == m_lastTouchedPlayer)
                     {
-                        points = m_scoreBoard->addSelfTotalPoints(owner);
+                        points = m_scoreBoard->getSelfTotalPoints(owner);
                     }
                     else
                     {
-                        points = m_scoreBoard->addTotalPoints(owner);
+                        points = m_scoreBoard->getTotalPoints(owner);
                     }
                 }
                 else
                 {
                     //case when noone touched the ball after throwing minus
-                    points = m_scoreBoard->addPoint(owner);
                 }
 
-                m_messages->add3D(new FlowingMessage(
-                    Language::instance->get(TEXT_OUT_FROM_FIELD)(owner)(points),
-                    m_ball->getPosition(),
-                    Red,
-                    Font::Align_Center));
+                scoreBoardCritical(1, m_lastFieldOwner, points, m_ball->getPosition());
+
                 m_lastWhoGotPoint = m_players.find(m_lastFieldOwner)->second;
             }
         }
         else
         {
-            m_messages->add3D(new FlowingMessage(
-                    Language::instance->get(TEXT_OUT_FROM_MIDDLE_LINE),
-                    m_ball->getPosition(),
-                    Red,
-                    Font::Align_Center));
+            //middle line
+            scoreBoardCritical(2, NULL, 0, m_ball->getPosition());
         }
 
         //finishing handling critical branch
@@ -589,7 +518,7 @@ void Referee::processBallGround(const Body* groundObject)
     }
 }
 
-void Referee::processBallPlayer(const Body* player)
+void RefereeLocal::processBallPlayer(const Body* player)
 {
     //if (Network::instance->m_isServer)
     //{
@@ -612,12 +541,8 @@ void Referee::processBallPlayer(const Body* player)
             //but the ball hasn`t touched the ground enough times
             //or player was not allowed to touch the ball after the fault throw-in
 
-            int points = m_scoreBoard->addPoint(playerName);
-            m_messages->add3D(new FlowingMessage(
-                                    Language::instance->get(TEXT_PLAYER_UNALLOWED)(playerName)(points),
-                                    player->getPosition(),
-                                    Red,
-                                    Font::Align_Center));
+            int points = 1;
+            scoreBoardCritical(4, player, points, m_ball->getPosition());
 
             m_lastTouchedObject = player;
             m_lastTouchedPlayer = player;
@@ -635,14 +560,14 @@ void Referee::processBallPlayer(const Body* player)
 
     if (m_lastTouchedObject == NULL) // last object is neither ground nor player,
     {
-        m_scoreBoard->resetCombo(); //resetting combo in case picked from middle line
-        m_scoreBoard->incrementCombo(playerName, m_players.find(player)->second->m_profile->m_color, m_ball->getPosition()); //(+1)
+        resetCombo(); //resetting combo in case picked from middle line
+        incrementCombo(player, m_ball->getPosition());
     }
     else if (isGroundObject(m_lastTouchedObject)) // picked from ground inside
     {
-        m_scoreBoard->resetCombo(); //clear combo
+        resetCombo(); //clear combo
 
-        m_scoreBoard->incrementCombo(playerName, m_players.find(player)->second->m_profile->m_color, m_ball->getPosition()); //(+1)
+        incrementCombo(player, m_ball->getPosition());
 
         if ((m_lastFieldOwner == player)
             && (m_lastTouchedPlayer == player)
@@ -663,12 +588,8 @@ void Referee::processBallPlayer(const Body* player)
         {
             //critical event. double-touched -> fault
 
-            int points = m_scoreBoard->addPoint(playerName);
-            m_messages->add3D(new FlowingMessage(
-                Language::instance->get(TEXT_PLAYER_TOUCHES_TWICE)(playerName)(points),
-                player->getPosition(),
-                Red,
-                Font::Align_Center));
+            int points = 1;
+            scoreBoardCritical(3, player, points, m_ball->getPosition());
 
             m_lastWhoGotPoint = m_players.find(player)->second;
             processCriticalEvent();
@@ -680,14 +601,47 @@ void Referee::processBallPlayer(const Body* player)
     {
         if (m_lastTouchedPlayer != player) //reset own combo, when picked from other
         {        
-            m_scoreBoard->resetOwnCombo(playerName);
+            resetOwnCombo(player);
         }
-        m_scoreBoard->incrementCombo(playerName, m_players.find(player)->second->m_profile->m_color, m_ball->getPosition()); //(+1)
+        incrementCombo(player, m_ball->getPosition()); //(+1)
     }
     
     m_lastTouchedObject = player;
     m_lastTouchedPlayer = player;
     m_lastTouchedPosition = player->getPosition();
 end:;
-    
+}
+
+void RefereeLocal::resetOwnCombo(const Body* player)
+{
+    Network::instance->addResetOwnComboPacket(player);
+    m_scoreBoard->resetOwnCombo(player->m_id);
+}
+
+void RefereeLocal::resetCombo()
+{
+    Network::instance->addResetComboPacket();
+    m_scoreBoard->resetCombo();
+}
+
+void RefereeLocal::incrementCombo(const Body* player, const Vector& position)
+{
+    Network::instance->addIncrementComboPacket(player);
+    m_scoreBoard->incrementCombo(player->m_id, m_players.find(player)->second->m_profile->m_color, position); //(+1)
+}
+
+void RefereeLocal::scoreBoardCritical(int faultID, const Body* player, int points, const Vector& position)
+{
+    Network::instance->addRefereePacket(faultID, player, points);
+    string name;
+    if (player == NULL)
+    {
+        //middle line it was then
+        name = "";
+    }
+    else
+    {
+        name = player->m_id;
+    }
+    RefereeBase::scoreBoardCritical(faultID, name, points, position);
 }

@@ -10,11 +10,10 @@
 #include "menu.h"
 #include "game.h"
 #include "version.h"
-#include "referee.h"
+#include "referee_base.h"
 #include "world.h"
 #include "properties.h"
-
-const int SQUARES_PORT = 12321;
+#include "config.h"
 
 template <class Network> Network* System<Network>::instance = NULL;
 
@@ -31,7 +30,8 @@ Network::Network() :
     m_ready_count(0),
     m_needToStartGame(false),
     m_needToBeginGame(false),
-    m_needToQuitGame(false)
+    m_needToQuitGame(false),
+    m_netfps(1.0f/Config::instance->m_misc.net_fps)
 {
     clog << "Initializing network." << endl;
 
@@ -58,7 +58,7 @@ Network::~Network()
     delete m_tmpProfile;
 }
 
-void Network::setReferee(Referee* referee)
+void Network::setReferee(RefereeBase* referee)
 {
     m_referee = referee;
 }
@@ -68,7 +68,7 @@ void Network::createServer()
     ENetAddress address;
 
     address.host = ENET_HOST_ANY;
-    address.port = SQUARES_PORT;
+    address.port = Config::instance->m_misc.net_port;
 
     m_host = enet_host_create(&address, 3, 0, 0); // 3 clients
     if (m_host == NULL)
@@ -113,7 +113,7 @@ bool Network::connect(const string& host)
         clog << "WARNING: " << Exception("enet_address_set_host failed, host unknown") << endl;
         return false;
     }
-    address.port = SQUARES_PORT;
+    address.port = Config::instance->m_misc.net_port;
 
     m_server = enet_host_connect(m_host, &address, 0);
     if (m_server == NULL)
@@ -161,12 +161,6 @@ void Network::close()
         delete *iter;
     }
     m_packetsBuffer.clear();
-
-    for each_const(SoundPacketBuffer, m_soundBuffer, iter)
-    {
-        delete *iter;
-    }
-    m_soundBuffer.clear();
 
     for each_const(set<Profile*>, m_garbage, iter)
     {
@@ -216,12 +210,13 @@ void Network::update()
 
     if (m_playing && !m_needToQuitGame)
     {
-        if (m_timer.read() > 0.02f) // 20ms (50fps)
+        if (m_timer.read() > m_netfps) // 20ms (50fps)
         {
             // update local player to remote players
             if (m_isServer)
             {
                 sendUpdatePacket();
+
                 for each_const(PacketBuffer, m_packetsBuffer, iter)
                 {
                     for each_const(PlayerMap, m_clients, client)
@@ -231,15 +226,6 @@ void Network::update()
                     delete *iter;
                 }
                 m_packetsBuffer.clear();
-                for each_const(SoundPacketBuffer, m_soundBuffer, iter)
-                {
-                    for each_const(PlayerMap, m_clients, client)
-                    {
-                        send(client->first, **iter, true);
-                    }
-                    delete *iter;
-                }
-                m_soundBuffer.clear();
             }
             else // client
             {
@@ -539,47 +525,77 @@ void Network::setMenuEntries(Menu* menu, const string& lobbySubmenu, const strin
     m_joinSubmenu = joinSubmenu;
 }
 
-void Network::addPacketToBuffer(const Body* b1, const Body* b2)
+int Network::getBodyIdx(const Body* body) const
 {
-    int idx1 = -1;
-    int idx2 = -1;
-
-    for (int i = 0; i < static_cast<int>(m_activeBodies.size()); i++)
+    for (size_t i = 0; i < m_activeBodies.size(); i++)
     {
-        if (m_activeBodies[i]->body == b1)
+        if (m_activeBodies[i]->body == body)
         {
-            idx1 = i;
-        }
-        else if (m_activeBodies[i]->body == b2)
-        {
-            idx2 = i;
+            return static_cast<int>(i);
         }
     }
-    if ((idx1 == -1) || (idx2 == -1))
-    {
-        return;
-    }
+    return -1;
+}
 
-    bool hasAlready = false;
-    for (int i = 0; i < static_cast<int>(m_packetsBuffer.size()); i++)
+Body* Network::getBodyByName(const string& name) const
+{
+    for each_const(ActiveBodyVector, m_activeBodies, iter)
     {
-        if ((m_packetsBuffer[i]->m_idx1 == idx1) && (m_packetsBuffer[i]->m_idx2 == idx2))
+        if ((*iter)->body->m_id == name)
         {
-            hasAlready = true;
-            break;
+            return (*iter)->body;
         }
     }
+    return NULL;
+}
 
-    if (!hasAlready)
+void Network::addResetOwnComboPacket(const Body* body)
+{
+    if (m_isSingle) return;
+
+    int bodyIdx = getBodyIdx(body);
+    if (bodyIdx != -1)
     {
-        m_packetsBuffer.push_back(new RefereeProcessPacket(idx1, idx2));
+        m_packetsBuffer.push_back(new ComboResetOwnPacket(bodyIdx));
+    }
+}
+void Network::addResetComboPacket()
+{
+    if (m_isSingle) return;
+
+    m_packetsBuffer.push_back(new ComboResetPacket());
+}
+void Network::addIncrementComboPacket(const Body* body)
+{
+    if (m_isSingle) return;
+    
+    int bodyIdx = getBodyIdx(body);
+    if (bodyIdx != -1)
+    {
+        m_packetsBuffer.push_back(new ComboIncPacket(bodyIdx));
+    }
+}
+
+void Network::addRefereePacket(int faultID, const Body* body, int points)
+{
+    if (m_isSingle) return;
+
+    if (body == NULL)
+    {
+        body = m_activeBodies[0]->body; // a little hack for middle line which has no body
+    }
+
+    int bodyIdx = getBodyIdx(body);
+    if (bodyIdx != -1)
+    {
+        m_packetsBuffer.push_back(new RefereePacket(faultID, bodyIdx, points));
     }
 }
 
 void Network::addSoundPacket(byte id, const Vector& position)
 {
     //clog << "SERVER: sound, " << (int)id << endl;
-    m_soundBuffer.push_back(new SoundPacket(id, position));
+    m_packetsBuffer.push_back(new SoundPacket(id, position));
 }
     
 void Network::processPacket(ENetPeer* peer, const bytes& packet)
@@ -627,11 +643,11 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_QUIT)
         {
             // client is quitting
-            clog << "SERVER: Packet::ID_QUIT, client is quitting" << endl;
+            //clog << "SERVER: Packet::ID_QUIT, client is quitting" << endl;
             if (foundIn(m_clients, peer))
             {
                 int idx = m_clients[peer];
-                clog << "erasing old, and joinging some ai, idx=" << idx << endl;
+                //clog << "erasing old, and joinging some ai, idx=" << idx << endl;
                 m_clients.erase(peer);
                 m_aiIdx[idx] = true;
                 m_profiles[idx] = getRandomAI();
@@ -678,7 +694,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
 
                 m_ready_count++;
 
-                clog << "SERVER, Packet::ID_READY, m_ready_count=" << m_ready_count << endl;
+                //clog << "SERVER, Packet::ID_READY, m_ready_count=" << m_ready_count << endl;
 
                 if (m_ready_count >= 4)
                 {
@@ -760,7 +776,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         }
         else if (type == Packet::ID_KICK)
         {
-            clog << "CLIENT: Packet::ID_KICK, i have been kicked ;(" << endl;
+            //clog << "CLIENT: Packet::ID_KICK, i have been kicked ;(" << endl;
             // kick teh user
             send(m_server, QuitPacket(), true);
             if (m_inMenu)
@@ -800,14 +816,14 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
 
             StartPacket p(packet);
             m_needToStartGame = true;
-            clog << "CLIENT, Packet::ID_START" << endl;
+            //clog << "CLIENT, Packet::ID_START" << endl;
         }
         else if (type == Packet::ID_READY)
         {
             // recieve from server, that some client is ready
             // when all remote clients is ready, start the game
             
-            clog << "CLIENT, Packet::ID_READY" << endl;
+            //clog << "CLIENT, Packet::ID_READY" << endl;
             m_needToBeginGame = true;
             m_playing = true;
         }
@@ -828,16 +844,39 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
             // not possible
             clog << "WARNING: " << Exception("invalid client packet type = ID_CONTROL") << endl;
         }
-        else if (type == Packet::ID_REFEREE_PROCESS)
+        else if (type == Packet::ID_RESETCOMBO)
         {
             if (m_inMenu) return;
 
-            //let the referee process the fault on client side
-            RefereeProcessPacket p(packet);
-            Body* b1 = m_activeBodies[p.m_idx1]->body;
-            Body* b2 = m_activeBodies[p.m_idx2]->body;
+            m_referee->resetCombo();
+        }
+        else if (type == Packet::ID_RESETOWNCOMBO)
+        {
+            if (m_inMenu) return;
 
-            m_referee->process(b1, b2);
+            ComboResetOwnPacket p(packet);
+            Body* player = m_activeBodies[p.m_bodyID]->body;
+
+            m_referee->resetOwnCombo(player);
+        }
+        else if (type == Packet::ID_INCCOMBO)
+        {
+            if (m_inMenu) return;
+
+            ComboIncPacket p(packet);
+            Body* player = m_activeBodies[p.m_bodyID]->body;
+
+            m_referee->incrementCombo(player, player->getPosition()); //(+1)
+        }
+        else if (type == Packet::ID_REFEREE)
+        {
+            if (m_inMenu) return;
+
+            RefereePacket p(packet);
+            Body* body = m_activeBodies[p.m_bodyID]->body;
+
+            Body* ball = getBodyByName("football");
+            m_referee->scoreBoardCritical(p.m_faultID, body->m_id, p.m_points, ball->getPosition());
         }
         else if (type == Packet::ID_SOUND)
         {
@@ -868,7 +907,7 @@ void Network::updateAiProfile(int idx)
 
 void Network::kickClient(int idx)
 {
-    clog << "Network::kickClient - kicking client idx=" << idx << endl;
+    //clog << "Network::kickClient - kicking client idx=" << idx << endl;
     ENetPeer* eraseable = NULL;
     for each_(PlayerMap, m_clients, client)
     {
@@ -902,7 +941,7 @@ void Network::startGame()
         }
     }
     
-    clog << "SERVER, m_ready_count=" << m_ready_count << endl;
+    //clog << "SERVER, m_ready_count=" << m_ready_count << endl;
     m_ready_count += ai_count;
     m_needToStartGame = true;
 
@@ -929,7 +968,7 @@ void Network::iAmReady()
     {
         m_ready_count++;
 
-        clog << "SERVER, m_ready_count=" << m_ready_count << endl;
+        //clog << "SERVER, m_ready_count=" << m_ready_count << endl;
         if (m_ready_count >= 4)
         {
             m_needToBeginGame = true;

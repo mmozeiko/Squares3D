@@ -26,6 +26,14 @@ void LocalPlayer::control()
     if ((mouse.b & 2) == 2)
     {
         setDirection(Vector::Zero);
+        setRotation(Vector::Zero);
+
+        if (m_cpacket != NULL)
+        {
+            delete m_cpacket;
+        }
+        
+        m_cpacket = new ControlPacket(Network::instance->getLocalIdx(), Vector::Zero, Vector::Zero, false, false);
         return;
     }
     Vector direction = curMouse;
