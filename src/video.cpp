@@ -52,7 +52,6 @@ Video::Video() :
     m_haveShadowsFB(false),
     m_haveVBO(false),
     m_shadowMap3ndPass(false),
-    m_lastBound(NULL),
     m_haveShaders(false)
 {
     setInstance(this);
@@ -365,17 +364,10 @@ void Video::end() const
 
 void Video::bind(const Material* material) const
 {
-    if (m_lastBound == material)
-    {
-        return;
-    }
-
     if (material != NULL)
     {
         material->bind();
     }
-
-    m_lastBound = material;
 }
 
 Texture* Video::loadTexture(const string& name, bool mipmap)

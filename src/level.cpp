@@ -260,7 +260,7 @@ void Level::prepare()
 
 void Level::render() const
 {
-    m_materials.find("penguin")->second->bind();
+    //m_materials.find("penguin")->second->bind();
 
     for each_const(BodiesMap, m_bodies, iter)
     {

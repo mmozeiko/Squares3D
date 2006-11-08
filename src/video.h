@@ -88,8 +88,6 @@ private:
 
     vector<float> m_circleSin;
     vector<float> m_circleCos;
-
-    mutable const Material* m_lastBound;
 };
 
 #endif
