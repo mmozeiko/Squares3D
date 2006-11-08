@@ -627,11 +627,11 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_QUIT)
         {
             // client is quitting
-            //clog << "Client is quitting" << endl;
+            clog << "SERVER: Packet::ID_QUIT, client is quitting" << endl;
             if (foundIn(m_clients, peer))
             {
                 int idx = m_clients[peer];
-                //clog << "erasing old, and joinging some ai, idx=" << idx << endl;
+                clog << "erasing old, and joinging some ai, idx=" << idx << endl;
                 m_clients.erase(peer);
                 m_aiIdx[idx] = true;
                 m_profiles[idx] = getRandomAI();
@@ -680,7 +680,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
 
                 clog << "SERVER, Packet::ID_READY, m_ready_count=" << m_ready_count << endl;
 
-                if (m_ready_count == 4)
+                if (m_ready_count >= 4)
                 {
                     m_needToBeginGame = true;
                     m_playing = true;
@@ -760,6 +760,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         }
         else if (type == Packet::ID_KICK)
         {
+            clog << "CLIENT: Packet::ID_KICK, i have been kicked ;(" << endl;
             // kick teh user
             send(m_server, QuitPacket(), true);
             if (m_inMenu)
@@ -817,14 +818,10 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
             // recieve update from server, update body
             UpdatePacket p(packet);
 
-            // ignore update, if server tries to update this client player body
-            //if (m_players[m_localIdx]->m_body != m_activeBodies[p.m_idx]->body)
-            //{
-                ActiveBody* & ab = m_activeBodies[p.m_idx];
-                ab->lastPosition = p.m_position;
+            ActiveBody* & ab = m_activeBodies[p.m_idx];
+            ab->lastPosition = p.m_position;
 
-                ab->body->setMatrix(ab->lastPosition );
-            //}
+            ab->body->setMatrix(ab->lastPosition );
         }
         else if (type == Packet::ID_CONTROL)
         {
@@ -871,21 +868,21 @@ void Network::updateAiProfile(int idx)
 
 void Network::kickClient(int idx)
 {
+    clog << "Network::kickClient - kicking client idx=" << idx << endl;
     ENetPeer* eraseable = NULL;
     for each_(PlayerMap, m_clients, client)
     {
         if (client->second == idx)
         {
-            eraseable = client->first;
+            //eraseable = client->first;
             send(client->first, KickPacket("kick"), true);
-            break;
         }
         else
         {
             send(client->first, JoinPacket(idx, g_version, m_profiles[idx]), true);
         }
     }
-    m_clients.erase(eraseable); 
+    //m_clients.erase(eraseable); 
     m_aiIdx[idx] = true;
 }
 
@@ -897,7 +894,7 @@ void Network::startGame()
         ai_count += (m_aiIdx[i] ? 1 : 0);
     }
     
-    for each_(PlayerMap, m_clients, client)
+    for each_const(PlayerMap, m_clients, client)
     {
         if (client->second != m_localIdx)
         {
@@ -908,6 +905,18 @@ void Network::startGame()
     clog << "SERVER, m_ready_count=" << m_ready_count << endl;
     m_ready_count += ai_count;
     m_needToStartGame = true;
+
+    if (m_ready_count >= 4)
+    {
+        m_needToBeginGame = true;
+        m_playing = true;
+
+        for each_const(PlayerMap, m_clients, client)
+        {
+            send(client->first, ReadyPacket(), true);
+        }
+    }
+
 }
 
 void Network::iAmReady()
@@ -921,7 +930,7 @@ void Network::iAmReady()
         m_ready_count++;
 
         clog << "SERVER, m_ready_count=" << m_ready_count << endl;
-        if (m_ready_count == 4)
+        if (m_ready_count >= 4)
         {
             m_needToBeginGame = true;
             m_playing = true;
