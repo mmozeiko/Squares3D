@@ -76,6 +76,7 @@ void RefereeBase::scoreBoardCritical(int faultID, const string& name, int points
         m_sound->play(m_soundFault);
     }
     m_scoreBoard->resetCombo();
+	m_scoreBoard->fadeOutLastTouchedMsg();
 }
 
 void RefereeBase::loadFaultsVector()

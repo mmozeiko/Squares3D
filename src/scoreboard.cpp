@@ -121,8 +121,6 @@ void ScoreBoard::addPoints(const string& name, int points)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += points;
-
-    m_lastTouchedMessage->fadeOut();
 }
 
 int ScoreBoard::getSelfTotalPoints(const string& name)
@@ -139,6 +137,11 @@ void ScoreBoard::incrementCombo(const string& name, const Vector& color, const V
     acc.m_combo++;
 
     m_lastTouchedMessage->setMessage(name, color);
+}
+
+void ScoreBoard::fadeOutLastTouchedMsg()
+{
+	m_lastTouchedMessage->fadeOut();
 }
 
 void ScoreBoard::update()

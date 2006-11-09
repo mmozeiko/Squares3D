@@ -47,7 +47,9 @@ public:
     void resetOwnCombo(const string& name);
     void reset();
     void update();
-    StringIntPair getMostScoreData();
+    void fadeOutLastTouchedMsg();
+
+	StringIntPair getMostScoreData();
     
 
 private:
