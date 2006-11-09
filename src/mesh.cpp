@@ -97,7 +97,7 @@ void Mesh::render() const
     }
 }
 
-CubeMesh::CubeMesh(const Vector& size) : Mesh(GL_TRIANGLE_STRIP, false)
+CubeMesh::CubeMesh(const Vector& size) : Mesh(GL_TRIANGLES, false)
 {
     // -0.5 .. 0.5
     static const float vertices[][3] = {
@@ -112,13 +112,13 @@ CubeMesh::CubeMesh(const Vector& size) : Mesh(GL_TRIANGLE_STRIP, false)
         /* 7 */ { -0.5,  0.5,  0.5 },
     };
 
-    static const int faces[][4] = {
-        { 0, 1, 3, 2 }, // bottom
-        { 4, 7, 5, 6 }, // up
-        { 4, 5, 0, 1 }, // front
-        { 6, 7, 2, 3 }, // back
-        { 7, 4, 3, 0 }, // left
-        { 5, 6, 1, 2 }, // right
+    static const int faces[][6] = {
+        { 0, 1, 3, 3, 1, 2 }, // bottom
+        { 4, 7, 5, 5, 7, 6 }, // up
+        { 4, 5, 0, 0, 5, 1 }, // front
+        { 6, 7, 2, 2, 7, 3 }, // back
+        { 7, 4, 3, 3, 4, 0 }, // left
+        { 5, 6, 1, 1, 6, 2 }, // right
     };
     
     static const float normals[][3] = {
@@ -134,12 +134,14 @@ CubeMesh::CubeMesh(const Vector& size) : Mesh(GL_TRIANGLE_STRIP, false)
         { 1.0, 0.0 },
         { 0.0, 0.0 },
         { 1.0, 1.0 },
+        { 1.0, 1.0 },
+        { 0.0, 0.0 },
         { 0.0, 1.0 },
     };
 
     for (size_t i = 0; i < sizeOfArray(faces); i++)
     {
-        for (int k=0; k<4; k++)
+        for (int k=0; k<6; k++)
         {
             m_normals.push_back(Vector(normals[i][0], normals[i][1], normals[i][2]));
             m_texcoords.push_back(UV(uv[k][0], uv[k][1]));
