@@ -70,7 +70,7 @@
             <name>Joz1k0</name>
             <collision>player_small</collision>
             <properties   speed="1.0" accuracy="0.8" jump="0.4" />
-            <color r="0.2"  g="0.2" b="0.2" />
+            <color r="1.0"  g="0.5" b="0.0" />
         </profile>
         <profile>
             <name>Herr Tag</name>
@@ -82,7 +82,7 @@
             <name>A.Chalis</name>
             <collision>player_thin</collision>
             <properties   speed="0.2" accuracy="1.0" jump="1.0" />
-            <color r="0.5"  g="0.5" b="0.5" />
+            <color r="1.0"  g="0.0" b="0.0" />
         </profile>
         <profile>
             <name>Undo17</name>

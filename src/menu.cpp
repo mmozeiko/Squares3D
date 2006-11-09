@@ -18,6 +18,7 @@
 #include "profile.h"
 #include "colors.h"
 #include "network.h"
+#include "chat.h"
 
 // BUGBUG: ugly ugly windows.h include defines:
 #undef min
@@ -53,7 +54,8 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_soundChange(NULL),
     m_mousePrevPos(Vector(static_cast<float>(Video::instance->getResolution().first/2),
                           0.0f, 
-                          static_cast<float>(Video::instance->getResolution().second/2)))
+                          static_cast<float>(Video::instance->getResolution().second/2))),
+    m_chat(NULL)
 {
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
@@ -91,6 +93,7 @@ Menu::Menu(Profile* userProfile, int unlockable, int& current) :
     m_music->play();
 
     Network::instance->m_inMenu = true;
+    m_chat = new Chat(Game::instance->m_userProfile->m_name, Game::instance->m_userProfile->m_color);
 }
 
 void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
@@ -121,7 +124,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 	submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_RULES), false, "rules"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CONTROLS), false, "controls"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_CREDITS), false, "credits"));
-    submenu->addEntry(new QuitEntry(this, language->get(TEXT_QUIT_GAME)));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_QUIT_GAME), false, "quitReally"));
 
     m_currentSubmenu = submenu;
     submenu->center(submenuPosition);
@@ -586,7 +589,36 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     titleY = std::max(submenu->m_upper.y, titleY);
     m_submenus["infoServerVersion"] = submenu;
 
+    // Info: Net port failed Submenu
+    submenu = new Submenu(this);
+    submenu->setTitle(language->get(TEXT_INFORMATION), titlePos);
+    submenu->addEntry(new FormatterEntry(this, language->get(TEXT_NET_CREATE_FAILED)));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "startMulti"));
+    // TODO: hack
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    titleY = std::max(submenu->m_upper.y, titleY);
+    m_submenus["infoNetPortFailed"] = submenu;
+
+
+    // Quit really
+    submenu = new Submenu(this);
+
+    submenu->setTitle(language->get(TEXT_QUIT_GAME), titlePos);
+
+    submenu->addEntry(new LabelEntry(this, language->get(TEXT_RLY_QUIT)));
+    submenu->m_entries.back()->disable();
+
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new QuitEntry(this, language->get(TEXT_TRUE)));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_FALSE), true, "main"));
+
+    submenu->m_height += 20;
+    submenu->center(submenuPosition);
+    m_submenus["quitReally"] = submenu;
     
+
     titleY += m_font->getHeight() / 2;
     titleY = std::min(titleY, resY - static_cast<float>(m_fontBig->getHeight()));
     
@@ -602,6 +634,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 Menu::~Menu()
 {
     Network::instance->m_inMenu = false;
+    Network::instance->setChat(NULL);
 
     delete m_sound;
     delete m_sound2;
@@ -621,6 +654,7 @@ Menu::~Menu()
         delete iter->second;
     }
 
+    delete m_chat;
     delete m_backGround;
 }
 
@@ -668,15 +702,25 @@ void Menu::control()
     while (!done)
     {
         key = Input::instance->popKey();
+        done = key==-1;
+        
+        if (Network::instance->m_chat != NULL)
+        {
+            if (m_chat->updateKey(key))
+            {
+                continue;
+            }
+        }
+
         if (key < 32 || key >= 127)
         {
             if (key == GLFW_KEY_ESC)
             {
-                if (m_currentSubmenu == m_submenus["main"])
-                {
-                    m_state = State::Quit;
-                }
-                else
+                //if (m_currentSubmenu == m_submenus["quitReally"])
+                //{
+                //    m_state = State::Quit;
+                //}
+                //else
                 {
                     // assume "back" is last entry
                     size_t i = m_currentSubmenu->m_entries.size()-1;
@@ -689,7 +733,6 @@ void Menu::control()
             }
             m_currentSubmenu->control(key);
         }
-        done = key==-1;
     }
 
     done = false;
@@ -698,6 +741,10 @@ void Menu::control()
         int ch = Input::instance->popChar();
         m_currentSubmenu->onChar(ch);
         done = ch==-1;
+    }
+    if (Input::instance->key(GLFW_KEY_BACKSPACE))
+    {
+        m_currentSubmenu->onBackspace();
     }
 }
 
@@ -713,4 +760,9 @@ void Menu::render() const
     m_font->begin2();
     m_currentSubmenu->render();
     m_font->end();
+
+    if (Network::instance->m_chat != NULL)
+    {
+        m_chat->render();
+    }
 }

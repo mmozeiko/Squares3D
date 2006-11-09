@@ -30,6 +30,7 @@
 #include "fence.h"
 #include "random.h"
 #include "hdr.h"
+#include "chat.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -46,16 +47,43 @@ template <class World> World* System<World>::instance = NULL;
 
 State::Type World::progress()
 {
+    // TODO: move key reading to update
     int key;
     do
     {
         key = Input::instance->popKey();
+        
+        if (Network::instance->m_isSingle == false)
+        {
+            if (m_chat->updateKey(key))
+            {
+                continue;
+            }
+        }
+
         if (key == GLFW_KEY_ESC)
         {
             if (!Network::instance->m_isSingle && (!Network::instance->m_needToBeginGame || Network::instance->m_needToQuitGame))
             {
-                // quit game
-                return State::Menu;
+                if (m_networkPaused)
+                {
+                    m_messages->remove(m_escMessage);
+                    m_escMessage = NULL;
+                    m_networkPaused = false;
+                }
+                else
+                {
+                    m_networkPaused = true;
+                    float resY = static_cast<float>(Video::instance->getResolution().second);
+                    m_escMessage = new Message(
+                                    Language::instance->get(TEXT_NETWORK_ESC_MESSAGE), 
+                                    Vector(static_cast<float>(Video::instance->getResolution().first) / 2, 
+                                           resY / 2 + resY / 3, 
+                                           0.0f), 
+                                    White,
+                                    Font::Align_Center);
+                    m_messages->add2D(m_escMessage);
+                }
             }
 
             else // local game
@@ -130,6 +158,18 @@ State::Type World::progress()
                 return returnState;            
             }
         }
+        else // networked
+        {
+            if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)) 
+            {
+                if (m_networkPaused)
+                {
+                    m_messages->remove(m_escMessage);
+                    m_escMessage = NULL;
+                    return State::Menu;
+                }
+            }
+        }
     }
     while (key != -1);
 
@@ -169,18 +209,23 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     m_unlockable(unlockable),
     m_current(current),
     m_waitMessage(NULL),
-    m_hdr(NULL)
+    m_hdr(NULL),
+    m_chat(NULL),
+    m_networkPaused(false)
 {
     setInstance(this); // MUST go first
 
     m_framebuffer = new FrameBuffer();
 
+    m_chat = new Chat(m_userProfile->m_name, m_userProfile->m_color);
     m_hdr = new HDR();
     m_hdr->init();
 
     setupShadowStuff();
     setLight(Vector(-15.0f, 35.0f, 38.0f));
 
+    Input::instance->startCharBuffer();
+    Input::instance->startKeyBuffer();
 }
 
 void World::init()
@@ -279,6 +324,7 @@ void World::init()
     if (!Network::instance->m_isSingle)
     {
         Network* net = Network::instance;
+        net->setChat(m_chat);
 
         net->setReferee(m_referee);
 
@@ -299,8 +345,6 @@ void World::init()
     }
 
     m_scoreBoard->reset();
-    Input::instance->startKeyBuffer();
-
 
     if (!m_level->m_music.empty())
     {
@@ -331,9 +375,7 @@ void World::init()
 }
 
 World::~World()
-{
-    Input::instance->endKeyBuffer();
-    
+{  
     // NETWORK-
     
     Network::instance->close();
@@ -359,11 +401,15 @@ World::~World()
     NewtonDestroyAllBodies(m_newtonWorld);
     NewtonDestroy(m_newtonWorld);
 
+    delete m_chat;
     delete m_hdr;
     delete m_scoreBoard;
     delete m_messages;
     delete m_skybox;
     delete m_camera;
+    
+    Input::instance->endCharBuffer();
+    Input::instance->endKeyBuffer();
 }
 
 void World::control()
@@ -500,7 +546,7 @@ void World::render() const
     m_hdr->render();
 
     // text messages are last
-    if (m_freeze)
+    if (m_freeze || m_networkPaused)
     {
         if (m_escMessage != NULL || m_waitMessage != NULL)
         {
@@ -528,6 +574,10 @@ void World::render() const
         }
     }
 
+    if (Network::instance->m_isSingle == false)
+    {
+        m_chat->render();
+    }
     if (m_referee->m_over != NULL)
     {
         Message* m = m_referee->m_over;

@@ -7,6 +7,7 @@
 class Vector;
 class ScoreMessage;
 class ComboMessage;
+class LastTouchedMessage;
 class Messages;
 class Player;
 
@@ -50,15 +51,16 @@ public:
     
 
 private:
-    Scores         m_scores;
-    Order          m_playerOrder;
-    int            m_joinedCombo;
-    Messages*      m_messages;
+    Scores               m_scores;
+    Order                m_playerOrder;
+    int                  m_joinedCombo;
+    Messages*            m_messages;
     //TODO: make universal
-    Board          m_boardPositions;
-    ScoreMessages  m_scoreMessages;
-    ComboMessage*  m_comboMessage;
-    ComboMessages  m_selfComboMessages;
+    Board                m_boardPositions;
+    ScoreMessages        m_scoreMessages;
+    ComboMessage*        m_comboMessage;
+    LastTouchedMessage*  m_lastTouchedMessage;
+    ComboMessages        m_selfComboMessages;
 };
 
 #endif

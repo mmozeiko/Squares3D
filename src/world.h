@@ -24,6 +24,7 @@ class Grass;
 class Profile;
 class Game;
 class HDR;
+class Chat;
 
 typedef vector<Profile*> ProfilesVector;
 
@@ -86,6 +87,8 @@ private:
     void shadowMapPass3() const;
 
     Message* m_waitMessage;
+    Chat*    m_chat;
+    bool     m_networkPaused;
 };
 
 #endif

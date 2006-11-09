@@ -13,6 +13,7 @@
 #include "game.h"
 #include "config.h"
 #include "version.h"
+#include "chat.h"
 
 /*** COLORVALUE ***/
 
@@ -20,12 +21,12 @@ static const pair<string, Vector> namesToColors[] = {
       make_pair("Red", Red),
       make_pair("Green", Green),
       make_pair("Blue", Blue),
-      make_pair("Black", Black),
+      make_pair("Violet", Violet),
       make_pair("White", White),
       make_pair("Yellow", Yellow),
       make_pair("Cyan", Cyan),
       make_pair("Magenta", Magenta),
-      make_pair("Grey", Grey),
+      make_pair("Orange", Orange),
       make_pair("Pink", Pink)
 };
 
@@ -204,6 +205,7 @@ void ColorEntry::click(int button)
         m_menu->m_sound->play(m_menu->m_soundChange);
     }
     m_binding = colors.find(m_value.getCurrent())->second;
+    m_menu->m_chat->updateColor(m_binding);
 }
 
 int ColorEntry::getMaxRightWidth() const
@@ -230,13 +232,6 @@ void WritableEntry::render() const
 
 void WritableEntry::click(int key)
 { 
-    if (key == GLFW_KEY_BACKSPACE)
-    {
-        if (m_binding.size() > 0)
-        {
-            m_binding.erase(m_binding.end()-1); // TODO: UTF-8 warning!!
-        }
-    }
 }
 
 void WritableEntry::onChar(int ch)
@@ -251,6 +246,15 @@ void WritableEntry::onChar(int ch)
     if (ch<=127 && m_menu->m_font->hasChar(ch) && (static_cast<int>(m_binding.size()) < x))
     {
         m_binding.push_back(ch);
+    }
+}
+
+void WritableEntry::onBackspace()
+{
+    if (m_binding.size() > 0 && m_backTimer.read() > 0.05f)
+    {
+        m_binding.erase(m_binding.end()-1); // TODO: UTF-8 warning!!
+        m_backTimer.reset();
     }
 }
 
@@ -347,6 +351,7 @@ void NetPlayerEntry::render() const
 {
     glPushMatrix();
     glTranslatef(static_cast<float>(- this->getMaxLeftWidth()), 0.0f, 0.0f);
+    glColor3fv(Network::instance->getProfileColor(m_idx).v);
     m_font->render(getString(), Font::Align_Left);
     glPopMatrix();
 }
@@ -379,32 +384,33 @@ void NetPlayerEntry::click(int button)
 
 void NewHostEntry::click(int button) 
 { 
+    SubmenuEntry::click(button);
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
     {
         Network::instance->createServer();
         Network::instance->setPlayerProfile(Game::instance->m_userProfile);
         Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, -1);        
+        Network::instance->setChat(m_menu->m_chat);
     }
-    SubmenuEntry::click(button);
 }
 
 void JoinHostEntry::click(int button) 
 { 
+    SubmenuEntry::click(button);
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
     {
         Network::instance->createClient();
         Network::instance->createRemoteProfiles();
     }
-    SubmenuEntry::click(button);
 }
 
 void CloseHostEntry::click(int button) 
 {
+    SubmenuEntry::click(button);
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1 || button == GLFW_KEY_ESC)
     {
         Network::instance->close();
     }
-    SubmenuEntry::click(button);
 }
 
 
@@ -439,6 +445,7 @@ void NetRemotePlayerEntry::render() const
 {
     glPushMatrix();
     glTranslatef(static_cast<float>(- this->getMaxLeftWidth()), 0.0f, 0.0f);
+    glColor3fv(Network::instance->getProfileColor(m_idx).v);
     m_font->render(getString(), Font::Align_Left);
     glPopMatrix();
 }

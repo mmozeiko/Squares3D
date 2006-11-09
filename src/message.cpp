@@ -3,6 +3,7 @@
 #include "formatter.h"
 #include "font.h"
 #include "video.h"
+#include "colors.h"
 
 static const float FADE_SPEED = 2.0f;
 
@@ -151,7 +152,40 @@ string ComboMessage::getText() const
 
 bool ComboMessage::applyDelta(float delta)
 {
-    if (m_points < 2)
+    if (m_points > 1)
+    {
+        m_color.w = 1.0f;
+        m_previousPoints = m_points;
+    }
+    else
+    {
+        if (m_color.w > 0.0f)
+        {
+            m_color.w -= delta * FADE_SPEED;
+        }
+    }
+    return false;
+}
+
+void ComboMessage::render(const Font* font) const
+{
+    if (m_color.w > 0.0f)
+    {
+        Message::render(font);
+    }
+}
+
+LastTouchedMessage::LastTouchedMessage(const Vector&   position, 
+                                       Font::AlignType align,
+                                       int             fontSize) : 
+    Message("", position, White, align, fontSize),
+    m_fadeOut(false)
+{
+}
+
+bool LastTouchedMessage::applyDelta(float delta)
+{
+    if (m_fadeOut)
     {
         if (m_color.w > 0.0f)
         {
@@ -161,7 +195,26 @@ bool ComboMessage::applyDelta(float delta)
     else
     {
         m_color.w = 1.0f;
-        m_previousPoints = m_points;
     }
     return false;
+}
+
+void LastTouchedMessage::setMessage(const string& message, const Vector& color)
+{
+    m_text = message;
+    m_color = color;
+    m_fadeOut = false;
+}
+
+void LastTouchedMessage::render(const Font* font) const
+{
+    if (m_color.w > 0.0f)
+    {
+        Message::render(font);
+    }
+}
+
+void LastTouchedMessage::fadeOut()
+{
+    m_fadeOut = true;
 }

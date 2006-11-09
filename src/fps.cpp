@@ -51,8 +51,8 @@ void FPS::render() const
     m_font->begin();
 
     glTranslatef(
-        static_cast<float>(res.first - m_width)/2, 
-        static_cast<float>(res.second - m_font->getHeight(m_fps)),
+        3, //static_cast<float>(res.first) - (m_width)-3, 
+        static_cast<float>(res.second) -  (3 * m_font->getHeight(m_fps) + 5),
         0.0f);
     glColor3fv(m_color.v);
     m_font->render(m_fps);

@@ -65,14 +65,13 @@ void Camera::control()
         }
     }
 
-    m_targetDirection = Vector::Zero;
-
     if (m_uuberCamera == false)
     {
+        m_targetDirection = Vector::Zero;
         m_targetDirection.z = static_cast<float>(mouse.z);
     }
 
-    if (Input::instance->key(GLFW_KEY_BACKSPACE) && m_lastUuberKey==false)
+    if (Input::instance->key(GLFW_KEY_TAB) && m_lastUuberKey==false)
     {
         m_uuberCamera = !m_uuberCamera;
 
@@ -93,7 +92,7 @@ void Camera::control()
         m_lastUuberKey = true;
     }
 
-    if (Input::instance->key(GLFW_KEY_BACKSPACE)==false && m_lastUuberKey==true)
+    if (Input::instance->key(GLFW_KEY_TAB)==false && m_lastUuberKey==true)
     {
         m_lastUuberKey = false;
     }

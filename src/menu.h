@@ -17,6 +17,7 @@ class Profile;
 class Sound;
 class SoundBuffer;
 class Game;
+class Chat;
 
 extern string g_neededVersion;
 
@@ -52,6 +53,7 @@ public:
     SoundBuffer* m_soundBackClick;
     SoundBuffer* m_soundChange;
     Vector       m_mousePrevPos;
+    Chat*        m_chat;
 
 private:
     State::Type  m_state;

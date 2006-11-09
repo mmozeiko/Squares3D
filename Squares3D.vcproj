@@ -210,6 +210,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\chat.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\chat.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\message.cpp"
 					>
 				</File>

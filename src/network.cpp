@@ -14,6 +14,7 @@
 #include "world.h"
 #include "properties.h"
 #include "config.h"
+#include "chat.h"
 
 template <class Network> Network* System<Network>::instance = NULL;
 
@@ -31,7 +32,9 @@ Network::Network() :
     m_needToStartGame(false),
     m_needToBeginGame(false),
     m_needToQuitGame(false),
-    m_netfps(1.0f/Config::instance->m_misc.net_fps)
+    m_netfps(1.0f/Config::instance->m_misc.net_fps),
+    m_chat(NULL),
+    m_localIdx(0)
 {
     clog << "Initializing network." << endl;
 
@@ -73,7 +76,9 @@ void Network::createServer()
     m_host = enet_host_create(&address, 3, 0, 0); // 3 clients
     if (m_host == NULL)
     {
-        throw Exception("enet_host_create failed");
+        //throw Exception("enet_host_create failed");
+        m_menu->setSubmenu("infoNetPortFailed");
+        return;
     }
 
     m_clients.clear();
@@ -85,6 +90,7 @@ void Network::createServer()
     m_needToQuitGame = false;
     m_playing = false;
     m_ready_count = 0;
+    m_localIdx = 0;
 }
 
 void Network::createClient()
@@ -92,6 +98,7 @@ void Network::createClient()
     m_host = enet_host_create(NULL, 1, 0, 0);
     if (m_host == NULL)
     {
+        //infoNetPortFailed
         throw Exception("enet_host_create failed");
     }
 
@@ -102,6 +109,7 @@ void Network::createClient()
     m_needToBeginGame = false;
     m_needToQuitGame = false;
     m_playing = false;
+    m_localIdx = -1;
 }
 
 bool Network::connect(const string& host)
@@ -183,6 +191,8 @@ void Network::close()
     m_isSingle = true;
     m_isServer = false;
     m_ready_count = 0;
+
+    m_chat = NULL;
 }
 
 void Network::sendUpdatePacket()
@@ -300,6 +310,9 @@ void Network::update()
 
                 // click the menu button!
                 m_menu->setSubmenu(m_lobbySubmenu);
+
+                // activate client chat!
+                m_chat = m_menu->m_chat;
             }
             break;
 
@@ -597,7 +610,35 @@ void Network::addSoundPacket(byte id, const Vector& position)
     //clog << "SERVER: sound, " << (int)id << endl;
     m_packetsBuffer.push_back(new SoundPacket(id, position));
 }
-    
+
+void Network::addChatPacket(const string& msg)
+{
+    if (m_isSingle)
+    {
+        return;
+    }
+    if (m_isServer)
+    {
+        if (m_inMenu)
+        {
+            ChatPacket packet(m_localIdx, msg);
+
+            for each_const(PlayerMap, m_clients, client)
+            {
+                send(client->first, packet, true);
+            }
+        }
+        else
+        {
+            m_packetsBuffer.push_back(new ChatPacket(m_localIdx, msg));
+        }
+    }
+    else
+    {
+        send(m_server, ChatPacket(m_localIdx, msg), true);
+    }
+}
+
 void Network::processPacket(ENetPeer* peer, const bytes& packet)
 {
     if (packet.size() < 1)
@@ -675,7 +716,22 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         }
         else if (type == Packet::ID_CHAT)
         {
-            // not used
+            if (m_chat == NULL)
+            {
+                return;
+            }
+            
+            ChatPacket p(packet);
+            m_chat->recieve(m_profiles[p.m_player]->m_name, m_profiles[p.m_player]->m_color, p.m_msg);
+
+            for each_(PlayerMap, m_clients, client)
+            {
+                if (client->first != peer)
+                {
+                    send(client->first, p, true);
+                }
+            }
+
         }
         else if (type == Packet::ID_START)
         {
@@ -807,7 +863,12 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         }
         else if (type == Packet::ID_CHAT)
         {
-            // not used
+            if (m_chat == NULL)
+            {
+                return;
+            }
+            ChatPacket p(packet);
+            m_chat->recieve(m_profiles[p.m_player]->m_name, m_profiles[p.m_player]->m_color, p.m_msg);
         }
         else if (type == Packet::ID_START)
         {
@@ -980,4 +1041,28 @@ void Network::iAmReady()
             }
         }
     }
+}
+
+void Network::setChat(Chat* chat)
+{
+    m_chat = chat;
+}
+
+string Network::getMaxPlayerName() const
+{
+    string m;
+    for (int i=0; i<4; i++)
+    {
+        if (m_profiles[i]->m_name.size() > m.size())
+        {
+            m = m_profiles[i]->m_name;
+        }
+    }
+    return m;
+}
+
+Vector Network::getProfileColor(size_t idx) const
+{
+    assert(idx >=0 && idx < 4);
+    return m_profiles[idx]->m_color;
 }

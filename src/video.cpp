@@ -195,66 +195,6 @@ void Video::init()
     glEnableClientState(GL_VERTEX_ARRAY); 
     glEnableClientState(GL_TEXTURE_COORD_ARRAY); 
     glEnableClientState(GL_NORMAL_ARRAY); 
-
-    // -0.5 .. 0.5
-    static const float vertices[][3] = {
-        /* 0 */ { -0.5, -0.5, -0.5 },
-        /* 1 */ {  0.5, -0.5, -0.5 },
-        /* 2 */ {  0.5, -0.5,  0.5 },
-        /* 3 */ { -0.5, -0.5,  0.5 },
-
-        /* 4 */ { -0.5,  0.5, -0.5 },
-        /* 5 */ {  0.5,  0.5, -0.5 },
-        /* 6 */ {  0.5,  0.5,  0.5 },
-        /* 7 */ { -0.5,  0.5,  0.5 },
-    };
-
-    static const int faces[][4] = {
-        { 0, 1, 3, 2 }, // bottom
-        { 4, 7, 5, 6 }, // up
-        { 4, 5, 0, 1 }, // front
-        { 6, 7, 2, 3 }, // back
-        { 7, 4, 3, 0 }, // left
-        { 5, 6, 1, 2 }, // right
-    };
-    
-    static const float normals[][3] = {
-        {  0.0, -1.0,  0.0 }, // bottom
-        {  0.0,  1.0,  0.0 }, // up
-        {  0.0,  0.0, -1.0 }, // front
-        {  0.0,  0.0,  1.0 }, // back
-        { -1.0,  0.0,  0.0 }, // left
-        {  1.0,  0.0,  0.0 }, // right
-    };
-
-    static const float uv[][2] = {
-        { 1.0, 0.0 },
-        { 0.0, 0.0 },
-        { 1.0, 1.0 },
-        { 0.0, 1.0 },
-    };
-
-    m_cubeList = Video::instance->newList();
-    glNewList(m_cubeList, GL_COMPILE);
-
-    for (size_t i = 0; i < sizeOfArray(faces); i++)
-    {
-        glBegin(GL_TRIANGLE_STRIP);
-        for (int k=0; k<4; k++)
-        {
-            glTexCoord2fv(uv[k]);
-            glNormal3fv(normals[i]);
-            glVertex3fv(vertices[faces[i][k]]);
-        }
-        glEnd();
-    }
-
-    glEndList();
-}
-
-void Video::renderCube() const
-{
-    glCallList(m_cubeList);
 }
 
 void Video::renderFace(const Face& face) const

@@ -19,7 +19,7 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     m_messages(messages)
 {
     //TODO: make universal
-    float fontSize = 32;
+    int fontSize = 32;
     float resX = static_cast<float>(Video::instance->getResolution().first);
     float resY = static_cast<float>(Video::instance->getResolution().second);
     float tabX = resX / 70;
@@ -32,12 +32,17 @@ ScoreBoard::ScoreBoard(Messages* messages) :
     
     reset();
 
+    m_lastTouchedMessage = new LastTouchedMessage(Vector(resX / 2, tabY, 0),
+                                      Font::Align_Center,
+                                      fontSize);
+    m_messages->add2D(m_lastTouchedMessage);
+
     m_comboMessage = new ComboMessage(Language::instance->get(TEXT_HITS_COMBO), 
-                                      Vector(resX / 2, 50.0f, 0),
+                                      Vector(resX / 2, tabY + fontSize, 0),
                                       Yellow,
                                       0,
                                       Font::Align_Center,
-                                      32);
+                                      fontSize);
     m_messages->add2D(m_comboMessage);
 }
 
@@ -116,6 +121,8 @@ void ScoreBoard::addPoints(const string& name, int points)
 {
     Account& acc = m_scores.find(name)->second;
     acc.m_total += points;
+
+    m_lastTouchedMessage->fadeOut();
 }
 
 int ScoreBoard::getSelfTotalPoints(const string& name)
@@ -130,6 +137,8 @@ void ScoreBoard::incrementCombo(const string& name, const Vector& color, const V
     m_joinedCombo++;
     Account& acc = m_scores.find(name)->second;
     acc.m_combo++;
+
+    m_lastTouchedMessage->setMessage(name, color);
 }
 
 void ScoreBoard::update()

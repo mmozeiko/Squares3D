@@ -109,16 +109,32 @@ public:
         int             points,
         Font::AlignType align = Font::Align_Center,
         int             fontSize = 32);
-    virtual ~ComboMessage() {}
 
     bool applyDelta(float delta);
-    bool render();
+    void render(const Font* font) const;
 
     int m_points;
 
 protected:
     int m_previousPoints;
     string getText() const;
+};
+
+class LastTouchedMessage : public Message
+{
+public:
+    LastTouchedMessage(const Vector&   position, 
+                       Font::AlignType align = Font::Align_Center,
+                       int             fontSize = 32);
+
+    bool applyDelta(float delta);
+    void render(const Font* font) const;
+    void setMessage(const string& message, const Vector& color);
+    void fadeOut();
+
+private:
+    bool m_fadeOut;
+
 };
 
 #endif

@@ -190,5 +190,13 @@ Incompatible game versions!
 Server has version: $1    
 You have version: $2    
     </item>
+    <item name="NET_CREATE_FAILED" value="Server creation failed (network port unavailable)!"/>
 
+    <item name="RLY_QUIT" value="Do you really want to quit?"/>
+
+    <item name="NETWORK_ESC_MESSAGE">
+Press &lt;ESCAPE&gt; to continue
+
+Press &lt;ENTER&gt; to quit to Main Menu.
+    </item>
 </xml>

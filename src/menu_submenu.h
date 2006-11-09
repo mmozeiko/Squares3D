@@ -29,6 +29,7 @@ public:
     void render() const;
     void control(int key);
     void onChar(int ch);
+    void onBackspace();
     void setTitle(const string& title, const Vector& position);
     void activateNextEntry(bool moveDown);
 

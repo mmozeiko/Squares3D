@@ -105,7 +105,11 @@ void Player::setKick(bool needKick)
             Network::instance->addSoundPacket(sb->first, m_ballBody->getPosition());
 
             // CHARACTER: kick powaaar!
-            m_ballBody->setKickForce(Vector(0, 500, 0)); // 400-700
+            Vector f = m_ballBody->getPosition() - m_body->getPosition();
+            f.norm();
+            f.y = 4.0f;
+            f.norm();
+            m_ballBody->setKickForce(500.0f * f); //Vector(0, 500, 0)); // 400-700
             m_timer.reset();
             m_referee->addDelayedProcess(m_ballBody, m_body, 0.1f);
         }

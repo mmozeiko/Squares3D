@@ -11,7 +11,7 @@ typedef vector<UV>     TexCoords;
 class Mesh
 {
 public:
-    Mesh(GLenum mode, bool normals);
+    Mesh(GLenum mode, bool indexed);
     ~Mesh();
   
     void render() const;
@@ -19,17 +19,27 @@ public:
 protected:
     void init();
 
-    VectorVector m_vertices;
     VectorVector m_normals; 
     TexCoords    m_texcoords;
+    VectorVector m_vertices;
 
     UShortVector m_indices;
 
 private:
-    GLuint  m_buffers[4];
-    bool    m_haveNormals;
+    GLuint  m_buffers[2];
+    
+    GLuint  m_texcoordOffset;
+    GLuint  m_verticesOffset;
+
     GLenum  m_mode;
     GLsizei m_indicesCount;
+    bool    m_indexed;
+};
+
+class CubeMesh : public Mesh
+{
+public:
+    CubeMesh(const Vector& size);
 };
 
 class SphereMesh : public Mesh

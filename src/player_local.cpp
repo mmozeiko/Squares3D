@@ -41,7 +41,7 @@ void LocalPlayer::control()
     direction.z = -direction.z;
     direction /= 8.9f;
 
-    direction = 0.8f * direction + 0.15f * m_lastMove[1] + 0.05f * m_lastMove[0];
+    //direction = 0.8f * direction + 0.15f * m_lastMove[1] + 0.05f * m_lastMove[0];
 
     m_lastMove[0] = m_lastMove[1];
     m_lastMove[1] = direction;

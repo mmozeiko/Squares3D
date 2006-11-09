@@ -31,7 +31,7 @@ public:
         ID_SOUND = 13,
         ID_INCCOMBO = 14,
         ID_RESETCOMBO = 15,
-        ID_RESETOWNCOMBO = 16
+        ID_RESETOWNCOMBO = 16,
     };
 
     const bytes& data() const;
@@ -191,6 +191,16 @@ public:
 
     byte   m_id;
     Vector m_position;
+};
+
+class ChatPacket : public Packet
+{
+public:
+    ChatPacket(const bytes& data);
+    ChatPacket(byte player, const string& msg);
+
+    byte   m_player;
+    string m_msg;
 };
 
 #endif

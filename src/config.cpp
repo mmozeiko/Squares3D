@@ -8,7 +8,7 @@ template <class Config> Config* System<Config>::instance = NULL;
 const string Config::CONFIG_FILE = "/config.xml";
 
 const VideoConfig Config::defaultVideo = { 800, 600, true, true, 0, 0, 1, 1, false, 1, 1, true };
-const AudioConfig Config::defaultAudio = { true, 5, 5 };
+const AudioConfig Config::defaultAudio = { true, 3, 5 };
 const MiscConfig Config::defaultMisc = { true, "en", 5.0f, "localhost", 12321, 40.0f };
 
 Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultMisc)
@@ -28,7 +28,7 @@ Config::Config() : m_video(defaultVideo), m_audio(defaultAudio), m_misc(defaultM
     if (version != g_version)
     {
         // config file version mismatch
-        return;
+        //return;
     }
 
     // TODO: maybe rewrite with map<string, variable&>

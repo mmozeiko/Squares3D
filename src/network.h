@@ -26,6 +26,7 @@ class RefereeBase;
 class RemotePlayer;
 class RefereeProcessPacket;
 class SoundPacket;
+class Chat;
 
 struct ActiveBody
 {
@@ -71,6 +72,7 @@ public:
     void setMenuEntries(Menu* menu, const string& lobbySubmenu, const string& joinSubmenu);
     
     void setReferee(RefereeBase* referee);
+    void setChat(Chat* chat);
 
     void updateAiProfile(int idx);
     void kickClient(int idx);
@@ -82,10 +84,13 @@ public:
     void addResetComboPacket();
     void addIncrementComboPacket(const Body* b1);
     void addRefereePacket(int faultID, const Body* b1, int points);
+    void addChatPacket(const string& msg);
 
     Body* getBodyByName(const string& name) const;
     int getBodyIdx(const Body* body) const;
 
+    string getMaxPlayerName() const;
+    Vector getProfileColor(size_t idx) const;
 
     bool m_needDisconnect;
     bool m_disconnected;
@@ -97,7 +102,8 @@ public:
     bool m_needToStartGame;
     bool m_needToBeginGame;
     bool m_needToQuitGame;
-    bool m_playing;
+    bool  m_playing;
+    Chat* m_chat;
 
 private:
     ENetHost* m_host;

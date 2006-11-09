@@ -14,6 +14,11 @@ void Submenu::onChar(int ch)
     m_entries[m_activeEntry]->onChar(ch);
 }
 
+void Submenu::onBackspace()
+{
+    m_entries[m_activeEntry]->onBackspace();
+}
+
 void Submenu::control(int key)
 {
     int b;

@@ -74,7 +74,11 @@ string Packet::readString()
         clog << "WARNING: " << Exception("m_pos+length > m_size") << endl;
         return "";
     }
-    string x(&m_data[m_pos], &m_data[m_pos+length]);
+    string x;
+    for (size_t i=m_pos; i<m_pos+length; i++)
+    {
+        x.push_back(m_data[i]);
+    }
     m_pos += length;
     return x;
 }
@@ -347,4 +351,16 @@ SoundPacket::SoundPacket(byte id, const Vector& position) : Packet(ID_SOUND)
     writeShort(static_cast<short>(std::floor(position.x*512.0f)));
     writeShort(static_cast<short>(std::floor(position.y*512.0f)));
     writeShort(static_cast<short>(std::floor(position.z*512.0f)));
+}
+
+ChatPacket::ChatPacket(const bytes& data) : Packet(data)
+{
+    m_player = readByte();
+    m_msg = readString();
+}
+
+ChatPacket::ChatPacket(byte player, const string& msg) : Packet(ID_CHAT)
+{
+    writeByte(player);
+    writeString(msg);
 }

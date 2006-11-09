@@ -30,7 +30,7 @@ Ball::Ball(Body* body, const Collision* levelCollision) :
 
     NewtonCollision* ballCollision = (*m_body->m_collisions.begin())->m_newtonCollision;
 
-    static const float t = 1.3f; // 30%
+    static const float t = 1.4f; // 40%
     NewtonCollision* hull = NewtonCreateConvexHullModifier(World::instance->m_newtonWorld, ballCollision);
     NewtonConvexHullModifierSetMatrix(hull, Matrix::scale(Vector(t, t, t)).m);
     //NewtonCollision* hull = NewtonCreateSphere(World::instance->m_newtonWorld, t, t, t, NULL);

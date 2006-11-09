@@ -47,10 +47,7 @@ public:
     void init();
     void unloadTextures();
 
-    void renderCube() const;
     void renderFace(const Face& face) const;
-    void renderCylinder(float radius, float height) const;
-    void renderCone(float radius, float height) const;
     void renderAxes(float size = 5.0f) const;
     void renderRoundRect(const Vector& lower, const Vector& upper, float r) const;
     void renderSimpleShadow(float r, const Vector& pos, const Collision* level, const Vector& color) const;
@@ -83,8 +80,6 @@ private:
     TextureMap    m_textures;
     IntPair       m_resolution;    
     UIntSet       m_lists;
-
-    unsigned int  m_cubeList;
 
     vector<float> m_circleSin;
     vector<float> m_circleCos;

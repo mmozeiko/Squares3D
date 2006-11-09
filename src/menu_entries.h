@@ -49,6 +49,7 @@ public:
 
     virtual void click(int button) = 0;
     virtual void onChar(int ch) {}
+    virtual void onBackspace() {}
     virtual string getString() const                     { return m_string;   }
     virtual string getValueID() const                    { return "";         }
     virtual string getValue() const                      { return "";         }
@@ -117,6 +118,7 @@ public:
     void render() const;
     void click(int button);
     void onChar(int ch);
+    void onBackspace();
     
     int getMaxRightWidth() const;
 
@@ -124,6 +126,7 @@ private:
     const Submenu* m_ownerSubmenu;
     string&        m_binding;
     Timer          m_timer;
+    Timer          m_backTimer;
     int            m_maxBindingSize;
 };
 
@@ -259,26 +262,6 @@ public:
     
     void click(int button);
 };
-
-/*
-TODO: no time now
-
-class NetChatEntry : public Entry
-{
-public: 
-    NetChatEntry(Menu* menu) : Entry(menu, "MMMMMMMMMMMMMMM"), m_font(Font::get("Arial_16pt_bold") {}
-
-    string getString() const;
-    void click(int button);
-    void render(const Font* font) const;
-    void onChar(int ch);
-
-private:
-    Font*  m_font;
-    string m_text;
-    Timer  m_timer;
-};
-*/
 
 #endif
 
