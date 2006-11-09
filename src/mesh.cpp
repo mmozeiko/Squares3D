@@ -113,12 +113,12 @@ CubeMesh::CubeMesh(const Vector& size) : Mesh(GL_TRIANGLES, false)
     };
 
     static const int faces[][6] = {
-        { 0, 1, 3, 3, 1, 2 }, // bottom
-        { 4, 7, 5, 5, 7, 6 }, // up
-        { 4, 5, 0, 0, 5, 1 }, // front
-        { 6, 7, 2, 2, 7, 3 }, // back
-        { 7, 4, 3, 3, 4, 0 }, // left
-        { 5, 6, 1, 1, 6, 2 }, // right
+        { 0, 1, 2, 3, 0, 2 }, // bottom
+        { 4, 7, 6, 5, 4, 6 }, // up
+        { 4, 5, 1, 0, 4, 1 }, // front
+        { 6, 7, 3, 2, 6, 3 }, // back
+        { 7, 4, 0, 3, 7, 0 }, // left
+        { 5, 6, 2, 1, 5, 2 }, // right
     };
     
     static const float normals[][3] = {
@@ -133,9 +133,9 @@ CubeMesh::CubeMesh(const Vector& size) : Mesh(GL_TRIANGLES, false)
     static const float uv[][2] = {
         { 1.0, 0.0 },
         { 0.0, 0.0 },
+        { 0.0, 1.0 },
         { 1.0, 1.0 },
-        { 1.0, 1.0 },
-        { 0.0, 0.0 },
+        { 1.0, 0.0 },
         { 0.0, 1.0 },
     };
 
