@@ -154,5 +154,15 @@
 Игроки имеют право касаться мяча, как только тот коснулся земли.
     Первый игрок, который набрал 21 или больше штрафных очков, проигрывает игру.
     </item>
+
+    <!--item name="NET_CREATE_FAILED" value="Server creation failed (network port unavailable)!"/>
+
+    <item name="RLY_QUIT" value="Do you really want to quit?"/-->
+
+    <item name="NETWORK_ESC_MESSAGE">
+Нажмите &lt;ESCAPE&gt; для продолжения
+
+Нажмите &lt;ENTER&gt; для выхода в главное меню.
+    </item>
 </xml>
 

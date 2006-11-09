@@ -199,4 +199,15 @@ Version des Spiele-Servers: $1
 Version Deines Spiels: $2
     </item>
 
+    <item name="NETWORK_ESC_MESSAGE">
+Drücke &lt;ESCAPE&gt; um fortzufahren.
+
+Drücke &lt;ENTER&gt; um das Spiel zu beenden
+und zum Hauptmenü zurückzukehren.
+    </item>
+
+    <!--item name="NET_CREATE_FAILED" value="Server creation failed (network port unavailable)!"/>
+
+    <item name="RLY_QUIT" value="Do you really want to quit?"/-->
+
 </xml>

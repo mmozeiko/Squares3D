@@ -183,4 +183,14 @@ Nesavietojamas spēles versijas!
 Servera spēles versija: $1
 Jūsu speles versija: $2
     </item>
+
+    <item name="NET_CREATE_FAILED" value="Kļūda servera izveidē (tīkla ports ir aizņemts)!"/>
+
+    <item name="RLY_QUIT" value="Tiešām vēlaties iziet?"/>
+
+    <item name="NETWORK_ESC_MESSAGE">
+Nospiediet &lt;ESCAPE&gt; lai turpinātu
+
+Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
+    </item>
 </xml>

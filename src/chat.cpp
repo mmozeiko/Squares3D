@@ -130,7 +130,7 @@ void Chat::render() const
         string render = m_player + ": " + m_message;
         if (fmod(m_timer.read(), 1.0f) > 0.5f)
         {
-            render.push_back('|');
+            render.push_back('_');
         }
         glPushMatrix();
         glTranslatef(xx, yy, 0.0f);
