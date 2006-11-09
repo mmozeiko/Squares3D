@@ -1,4 +1,4 @@
-﻿Readme for Squares 3D release for Indago 2006 game contest (version 1.1.0).
+﻿Readme for Squares 3D release for Indago 2006 game contest (version 1.1.1).
 
 System requirements:
 - Runs fairly well on systems above 1 GHz and video cards above GeForce 2.
@@ -40,7 +40,7 @@ Squares team.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------
 
-Squares 3D "izlasi mani" Indago 2006 spēļu konkursam (versija 1.1.0).
+Squares 3D "izlasi mani" Indago 2006 spēļu konkursam (versija 1.1.1).
 
 Sistēmas prasības:
 - Spēle iet visnotaļ labi uz sistēmām ar 1 GHz vai ātrāku procesoru un videokarti GeForce 2 vai labāku.
