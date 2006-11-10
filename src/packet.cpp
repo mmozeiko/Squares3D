@@ -143,9 +143,11 @@ ControlPacket::ControlPacket(const bytes& data) : Packet(data)
     m_netRotation.x = readShort()/512.0f;
     m_netRotation.y = readShort()/512.0f;
     m_netRotation.z = readShort()/512.0f;
-    m_netJump = readByte()==1;
-    m_netKick = readByte()==1;
-    m_idx = readByte();
+	byte idxJumpKick = readByte();
+    m_idx = idxJumpKick & 15;
+	m_netJump = (idxJumpKick & 16) > 0;
+    m_netKick = (idxJumpKick & 32) > 0;
+
 }
 
 ControlPacket::ControlPacket(byte idx, const Vector& direction, const Vector& rotation, bool jump, bool kick)
@@ -157,9 +159,8 @@ ControlPacket::ControlPacket(byte idx, const Vector& direction, const Vector& ro
     writeShort(static_cast<short>(rotation.x*512.0f));
     writeShort(static_cast<short>(rotation.y*512.0f));
     writeShort(static_cast<short>(rotation.z*512.0f));
-    writeByte(jump ? 1 : 0);
-    writeByte(kick ? 1 : 0);
-    writeByte(idx);
+	byte idxJumpKick = idx | (jump ? 16 : 0) | (kick ? 32 : 0);
+    writeByte(idxJumpKick);
 }
 
 JoinPacket::JoinPacket(const bytes& data) : Packet(data), m_profile(NULL)
@@ -181,15 +182,16 @@ JoinPacket::JoinPacket(const bytes& data) : Packet(data), m_profile(NULL)
 RefereePacket::RefereePacket(int faultID, int bodyID, int points) :
     Packet(ID_REFEREE)
 {
-    writeByte(static_cast<byte>(faultID));
-    writeByte(static_cast<byte>(bodyID));
+	byte faultIDbodyID = (faultID << 4) | bodyID;
+    writeByte(static_cast<byte>(faultIDbodyID));
     writeByte(static_cast<byte>(points));
 }
 
 RefereePacket::RefereePacket(const bytes& data) : Packet(data)
 {
-    m_faultID = static_cast<int>(readByte());
-    m_bodyID = static_cast<int>(readByte());
+	byte faultIDbodyID = static_cast<int>(readByte());
+    m_faultID = faultIDbodyID >> 4;
+    m_bodyID = faultIDbodyID & 15;
     m_points = static_cast<int>(readByte());
 }
 
