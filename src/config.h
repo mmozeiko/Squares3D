@@ -33,7 +33,7 @@ struct MiscConfig
     string language;
     float mouse_sensitivity;
     string last_address;
-    int net_port;
+    string net_port;
     float net_fps;
 };
 
@@ -48,11 +48,12 @@ public:
     AudioConfig m_audio;
     MiscConfig  m_misc;
 
-private:
-    static const string CONFIG_FILE;
     static const VideoConfig defaultVideo;
     static const AudioConfig defaultAudio;
     static const MiscConfig defaultMisc;
+
+private:
+    static const string CONFIG_FILE;
 };
 
 #endif

@@ -128,9 +128,10 @@ Also credits goes to:
 Atis Straujums (extra level),
 Gustavs Gūtmanis (logo &amp; icon)
 Dmitry Chirkov (player model)
-Martin Offermann (music &amp; sound effects)
+Martin Offermann (menu music &amp; sound effects)
 Alexander Belov (Russian translation)
 Dirk Stegemann (German translation)
+Game music by trash80 (taken from trash80.net)
 And other people who have helped us!</item>
 
 	<item name="RULES_SCREEN">
@@ -199,4 +200,5 @@ Press &lt;ESCAPE&gt; to continue
 
 Press &lt;ENTER&gt; to quit to Main Menu.
     </item>
+    <item name="SERVER_NET_PORT"   value="Server port"/>
 </xml>

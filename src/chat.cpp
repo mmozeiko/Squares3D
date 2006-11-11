@@ -60,7 +60,7 @@ bool Chat::updateKey(int key)
         return true;
     }
 
-    if (m_active && Input::instance->key(GLFW_KEY_BACKSPACE) && m_backTimer.read() > 0.05f && m_message.empty()==false)
+    if (m_active && Input::instance->key(GLFW_KEY_BACKSPACE) && m_backTimer.read() > 0.1f && m_message.empty()==false)
     {
         m_message.erase(m_message.end()-1); // TODO: UTF-8 warning!!
         m_backTimer.reset();

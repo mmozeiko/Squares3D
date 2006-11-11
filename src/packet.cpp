@@ -179,24 +179,22 @@ JoinPacket::JoinPacket(const bytes& data) : Packet(data), m_profile(NULL)
     m_profile->m_speed = readFloat();
 }
 
-RefereePacket::RefereePacket(int faultID, int bodyID, int points) :
-    Packet(ID_REFEREE)
+RefereePacket::RefereePacket(int faultID, int bodyID, int points) : Packet(ID_REFEREE)
 {
-	byte faultIDbodyID = (faultID << 4) | bodyID;
-    writeByte(static_cast<byte>(faultIDbodyID));
+	byte faultIDbodyID = ((faultID << 4) & 0xF0) | (bodyID & 0x0F);
+    writeByte(faultIDbodyID);
     writeByte(static_cast<byte>(points));
 }
 
 RefereePacket::RefereePacket(const bytes& data) : Packet(data)
 {
-	byte faultIDbodyID = static_cast<int>(readByte());
+	byte faultIDbodyID = readByte();
     m_faultID = faultIDbodyID >> 4;
     m_bodyID = faultIDbodyID & 15;
     m_points = static_cast<int>(readByte());
 }
 
-ComboIncPacket::ComboIncPacket(int bodyID) :
-    Packet(ID_INCCOMBO)
+ComboIncPacket::ComboIncPacket(int bodyID) : Packet(ID_INCCOMBO)
 {
     writeByte(static_cast<byte>(bodyID));
 }
@@ -217,8 +215,7 @@ ComboResetOwnPacket::ComboResetOwnPacket(const bytes& data) : Packet(data)
     m_bodyID = static_cast<int>(readByte());
 }
 
-ComboResetPacket::ComboResetPacket() :
-    Packet(ID_RESETCOMBO)
+ComboResetPacket::ComboResetPacket() : Packet(ID_RESETCOMBO)
 {
 }
 

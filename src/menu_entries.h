@@ -112,8 +112,8 @@ private:
 class WritableEntry : public Entry
 {
 public: 
-    WritableEntry(Menu* menu, const string& label, string& binding, const Submenu* ownerSubmenu, int maxBindingSize = -1) :
-      Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding), m_maxBindingSize(maxBindingSize) {}
+    WritableEntry(Menu* menu, const string& label, string& binding, const Submenu* ownerSubmenu, int maxBindingSize = -1, bool onlyDigits = false) :
+      Entry(menu, label), m_ownerSubmenu(ownerSubmenu), m_binding(binding), m_maxBindingSize(maxBindingSize), m_onlyDigits(onlyDigits) {}
 
     void render() const;
     void click(int button);
@@ -123,6 +123,7 @@ public:
     int getMaxRightWidth() const;
 
 private:
+    bool           m_onlyDigits;
     const Submenu* m_ownerSubmenu;
     string&        m_binding;
     Timer          m_timer;

@@ -245,13 +245,16 @@ void WritableEntry::onChar(int ch)
 
     if (ch<=127 && m_menu->m_font->hasChar(ch) && (static_cast<int>(m_binding.size()) < x))
     {
-        m_binding.push_back(ch);
+        if (!m_onlyDigits || m_onlyDigits && ch >= '0' && ch <= '9')
+        {
+            m_binding.push_back(ch);
+        }
     }
 }
 
 void WritableEntry::onBackspace()
 {
-    if (m_binding.size() > 0 && m_backTimer.read() > 0.05f)
+    if (m_binding.size() > 0 && m_backTimer.read() > 0.1f)
     {
         m_binding.erase(m_binding.end()-1); // TODO: UTF-8 warning!!
         m_backTimer.reset();
@@ -351,7 +354,16 @@ void NetPlayerEntry::render() const
 {
     glPushMatrix();
     glTranslatef(static_cast<float>(- this->getMaxLeftWidth()), 0.0f, 0.0f);
-    glColor3fv(Network::instance->getProfileColor(m_idx).v);
+    Vector col;
+    glGetFloatv(GL_CURRENT_COLOR, col.v);
+    if (col == Yellow)
+    {
+        glColor3fv(brighter(Network::instance->getProfileColor(m_idx), 1.3f).v);
+    }
+    else
+    {
+        glColor3fv(darker(Network::instance->getProfileColor(m_idx), 1.3f).v);
+    }
     m_font->render(getString(), Font::Align_Left);
     glPopMatrix();
 }

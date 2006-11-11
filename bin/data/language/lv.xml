@@ -119,9 +119,10 @@ Liels paldies sekojošiem cilvēkiem:
 Atis Straujums (extra līmenis)
 Gustavs Gūtmanis (spēles logo &amp; ikonas)
 Dmitry Chirkov (spēlētāju modelis)
-Martin Offermann (mūzika &amp; skaņu efekti)
+Martin Offermann (izvēļņu mūzika &amp; skaņu efekti)
 Aleksanders Belovs (tulkojums krieviski)
 Dirk Stegemann (tulkojums vāciski)
+Spēles mūzikas autors trash80 (paņemta no trash80.net)
 Kā arī pārējiem, kas ir palīdzējuši tapšanas procesā!</item>
 
 	<item name="RULES_SCREEN">
@@ -142,7 +143,7 @@ par vienu.
           ir ieskaitītas), vai tai ir pieskāries kāds cits spēlētājs.
     Kamēr bumba ārpus laukuma nav nokritusi zemē, spēlētājs drīkst to ķert un mēģināt iedabūt atpakaļ laukumā,
 tā, lai tā nepieskaras zemei ārpus laukuma. Kamēr bumba ārpus laukuma nav pieskārusies zemei, tikmēr spēle
-turpinās Objekti, kas ir augstāk par zemi netiek ieskaitīti kā pieskārieni zemei.
+turpinās objekti, kas ir augstāk par zemi netiek ieskaitīti kā pieskārieni zemei.
     Ja spēlētājs saņem mīnusu, spēle tiek atsākta ar bumbas izmetienu no spēlētāja laukuma tā, lai bumba atsistos
 spēlētāja laukumā un pēc tam spēlētājam pa diagonāli pretējā laukumā, vai pret tā spēlētāju. Kamēr bumba nav
 atsitusies pret vienu no tiem, pārējie spēlētāji bumbai nedrīkst pieskarties, pretējā gadījumā tie saņem mīnusa punktu.
@@ -193,4 +194,5 @@ Nospiediet &lt;ESCAPE&gt; lai turpinātu
 
 Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
     </item>
+    <item name="SERVER_NET_PORT"   value="Servera ports"/>
 </xml>

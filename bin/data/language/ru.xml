@@ -122,9 +122,10 @@
 Страуюмс Атис (дополнительный уровень)
 Гутманис Густав (лого &amp; иконка)
 Дмитрий Чирков (модель игроков)
-Мартин Офферманн (музыка &amp; звуковые эффекты)
+Мартин Офферманн (меню музыка &amp; звуковые эффекты)
 Александр Белов (перевод на русский)
 Дирк Штегеманн (перевод на немецкий)
+<!-->Game music by trash80 (taken from trash80.net)<-->
 И все прочие, кто помогал нам!</item>
 
     <item name="RULES_SCREEN">
@@ -155,14 +156,45 @@
     Первый игрок, который набрал 21 или больше штрафных очков, проигрывает игру.
     </item>
 
-    <!--item name="NET_CREATE_FAILED" value="Server creation failed (network port unavailable)!"/>
+    <!--item name="CONTROLS" value="Controls"/>
+    <item name="CONTROLS_SCREEN">
+Ingame controls:
+ * Use your mouse to move around
+ * Press left mouse button to make combo
+ * Press space key to jump
+ * Press and hold right mouse button to rotate camera with mouse
+   and use mouse wheel to zoom in or out
+ * Press escape during game to bring up pause screen. Use
+   enter key while in pause screen to quit to main menu or
+   escape key to resume the game
 
-    <item name="RLY_QUIT" value="Do you really want to quit?"/-->
+Menu controls:
+ * Navigate through menu using up / down keys or mouse
+ * Press enter key or left mouse button to enter or accept
+   selected menu entry
+ * Use right / left keys or left / right mouse buttons to
+   cycle forward and backward through options entries items
+</item>
+
+    <item name="PLAYER_KICKED"     value="You have been kicked from server!"/>
+    <item name="SERVER_FULL"       value="Server is full (max 4 players)!"/>
+    <item name="SERVER_DISCONNECT" value="Server has been disconnected!"/>
+    <item name="PLAYER_NAME_TAKEN" value="Player with your name&#10;already exists on server!"/>
+    <item name="INFORMATION"       value="Info"/>
+    <item name="SERVER_VERSION">
+Incompatible game versions!
+Server has version: $1
+You have version: $2
+    </item>
+    <item name="NET_CREATE_FAILED" value="Server creation failed (network port unavailable)!"/>
+
+    <item name="RLY_QUIT" value="Do you really want to quit?"/>
 
     <item name="NETWORK_ESC_MESSAGE">
 Нажмите &lt;ESCAPE&gt; для продолжения
 
 Нажмите &lt;ENTER&gt; для выхода в главное меню.
     </item>
+    <item name="SERVER_NET_PORT"   value="Server port"/-->
 </xml>
 

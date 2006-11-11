@@ -71,7 +71,11 @@ void Network::createServer()
     ENetAddress address;
 
     address.host = ENET_HOST_ANY;
-    address.port = Config::instance->m_misc.net_port;
+    address.port = cast<unsigned short>(Config::instance->m_misc.net_port);
+    if (address.port == 0)
+    {
+        address.port = cast<unsigned short>(Config::defaultMisc.net_port);
+    }
 
     m_host = enet_host_create(&address, 3, 0, 0); // 3 clients
     if (m_host == NULL)
@@ -115,13 +119,29 @@ void Network::createClient()
 bool Network::connect(const string& host)
 {
     ENetAddress address;
+    string connect_host;
 
-    if (enet_address_set_host(&address, host.c_str()) != 0)
+    string::size_type pos = host.find(':');
+    if (pos == string::npos)
+    {
+        address.port = cast<unsigned short>(Config::defaultMisc.net_port);
+        connect_host = host;
+    }
+    else
+    {
+        connect_host = host.substr(0, pos);
+        address.port = cast<unsigned short>(host.substr(pos+1));
+        if (address.port == 0)
+        {
+            address.port = cast<unsigned short>(Config::defaultMisc.net_port);
+        }
+    }
+
+    if (enet_address_set_host(&address, connect_host.c_str()) != 0)
     {
         clog << "WARNING: " << Exception("enet_address_set_host failed, host unknown") << endl;
         return false;
     }
-    address.port = Config::instance->m_misc.net_port;
 
     m_server = enet_host_connect(m_host, &address, 0);
     if (m_server == NULL)
@@ -308,11 +328,14 @@ void Network::update()
                 // connected to server
                 m_needDisconnect = true;
 
-                // click the menu button!
-                m_menu->setSubmenu(m_lobbySubmenu);
+                if (m_inMenu)
+                {
+                    // click the menu button!
+                    m_menu->setSubmenu(m_lobbySubmenu);
 
-                // activate client chat!
-                m_chat = m_menu->m_chat;
+                    // activate client chat!
+                    m_chat = m_menu->m_chat;
+                }
             }
             break;
 
@@ -508,7 +531,8 @@ void Network::changeCpu(int idx, bool forward)
         ok = true;
         for (int k=0; k<4; k++)
         {
-            if (m_profiles[k] == m_allProfiles[i][found])
+            if (m_profiles[k] == m_allProfiles[i][found] ||
+                m_profiles[k]->m_color == m_allProfiles[i][found]->m_color)
             {
                 ok = false;
                 break;

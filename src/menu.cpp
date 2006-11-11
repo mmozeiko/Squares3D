@@ -167,7 +167,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenuJ->setTitle(language->get(TEXT_START_JOIN), titlePos);
 
-    submenuJ->addEntry(new WritableEntry(this, language->get(TEXT_ADDRESS), Config::instance->m_misc.last_address, submenuJ, 15));
+    submenuJ->addEntry(new WritableEntry(this, language->get(TEXT_ADDRESS), Config::instance->m_misc.last_address, submenuJ, 18));
     submenuJ->addEntry(new ConnectEntry(this, language->get(TEXT_CONNECT_HOST), "startMultiJoin", submenuJ));
 
     Network::instance->setMenuEntries(this, "startMultiJoin", "startMulti");
@@ -520,6 +520,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     submenu->addEntry(new OptionEntry(language->get(TEXT_MOUSE_SENSITIVITY), valMS));
     */
 
+    submenu->addEntry(new WritableEntry(this, language->get(TEXT_SERVER_NET_PORT), Config::instance->m_misc.net_port, submenu, 10, true));
     submenu->addEntry(new SpacerEntry(this));
     submenu->addEntry(new ApplyOptionsEntry(this, language->get(TEXT_SAVE), "otherOptions"));
     submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_BACK), true, "options"));
