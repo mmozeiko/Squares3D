@@ -5,7 +5,7 @@
 #include "video.h"
 #include "colors.h"
 
-static const float FADE_SPEED = 1.0f;
+static const float FADE_SPEED = 0.8f;
 
 Message::Message(const string&         message, 
                  const Vector&         position, 
@@ -143,6 +143,7 @@ ComboMessage::ComboMessage(const string&   message,
     m_points(points),
     m_previousPoints(points)
 {
+	m_color.w = 0.0f;
 }
 
 string ComboMessage::getText() const
@@ -169,7 +170,7 @@ bool ComboMessage::applyDelta(float delta)
 
 void ComboMessage::render(const Font* font) const
 {
-    if (m_points > 1)
+    if (m_color.w > 0.0f)
     {
         Message::render(font);
     }
