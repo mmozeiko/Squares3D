@@ -205,7 +205,6 @@ void ColorEntry::click(int button)
         m_menu->m_sound->play(m_menu->m_soundChange);
     }
     m_binding = colors.find(m_value.getCurrent())->second;
-    m_menu->m_chat->updateColor(m_binding);
 }
 
 int ColorEntry::getMaxRightWidth() const

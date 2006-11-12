@@ -14,7 +14,6 @@ class Chat
 public:
     Chat(const string& player, const Vector& color);
 
-    void updateColor(const Vector& color) { m_color = color; }
     bool updateKey(int key);
     void render() const;
     void recieve(const string& player, const Vector& color, const string& message);
@@ -22,8 +21,8 @@ public:
 private:
     const Font* m_font;
 
-    string m_player;
-    Vector m_color;
+    const string& m_player;
+    const Vector& m_color;
     string m_message;
     
     string m_players[CHAT_MSG_COUNT];

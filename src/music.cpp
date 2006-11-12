@@ -67,11 +67,13 @@ void Music::update()
 {
     int processed = 0;
     alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &processed);
+    int p = processed;
 
     while (processed > 0)
     {
         unsigned int buffer = 0;
         alSourceUnqueueBuffers(m_source, 1, &buffer);
+
         m_position += 0.25f;
 
         size_t written = decode(m_buffer, m_bufferSize);
@@ -87,6 +89,14 @@ void Music::update()
         }
 
         processed--;
+    }
+    
+    int state;
+    alGetSourcei(m_source, AL_SOURCE_STATE, &state);
+    
+    if (p != 0 && state == AL_STOPPED)
+    {
+        alSourcePlay(m_source);
     }
     
     float f;

@@ -272,6 +272,11 @@ void World::init()
     
     m_level = new Level();
 
+    if (Network::instance->m_isSingle == false)
+    {
+        m_current = 1;
+    }
+
     StringSet tmp;
     m_level->load( ( m_current < 3 ? "world.xml" : "extra.xml" ), tmp);
     m_grass = new Grass(m_level);

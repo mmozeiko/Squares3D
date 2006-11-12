@@ -33,6 +33,9 @@ Construction:
 
 Done:
 =====
+2006-11-12 Fixed audio disappearing problem.
+           Correctly update player name and color in chat, when changing player options.
+           Fixed wrong level file loading in network game.
 2006-10-29 Add fence in game - something that can be pushed and destroyed.
                  Main menu background image.
                  Build some nice scenery around game field (like houses, some roads, etc.).
