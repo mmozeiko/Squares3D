@@ -106,13 +106,13 @@ void HDR::init()
     {
         pow2y <<= 1;
     }
-    
+
     m_w = Video::instance->getResolution().first / static_cast<float>(pow2x);
     m_h = Video::instance->getResolution().second / static_cast<float>(pow2y);
 
     m_fboSource->create(pow2x, pow2y);
     m_sourceTex = m_fboSource->attachColorTex();
-    m_fboSource->attachDepthTex(true);
+    m_fboSource->attachRBufDepth();
     if (!m_fboSource->isValid())
     {
         Config::instance->m_video.use_hdr = false;
@@ -207,9 +207,9 @@ void HDR::render()
         glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
-            glTexCoord2f(m_w, 0.0f);  glVertex2f(1.0f, 0.0f);
-            glTexCoord2f(m_w, m_h);   glVertex2f(1.0f, 1.0f);
-            glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, 1.0f);
+            glTexCoord2f(m_w, 0.0f);  glVertex2f(m_w, 0.0f);
+            glTexCoord2f(m_w, m_h);   glVertex2f(m_w, m_h);
+            glTexCoord2f(0.0f, m_h);  glVertex2f(0.0f, m_h);
         glEnd();
         m_fboDownsampled[i]->unbind();
     }
@@ -230,9 +230,9 @@ void HDR::render()
 
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
-            glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);
-            glTexCoord2f(1.0f, 1.0f); glVertex2f(1.0f, 1.0f);
-            glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 1.0f);
+            glTexCoord2f(m_w, 0.0f); glVertex2f(m_w, 0.0f);
+            glTexCoord2f(m_w, m_h); glVertex2f(m_w, m_h);
+            glTexCoord2f(0.0f, m_h); glVertex2f(0.0f, m_h);
         glEnd();
 
         // vertical blur
@@ -242,9 +242,9 @@ void HDR::render()
 
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
-            glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 0.0f);
-            glTexCoord2f(1.0f, 1.0f); glVertex2f(1.0f, 1.0f);
-            glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 1.0f);
+            glTexCoord2f(m_w, 0.0f); glVertex2f(1.0f, 0.0f);
+            glTexCoord2f(m_w, m_h); glVertex2f(1.0f, 1.0f);
+            glTexCoord2f(0.0f, m_h); glVertex2f(0.0f, 1.0f);
         glEnd();
 
         /* for DEBUG!!

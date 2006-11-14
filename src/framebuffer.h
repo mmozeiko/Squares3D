@@ -20,7 +20,8 @@ public:
 
     unsigned int attachColorTex(bool hdr = false);
     unsigned int attachColorTex1(bool hdr = false);
-    unsigned int attachDepthTex(bool hdr = false);
+    unsigned int attachDepthTex();
+    void attachRBufDepth();
 
 private:
     unsigned int m_sizeX;
@@ -28,6 +29,7 @@ private:
     unsigned int m_colorTex;
     unsigned int m_colorTex1;
     unsigned int m_shadowTex;
+    unsigned int m_shadowRBuf;
     unsigned int m_frameBuffer;
 };
 

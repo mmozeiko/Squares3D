@@ -272,13 +272,15 @@ void World::init()
     
     m_level = new Level();
 
-    if (Network::instance->m_isSingle == false)
-    {
-        m_current = 1;
-    }
-
     StringSet tmp;
-    m_level->load( ( m_current < 3 ? "world.xml" : "extra.xml" ), tmp);
+    if (Network::instance->m_isSingle)
+    {
+        m_level->load( ( m_current < 3 ? "world.xml" : "extra.xml" ), tmp);
+    }
+    else
+    {
+        m_level->load( Network::instance->getLevel(), tmp);
+    }
     m_grass = new Grass(m_level);
     
     if (m_level->m_fences.empty() == false)
@@ -659,9 +661,12 @@ void World::setupShadowStuff()
         while (!valid)
         {
             m_framebuffer->create(m_shadowSize, m_shadowSize);
-            m_framebuffer->attachColorTex();
             m_shadowTex = m_framebuffer->attachDepthTex();
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
             valid = m_framebuffer->isValid();
+            glDrawBuffer(GL_BACK);
+            glReadBuffer(GL_BACK);
             if (!valid && m_shadowSize > 512)
             {
                 m_shadowSize <<= 1;
@@ -728,6 +733,8 @@ void World::shadowMapPass1() const
     //First pass - from light's point of view
     if (m_withFBO)
     {
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
         m_framebuffer->bind();
     }
     glPushAttrib(GL_VIEWPORT_BIT | GL_POLYGON_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT);
@@ -776,6 +783,8 @@ void World::shadowMapPass1() const
     if (m_withFBO)
     {
         m_framebuffer->unbind();
+        glDrawBuffer(GL_BACK);
+        glReadBuffer(GL_BACK);
     }
 }
 

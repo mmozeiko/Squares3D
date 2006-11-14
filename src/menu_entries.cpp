@@ -398,6 +398,7 @@ void NewHostEntry::click(int button)
     SubmenuEntry::click(button);
     if (button == GLFW_KEY_ENTER || button == GLFW_KEY_KP_ENTER || button == GLFW_MOUSE_BUTTON_1)
     {
+        Network::instance->updateLevelOption();
         Network::instance->createServer();
         Network::instance->setPlayerProfile(Game::instance->m_userProfile);
         Network::instance->setCpuProfiles(Game::instance->m_cpuProfiles, -1);        

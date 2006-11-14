@@ -6,7 +6,8 @@ FrameBuffer::FrameBuffer() :
     m_colorTex(0),
     m_colorTex1(0),
     m_shadowTex(0),
-    m_frameBuffer(0)
+    m_frameBuffer(0),
+    m_shadowRBuf(0)
 {
 }
 
@@ -45,6 +46,12 @@ void FrameBuffer::destroy()
         m_shadowTex = 0;
     }
     
+    if (m_shadowRBuf != 0)
+    {
+        glDeleteRenderbuffersEXT(1, (GLuint*)&m_shadowRBuf);
+        m_shadowRBuf = 0;
+    }
+
     if (m_frameBuffer != 0)
     {
         glDeleteFramebuffersEXT(1, (GLuint*)&m_frameBuffer);
@@ -64,10 +71,18 @@ bool FrameBuffer::isValid() const
 void FrameBuffer::bind() const
 {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_frameBuffer);
+    if (m_shadowRBuf != 0)
+    {
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_shadowRBuf);
+    }
 }
 
 void FrameBuffer::unbind() const
 {
+    if (m_shadowRBuf != 0)
+    {
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+    }
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
@@ -121,7 +136,7 @@ unsigned int FrameBuffer::attachColorTex1(bool hdr)
     return m_colorTex1;
 }
 
-unsigned int FrameBuffer::attachDepthTex(bool hdr)
+unsigned int FrameBuffer::attachDepthTex()
 {
     // create the texture we'll use for the shadow map
     glGenTextures(1, (GLuint*)&m_shadowTex);
@@ -135,4 +150,12 @@ unsigned int FrameBuffer::attachDepthTex(bool hdr)
     glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_shadowTex, 0);
 
     return m_shadowTex;
+}
+
+void FrameBuffer::attachRBufDepth()
+{
+    glGenRenderbuffersEXT(1, (GLuint*)&m_shadowRBuf);
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_shadowRBuf);
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, m_sizeX, m_sizeY);
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_shadowRBuf);
 }

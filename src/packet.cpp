@@ -273,12 +273,14 @@ KickNamesPacket::KickNamesPacket() : Packet(ID_KICKNAME)
 
 SetPlacePacket::SetPlacePacket(const bytes& data) : Packet(data)
 {
-    m_idx = readInt();
+    m_idx = readByte();
+    m_level = readByte();
 }
 
-SetPlacePacket::SetPlacePacket(int idx) : Packet(ID_PLACE)
+SetPlacePacket::SetPlacePacket(int idx, byte level) : Packet(ID_PLACE)
 {
-    writeInt(idx);
+    writeByte(idx);
+    writeByte(level);
 }
 
 QuitPacket::QuitPacket(const bytes& data) : Packet(data)

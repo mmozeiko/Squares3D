@@ -8,6 +8,7 @@
 #include "network.h"
 #include "packet.h"
 #include "menu.h"
+#include "menu_options.h"
 #include "game.h"
 #include "version.h"
 #include "referee_base.h"
@@ -15,6 +16,7 @@
 #include "properties.h"
 #include "config.h"
 #include "chat.h"
+#include "xml.h"
 
 template <class Network> Network* System<Network>::instance = NULL;
 
@@ -43,6 +45,8 @@ Network::Network() :
         throw Exception("enet_initialize failed");
     }
     
+    loadLevelList();
+
     m_profiles.resize(4);
 
     m_tmpProfile = new Profile();
@@ -317,7 +321,7 @@ void Network::update()
                     }
                     else
                     {
-                        send(event.peer, SetPlacePacket(freePlace), true);
+                        send(event.peer, SetPlacePacket(freePlace, m_curLevel), true);
                         m_clients[event.peer] = freePlace;
                     }
                 }
@@ -850,6 +854,7 @@ void Network::processPacket(ENetPeer* peer, const bytes& packet)
         else if (type == Packet::ID_PLACE)
         {
             SetPlacePacket p(packet);
+            m_curLevel = p.m_level;
             m_localIdx = p.m_idx;
             m_profiles[m_localIdx] = Game::instance->m_userProfile;
             send(m_server, JoinPacket(m_localIdx, g_version, m_profiles[m_localIdx]), true);
@@ -1089,4 +1094,58 @@ Vector Network::getProfileColor(size_t idx) const
 {
     assert(idx >=0 && idx < 4);
     return m_profiles[idx]->m_color;
+}
+
+string Network::getLevel() const
+{
+    return m_levelFiles[m_curLevel];
+}
+
+void Network::loadLevelList()
+{
+    XMLnode xml;
+    File::Reader in("/data/level/level_list.xml");
+    if (!in.is_open())
+    {
+        throw Exception("Level file '/data/level/level_list.xml' not found");  
+    }
+    xml.load(in);
+    in.close();
+
+    for each_const(XMLnodes, xml.childs, iter)
+    {
+        const XMLnode& node = *iter;
+        if (node.name == "level")
+        {
+            m_levelFiles.push_back(node.getAttribute("file"));
+            m_levelNames.push_back(node.getAttribute("name"));
+        }
+        else
+        {
+            throw Exception("Invalid cpu_profiles, unknown node - " + node.name);
+        }
+    }
+
+    m_curLevel = 0;
+    m_levelEntry = NULL;
+}
+
+void Network::setLevelOption(const OptionEntry* entry)
+{
+    m_levelEntry = entry;
+}
+
+void Network::updateLevelOption()
+{
+    m_curLevel = m_levelEntry->getCurrentValueIdx();
+}
+
+string Network::getLevelName(size_t idx) const
+{
+    return m_levelNames[idx];
+}
+
+size_t Network::getLevelCount() const
+{
+    return m_levelFiles.size();
 }

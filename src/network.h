@@ -27,6 +27,7 @@ class RemotePlayer;
 class RefereeProcessPacket;
 class SoundPacket;
 class Chat;
+class OptionEntry;
 
 struct ActiveBody
 {
@@ -105,6 +106,12 @@ public:
     bool  m_playing;
     Chat* m_chat;
 
+    string getLevel() const;
+    string getLevelName(size_t idx) const;
+    size_t getLevelCount() const;
+    void setLevelOption(const OptionEntry* entry);
+    void updateLevelOption();
+
 private:
     ENetHost* m_host;
     ENetPeer* m_server;
@@ -139,6 +146,12 @@ private:
     void sendUpdatePacket();
     void send(ENetPeer* peer, const Packet& packet, bool important);
     void processPacket(ENetPeer* peer, const bytes& packet);
+
+    const OptionEntry* m_levelEntry;
+    StringVector     m_levelFiles;
+    StringVector     m_levelNames;
+    byte             m_curLevel;
+    void             loadLevelList();
 };
 
 #endif

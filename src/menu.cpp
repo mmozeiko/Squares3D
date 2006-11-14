@@ -183,12 +183,39 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
 
 
+    // Start Multi Host Level
+
+    submenu = new Submenu(this);
+
+    submenu->setTitle(language->get(TEXT_LEVEL), titlePos);
+
+
+    Value valLevels("levels");
+    size_t c = Network::instance->getLevelCount();
+
+    for (size_t i=0; i<c; i++)
+    {
+        valLevels.add(Network::instance->getLevelName(i));
+    }
+    OptionEntry* e = new OptionEntry(this, language->get(TEXT_LEVEL), valLevels);
+    submenu->addEntry(e);
+    Network::instance->setLevelOption(e);
+    submenu->addEntry(new NewHostEntry(this, language->get(TEXT_HOST), "startMultiHost"));
+    submenu->addEntry(new SpacerEntry(this));
+    submenu->addEntry(new CloseHostEntry(this, language->get(TEXT_BACK), "startMulti"));
+
+    // TODO: hack
+    submenu->m_height += 10;
+
+    submenu->center(submenuPosition);
+    m_submenus["startMultiHostLevel"] = submenu;
+
+
     // Start Multi Host
 
     submenu = new Submenu(this);
 
     submenu->setTitle(language->get(TEXT_START_HOST), titlePos);
-
     submenu->addEntry(new LabelEntry(this, language->get(TEXT_PLAYERS_LIST)));
     submenu->m_entries.back()->disable();
     submenu->addEntry(new NetPlayerEntry(this, 0));
@@ -279,7 +306,7 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
 
     submenu->setTitle(language->get(TEXT_START_MULTIPLAYER), titlePos);
 
-    submenu->addEntry(new NewHostEntry(this, language->get(TEXT_START_HOST), "startMultiHost"));
+    submenu->addEntry(new SubmenuEntry(this, language->get(TEXT_START_HOST), false, "startMultiHostLevel"));
     submenu->addEntry(new JoinHostEntry(this, language->get(TEXT_START_JOIN), "startMultiJoinIP", submenuJ));
     
     submenu->addEntry(new SpacerEntry(this));

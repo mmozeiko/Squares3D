@@ -71,6 +71,8 @@ Press &lt;ENTER&gt; to retry..
     <item name="LOCAL_PLAYER"             value=" (Local)"/>
     <item name="CPU_PLAYER"               value=" (CPU)"/>
     <item name="REMOTE_PLAYER"            value=" (Remote)"/>
+    <item name="HOST"                     value="Host"/>
+    <item name="LEVEL"                    value="Level"/>
 
     <!-- Player options -->
     <item name="NAME"                     value="Name"/>

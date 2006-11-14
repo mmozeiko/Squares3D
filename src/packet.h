@@ -157,9 +157,10 @@ class SetPlacePacket : public Packet
 {
 public:
     SetPlacePacket(const bytes& data);
-    SetPlacePacket(int idx);
+    SetPlacePacket(int idx, byte level);
 
     int m_idx;
+    byte m_level;
 };
 
 class QuitPacket : public Packet

@@ -22,7 +22,7 @@ RefereeBase::RefereeBase(Messages* messages, ScoreBoard* scoreBoard) :
     m_scoreBoard(scoreBoard),
     m_messages(messages),
     m_sound(new Sound(true)),
-    m_matchPoints(2),
+    m_matchPoints(21),
     m_gameOver(false),
     m_over(NULL),
     m_ground(NULL),

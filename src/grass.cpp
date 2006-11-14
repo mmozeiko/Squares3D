@@ -9,7 +9,7 @@
 Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_count2(0), m_grassTex(NULL)
 {
     // 1.0f, 2.0f, 4.0f
-    float grass_density = static_cast<float>(1 << Config::instance->m_video.grass_density);
+    float grass_density = static_cast<float>(1 << Config::instance->m_video.grass_density) / 2.0f;
     
     //size of grass face
     static const float SIZE = 0.4f;
