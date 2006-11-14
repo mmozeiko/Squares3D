@@ -664,6 +664,16 @@ void World::setLight(const Vector& position)
 
 void World::setupShadowStuff()
 {
+    m_shadowShader = new Shader("shadow");
+    m_shadowShader->setInt1("tex_source", 0);
+    m_shadowShader->setInt1("tex_shadow", 1);
+    m_shadowShader->end();
+
+    if (m_shadowShader->valid() == false)
+    {
+        Config::instance->m_video.shadow_type = 0;
+    }
+
     if (Config::instance->m_video.shadow_type == 0)
     {
         return;
@@ -712,11 +722,6 @@ void World::setupShadowStuff()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
     //Shadow comparison should generate an INTENSITY result
     glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE_ARB, GL_INTENSITY);
-
-    m_shadowShader = new Shader("shadow");
-    m_shadowShader->setInt1("tex_source", 0);
-    m_shadowShader->setInt1("tex_shadow", 1);
-    m_shadowShader->end();
 }
 
 void World::killShadowStuff()

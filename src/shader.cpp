@@ -2,7 +2,7 @@
 #include "video.h"
 #include "file.h"
 
-Shader::Shader(const string& name)
+Shader::Shader(const string& name) : m_program(0)
 {
     string shaders[2];
 
@@ -12,7 +12,8 @@ Shader::Shader(const string& name)
     File::Reader file(vp_filename);
     if (!file.is_open())
     {
-        throw Exception("Shader '" + vp_filename + "' not found");
+        clog << Exception("Shader '" + vp_filename + "' not found") << endl;
+        return ;
     }
     vector<char> v(file.size());
     file.read(&v[0], file.size());
@@ -22,7 +23,8 @@ Shader::Shader(const string& name)
     file.open(fp_filename);
     if (!file.is_open())
     {
-        throw Exception("Shader '" + fp_filename + "' not found");
+        clog << Exception("Shader '" + fp_filename + "' not found") << endl;
+        return ;
     }
     v.resize(file.size());
     file.read(&v[0], file.size());
@@ -34,15 +36,17 @@ Shader::Shader(const string& name)
         glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB),
     };
 
-    m_vhandle = objs[0];
-    m_fhandle = objs[1];
-
     for (int i=0; i<2; ++i)
     {
         const char* cstr = shaders[i].c_str();
         glShaderSourceARB(objs[i], 1, static_cast<const GLcharARB**>(&cstr), NULL);
         glCompileShaderARB(objs[i]);
-        checkShaderStatus(objs[i], GL_OBJECT_COMPILE_STATUS_ARB);
+        if (!checkShaderStatus(objs[i], GL_OBJECT_COMPILE_STATUS_ARB))
+        {
+            glDeleteObjectARB(objs[0]);
+            glDeleteObjectARB(objs[1]);
+            return;
+        }
     }
 
     m_program = glCreateProgramObjectARB();
@@ -54,17 +58,22 @@ Shader::Shader(const string& name)
     glDeleteObjectARB(objs[0]);
     glDeleteObjectARB(objs[1]);
 
-    checkShaderStatus(m_program, GL_OBJECT_LINK_STATUS_ARB);
+    if (!checkShaderStatus(m_program, GL_OBJECT_LINK_STATUS_ARB))
+    {
+        glDeleteObjectARB(m_program);
+        m_program = 0;
+        return;
+    }
     glUseProgramObjectARB(m_program);
 }
 
-void Shader::checkShaderStatus(GLhandleARB handle, int status)
+bool Shader::checkShaderStatus(GLhandleARB handle, int status)
 {
     int param;
     glGetObjectParameterivARB(handle, status, (GLint*)&param);
     if (param == 1)
     {
-        return;
+        return true;
     }
 
     int infologLength;
@@ -76,43 +85,68 @@ void Shader::checkShaderStatus(GLhandleARB handle, int status)
         int charsWritten;
         glGetInfoLogARB(handle, infologLength, (GLsizei*)&charsWritten, &infoLog[0]);
         string error(infoLog.begin(), infoLog.end());
-        throw Exception(error);
+        clog << Exception(error) << endl;
+        return false;
     }
     else
     {
-        throw Exception("Unknown error");
+        clog << Exception("Unknown error") << endl;
+        return false;
     }
 }
 
 Shader::~Shader()
 {
-    glDeleteObjectARB(m_program);
+    if (m_program != 0)
+    {
+        glDeleteObjectARB(m_program);
+    }
+}
+
+bool Shader::valid() const
+{
+    return m_program != 0;
 }
 
 void Shader::begin() const
 {
-    glUseProgramObjectARB(m_program);
+    if (m_program != 0)
+    {
+        glUseProgramObjectARB(m_program);
+    }
 }
 
 void Shader::end() const
 {
-    glUseProgramObjectARB(0);
+    if (m_program != 0)
+    {
+        glUseProgramObjectARB(0);
+    }
 }
 
 void Shader::setInt1(const string& name, int value) const
 {
-    GLint loc = glGetUniformLocationARB(m_program, name.c_str()); 
-    glUniform1iARB(loc, value);
+    if (m_program != 0)
+    {
+        GLint loc = glGetUniformLocationARB(m_program, name.c_str()); 
+        glUniform1iARB(loc, value);
+    }
 }
 
 void Shader::setFloat1(const string& name, float value) const
 {
-    GLint loc = glGetUniformLocationARB(m_program, name.c_str()); 
-    glUniform1fARB(loc, value);
+    if (m_program != 0)
+    {
+        GLint loc = glGetUniformLocationARB(m_program, name.c_str()); 
+        glUniform1fARB(loc, value);
+    }
 }
 
 void Shader::setFloat4(const string& name, const Vector& value) const
 {
-    GLint loc = glGetUniformLocationARB(m_program, name.c_str()); 
-    glUniform4fvARB(loc, 1, value.v);
+    if (m_program != 0)
+    {
+        GLint loc = glGetUniformLocationARB(m_program, name.c_str()); 
+        glUniform4fvARB(loc, 1, value.v);
+    }
 }

@@ -86,6 +86,12 @@ void HDR::init()
         return;
     }
 
+    if (m_downsample->valid()==false || m_blur->valid()==false || m_final->valid()==false)
+    {
+        Config::instance->m_video.use_hdr = false;
+        return;
+    }
+    
     m_fboSource = new FrameBuffer();
 
     for (int i=0; i<hdr_levels; i++)
