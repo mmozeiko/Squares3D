@@ -837,6 +837,14 @@
 					RelativePath=".\bin\data\shaders\hdr_final.vsh.glsl"
 					>
 				</File>
+				<File
+					RelativePath=".\bin\data\shaders\shadow.fsh.glsl"
+					>
+				</File>
+				<File
+					RelativePath=".\bin\data\shaders\shadow.vsh.glsl"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

@@ -96,12 +96,11 @@ private:
     vector<Vector>         m_normals;
     vector<Vector>         m_vertices;
     vector<unsigned short> m_indices;
-    vector<unsigned short> m_indices2;
     
     int                    m_realCount;
 
     Material*    m_material;
-    unsigned int m_buffers[5];
+    unsigned int m_buffers[4];
 
     vector<Face> m_tmpFaces;
 };
@@ -778,35 +777,13 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
                     throw Exception("Too many vertices in heightmap!!");
                 }
 
-                if (isPointInRectangle(v1, g_fieldLower, g_fieldUpper) &&
-                    isPointInRectangle(v2, g_fieldLower, g_fieldUpper) &&
-                    isPointInRectangle(v4, g_fieldLower, g_fieldUpper))
-                {
-                    m_indices.push_back(i1);
-                    m_indices.push_back(i2);
-                    m_indices.push_back(i4);
-                }
-                else
-                {
-                    m_indices2.push_back(i1);
-                    m_indices2.push_back(i2);
-                    m_indices2.push_back(i4);
-                }
+                m_indices.push_back(i1);
+                m_indices.push_back(i2);
+                m_indices.push_back(i4);
 
-                if (isPointInRectangle(v2, g_fieldLower, g_fieldUpper) &&
-                    isPointInRectangle(v3, g_fieldLower, g_fieldUpper) &&
-                    isPointInRectangle(v4, g_fieldLower, g_fieldUpper))
-                {
-                    m_indices.push_back(i2);
-                    m_indices.push_back(i3);
-                    m_indices.push_back(i4);
-                }
-                else
-                {
-                    m_indices2.push_back(i2);
-                    m_indices2.push_back(i3);
-                    m_indices2.push_back(i4);
-                }
+                m_indices.push_back(i2);
+                m_indices.push_back(i3);
+                m_indices.push_back(i4);
 
                 {
                     const Vector arr[] = { v1, v2, v4 };
@@ -843,7 +820,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
     
     if (Video::instance->m_haveVBO)
     {
-        glGenBuffersARB(5, (GLuint*)&m_buffers[0]);
+        glGenBuffersARB(4, (GLuint*)&m_buffers[0]);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffers[0]);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_uv.size() * sizeof(UV), &m_uv[0], GL_STATIC_DRAW_ARB);
@@ -860,12 +837,6 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
             glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW_ARB);
         }
 
-        if (m_indices2.size() != 0)
-        {
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
-            glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices2.size() * sizeof(unsigned short), &m_indices2[0], GL_STATIC_DRAW_ARB);
-        }
-
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     }
@@ -873,7 +844,7 @@ CollisionHMap::CollisionHMap(const XMLnode& node, Level* level) : Collision(node
 
 void CollisionHMap::render() const
 {
-    if (m_indices.size() + m_indices2.size() == 0)
+    if (m_indices.size() == 0)
     {
         return;
     }
@@ -897,26 +868,6 @@ void CollisionHMap::render() const
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, NULL);
         }
 
-        if (m_indices2.size() != 0)
-        {
-            if (Video::instance->m_shadowMap3ndPass)
-            {
-                glActiveTextureARB(GL_TEXTURE1_ARB);
-                glDisable(GL_TEXTURE_2D);
-                glActiveTextureARB(GL_TEXTURE0_ARB);
-            }
-            
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_buffers[4]);
-            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, NULL);
-
-            if (Video::instance->m_shadowMap3ndPass)
-            {
-                glActiveTextureARB(GL_TEXTURE1_ARB);
-                glEnable(GL_TEXTURE_2D);
-                glActiveTextureARB(GL_TEXTURE0_ARB);
-            }
-        }
-
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
@@ -930,23 +881,6 @@ void CollisionHMap::render() const
         {
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_SHORT, &m_indices[0]);
         }
-
-        if (m_indices2.size() != 0)
-        {
-            if (Video::instance->m_shadowMap3ndPass)
-            {
-                glActiveTextureARB(GL_TEXTURE1_ARB);
-                glDisable(GL_TEXTURE_2D);
-                glActiveTextureARB(GL_TEXTURE0_ARB);
-            }
-            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices2.size()), GL_UNSIGNED_SHORT, &m_indices2[0]);
-            if (Video::instance->m_shadowMap3ndPass)
-            {
-                glActiveTextureARB(GL_TEXTURE1_ARB);
-                glEnable(GL_TEXTURE_2D);
-                glActiveTextureARB(GL_TEXTURE0_ARB);
-            }
-        }
     }
 }
 
@@ -954,7 +888,7 @@ CollisionHMap::~CollisionHMap()
 {
     if (Video::instance->m_haveVBO)
     {
-        glDeleteBuffersARB(5, (GLuint*)&m_buffers[0]);
+        glDeleteBuffersARB(4, (GLuint*)&m_buffers[0]);
     }
 }
 

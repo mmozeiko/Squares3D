@@ -25,6 +25,7 @@ class Profile;
 class Game;
 class HDR;
 class Chat;
+class Shader;
 
 typedef vector<Profile*> ProfilesVector;
 
@@ -73,7 +74,6 @@ private:
 
     unsigned int     m_shadowTex;
     unsigned int     m_shadowSize;
-    bool             m_withFBO;
     FrameBuffer*     m_framebuffer;
     HDR*             m_hdr;
 
@@ -89,6 +89,8 @@ private:
     Message* m_waitMessage;
     Chat*    m_chat;
     bool     m_networkPaused;
+
+    Shader*  m_shadowShader;
 };
 
 #endif

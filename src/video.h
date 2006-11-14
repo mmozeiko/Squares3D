@@ -16,9 +16,6 @@ class Material;
 class Texture;
 class Collision;
 
-static const Vector g_fieldLower(-25.0f, 0.0f, -25.0f);
-static const Vector g_fieldUpper(25.0f, 0.0f, 25.0f);
-
 struct UV
 {
     UV(float u = 0.0f, float v = 0.0f) : u(u), v(v) {}
@@ -66,13 +63,11 @@ public:
 
     bool m_haveAnisotropy;
     int  m_maxAnisotropy;
+    bool m_haveFBO;
     bool m_haveShadows;
-    bool m_haveShadowsFB;
     bool m_haveShaders;
 
     bool m_haveVBO;
-
-    bool m_shadowMap3ndPass;
 
 private:
     void loadExtensions();

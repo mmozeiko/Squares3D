@@ -29,10 +29,8 @@ private:
     float             m_time;
 
     size_t            m_count;
-    size_t            m_count2;
-    unsigned int      m_buffer[2];
+    unsigned int      m_buffer;
     vector<GrassFace> m_faces;
-    vector<GrassFace> m_faces2;
     Texture*          m_grassTex;  
 };
 

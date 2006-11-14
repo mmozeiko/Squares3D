@@ -49,9 +49,8 @@ Video::Video() :
     m_haveAnisotropy(false),
     m_maxAnisotropy(0),
     m_haveShadows(false),
-    m_haveShadowsFB(false),
+    m_haveFBO(false),
     m_haveVBO(false),
-    m_shadowMap3ndPass(false),
     m_haveShaders(false)
 {
     setInstance(this);
@@ -335,10 +334,10 @@ void Video::loadExtensions()
     m_haveAnisotropy = (GLEE_EXT_texture_filter_anisotropic==GL_TRUE);
     clog << "Video: GL_EXT_texture_filter_anisotropic " << (m_haveAnisotropy ? "supported." : "unavailable.") << endl;
 
-    m_haveShadowsFB = (GLEE_EXT_framebuffer_object==GL_TRUE);
-    clog << "Video: GL_EXT_framebuffer_object " << (m_haveShadowsFB ? "supported." : "unavailable.") << endl;
+    m_haveFBO = (GLEE_EXT_framebuffer_object==GL_TRUE);
+    clog << "Video: GL_EXT_framebuffer_object " << (m_haveFBO ? "supported." : "unavailable.") << endl;
 
-    m_haveShaders = activeTex && m_haveShadowsFB && (GLEE_ARB_fragment_shader==GL_TRUE) &&
+    m_haveShaders = activeTex && m_haveFBO && (GLEE_ARB_fragment_shader==GL_TRUE) &&
                                  (GLEE_ARB_vertex_shader==GL_TRUE) &&
                                  (GLEE_ARB_shader_objects==GL_TRUE) &&
                                  (GLEE_ARB_shading_language_100==GL_TRUE);  
@@ -348,7 +347,7 @@ void Video::loadExtensions()
     m_haveVBO = (GLEE_ARB_vertex_buffer_object==GL_TRUE);
     clog << "Video: GL_ARB_vertex_buffer_object " << (m_haveVBO ? "supported." : "unavailable.") << endl;
 
-    m_haveShadows = activeTex && (GLEE_ARB_depth_texture==GL_TRUE) && (GLEE_ARB_shadow==GL_TRUE);
+    m_haveShadows = activeTex && m_haveFBO && (GLEE_ARB_depth_texture==GL_TRUE) && (GLEE_ARB_shadow==GL_TRUE);
     clog << "Video: GL_ARB_shadow and GL_ARB_depth_texture " << (m_haveShadows ? "supported." : "unavailable.") << endl;
 
     if (m_haveAnisotropy)
@@ -371,16 +370,6 @@ void Video::loadExtensions()
         Config::instance->m_video.anisotropy = 0;
     }
 
-    if (!m_haveShadows)
-    {
-        Config::instance->m_video.shadow_type = 0;
-    }
-
-    if (!m_haveShadowsFB)
-    {
-        Config::instance->m_video.shadowmap_size = 0;
-    }
-
     if (activeTex)
     {
         GLint maxTexUnits;
@@ -391,11 +380,15 @@ void Video::loadExtensions()
         {
             m_haveShaders = false;
         }
-        else if (maxTexUnits < 2)
+        else if (maxTexUnits < 2 && m_haveShadows)
         {
             m_haveShadows = false;
-            m_haveShadowsFB = false;
         }
+    }
+
+    if (!m_haveShadows)
+    {
+        Config::instance->m_video.shadow_type = 0;
     }
 
     if (!m_haveShaders)

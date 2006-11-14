@@ -31,6 +31,7 @@
 #include "random.h"
 #include "hdr.h"
 #include "chat.h"
+#include "shader.h"
 
 static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
@@ -211,7 +212,8 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     m_waitMessage(NULL),
     m_hdr(NULL),
     m_chat(NULL),
-    m_networkPaused(false)
+    m_networkPaused(false),
+    m_shadowShader(NULL)
 {
     setInstance(this); // MUST go first
 
@@ -547,7 +549,6 @@ void World::render() const
         shadowMapPass1();
         m_hdr->begin();
         shadowMapPass2();
-        shadowMapPass3();
     }
     m_hdr->end();
     m_hdr->render();
@@ -621,6 +622,11 @@ void World::setLight(const Vector& position)
 {
     m_lightPosition = position;
 
+    if (Config::instance->m_video.shadow_type == 0)
+    {
+        return;
+    }
+
     glPushMatrix();
     
     glLoadIdentity();
@@ -644,6 +650,16 @@ void World::setLight(const Vector& position)
                                     0.0f, 0.0f, 0.5f, 0.0f,
                                     0.5f, 0.5f, 0.5f, 1.0f);    //bias from [-1, 1] to [0, 1]
     m_textureMatrix = biasMatrix * m_lightProjection * m_lightView;
+
+    //Bind & enable shadow map texture
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    //Set up texture coordinate generation.
+    glTexGenfv(GL_S, GL_EYE_PLANE, m_textureMatrix.column(0).v);
+    glTexGenfv(GL_T, GL_EYE_PLANE, m_textureMatrix.column(1).v);
+    glTexGenfv(GL_R, GL_EYE_PLANE, m_textureMatrix.column(2).v);
+    glTexGenfv(GL_Q, GL_EYE_PLANE, m_textureMatrix.column(3).v);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+
 }
 
 void World::setupShadowStuff()
@@ -656,56 +672,36 @@ void World::setupShadowStuff()
     m_shadowSize = (1 << Config::instance->m_video.shadowmap_size) * 512; // 512, 1024, 2048
 
     bool valid = false;
-    if (Video::instance->m_haveShadowsFB)
+
+    while (!valid)
     {
-        while (!valid)
+        m_framebuffer->create(m_shadowSize, m_shadowSize);
+        m_shadowTex = m_framebuffer->attachDepthTex();
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        valid = m_framebuffer->isValid();
+        glDrawBuffer(GL_BACK);
+        glReadBuffer(GL_BACK);
+        if (!valid && m_shadowSize > 512)
         {
-            m_framebuffer->create(m_shadowSize, m_shadowSize);
-            m_shadowTex = m_framebuffer->attachDepthTex();
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
-            valid = m_framebuffer->isValid();
-            glDrawBuffer(GL_BACK);
-            glReadBuffer(GL_BACK);
-            if (!valid && m_shadowSize > 512)
-            {
-                m_shadowSize <<= 1;
-            }
-            else
-            {
-                break;
-            }
+            m_shadowSize <<= 1;
+        }
+        else
+        {
+            break;
         }
     }
     
     if (valid)
     {
-        m_withFBO = true;
         m_framebuffer->unbind();
         Config::instance->m_video.shadowmap_size = (m_shadowSize / 512) >> 1;
     }
     else
     {
-        m_withFBO = false;
-        Config::instance->m_video.shadowmap_size = 0;
-        m_shadowSize = 512;
-        if (Video::instance->getResolution().second < 512)
-        {
-            m_shadowSize = 256;
-        }
-
-        glGenTextures(1, (GLuint*)&m_shadowTex);
-        glBindTexture(GL_TEXTURE_2D, m_shadowTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowSize, m_shadowSize, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-        if (Video::instance->m_haveShadowsFB)
-        {
-            m_framebuffer->destroy();
-        }
+        Config::instance->m_video.shadow_type = 0;
+        m_framebuffer->destroy();
+        return;
     }
 
     // assume depth texture is currently bound
@@ -716,22 +712,31 @@ void World::setupShadowStuff()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
     //Shadow comparison should generate an INTENSITY result
     glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE_ARB, GL_INTENSITY);
+
+    m_shadowShader = new Shader("shadow");
+    m_shadowShader->setInt1("tex_source", 0);
+    m_shadowShader->setInt1("tex_shadow", 1);
+    m_shadowShader->end();
 }
 
 void World::killShadowStuff()
 {
-    if (!m_withFBO)
+    if (Config::instance->m_video.shadow_type != 0)
     {
         glDeleteTextures(1, (GLuint*)&m_shadowTex);
     }
 
     m_framebuffer->destroy();
+    if (m_shadowShader != NULL)
+    {
+        delete m_shadowShader;
+    }
 }
 
 void World::shadowMapPass1() const
 {
     //First pass - from light's point of view
-    if (m_withFBO)
+    if (Config::instance->m_video.shadow_type != 0)
     {
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
@@ -770,17 +775,10 @@ void World::shadowMapPass1() const
 
     glFrontFace(GL_CW);
    
-    if (!m_withFBO)
-    {
-        //Read the depth buffer into the shadow map texture
-        glBindTexture(GL_TEXTURE_2D, m_shadowTex);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_shadowSize, m_shadowSize);
-    }
-  
     //restore states
     glPopAttrib();
     
-    if (m_withFBO)
+    if (Config::instance->m_video.shadow_type != 0)
     {
         m_framebuffer->unbind();
         glDrawBuffer(GL_BACK);
@@ -803,85 +801,43 @@ void World::shadowMapPass2() const
     m_camera->render();
     m_skybox->render(); // IMPORTANT: must render after camera
 
+    glPushAttrib(GL_LIGHTING_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+
+    static const Vector amb1 = Vector::One * 0.5f;
+    static const Vector amb2 = Vector::One * 0.2f;
+    static const Vector dif1 = Vector::One * 0.7f;
+    static const Vector dif2 = Vector::One * 0.8f;
     //Use dim light to represent shadowed areas
     glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_1*Vector::One).v);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, (OBJECT_BRIGHTNESS_1*Vector::One).v);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::Zero.v);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, amb1.v);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, dif1.v);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
 
-    //Draw the scene
-    renderScene();
-
-    for each_const(vector<Player*>, m_localPlayers, iter)
-    {
-        (*iter)->renderColor();
-    }
-
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_1*Vector::One).v);
-    m_grass->render();
-}
-
-void World::shadowMapPass3() const
-{
-    //3rd pass
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-
-    //Remember state
-    glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
-
-    //Draw with bright light
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
-
-    //Set alpha test to discard false comparisons
-    glAlphaFunc(GL_GEQUAL, 0.99f);
-    glEnable(GL_ALPHA_TEST);
-
     //Bind & enable shadow map texture
+    glActiveTextureARB(GL_TEXTURE1_ARB);
     glBindTexture(GL_TEXTURE_2D, m_shadowTex);
-    glEnable(GL_TEXTURE_2D);
-
     //Set up texture coordinate generation.
-    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-    glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
     glTexGenfv(GL_S, GL_EYE_PLANE, m_textureMatrix.column(0).v);
     glTexGenfv(GL_T, GL_EYE_PLANE, m_textureMatrix.column(1).v);
     glTexGenfv(GL_R, GL_EYE_PLANE, m_textureMatrix.column(2).v);
     glTexGenfv(GL_Q, GL_EYE_PLANE, m_textureMatrix.column(3).v);
-    glEnable(GL_TEXTURE_GEN_S);
-    glEnable(GL_TEXTURE_GEN_T);
-    glEnable(GL_TEXTURE_GEN_R);
-    glEnable(GL_TEXTURE_GEN_Q);
-
     glActiveTextureARB(GL_TEXTURE0_ARB);
 
-    Video::instance->m_shadowMap3ndPass = true;
-
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_1*Vector::One).v);
+    m_shadowShader->begin();
     renderScene();
- 
-    glDisable(GL_ALPHA_TEST);
+    m_grass->render();
+    m_shadowShader->end();
+
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
 
     for each_const(vector<Player*>, m_localPlayers, iter)
     {
         (*iter)->renderColor();
     }
 
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
-    m_grass->render();
-
-    Video::instance->m_shadowMap3ndPass = false;
-
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-
     //Restore states
     glPopAttrib();
-
-    glActiveTextureARB(GL_TEXTURE0_ARB);
 }
