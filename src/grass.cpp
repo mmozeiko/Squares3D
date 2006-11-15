@@ -30,6 +30,7 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_grassTex(NULL)
         Vector side2 = face->vertexes[2] - face->vertexes[0];
         Vector areaV = side1 ^ side2;
         float area = areaV.magnitude();
+        areaV.norm();
         float count = grass_density * area;
 
         if (count >= 1.0f || (count < 1.0f && Randoms::getFloat() < count))
@@ -54,15 +55,15 @@ Grass::Grass(const Level* level) : m_time(0.0f), m_count(0), m_grassTex(NULL)
 
                     vector<GrassFace>* faces = &m_faces;
                      
-                    faces->push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(-SIZE/2, 0.0f, 0.0f)) );
-                    faces->push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(+SIZE/2, 0.0f, 0.0f)) );
-                    faces->push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(+SIZE/2, SIZE, 0.0f)) );
-                    faces->push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(-SIZE/2, SIZE, 0.0f)) );
+                    faces->push_back(GrassFace( UV(0.0f, 0.0f), areaV, trM * Vector(-SIZE/2, 0.0f, 0.0f)) );
+                    faces->push_back(GrassFace( UV(1.0f, 0.0f), areaV, trM * Vector(+SIZE/2, 0.0f, 0.0f)) );
+                    faces->push_back(GrassFace( UV(1.0f, 1.0f), areaV, trM * Vector(+SIZE/2, SIZE, 0.0f)) );
+                    faces->push_back(GrassFace( UV(0.0f, 1.0f), areaV, trM * Vector(-SIZE/2, SIZE, 0.0f)) );
 
-                    faces->push_back(GrassFace( UV(0.0f, 0.0f), trM * Vector(0.0f, 0.0f, -SIZE/2)) );
-                    faces->push_back(GrassFace( UV(1.0f, 0.0f), trM * Vector(0.0f, 0.0f, +SIZE/2)) );
-                    faces->push_back(GrassFace( UV(1.0f, 1.0f), trM * Vector(0.0f, SIZE, +SIZE/2)) );
-                    faces->push_back(GrassFace( UV(0.0f, 1.0f), trM * Vector(0.0f, SIZE, -SIZE/2)) );
+                    faces->push_back(GrassFace( UV(0.0f, 0.0f), areaV, trM * Vector(0.0f, 0.0f, -SIZE/2)) );
+                    faces->push_back(GrassFace( UV(1.0f, 0.0f), areaV, trM * Vector(0.0f, 0.0f, +SIZE/2)) );
+                    faces->push_back(GrassFace( UV(1.0f, 1.0f), areaV, trM * Vector(0.0f, SIZE, +SIZE/2)) );
+                    faces->push_back(GrassFace( UV(0.0f, 1.0f), areaV, trM * Vector(0.0f, SIZE, -SIZE/2)) );
                 }
 
             }
@@ -148,23 +149,21 @@ void Grass::render() const
         if (m_count != 0)
         {
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_buffer);
-            glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), NULL);
+            glInterleavedArrays(GL_T2F_N3F_V3F, sizeof(GrassFace), NULL);
             glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         }
 
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
     else
     {
         if (m_count != 0)
         {
-            glInterleavedArrays(GL_T2F_V3F, sizeof(GrassFace), &m_faces[0]);
+            glInterleavedArrays(GL_T2F_N3F_V3F, sizeof(GrassFace), &m_faces[0]);
             glDrawArrays(GL_QUADS, 0, static_cast<GLsizei>(m_count));
         }
 
     }
 
     glPopAttrib();
-
-    glEnableClientState(GL_NORMAL_ARRAY);
 }

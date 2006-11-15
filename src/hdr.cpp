@@ -211,6 +211,7 @@ void HDR::render()
         glViewport(0, 0, 256 >> i, 256 >> i);
         m_fboDownsampled[i]->bind();
         glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+        glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
             glTexCoord2f(m_w, 0.0f);  glVertex2f(m_w, 0.0f);
@@ -233,6 +234,7 @@ void HDR::render()
         m_blur->setFloat4("tex_offset", Vector(1.0f/(256 >> i), 0.0f, 0.0f, 0.0f));
         glBindTexture(GL_TEXTURE_2D, m_downsampledTex[i][0]);
         glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
@@ -245,6 +247,7 @@ void HDR::render()
         m_blur->setFloat4("tex_offset", Vector(0.0f, 1.0f/(256 >> i), 0.0f, 0.0f));
         glBindTexture(GL_TEXTURE_2D, m_downsampledTex[i][1]);
         glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);

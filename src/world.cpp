@@ -668,7 +668,7 @@ void World::setupShadowStuff()
     m_shadowShader->setInt1("tex_source", 0);
     m_shadowShader->setInt1("tex_shadow", 1);
     m_shadowShader->end();
-
+    
     if (m_shadowShader->valid() == false)
     {
         Config::instance->m_video.shadow_type = 0;
@@ -777,8 +777,6 @@ void World::shadowMapPass1() const
     glDisable(GL_LIGHTING);
     renderScene();
     glEnable(GL_TEXTURE_2D);
-
-    glFrontFace(GL_CW);
    
     //restore states
     glPopAttrib();
@@ -809,9 +807,9 @@ void World::shadowMapPass2() const
     glPushAttrib(GL_LIGHTING_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
 
     static const Vector amb1 = Vector::One * 0.6f;
-    static const Vector amb2 = Vector::One * 0.55f;
+    static const Vector amb2 = Vector::One * 0.6f;
     static const Vector dif1 = Vector::One * 0.75f;
-    static const Vector dif2 = Vector::One * 0.7f;
+    static const Vector dif2 = Vector::One * 0.75f;
     //Use dim light to represent shadowed areas
     glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, amb1.v);
@@ -831,6 +829,7 @@ void World::shadowMapPass2() const
 
     m_shadowShader->begin();
     renderScene();
+
     glLightfv(GL_LIGHT1, GL_AMBIENT, amb2.v);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, dif2.v);
     m_grass->render();

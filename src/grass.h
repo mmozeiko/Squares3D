@@ -10,9 +10,15 @@ class Texture;
 
 struct GrassFace
 {
-    GrassFace(const UV& uv, const Vector& vertex) : uv(uv), vertex(vertex) {}
+    GrassFace(const UV& uv, const Vector& norm, const Vector& vertex) : uv(uv), vertex(vertex)
+    {
+        normal[0] = norm.x;
+        normal[1] = norm.y;
+        normal[2] = norm.z;
+    }
 
     UV uv;
+    float normal[3];
     Vector vertex;
 };
 
