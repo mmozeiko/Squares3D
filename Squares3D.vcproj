@@ -845,14 +845,6 @@
 					RelativePath=".\bin\data\shaders\shadow.vsh.glsl"
 					>
 				</File>
-				<File
-					RelativePath=".\bin\data\shaders\shadow_grass.fsh.glsl"
-					>
-				</File>
-				<File
-					RelativePath=".\bin\data\shaders\shadow_grass.vsh.glsl"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

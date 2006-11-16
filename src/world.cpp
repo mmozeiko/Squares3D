@@ -33,10 +33,10 @@
 #include "chat.h"
 #include "shader.h"
 
-static const float OBJECT_BRIGHTNESS_1 = 0.3f; // shadowed
-static const float OBJECT_BRIGHTNESS_2 = 0.4f; // lit
-static const float GRASS_BRIGHTNESS_1 = 0.6f; // shadowed
-static const float GRASS_BRIGHTNESS_2 = 0.7f; // lit
+static const float OBJECT_BRIGHTNESS_1 = 0.5f; // shadowed
+static const float OBJECT_BRIGHTNESS_2 = 0.6f; // lit
+static const float GRASS_BRIGHTNESS_1 = 0.5f; // shadowed
+static const float GRASS_BRIGHTNESS_2 = 0.6f; // lit
 
 static const Vector playerPositions[4] = {Vector(- FIELD_LENGTH / 2, 1.5f, - FIELD_LENGTH / 2),
                                           Vector(- FIELD_LENGTH / 2, 1.5f,   FIELD_LENGTH / 2),
@@ -224,7 +224,7 @@ World::World(Profile* userProfile, int& unlockable, int current) :
     m_hdr->init();
 
     setupShadowStuff();
-    setLight(Vector(-15.0f, 35.0f, 38.0f));
+    setLight(Vector(-15.0f, 35.0f, 38.0f, 0.0f));
 
     Input::instance->startCharBuffer();
     Input::instance->startKeyBuffer();
@@ -470,6 +470,7 @@ void World::updateStep(float delta)
             if (m_localPlayers[i]->getPosition().y < -5.0f)
             {
                 m_localPlayers[i]->setPositionRotation(playerPositions[i], Vector::Zero);
+                NewtonWorldUnfreezeBody(m_newtonWorld, m_localPlayers[i]->m_body->m_newtonBody);
             }
         }
 
@@ -481,6 +482,7 @@ void World::updateStep(float delta)
             if (m_referee->m_gameOver)
             {
                 m_ball->setPosition0();
+                NewtonWorldUnfreezeBody(m_newtonWorld, m_ball->m_body->m_newtonBody);
                 NewtonBodySetVelocity(m_ball->m_body->m_newtonBody, Vector::Zero.v);
                 NewtonBodySetOmega(m_ball->m_body->m_newtonBody, Vector::Zero.v);
             }
@@ -519,16 +521,16 @@ void World::render() const
     if (shadow_type == 0)
     {
         m_hdr->begin();
-        glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_2*Vector::One).v);
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::One.v);
-        glLightfv(GL_LIGHT1, GL_SPECULAR, Vector::One.v);
-        glEnable(GL_LIGHT1);
-        glEnable(GL_LIGHTING);
-
         glClear(GL_DEPTH_BUFFER_BIT);
         m_camera->render();
         m_skybox->render(); // IMPORTANT: must render after camera
+
+        glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (OBJECT_BRIGHTNESS_1*Vector::One).v);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, (OBJECT_BRIGHTNESS_2*Vector::One).v);
+        glEnable(GL_LIGHT1);
+        glEnable(GL_LIGHTING);
+
         renderScene();
 
         m_ball->renderShadow(m_lightPosition);
@@ -537,7 +539,7 @@ void World::render() const
             (*iter)->renderColor();
         }
         
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, Vector::Zero.v);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, (GRASS_BRIGHTNESS_1*Vector::One).v);
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GRASS_BRIGHTNESS_2*Vector::One).v);
 
         m_grass->render();
