@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <xml>
     <item name="FPS_DISPLAY"           value="FPS: $1"/>
     <item name="GAME_OVER"             value="Spēle beigusies!"/>
@@ -40,28 +40,28 @@ Nospiediet &lt;ENTER&gt; lai mēģinātu vēlreiz..
     <item name="WAIT_PLAYERS"             value="Gaida tīkla spēlētājus..."/>
 
     <!-- Main menu -->
-    <item name="MAIN_MENU"                value="Squares 3D Izvēlne"/>
-    <item name="START_SINGLEPLAYER"       value="Sākt Spēli"/>
-    <item name="START_MULTIPLAYER"        value="Sākt Tīkla Spēli"/>
-    <item name="PLAYER_OPTIONS"           value="Spēlētāja Uzstādījumi"/>
+    <item name="MAIN_MENU"                value="Squares 3D izvēlne"/>
+    <item name="START_SINGLEPLAYER"       value="Sākt spēli"/>
+    <item name="START_MULTIPLAYER"        value="Sākt tīkla spēli"/>
+    <item name="PLAYER_OPTIONS"           value="Spēlētāja uzstādījumi"/>
     <item name="OPTIONS"                  value="Uzstādījumi"/>
-    <item name="RULES"                    value="Spēles Noteikumi"/>
+    <item name="RULES"                    value="Spēles noteikumi"/>
     <item name="CREDITS"                  value="Autori"/>
-    <item name="QUIT_GAME"                value="Iziet no Spēles"/>
+    <item name="QUIT_GAME"                value="Iziet no spēles"/>
 
     <item name="BACK"                     value="Atgriezties"/>
 
     <!-- Singleplayer menu -->
-    <item name="EASY"                     value="Viegls Līmenis"/>
-    <item name="NORMAL"                   value="Vidējs Līmenis"/>
-    <item name="HARD"                     value="Grūts Līmenis"/>
-    <item name="EXTRA"                    value="Extra Līmenis"/>
+    <item name="EASY"                     value="Viegls līmenis"/>
+    <item name="NORMAL"                   value="Vidējs līmenis"/>
+    <item name="HARD"                     value="Grūts līmenis"/>
+    <item name="EXTRA"                    value="Extra līmenis"/>
 
     <!-- Multiplayer menu -->
-    <item name="START_HOST"               value="Izveidot Jaunu Spēli"/>
-    <item name="START_JOIN"               value="Pievienoties Spēlei"/>
-    <item name="BEGIN_GAME"               value="Sākt Spēli"/>
-    <item name="PLAYERS_LIST"             value="Spēlētāju Saraksts:"/>
+    <item name="START_HOST"               value="Izveidot jaunu spēli"/>
+    <item name="START_JOIN"               value="Pievienoties spēlei"/>
+    <item name="BEGIN_GAME"               value="Sākt spēli"/>
+    <item name="PLAYERS_LIST"             value="Spēlētāju saraksts:"/>
     <item name="CONNECT_HOST"             value="Pievienoties"/>
     <item name="ADDRESS"                  value="Adrese"/>
     <item name="CONNECTING"               value="Vienojas..."/>
@@ -75,43 +75,43 @@ Nospiediet &lt;ENTER&gt; lai mēģinātu vēlreiz..
     <item name="COLOR"                    value="Krāsa"/>
 
     <!-- Options menu -->
-    <item name="AUDIO_OPTIONS"            value="Skaņas Uzstādījumi"/>
-    <item name="VIDEO_OPTIONS"            value="Attēla Uzstādījumi"/>
-    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus Attēla Uzstādījumi"/>
-    <item name="OTHER_OPTIONS"            value="Citi Uzstādījumi"/>
-    <item name="SAVE"                     value="Uzlikt Uzstādījumus"/>
+    <item name="AUDIO_OPTIONS"            value="Skaņas uzstādījumi"/>
+    <item name="VIDEO_OPTIONS"            value="Attēla uzstādījumi"/>
+    <item name="VIDEO_OPTIONS_ADVANCED"   value="Papildus attēla uzstādījumi"/>
+    <item name="OTHER_OPTIONS"            value="Citi uzstādījumi"/>
+    <item name="SAVE"                     value="Uzlikt uzstādījumus"/>
 
     <!-- Options -->
     <item name="TRUE"                     value="Jā"/>
     <item name="FALSE"                    value="Nē"/>
     <item name="RESOLUTION"               value="Izšķirtspēja"/>
-    <item name="FULLSCREEN"               value="Pa Visu Ekrānu"/>
-    <item name="VSYNC"                    value="Vertikālā Sinhronizācija"/>
-    <item name="FSAA"                     value="Attēla Izlīdzināšana"/>
+    <item name="FULLSCREEN"               value="Pa visu ekrānu"/>
+    <item name="VSYNC"                    value="Vertikālā sinhronizācija"/>
+    <item name="FSAA"                     value="Attēla izlīdzināšana"/>
     <item name="ANISOTROPY"               value="Anizotropija"/>
     <item name="SHADOW_TYPE"              value="Ēnas"/>
     <item name="USE_HDR"                  value="Lietot HDR"/>
-    <item name="SHADOWMAP_SIZE"           value="Ēnu Kvalitāte"/>
+    <item name="SHADOWMAP_SIZE"           value="Ēnu kvalitāte"/>
     <item name="SHOW_FPS"                 value="Rādīt FPS"/>
-    <item name="GRASS_DENSITY"            value="Zāļu Daudzums"/>
-    <item name="TERRAIN_DETAIL"           value="Reljefa Detalizācija"/>
-    <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes Detalizācija"/>
+    <item name="GRASS_DENSITY"            value="Zāļu daudzums"/>
+    <item name="TERRAIN_DETAIL"           value="Reljefa detalizācija"/>
+    <item name="ENVIRONMENT_DETAILS"      value="Apkārtnes detalizācija"/>
 
     <item name="LOW"                      value="Zema"/>
     <item name="MEDIUM"                   value="Vidēja"/>
     <item name="HIGH"                     value="Augsta"/>
-    <item name="CUSTOM"                   value="Pēc Izvēles"/>
-    <item name="NOT_SUPPORTED"            value="Nav Atbalsta"/>
+    <item name="CUSTOM"                   value="Pēc izvēles"/>
+    <item name="NOT_SUPPORTED"            value="Nav atbalsta"/>
 
     <item name="AUDIO"                    value="Skaņa"/>
-    <item name="SYSTEM_KEYS"              value="Sistēmas Taustiņi"/>
+    <item name="SYSTEM_KEYS"              value="Sistēmas taustiņi"/>
     <item name="LANGUAGE"                 value="Valoda"/>
-    <item name="MOUSE_SENSITIVITY"        value="Peles Jūtīgums"/>
+    <item name="MOUSE_SENSITIVITY"        value="Peles jūtīgums"/>
 
-    <item name="MUSIC_VOL"                value="Mūzikas Skaļums"/>
-    <item name="SOUND_VOL"                value="Skaņas Skaļums"/>
+    <item name="MUSIC_VOL"                value="Mūzikas skaļums"/>
+    <item name="SOUND_VOL"                value="Skaņas skaļums"/>
     
-    <item name="CREDITS_SCREEN">Programmēšana &amp; Dizains:
+    <item name="CREDITS_SCREEN">Programmēšana &amp; dizains:
 Mārtiņš Možeiko
 Kristaps Straupe
 
@@ -176,7 +176,7 @@ Izvēlnes vadība:
 
     <item name="PLAYER_KICKED"     value="Jūs tikāt izmests no servera!"/>
     <item name="SERVER_FULL"       value="Serveris ir pilns (maksimāli 4 spēlētāji)!"/>
-    <item name="SERVER_DISCONNECT" value="Konekcija ar serveri pārtrūka!"/>
+    <item name="SERVER_DISCONNECT" value="Savienojums ar serveri pārtrūka!"/>
     <item name="PLAYER_NAME_TAKEN" value="Spēlētājs ar jūsu vārdu&#10;jau ir pievienojies serverī!"/>
     <item name="INFORMATION"       value="Info"/>
     <item name="SERVER_VERSION">

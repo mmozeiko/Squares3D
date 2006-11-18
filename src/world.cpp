@@ -249,6 +249,7 @@ void World::init()
         delete m_referee;
         delete m_grass;
         delete m_level;
+        delete m_camera;
 
         NewtonDestroyAllBodies(m_newtonWorld);
         NewtonDestroy(m_newtonWorld);
@@ -262,6 +263,7 @@ void World::init()
         m_referee = NULL;
         m_level = NULL;
         m_newtonWorld = NULL;
+        m_camera = NULL;
     }
 
     m_messages = new Messages();
