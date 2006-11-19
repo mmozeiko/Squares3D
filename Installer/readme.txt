@@ -17,7 +17,6 @@ Known issues:
 - Mouse movement might have some lagging behavior if game frames per second exceeds 100.
   Solution would be to enable vertical synchronization in advanced video options. Enabling vertical
   synchronization is not recommended if you`re getting low fps.
-- Multiplayer is disabled right now.
 - German and russian localizations have some text parts untranslated from english.
 - Under Linux and MacOSX user must have write access rights to folder where Squares 3D executable file
   or bundle is located. You can simple keep the game in some folder on Desktop.
@@ -27,7 +26,7 @@ Known issues:
 
 If game runs slow (at unplayable frame rate) it is recommended to turn down video options to lowest
 detalization. Slowest video effects are usage of shadows and grass density. These two are the first
-options to tweak down in case of poor performance. Also using HDR, AntiAliasing and Anisotropic
+options to tweak down in case of poor performance. Also using HDR, Antialiasing and Anisotropic
 filtration is not recommended on older video cards.
 Applying selected options is done by pressing the apply button in options screens.
 
@@ -60,7 +59,6 @@ Zināmās problēmas:
 - Peles kustība var notikt ar aizkavējumiem, ja spēles kadri sekundē (FPS) pārsniedz 100. Lai apietu
   šo problēmu uzstādiet vertikālo sinhronizāciju par ieslēgtu. Tā ir atrodama spēles papildus video
   uzstādījumos. Ja spēle iet lēni (zems FPS), tad lietot vertikālo sinhronizāciju nav ieteicams.
-- Vairākspēletāju režīms pašlaik nav pieejams.
 - Vācu un krievu lokalizācijās ir dažas daļas neiztulkotas no angļu valodas.
 - Linux un MacOSX lietotājam jābūt rakstīšanas tiesībām folderim, kurā atrodas Squares 3D izpildāmais
   fails vai bundle. Spēli var vienkārši turēt uz Desktopa kādā folderī.
@@ -70,7 +68,7 @@ Zināmās problēmas:
   
 Ja spēle iet lēni (par maz kadru sekundē), tad ir ieteicams uzstādīt video opcijas uz zemākajiem
 uzstādījumiem. Visvairāk resursus prasa ēnu lietošana un zāļu daudzums spēles pasaulē. Šie abi
-ustādījumi ir pirmie, kurus vajadzētu pieregulēt, ja spēle neiet pietiekami ātri. Arī HDR, AntiAliasing
+ustādījumi ir pirmie, kurus vajadzētu pieregulēt, ja spēle neiet pietiekami ātri. Arī HDR, Antialiasing
 (attēla izlīdzināšana) un anizotropiskā filtrācija nav ieteicama uz vecākām videokartēm.
 Opciju apstiprināšana notiek nospiežot uzstādīšanas pogu opciju izvēlnēs.
 
