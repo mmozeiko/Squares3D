@@ -36,7 +36,7 @@
 static const float OBJECT_BRIGHTNESS_1 = 0.5f; // shadowed
 static const float OBJECT_BRIGHTNESS_2 = 0.6f; // lit
 static const float GRASS_BRIGHTNESS_1 = 0.5f; // shadowed
-static const float GRASS_BRIGHTNESS_2 = 0.6f; // lit
+static const float GRASS_BRIGHTNESS_2 = 0.5f; // lit
 
 static const Vector playerPositions[4] = {Vector(- FIELD_LENGTH / 2, 1.5f, - FIELD_LENGTH / 2),
                                           Vector(- FIELD_LENGTH / 2, 1.5f,   FIELD_LENGTH / 2),
@@ -811,9 +811,9 @@ void World::shadowMapPass2() const
     glPushAttrib(GL_LIGHTING_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
 
     static const Vector amb1 = Vector::One * 0.6f;
-    static const Vector amb2 = Vector::One * 0.6f;
     static const Vector dif1 = Vector::One * 0.75f;
-    static const Vector dif2 = Vector::One * 0.75f;
+    static const Vector amb2 = Vector::One * 0.6f;
+    static const Vector dif2 = Vector::One * 0.6f;
     //Use dim light to represent shadowed areas
     glLightfv(GL_LIGHT1, GL_POSITION, m_lightPosition.v);
     glLightfv(GL_LIGHT1, GL_AMBIENT, amb1.v);

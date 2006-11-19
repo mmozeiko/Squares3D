@@ -209,6 +209,10 @@ und zum Hauptmenü zurückzukehren.
 
     <!--item name="NET_CREATE_FAILED" value="Server creation failed (network port unavailable)!"/>
 
-    <item name="RLY_QUIT" value="Do you really want to quit?"/-->
+    <item name="RLY_QUIT" value="Do you really want to quit?"/>
+    
+    <item name="LEVEL_DEFAULT"     value="Default"/>
+    <item name="LEVEL_EXTRA"       value="Extra"/>
+    -->
 
 </xml>

@@ -108,6 +108,9 @@ enum TextType
 
     TEXT_HOST,
     TEXT_LEVEL,
+    
+    TEXT_LEVEL_DEFAULT,
+    TEXT_LEVEL_EXTRA,
 
     TEXT_LAST_ONE, // THIS MUST BE TEH LAST ONE
 };

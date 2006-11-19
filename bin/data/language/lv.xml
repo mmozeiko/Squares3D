@@ -195,4 +195,6 @@ Nospiediet &lt;ESCAPE&gt; lai turpinātu
 Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
     </item>
     <item name="SERVER_NET_PORT"   value="Servera ports"/>
+    <item name="LEVEL_DEFAULT"     value="Parastais"/>
+    <item name="LEVEL_EXTRA"       value="Extra"/>
 </xml>

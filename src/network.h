@@ -107,7 +107,6 @@ public:
     Chat* m_chat;
 
     string getLevel() const;
-    string getLevelName(size_t idx) const;
     size_t getLevelCount() const;
     void setLevelOption(const OptionEntry* entry);
     void updateLevelOption();
@@ -149,7 +148,6 @@ private:
 
     const OptionEntry* m_levelEntry;
     StringVector     m_levelFiles;
-    StringVector     m_levelNames;
     byte             m_curLevel;
     void             loadLevelList();
 };

@@ -1118,7 +1118,6 @@ void Network::loadLevelList()
         if (node.name == "level")
         {
             m_levelFiles.push_back(node.getAttribute("file"));
-            m_levelNames.push_back(node.getAttribute("name"));
         }
         else
         {
@@ -1138,11 +1137,6 @@ void Network::setLevelOption(const OptionEntry* entry)
 void Network::updateLevelOption()
 {
     m_curLevel = m_levelEntry->getCurrentValueIdx();
-}
-
-string Network::getLevelName(size_t idx) const
-{
-    return m_levelNames[idx];
 }
 
 size_t Network::getLevelCount() const

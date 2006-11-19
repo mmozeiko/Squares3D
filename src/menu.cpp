@@ -193,9 +193,14 @@ void Menu::loadMenu(Profile* userProfile, int unlockable, int& current)
     Value valLevels("levels");
     size_t c = Network::instance->getLevelCount();
 
+    const string names[] = {
+        language->get(TEXT_LEVEL_DEFAULT),
+        language->get(TEXT_LEVEL_EXTRA),
+    };
+
     for (size_t i=0; i<c; i++)
     {
-        valLevels.add(Network::instance->getLevelName(i));
+        valLevels.add(names[i]);
     }
     OptionEntry* e = new OptionEntry(this, language->get(TEXT_LEVEL), valLevels);
     submenu->addEntry(e);

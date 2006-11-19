@@ -203,4 +203,6 @@ Press &lt;ESCAPE&gt; to continue
 Press &lt;ENTER&gt; to quit to Main Menu.
     </item>
     <item name="SERVER_NET_PORT"   value="Server port"/>
+    <item name="LEVEL_DEFAULT"     value="Default"/>
+    <item name="LEVEL_EXTRA"       value="Extra"/>
 </xml>

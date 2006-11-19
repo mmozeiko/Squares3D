@@ -766,6 +766,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\bin\data\level\level_list.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\bin\data\level\object_field.xml"
 					>
 				</File>

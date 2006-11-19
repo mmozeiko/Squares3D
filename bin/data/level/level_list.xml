@@ -1,4 +1,4 @@
 <xml>
-    <level name="Default" file="world.xml"/>
-    <level name="Extra" file="extra.xml"/>
+    <level file="world.xml"/>
+    <level file="extra.xml"/>
 </xml>

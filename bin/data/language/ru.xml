@@ -195,6 +195,10 @@ You have version: $2
 
 Нажмите &lt;ENTER&gt; для выхода в главное меню.
     </item>
-    <item name="SERVER_NET_PORT"   value="Server port"/-->
+    <item name="SERVER_NET_PORT"   value="Server port"/>
+    
+    <item name="LEVEL_DEFAULT"     value="Default"/>
+    <item name="LEVEL_EXTRA"       value="Extra"/>
+    -->
 </xml>
 
