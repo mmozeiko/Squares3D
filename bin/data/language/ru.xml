@@ -190,15 +190,17 @@ You have version: $2
 
     <item name="RLY_QUIT" value="Do you really want to quit?"/>
 
+    <item name="SERVER_NET_PORT"   value="Server port"/>
+    
+    <item name="LEVEL_DEFAULT"     value="Default"/>
+    <item name="HOST"              value="Izveidot serveri"/>
+-->
     <item name="NETWORK_ESC_MESSAGE">
 Нажмите &lt;ESCAPE&gt; для продолжения
 
 Нажмите &lt;ENTER&gt; для выхода в главное меню.
     </item>
-    <item name="SERVER_NET_PORT"   value="Server port"/>
-    
-    <item name="LEVEL_DEFAULT"     value="Default"/>
-    <item name="LEVEL_EXTRA"       value="Extra"/>
-    -->
+    <item name="LEVEL_EXTRA"       value="Дополнительный"/>
+    <item name="LEVEL"             value="Уровень"/>
 </xml>
 

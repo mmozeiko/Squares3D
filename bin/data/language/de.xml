@@ -213,6 +213,8 @@ und zum Hauptmenü zurückzukehren.
     
     <item name="LEVEL_DEFAULT"     value="Default"/>
     <item name="LEVEL_EXTRA"       value="Extra"/>
+    <item name="HOST"              value="Izveidot serveri"/>
+    <item name="LEVEL"             value="Līmenis"/>
     -->
 
 </xml>

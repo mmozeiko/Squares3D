@@ -668,12 +668,19 @@ void World::setLight(const Vector& position)
 
 void World::setupShadowStuff()
 {
-    m_shadowShader = new Shader("shadow");
-    m_shadowShader->setInt1("tex_source", 0);
-    m_shadowShader->setInt1("tex_shadow", 1);
-    m_shadowShader->end();
-    
-    if (m_shadowShader->valid() == false)
+    if (Video::instance->m_haveShaders)
+    {
+        m_shadowShader = new Shader("shadow");
+        m_shadowShader->setInt1("tex_source", 0);
+        m_shadowShader->setInt1("tex_shadow", 1);
+        m_shadowShader->end();
+        
+        if (m_shadowShader->valid() == false)
+        {
+            Config::instance->m_video.shadow_type = 0;
+        }
+    }
+    else
     {
         Config::instance->m_video.shadow_type = 0;
     }

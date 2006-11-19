@@ -197,4 +197,6 @@ Nospiediet &lt;ENTER&gt; lai atgrieztos uz galveno izvēlni.
     <item name="SERVER_NET_PORT"   value="Servera ports"/>
     <item name="LEVEL_DEFAULT"     value="Parastais"/>
     <item name="LEVEL_EXTRA"       value="Extra"/>
+    <item name="HOST"              value="Izveidot serveri"/>
+    <item name="LEVEL"             value="Līmenis"/>
 </xml>
