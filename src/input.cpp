@@ -56,7 +56,7 @@ void Input::mouseVisible(bool visible)
 	    CGAssociateMouseAndMouseCursorPosition(FALSE);
 #else
         glfwDisable(GLFW_MOUSE_CURSOR);
-        glfwSetMousePos(0, 0);
+        glfwSetMousePos(m_mouseMiddleX, m_mouseMiddleY);
 #endif
     }
     m_mouseVisible = visible;
@@ -78,7 +78,9 @@ void Input::update()
 		CGWarpMouseCursorPosition(p);
 #else
         glfwGetMousePos(&m_mouse.x, &m_mouse.y);
-        glfwSetMousePos(0, 0);
+        m_mouse.x -= m_mouseMiddleX;
+        m_mouse.y -= m_mouseMiddleY;
+        glfwSetMousePos(m_mouseMiddleX, m_mouseMiddleY);
 #endif
     }
     else

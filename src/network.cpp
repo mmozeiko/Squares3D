@@ -164,7 +164,7 @@ void Network::close()
         // TODO: make asynchronous
         send(m_server, QuitPacket(), true);
         enet_host_flush(m_host);
-        enet_peer_disconnect(m_server);
+        enet_peer_disconnect(m_server, 0);
         enet_host_flush(m_host);
     }
     if (m_isServer && m_host != NULL)
@@ -174,7 +174,7 @@ void Network::close()
         {
             send(client->first, QuitPacket(), true);
             enet_host_flush(m_host);
-            enet_peer_disconnect(client->first);
+            enet_peer_disconnect(client->first, 0);
             enet_host_flush(m_host);
         }
     }
@@ -295,7 +295,7 @@ void Network::update()
             {
                 if (m_inMenu == false)
                 {
-                    enet_peer_disconnect(event.peer);
+                    enet_peer_disconnect(event.peer, 0);
                     enet_host_flush(m_host);
                 }
                 else

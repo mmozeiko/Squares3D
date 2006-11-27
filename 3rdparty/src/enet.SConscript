@@ -1,7 +1,7 @@
 #
 Import("env lib suffix")
 
-sources = Split("packet.c peer.c protocol.c host.c list.c memory.c")
+sources = Split("packet.c peer.c protocol.c host.c list.c callbacks.c")
 
 p = str( Platform() )
 
