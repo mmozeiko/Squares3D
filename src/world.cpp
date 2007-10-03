@@ -110,7 +110,8 @@ void World::init()
     NewtonBodySetContinuousCollisionMode(m_level->getBody("football")->m_newtonBody, 1);
 
     m_referee = new Referee(m_messages, m_scoreBoard);
-    m_referee->m_ground = m_level->getBody("field"); //referee now can recognize game field
+    m_referee->m_field = m_level->getBody("field"); //referee now can recognize game field
+    m_referee->m_ground = m_level->getBody("level"); //referee now can recognize ground outside
 
     m_ball = new Ball(m_level->getBody("football"));
     m_referee->registerBall(m_ball);

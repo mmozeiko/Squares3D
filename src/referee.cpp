@@ -227,7 +227,7 @@ void Referee::process(const Body* body1, const Body* body2)
 
 void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 {
-    if (otherBody == m_ground)
+    if ((otherBody == m_ground) || (otherBody == m_field))
     {
         processPlayerGround(player);
     }
@@ -235,7 +235,7 @@ void Referee::registerPlayerEvent(const Body* player, const Body* otherBody)
 
 void Referee::registerBallEvent(const Body* ball, const Body* otherBody)
 {
-    if (otherBody == m_ground)
+    if ((otherBody == m_ground) || (otherBody == m_field))
     {
         processBallGround();
     }

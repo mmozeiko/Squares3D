@@ -20,6 +20,7 @@ public:
     BodyToPlayerDataMap      m_players;
     Body*                    m_ball;
     const Body*              m_ground;
+    const Body*              m_field;
     const Body*              m_lastFieldOwner;
     const Body*              m_lastTouchedObject;
     const Body*              m_lastTouchedPlayer;
