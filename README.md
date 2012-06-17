@@ -14,7 +14,10 @@ Būvēšanas pamācība:
 * vispirms atveram 3dparty/3rdparty.sln solution'u, ar kuru uzbūvēs trešās puses bibliotēkas (enet, expat, glee, glfw, ogg, physfs, vorbis, zlib)
 * tad veram vaļā Squares3D.sln solution'u un kompilējam pašu bin/Squares3d.exe failu
 
-Pēdējā versija (1.1.2) lejupielādei:
+Lejupielāde
+===========
+
+Pēdējā versija (1.1.2):
 
 * [Windows][1]
 * [MacOSX][2]
@@ -24,3 +27,9 @@ Pēdējā versija (1.1.2) lejupielādei:
   [2]: https://github.com/downloads/mmozeiko/Squares3D/Squares3D-1.1.2-MacOSX.dmg
   [3]: https://github.com/downloads/mmozeiko/Squares3D/Squares3D-1.1.2-Linux.tar.gz
   [4]: https://github.com/mmozeiko/Squares3D/wiki/Indago-2006-atskaites
+
+Saites internetā
+================
+
+*​http://www.gamedev.lv/article/squares_3d
+*​http://klab.lv/users/peacemaker/47768.html
