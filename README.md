@@ -31,5 +31,6 @@ Pēdējā versija (1.1.2):
 Saites internetā
 ================
 
-*​http://www.gamedev.lv/article/squares_3d
-*​http://klab.lv/users/peacemaker/47768.html
+http://www.gamedev.lv/article/squares_3d
+
+http://klab.lv/users/peacemaker/47768.html
