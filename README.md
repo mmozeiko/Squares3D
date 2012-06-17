@@ -5,6 +5,15 @@ Indago 2006 konkursa uzvarētājs.
 
 Vēsturiskās atskaites, kas tika rakstītas Indago blogā - [Indago 2006 atskaites][4]
 
+Būvēts izmantojot VS2005 vai gcc + scons komandrindā (zem MacOSX un GNU/Linux). Izejas kods pieejams kā public domain. Ņemiet vērā, ka tas ir sasteigts, lai iekļautos termiņos. Kodu noteikti nevajag izmantot, lai mācītos C++ vai veidot spēles. Tas ir šeit pieejams tikai informatīvos un ziņkārības nolūkos.
+
+Ņemiet vērā, ka spēle tika veidota 2006. gadā un kopš tā laika nav testēta uz jaunākajām videokartēm un draiverim, tādēļ visai ticami, ka tā var neizskatīties uz mūsdienu datoriem kā bija paredzēts.
+
+Būvēšanas pamācība:
+
+* vispirms atveram 3dparty/3rdparty.sln solution'u, ar kuru uzbūvēs trešās puses bibliotēkas (enet, expat, glee, glfw, ogg, physfs, vorbis, zlib)
+* tad veram vaļā Squares3D.sln solution'u un kompilējam pašu bin/Squares3d.exe failu
+
 Pēdējā versija (1.1.2) lejupielādei:
 
 * [Windows][1]
