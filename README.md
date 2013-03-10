@@ -23,9 +23,9 @@ Pēdējā versija (1.1.2):
 * [MacOSX][2]
 * [GNU/Linux][3]
 
-  [1]: https://github.com/downloads/mmozeiko/Squares3D/Squares3D-1.1.2-Windows.exe
-  [2]: https://github.com/downloads/mmozeiko/Squares3D/Squares3D-1.1.2-MacOSX.dmg
-  [3]: https://github.com/downloads/mmozeiko/Squares3D/Squares3D-1.1.2-Linux.tar.gz
+  [1]: https://docs.google.com/file/d/0B6NdBDx_PciXbEZMX3RvbW1sN28/edit?usp=sharing
+  [2]: https://docs.google.com/file/d/0B6NdBDx_PciXT3RQM0VHem5UZjA/edit?usp=sharing
+  [3]: https://docs.google.com/file/d/0B6NdBDx_PciXdFJMZ1dHNnBqNnc/edit?usp=sharing
   [4]: https://github.com/mmozeiko/Squares3D/wiki/Indago-2006-atskaites
 
 Saites internetā
